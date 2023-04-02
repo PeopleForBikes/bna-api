@@ -1,0 +1,27 @@
+name: docs
+
+defaults:
+  run:
+    working-directory: docs
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+    types:
+      - opened
+      - synchronize
+      - reopened
+  push:
+    paths:
+      - ".github/workflows/docs.yml"
+      - "docs/**"
+    branches:
+      - main
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  docs-zola:
+    uses: PeopleForBikes/.github/.github/workflows/docs-zola.yml@main
