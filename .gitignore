@@ -1,10 +1,6 @@
-**/*.rs.bk
 *.pdb
+**/*.rs.bk
+/target
 Cargo.lock
 debug/
 target/
-
-
-# Added by cargo
-
-/target
