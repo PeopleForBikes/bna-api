@@ -2,7 +2,7 @@
 
 ## General guidelines
 
-This project follows the [BNA Mechanics Contributing Guidelines] Refer to them
+This project follows the [BNA Mechanics Contributing Guidelines]. Refer to them
 for general principles.
 
 [bna mechanics contributing guidelines]:
