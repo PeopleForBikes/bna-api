@@ -1,0 +1,29 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:15.2
+    environment:
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRESQL_USERNAME: bna
+        POSTGRESQL_PASSWORD: bna
+        POSTGRESQL_DATABASE: bna
+    ports:
+      - 5432:5432
+    volumes:
+        - postgres:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:6.21
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@pgadmin.com
+        PGADMIN_DEFAULT_PASSWORD: admin
+        PGADMIN_LISTEN_PORT: 80
+    ports:
+      - 8484:80
+    volumes:
+        - ./docker/servers.json:/pgadmin4/servers.json
+
+volumes:
+  postgres:
+    external: false
