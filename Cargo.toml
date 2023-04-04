@@ -5,7 +5,7 @@ edition = "2021"
 publish = false
 
 [workspace]
-members = [".", "entity", "migration"]
+members = [".", "lambdas", "entity", "migration"]
 
 [dependencies]
 entity = { path = "entity" }
