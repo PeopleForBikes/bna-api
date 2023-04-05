@@ -35,4 +35,8 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 
 [[bin]]
 name = "get-cities"
-path = "src/get-cities.rs"
+path = "src/city/get-cities.rs"
+
+[[bin]]
+name = "get-city"
+path = "src/city/get-city.rs"
