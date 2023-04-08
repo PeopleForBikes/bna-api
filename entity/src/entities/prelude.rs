@@ -2,4 +2,3 @@
 
 pub use super::bna::Entity as Bna;
 pub use super::city::Entity as City;
-pub use super::infrastructure::Entity as Infrastructure;

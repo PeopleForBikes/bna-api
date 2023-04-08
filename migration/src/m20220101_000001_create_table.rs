@@ -12,7 +12,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(City::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(City::Id).uuid().not_null().primary_key())
+                    // .col(ColumnDef::new(City::Id).unsigned().not_null().primary_key())
                     // .col(
                     //     ColumnDef::new(City::CreatedAt)
                     //         .timestamp_with_time_zone()
@@ -23,7 +23,12 @@ impl MigrationTrait for Migration {
                     //         .timestamp_with_time_zone()
                     //         .not_null(),
                     // )
-                    .col(ColumnDef::new(City::CensusFipsCode).unsigned().not_null())
+                    .col(
+                        ColumnDef::new(City::CensusFipsCode)
+                            .unsigned()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .col(ColumnDef::new(City::CensusLatitude).double().not_null())
                     .col(ColumnDef::new(City::CensusLongitude).double().not_null())
                     .col(ColumnDef::new(City::CensusPopulation).unsigned().not_null())
@@ -53,13 +58,13 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Bna::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Bna::Id)
-                            .integer()
-                            .not_null()
-                            .primary_key()
-                            .auto_increment(),
-                    )
+                    // .col(
+                    //     ColumnDef::new(Bna::Id)
+                    //         .integer()
+                    //         .not_null()
+                    //         .primary_key()
+                    //         .auto_increment(),
+                    // )
                     // .col(
                     //     ColumnDef::new(Bna::CreatedAt)
                     //         .timestamp_with_time_zone()
@@ -127,12 +132,22 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Bna::BNARetail).double().not_null())
                     .col(ColumnDef::new(Bna::BNARoundedScore).unsigned().not_null())
                     .col(ColumnDef::new(Bna::BNATransit).double().not_null())
-                    // .col(ColumnDef::new(Bna::BNAUuid).uuid().not_null())
-                    .col(ColumnDef::new(Bna::CityId).uuid())
+                    .col(ColumnDef::new(Bna::BNAUuid).uuid().not_null().primary_key())
+                    .col(
+                        ColumnDef::new(Bna::BNATotalLowStressMiles)
+                            .double()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Bna::BNATotalHighStressMiles)
+                            .double()
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(Bna::CityId).unsigned())
                     .foreign_key(
                         ForeignKey::create()
                             .from(Bna::Table, Bna::CityId)
-                            .to(City::Table, City::Id)
+                            .to(City::Table, City::CensusFipsCode)
                             .on_delete(ForeignKeyAction::Cascade)
                             .on_update(ForeignKeyAction::Cascade),
                     )
@@ -192,50 +207,50 @@ impl MigrationTrait for Migration {
         //             )
         //             .await?;
 
-        // Create the infrastructure table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(Infrastructure::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(Infrastructure::Id)
-                            .integer()
-                            .not_null()
-                            .primary_key()
-                            .auto_increment(),
-                    )
-                    .col(
-                        ColumnDef::new(Infrastructure::BNATotalLowStressMiles)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Infrastructure::BNATotalHighStressMiles)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Infrastructure::CityId).uuid())
-                    // .col(
-                    //     ColumnDef::new(Infrastructure::CreatedAt)
-                    //         .timestamp_with_time_zone()
-                    //         .not_null(),
-                    // )
-                    // .col(
-                    //     ColumnDef::new(Infrastructure::UpdatedAt)
-                    //         .timestamp_with_time_zone()
-                    //         .not_null(),
-                    // )
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from(Infrastructure::Table, Infrastructure::CityId)
-                            .to(City::Table, City::Id)
-                            .on_delete(ForeignKeyAction::Cascade)
-                            .on_update(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
+        // // Create the infrastructure table.
+        // manager
+        //     .create_table(
+        //         Table::create()
+        //             .table(Infrastructure::Table)
+        //             .if_not_exists()
+        //             .col(
+        //                 ColumnDef::new(Infrastructure::Id)
+        //                     .integer()
+        //                     .not_null()
+        //                     .primary_key()
+        //                     .auto_increment(),
+        //             )
+        //             .col(
+        //                 ColumnDef::new(Infrastructure::BNATotalLowStressMiles)
+        //                     .double()
+        //                     .not_null(),
+        //             )
+        //             .col(
+        //                 ColumnDef::new(Infrastructure::BNATotalHighStressMiles)
+        //                     .double()
+        //                     .not_null(),
+        //             )
+        //             .col(ColumnDef::new(Infrastructure::CityId).uuid())
+        //             // .col(
+        //             //     ColumnDef::new(Infrastructure::CreatedAt)
+        //             //         .timestamp_with_time_zone()
+        //             //         .not_null(),
+        //             // )
+        //             // .col(
+        //             //     ColumnDef::new(Infrastructure::UpdatedAt)
+        //             //         .timestamp_with_time_zone()
+        //             //         .not_null(),
+        //             // )
+        //             .foreign_key(
+        //                 ForeignKey::create()
+        //                     .from(Infrastructure::Table, Infrastructure::CityId)
+        //                     .to(City::Table, City::Id)
+        //                     .on_delete(ForeignKeyAction::Cascade)
+        //                     .on_update(ForeignKeyAction::Cascade),
+        //             )
+        //             .to_owned(),
+        //     )
+        //     .await?;
 
         Ok(())
     }
@@ -250,9 +265,9 @@ impl MigrationTrait for Migration {
         // manager
         //     .drop_table(Table::drop().table(CommunitySurvey::Table).to_owned())
         //     .await?;
-        manager
-            .drop_table(Table::drop().table(Infrastructure::Table).to_owned())
-            .await?;
+        // manager
+        //     .drop_table(Table::drop().table(Infrastructure::Table).to_owned())
+        //     .await?;
 
         Ok(())
     }
@@ -261,7 +276,7 @@ impl MigrationTrait for Migration {
 #[derive(Iden)]
 enum City {
     Table,
-    Id,
+    // Id,
     // CreatedAt,
     // UpdatedAt,
     /// Numerical city identifier given by the U.S. census.
@@ -301,7 +316,7 @@ enum City {
 #[derive(Iden)]
 enum Bna {
     Table,
-    Id,
+    /// The ID of the city that was target by this BNA run.
     CityId,
     // CreatedAt,
     // UpdatedAt,
@@ -345,8 +360,14 @@ enum Bna {
     BNARetail,
     /// BNA total score rounded.
     BNARoundedScore,
+    /// Total miles of low-stress streets and paths in the measured area.
+    BNATotalLowStressMiles,
+    /// Total miles of high-stress streets in the measured area.
+    BNATotalHighStressMiles,
     /// BNA category score for access to major transit stops.
     BNATransit,
+    /// BNA run unique identifier
+    BNAUuid,
 }
 
 // #[derive(Iden)]
@@ -372,15 +393,15 @@ enum Bna {
 //     TotalRounded,
 // }
 
-#[derive(Iden)]
-enum Infrastructure {
-    Table,
-    Id,
-    CityId,
-    // CreatedAt,
-    // UpdatedAt,
-    /// Total miles of low-stress streets and paths in the measured area.
-    BNATotalLowStressMiles,
-    /// Total miles of high-stress streets in the measured area.
-    BNATotalHighStressMiles,
-}
+// #[derive(Iden)]
+// enum Infrastructure {
+//     Table,
+//     Id,
+//     CityId,
+//     // CreatedAt,
+//     // UpdatedAt,
+//     /// Total miles of low-stress streets and paths in the measured area.
+//     BNATotalLowStressMiles,
+//     /// Total miles of high-stress streets in the measured area.
+//     BNATotalHighStressMiles,
+// }
