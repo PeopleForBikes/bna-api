@@ -4,4 +4,3 @@ pub mod prelude;
 
 pub mod bna;
 pub mod city;
-pub mod infrastructure;

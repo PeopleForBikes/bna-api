@@ -7,8 +7,6 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "city")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    #[serde(skip_deserializing)]
-    pub id: Uuid,
     pub census_fips_code: i32,
     #[sea_orm(column_type = "Double")]
     pub census_latitude: f64,
@@ -33,19 +31,11 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::bna::Entity")]
     Bna,
-    #[sea_orm(has_many = "super::infrastructure::Entity")]
-    Infrastructure,
 }
 
 impl Related<super::bna::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Bna.def()
-    }
-}
-
-impl Related<super::infrastructure::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Infrastructure.def()
     }
 }
 

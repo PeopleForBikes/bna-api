@@ -6,9 +6,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "bna")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    #[serde(skip_deserializing)]
-    pub id: i32,
     #[sea_orm(column_type = "Double")]
     pub bna_core_services: f64,
     #[sea_orm(column_type = "Double")]
@@ -50,7 +47,13 @@ pub struct Model {
     pub bna_rounded_score: i32,
     #[sea_orm(column_type = "Double")]
     pub bna_transit: f64,
-    pub city_id: Option<Uuid>,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub bna_uuid: Uuid,
+    #[sea_orm(column_type = "Double")]
+    pub bna_total_low_stress_miles: f64,
+    #[sea_orm(column_type = "Double")]
+    pub bna_total_high_stress_miles: f64,
+    pub city_id: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
@@ -58,7 +61,7 @@ pub enum Relation {
     #[sea_orm(
         belongs_to = "super::city::Entity",
         from = "Column::CityId",
-        to = "super::city::Column::Id",
+        to = "super::city::Column::CensusFipsCode",
         on_update = "Cascade",
         on_delete = "Cascade"
     )]
