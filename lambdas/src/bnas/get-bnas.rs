@@ -1,7 +1,8 @@
 use dotenv::dotenv;
-use entity::city;
+use entity::bna;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use sea_orm::{Database, EntityTrait};
+use lambdas::pagination_parameters;
+use sea_orm::{prelude::Uuid, Database, EntityTrait, PaginatorTrait};
 use serde_json::json;
 use std::env;
 
@@ -12,17 +13,27 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let database_url = env::var("DATABASE_URL")?;
     let db = Database::connect(database_url).await?;
 
-    // Extract and convert the city parameter.
-    let path_parameters = event.path_parameters();
-    let city_id = match path_parameters.first("city_id") {
-        Some(city_id) => city_id.parse::<i32>()?,
-        None => return Err("No `city_id` parameter was provided".into()),
-    };
+    // Retrieve pagination parameters if any.
+    let (page_size, page) = pagination_parameters(&event)?;
 
-    // Retrieve a specific city.
-    Ok(json!(city::Entity::find_by_id(city_id).one(&db).await?)
+    // Retrieve city or cities.
+    match event.path_parameters().first("bna_id") {
+        Some(bna_id) => Ok(json!(
+            bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
+                .one(&db)
+                .await?
+        )
         .into_response()
-        .await)
+        .await),
+        None => Ok(json!(
+            bna::Entity::find()
+                .paginate(&db, page_size)
+                .fetch_page(page)
+                .await?
+        )
+        .into_response()
+        .await),
+    }
 }
 
 #[tokio::main]

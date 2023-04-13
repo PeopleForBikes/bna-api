@@ -34,9 +34,19 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 ] }
 
 [[bin]]
-name = "get-cities"
-path = "src/city/get-cities.rs"
+name = "get-bnas"
+path = "src/bnas/get-bnas.rs"
 
 [[bin]]
-name = "get-city"
-path = "src/city/get-city.rs"
+name = "get-cities"
+path = "src/cities/get-cities.rs"
+
+[[bin]]
+name = "get-cities-bnas"
+path = "src/cities/get-cities-bnas.rs"
+
+[package.metadata.lambda.deploy]
+memory = 128
+timeout = 10
+tracing = "active"
+role = "role-full-arn"
