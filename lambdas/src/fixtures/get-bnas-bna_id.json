@@ -1,6 +1,6 @@
 {
-  "resource": "/cities",
-  "path": "/cities",
+  "resource": "/bnas/{bna_id}",
+  "path": "/bnas/9b5b76d8-f628-4367-bd1d-12e6423aacea",
   "httpMethod": "GET",
   "headers": {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -41,6 +41,9 @@
     "X-Forwarded-Proto": ["https"]
   },
   "queryStringParameters": null,
+  "pathParameters": {
+    "bna_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
+  },
   "multiValueQueryStringParameters": null,
   "stageVariables": null,
   "requestContext": {

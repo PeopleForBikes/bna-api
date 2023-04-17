@@ -18,8 +18,9 @@ edition = "2021"
 dotenv = "0.15.0"
 entity = { path = "../entity" }
 lambda_http = "0.8"
-lambda_runtime = "0.7"
+lambda_runtime = "0.8"
 once_cell = "1.17.1"
+reqwest = "0.11.16"
 sea-orm = { version = "0.11.0", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
@@ -49,4 +50,6 @@ path = "src/cities/get-cities-bnas.rs"
 memory = 128
 timeout = 10
 tracing = "active"
-role = "role-full-arn"
+layers = [
+  "arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
+]
