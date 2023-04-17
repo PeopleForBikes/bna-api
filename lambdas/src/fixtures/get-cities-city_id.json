@@ -1,6 +1,6 @@
 {
-  "resource": "/city/{city_id}",
-  "path": "/city/1208800",
+  "resource": "/cities/{city_id}",
+  "path": "/cities/2650480",
   "httpMethod": "GET",
   "headers": {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -43,7 +43,7 @@
   "queryStringParameters": null,
   "multiValueQueryStringParameters": null,
   "pathParameters": {
-    "city_id": "1208800"
+    "city_id": "2650480"
   },
   "stageVariables": null,
   "requestContext": {

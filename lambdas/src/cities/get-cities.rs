@@ -1,38 +1,45 @@
 use dotenv::dotenv;
 use entity::city;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::pagination_parameters;
-use sea_orm::{Database, EntityTrait, PaginatorTrait};
+use lambdas::{database_connect, pagination_parameters};
+use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 use std::env;
+use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
-    let database_url = env::var("DATABASE_URL")?;
-    let db = Database::connect(database_url).await?;
+    let database_url_secret_id = env::var("DATABASE_URL_SECRET_ID").ok();
+    let db = database_connect(database_url_secret_id).await?;
 
     // Retrieve pagination parameters if any.
     let (page_size, page) = pagination_parameters(&event)?;
 
     // Retrieve city or cities.
     match event.path_parameters().first("city_id") {
-        Some(city_id) => Ok(json!(
-            city::Entity::find_by_id(city_id.parse::<i32>()?)
-                .one(&db)
-                .await?
-        )
-        .into_response()
-        .await),
-        None => Ok(json!(
-            city::Entity::find()
-                .paginate(&db, page_size)
-                .fetch_page(page)
-                .await?
-        )
-        .into_response()
-        .await),
+        Some(city_id) => {
+            info!("/cities/{city_id}");
+            Ok(json!(
+                city::Entity::find_by_id(city_id.parse::<i32>()?)
+                    .one(&db)
+                    .await?
+            )
+            .into_response()
+            .await)
+        }
+        None => {
+            info!("/cities/");
+            Ok(json!(
+                city::Entity::find()
+                    .paginate(&db, page_size)
+                    .fetch_page(page)
+                    .await?
+            )
+            .into_response()
+            .await)
+        }
     }
 }
 

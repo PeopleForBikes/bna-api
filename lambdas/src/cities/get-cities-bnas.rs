@@ -1,8 +1,8 @@
 use dotenv::dotenv;
 use entity::{bna, city};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::pagination_parameters;
-use sea_orm::{prelude::Uuid, Database, EntityTrait, PaginatorTrait};
+use lambdas::{database_connect, pagination_parameters};
+use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
 use std::env;
 
@@ -10,8 +10,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
-    let database_url = env::var("DATABASE_URL")?;
-    let db = Database::connect(database_url).await?;
+    let database_url_secret_id = env::var("DATABASE_URL_SECRET_ID").ok();
+    let db = database_connect(database_url_secret_id).await?;
 
     // Retrieve pagination parameters if any.
     let (page_size, page) = pagination_parameters(&event)?;

@@ -1,6 +1,6 @@
 {
-  "resource": "/city/{city_id}/bna/{bna_id}",
-  "path": "/city/1208800/bna/9b5b76d8-f628-4367-bd1d-12e6423aacea",
+  "resource": "/cities/{city_id}/bnas/{bna_id}",
+  "path": "/cities/1208800/bnas/9b5b76d8-f628-4367-bd1d-12e6423aacea",
   "httpMethod": "GET",
   "headers": {
     "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
@@ -43,7 +43,8 @@
   "queryStringParameters": null,
   "multiValueQueryStringParameters": null,
   "pathParameters": {
-    "city_id": "1208800"
+    "city_id": "1208800",
+    "bna_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
   },
   "stageVariables": null,
   "requestContext": {
