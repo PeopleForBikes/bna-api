@@ -17,7 +17,7 @@ edition = "2021"
 [dependencies]
 dotenv = "0.15.0"
 entity = { path = "../entity" }
-lambda_http = "0.7"
+lambda_http = "0.8"
 lambda_runtime = "0.7"
 once_cell = "1.17.1"
 sea-orm = { version = "0.11.0", features = [
