@@ -27,3 +27,4 @@ tokio = { version = "1", features = ["full"] }
 [dev-dependencies]
 csv = "1.2.1"
 dotenv = "0.15.0"
+itertools = "0.10.5"

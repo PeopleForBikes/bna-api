@@ -3,16 +3,18 @@ use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
 use entity::{bna, city, prelude::*};
-use sea_orm::{ActiveValue::Set, Database, EntityTrait, IntoActiveModel};
+use itertools::Itertools;
+use sea_orm::{prelude::Uuid, ActiveValue::Set, Database, EntityTrait, IntoActiveModel};
 use serde::Deserialize;
+use std::collections::HashMap;
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
     dotenv().ok();
 
     // Populate entities.
-    let mut bnas: Vec<bna::ActiveModel> = Vec::new();
-    let mut cities: Vec<city::ActiveModel> = Vec::new();
+    let mut bnas: HashMap<Uuid, bna::ActiveModel> = HashMap::new();
+    let mut cities: HashMap<i32, city::ActiveModel> = HashMap::new();
 
     // Load the CSV file.
     let mut csv_reader = Reader::from_path("examples/sample.csv")?;
@@ -20,15 +22,16 @@ async fn main() -> Result<(), Report> {
         // Read the record.
         let scorecard: ScoreCard = record?;
         let city_id = scorecard.city.census_fips_code;
+        let bna_id = scorecard.bna.bna_uuid;
 
         // Extract the city.
         let active_city = scorecard.city.into_active_model();
-        cities.push(active_city);
+        cities.insert(city_id, active_city);
 
         // Extract the BNA.
         let mut active_bna = scorecard.bna.into_active_model();
         active_bna.city_id = Set(Some(city_id));
-        bnas.push(active_bna);
+        bnas.insert(bna_id, active_bna);
     }
 
     // Set the database connection.
@@ -36,8 +39,10 @@ async fn main() -> Result<(), Report> {
     let db = Database::connect(database_url).await?;
 
     // Insert the entries.
-    City::insert_many(cities).exec(&db).await?;
-    Bna::insert_many(bnas).exec(&db).await?;
+    City::insert_many(cities.into_values()).exec(&db).await?;
+    Bna::insert_many(bnas.into_values().collect_vec())
+        .exec(&db)
+        .await?;
 
     Ok(())
 }
