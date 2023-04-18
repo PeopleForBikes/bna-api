@@ -11,11 +11,11 @@ use std::{env, num::ParseIntError};
 pub struct SecretValue {
     /// Amazon Resource Name of the secret.
     #[serde(alias = "ARN")]
-    arn: String,
+    pub arn: String,
     /// Creation date.
-    created_date: String,
+    pub created_date: String,
     /// The friendly name of the secret.
-    name: String,
+    pub name: String,
     /// The decrypted secret value, if the secret value was originally provided
     /// as binary data in the form of a byte array. The response parameter
     /// represents the binary data as a base64-encoded string.
@@ -23,19 +23,19 @@ pub struct SecretValue {
     /// If the secret was created by using the Secrets Manager console, or if
     /// the secret value was originally provided as a string, then this field
     /// is omitted. The secret value appears in SecretString instead.
-    secret_binary: Option<String>,
+    pub secret_binary: Option<String>,
     /// The decrypted secret value, if the secret value was originally provided
     /// as a string or through the Secrets Manager console.
     /// If this secret was created by using the console, then Secrets Manager
     /// stores the information as a JSON structure of key/value pairs.
-    secret_string: String,
+    pub secret_string: String,
     /// Unique identifier of the version of the secret.
-    version_id: String,
+    pub version_id: String,
     /// A list of all of the staging labels currently attached to this version
     /// of the secret.
-    version_stages: Vec<String>,
+    pub version_stages: Vec<String>,
     /// Metadata.
-    result_metadata: HashMap<String, String>,
+    pub result_metadata: HashMap<String, String>,
 }
 
 /// Retrieve the pagination parameters.
@@ -70,7 +70,7 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
                   Ok(v) => {
                     let secret_value = get_aws_secrets(&v)
                         .await
-                        .map_err(|e| DbErr::Custom(e.to_string()))?;
+                        .map_err( DbErr::Custom)?;
                     let secrets: HashMap<String, String> = serde_json::from_str(&secret_value.secret_string)
                         .map_err(|e| DbErr::Custom(format!("Cannot deserialize the cached secret: {e}")))?;
                     match secrets.get(DATABASE_URL_KEY) {
@@ -83,7 +83,7 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
             None => return Err(DbErr::Custom(format!("Cannot find the connection string. Ensure `{DATABASE_URL_KEY}` is correctly set."))),
         },
     };
-    Ok(Database::connect(database_url).await?)
+    Database::connect(database_url).await
 }
 
 /// Retrieve a secret from the AWS Secrets Manager using the Lambda caching layer.
@@ -92,7 +92,7 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
 pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
     let aws_session_token =
         env::var("AWS_SESSION_TOKEN").map_err(|e| format!("Cannot find AWS session token: {e}"))?;
-    Ok(reqwest::Client::new()
+    reqwest::Client::new()
         .get(format!(
             "http://localhost:2773/secretsmanager/get?secretId={secret_id}"
         ))
@@ -102,5 +102,5 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
         .map_err(|e| e.to_string())?
         .json::<SecretValue>()
         .await
-        .map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())
 }
