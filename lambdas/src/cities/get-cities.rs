@@ -4,15 +4,13 @@ use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestEx
 use lambdas::{database_connect, pagination_parameters};
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
-use std::env;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
-    let database_url_secret_id = env::var("DATABASE_URL_SECRET_ID").ok();
-    let db = database_connect(database_url_secret_id).await?;
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve pagination parameters if any.
     let (page_size, page) = pagination_parameters(&event)?;

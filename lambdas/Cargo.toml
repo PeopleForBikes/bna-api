@@ -20,7 +20,11 @@ entity = { path = "../entity" }
 lambda_http = "0.8"
 lambda_runtime = "0.8"
 once_cell = "1.17.1"
-reqwest = "0.11.16"
+reqwest = { version = "0.11.16", features = [
+  "json",
+  "native-tls-vendored",
+  "rustls",
+] }
 sea-orm = { version = "0.11.0", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
