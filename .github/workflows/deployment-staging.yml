@@ -1,0 +1,44 @@
+name: staging-deployment
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  # This is required for requesting the JWT.
+  id-token: write
+  # This is required for actions/checkout.
+  contents: read
+
+defaults:
+  run:
+    working-directory: lambdas
+
+concurrency: ${{ github.ref }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install cargo lambda
+        run: pip install cargo-lambda
+
+      # Configure AWS and deploy the lambdas.
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: ${{ secrets.LAMBDA_DEPLOY_GITHUB_ROLE_ARN_STAGING }}
+          aws-region: ${{ secrets.AWS_REGION_STAGING }}
+
+      # Build the lambdas in release mode and deploy them.
+      - name: Build all lambdas
+        run: cargo lambda build --release
+      - name: Deploy all lambdas
+        run: >
+          cargo lambda deploy
+          --iam-role ${{ secrets.LAMBDA_ROLE_ARN_STAGING }}
+          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
