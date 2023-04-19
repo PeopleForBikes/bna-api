@@ -32,7 +32,7 @@ jobs:
 
       # Build the lambdas in release mode and deploy them.
       - name: Build all lambdas
-        run: cargo lambda build --release
+        run: cd lambdas && cargo lambda build --release
       - run: >
           cargo lambda deploy
           --iam-role ${{ secrets.LAMBDA_ROLE_ARN_STAGING }}
