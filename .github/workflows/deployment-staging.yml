@@ -11,10 +11,6 @@ permissions:
   # This is required for actions/checkout.
   contents: read
 
-defaults:
-  run:
-    working-directory: lambdas
-
 concurrency: ${{ github.ref }}
 
 jobs:
