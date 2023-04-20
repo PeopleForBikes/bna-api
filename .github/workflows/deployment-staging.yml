@@ -37,6 +37,11 @@ jobs:
           cargo lambda deploy
           --iam-role ${{ secrets.LAMBDA_ROLE_ARN_STAGING }}
           --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
+          get-bnas-cities
+      - run: >
+          cargo lambda deploy
+          --iam-role ${{ secrets.LAMBDA_ROLE_ARN_STAGING }}
+          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
           get-bnas
       - run: >
           cargo lambda deploy

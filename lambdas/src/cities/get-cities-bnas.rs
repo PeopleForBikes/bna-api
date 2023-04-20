@@ -2,7 +2,7 @@ use dotenv::dotenv;
 use entity::{bna, city};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
 use lambdas::{database_connect, pagination_parameters};
-use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
+use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -14,29 +14,17 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Retrieve pagination parameters if any.
     let (page_size, page) = pagination_parameters(&event)?;
 
-    // Retrieve a city and all or a specific BNA.
+    // Retrieve a city and all its BNAs.
     match event.path_parameters().first("city_id") {
-        Some(city_id) => match event.path_parameters().first("bna_id") {
-            Some(bna_id) => {
-                let city = city::Entity::find_by_id(city_id.parse::<i32>()?)
-                    .one(&db)
-                    .await?;
-                let bna = bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
-                    .one(&db)
-                    .await?;
-                Ok(json!((city, bna)).into_response().await)
-            }
-            None => Ok(json!(
-                city::Entity::find_by_id(city_id.parse::<i32>()?)
-                    .find_also_related(bna::Entity)
-                    .paginate(&db, page_size)
-                    .fetch_page(page)
-                    .await?
-            )
-            .into_response()
-            .await),
-        },
-
+        Some(city_id) => Ok(json!(
+            city::Entity::find_by_id(city_id.parse::<i32>()?)
+                .find_also_related(bna::Entity)
+                .paginate(&db, page_size)
+                .fetch_page(page)
+                .await?
+        )
+        .into_response()
+        .await),
         None => Err("The `city_id` parameter is missing.".into()),
     }
 }
