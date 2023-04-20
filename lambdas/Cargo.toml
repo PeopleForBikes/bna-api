@@ -43,6 +43,10 @@ name = "get-bnas"
 path = "src/bnas/get-bnas.rs"
 
 [[bin]]
+name = "get-bnas-cities"
+path = "src/bnas/get-bnas-cities.rs"
+
+[[bin]]
 name = "get-cities"
 path = "src/cities/get-cities.rs"
 

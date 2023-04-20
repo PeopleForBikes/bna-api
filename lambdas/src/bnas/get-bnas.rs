@@ -4,7 +4,6 @@ use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestEx
 use lambdas::{database_connect, pagination_parameters};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
-use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
@@ -15,29 +14,23 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Retrieve pagination parameters if any.
     let (page_size, page) = pagination_parameters(&event)?;
 
-    // Retrieve city or cities.
+    // Retrieve all bnas or a specific one.
     match event.path_parameters().first("bna_id") {
-        Some(bna_id) => {
-            info!("/bnas/{bna_id}");
-            Ok(json!(
-                bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
-                    .one(&db)
-                    .await?
-            )
-            .into_response()
-            .await)
-        }
-        None => {
-            info!("/bnas");
-            Ok(json!(
-                bna::Entity::find()
-                    .paginate(&db, page_size)
-                    .fetch_page(page)
-                    .await?
-            )
-            .into_response()
-            .await)
-        }
+        Some(bna_id) => Ok(json!(
+            bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
+                .one(&db)
+                .await?
+        )
+        .into_response()
+        .await),
+        None => Ok(json!(
+            bna::Entity::find()
+                .paginate(&db, page_size)
+                .fetch_page(page)
+                .await?
+        )
+        .into_response()
+        .await),
     }
 }
 
