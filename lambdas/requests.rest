@@ -1,0 +1,34 @@
+@host=https://api.peopleforbikes.xyz
+@bna_id=d84b4c38-cfda-40e3-9112-4fc80bebcd99
+# Brooksville, FL.
+@city_id=1208800
+
+###
+
+# Query the first page of the bnas.
+GET {{host}}/bnas
+
+###
+
+# Query a specific bna run.
+GET {{host}}/bnas/{{bna_id}}
+
+###
+
+# Query a specific bna run and its associated city.
+GET {{host}}/bnas/{{bna_id}}/city
+
+###
+
+# Query the first page of the cities.
+GET {{host}}/cities
+
+###
+
+# Query a specific city.
+GET {{host}}/cities/{{city_id}}
+
+###
+
+# Query all the BNAs of a specific city.
+GET {{host}}/cities/{{city_id}}/bnas
