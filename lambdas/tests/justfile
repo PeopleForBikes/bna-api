@@ -1,0 +1,3 @@
+# Run the integration tests against the stagging environment.
+test-staging:
+  hurl --variables-file staging.vars --test tests.hurl
