@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use entity::bna;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::{database_connect, pagination_parameters};
+use lambdas::{build_paginated_response, database_connect, pagination_parameters};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
 
@@ -23,14 +23,14 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         )
         .into_response()
         .await),
-        None => Ok(json!(
-            bna::Entity::find()
+        None => {
+            let body = bna::Entity::find()
                 .paginate(&db, page_size)
                 .fetch_page(page)
-                .await?
-        )
-        .into_response()
-        .await),
+                .await?;
+            let total_items = bna::Entity::find().count(&db).await?;
+            build_paginated_response(json!(body), total_items, page, page_size)
+        }
     }
 }
 
