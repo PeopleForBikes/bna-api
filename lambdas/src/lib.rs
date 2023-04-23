@@ -1,8 +1,8 @@
-use lambda_http::{Request, RequestExt};
+use lambda_http::{Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Deserialize;
-use std::collections::HashMap;
-use std::{env, num::ParseIntError};
+use serde_json::Value;
+use std::{collections::HashMap, env, num::ParseIntError};
 
 /// Represent the contents of the encrypted fields SecretString or SecretBinary
 /// from the specified version of a secret, whichever contains content.
@@ -36,23 +36,6 @@ pub struct SecretValue {
     pub version_stages: Vec<String>,
     /// Metadata.
     pub result_metadata: HashMap<String, String>,
-}
-
-/// Retrieve the pagination parameters.
-///
-/// If nothing is provided, the first page is returned and will contain up to 50 items.
-pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
-    let page_size = event
-        .query_string_parameters()
-        .first("page_size")
-        .unwrap_or("50")
-        .parse::<u64>()?;
-    let page = event
-        .query_string_parameters()
-        .first("page")
-        .unwrap_or("0")
-        .parse::<u64>()?;
-    Ok((page_size, page))
 }
 
 /// Return the database connection.
@@ -103,4 +86,58 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
         .json::<SecretValue>()
         .await
         .map_err(|e| e.to_string())
+}
+
+/// Retrieve the pagination parameters.
+///
+/// If nothing is provided, the first page is returned and will contain up to 50 items.
+pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
+    let page_size = event
+        .query_string_parameters()
+        .first("page_size")
+        .unwrap_or("50")
+        .parse::<u64>()?;
+    let page = event
+        .query_string_parameters()
+        .first("page")
+        .unwrap_or("0")
+        .parse::<u64>()?;
+    Ok((page_size, page))
+}
+
+/// Build a paginated Response.
+///
+/// Builds a Response struct which contains the pagination information in the headers.
+///
+/// Implements pagination headers, similar to GitLab:
+/// https://docs.gitlab.com/ee/api/rest/index.html#other-pagination-headers
+///
+/// - x-next-page   The index of the next page.
+/// - x-page        The index of the current page (starting at 1).
+/// - x-per-page    The number of items per page.
+/// - x-prev-page   The index of the previous page.
+/// - x-total       The total number of items.
+/// - x-total-pages The total number of pages.
+pub fn build_paginated_response(
+    body: Value,
+    total_items: u64,
+    page: u64,
+    page_size: u64,
+) -> Result<Response<Body>, Error> {
+    let total_pages = total_items / page_size;
+    let previous_page = if page <= 1 { 1 } else { page - 1 };
+    let next_page = if page >= total_pages {
+        total_pages
+    } else {
+        page + 1
+    };
+    Ok(Response::builder()
+        .header("x-next-page", next_page)
+        .header("x-page", page)
+        .header("x-per-page", page_size)
+        .header("x-prev-page", previous_page)
+        .header("x-total", total_items)
+        .header("x-total-pages", total_pages)
+        .body(body.to_string().into())
+        .map_err(Box::new)?)
 }
