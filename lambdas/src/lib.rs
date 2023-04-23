@@ -1,3 +1,5 @@
+pub mod link_header;
+
 use lambda_http::{Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Deserialize;
@@ -140,4 +142,28 @@ pub fn build_paginated_response(
         .header("x-total-pages", total_pages)
         .body(body.to_string().into())
         .map_err(Box::new)?)
+}
+
+// Create a TryFrom<&'a str> implementation for a specific type.
+//
+// This macros expects the following items to be setup before use:
+//   - the type must implement a `parse` function with the following signature
+//       `pub fn parse(i: &str) -> IResult<&str, __type__>`
+#[macro_export]
+macro_rules! nomstr {
+    ($a:ident) => {
+        impl<'a> TryFrom<&'a str> for $a<'a> {
+            type Error = Error<String>;
+
+            fn try_from(value: &'a str) -> Result<Self, Self::Error> {
+                match $a::parse(value).finish() {
+                    Ok((_, item)) => Ok(item),
+                    Err(Error { input, code }) => Err(Error {
+                        input: input.to_string(),
+                        code,
+                    }),
+                }
+            }
+        }
+    };
 }
