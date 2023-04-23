@@ -19,6 +19,7 @@ dotenv = "0.15.0"
 entity = { path = "../entity" }
 lambda_http = "0.8"
 lambda_runtime = "0.8"
+nom = "7.1.3"
 once_cell = "1.17.1"
 reqwest = { version = "0.11.16", features = [
   "json",
@@ -37,6 +38,7 @@ tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = [
   "fmt",
 ] }
+url = "2.3.1"
 
 [[bin]]
 name = "get-bnas"
@@ -53,6 +55,9 @@ path = "src/cities/get-cities.rs"
 [[bin]]
 name = "get-cities-bnas"
 path = "src/cities/get-cities-bnas.rs"
+
+[dev-dependencies]
+rstest = "0.17.0"
 
 [package.metadata.lambda.deploy]
 memory = 128
