@@ -97,17 +97,20 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
 
 /// Retrieve the pagination parameters.
 ///
-/// If nothing is provided, the first page is returned and will contain up to 50 items.
+/// If nothing is provided, the first page is returned and will contain up to
+/// `[DEFAULT_PAGE_SIZE]` items.
+///
+/// If `page` does not exist, an empty array is returned.
 pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
     let mut page_size = event
         .query_string_parameters()
         .first("page_size")
-        .unwrap_or("50")
+        .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
         .parse::<u64>()?;
     let page = event
         .query_string_parameters()
         .first("page")
-        .unwrap_or("0")
+        .unwrap_or("1")
         .parse::<u64>()?;
 
     // Ensure we do not allow the page to go above the max size.
@@ -137,7 +140,11 @@ pub fn build_paginated_response(
     page: u64,
     page_size: u64,
 ) -> Result<Response<Body>, Error> {
-    let total_pages = total_items / page_size;
+    let total_pages = if total_items < page_size {
+        1
+    } else {
+        total_items / page_size
+    };
     let previous_page = if page <= 1 { 1 } else { page - 1 };
     let next_page = if page >= total_pages {
         total_pages
