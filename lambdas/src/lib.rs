@@ -140,11 +140,7 @@ pub fn build_paginated_response(
     page: u64,
     page_size: u64,
 ) -> Result<Response<Body>, Error> {
-    let total_pages = if total_items < page_size {
-        1
-    } else {
-        total_items / page_size
-    };
+    let total_pages = (total_items + page_size - 1) / page_size;
     let previous_page = if page <= 1 { 1 } else { page - 1 };
     let next_page = if page >= total_pages {
         total_pages
