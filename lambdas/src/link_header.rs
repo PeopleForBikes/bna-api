@@ -147,6 +147,7 @@ impl<'a> Link<'a> {
     /// use lambdas::link_header::{Link, LinkValues, RelationType, LinkTarget};
     /// use url::Url;
     ///
+    /// let link = Link::parse(r#"link: <https://api.github.com/repositories/1300192/issues?page=2>; rel="prev""#).unwrap();
     /// ```
     pub fn parse(i: &str) -> IResult<&str, Link> {
         let (i, _) = alt((tag("Link:"), tag("link:")))(i)?;

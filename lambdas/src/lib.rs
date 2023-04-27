@@ -1,6 +1,7 @@
 pub mod link_header;
 
-use lambda_http::{Body, Error, Request, RequestExt, Response};
+use lambda_http::{http::uri::Scheme, Body, Error, Request, RequestExt, Response};
+use link_header::Link;
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Deserialize;
 use serde_json::Value;
@@ -117,7 +118,6 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
     if page_size > MAX_PAGE_SIZE {
         page_size = MAX_PAGE_SIZE;
     }
-
     Ok((page_size, page))
 }
 
@@ -156,6 +156,36 @@ pub fn build_paginated_response(
         .header("x-total-pages", total_pages)
         .body(body.to_string().into())
         .map_err(Box::new)?)
+}
+
+pub fn build_link_header(event: &Request) -> Option<String> {
+    // Collect the parts.
+    let event_headers = event.headers();
+    let scheme: Option<Scheme> = event_headers
+        .get("X-Forwarded-Proto")
+        .and_then(|h| h.to_str().ok())
+        .and_then(|h| h.parse().ok());
+    let host: Option<&str> = event_headers.get("Host").and_then(|h| h.to_str().ok());
+    let path = event.raw_http_path();
+    let uri = event.uri();
+    let uri_scheme = uri.scheme_str().unwrap();
+    let uri_host = uri.host().unwrap();
+    let uri_path = uri.path();
+
+    // Assemble the links.
+    let url = format!("{}://{}/{}", uri_scheme, uri_host, uri_path);
+    let first = format!(r#"<{}?page=1>; rel="first""#, url);
+    let prev = format!(r#"<{}?page=1>; rel="prev""#, url);
+    let next = format!(r#"<{}?page=1>; rel="next""#, url);
+    let last = format!(r#"<{}?page=1>; rel="last""#, url);
+
+    // Return the link header.
+    let mut link = link_header::Link::new();
+    link.add_link_value_from_str(&first);
+    link.add_link_value_from_str(&prev);
+    link.add_link_value_from_str(&next);
+    link.add_link_value_from_str(&last);
+    Some(link.to_string())
 }
 
 // Create a TryFrom<&'a str> implementation for a specific type.
