@@ -140,7 +140,6 @@ impl<'a> ToString for Link<'a> {
 }
 
 impl<'a> Link<'a> {
-    // link: <https://api.github.com/repositories/1300192/issues?page=2>; rel="prev"
     /// Recognizes a Link.
     ///
     /// ```

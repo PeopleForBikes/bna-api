@@ -1,7 +1,6 @@
 pub mod link_header;
 
-use lambda_http::{http::uri::Scheme, Body, Error, Request, RequestExt, Response};
-use link_header::Link;
+use lambda_http::{Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Deserialize;
 use serde_json::Value;
@@ -134,12 +133,16 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
 /// - x-prev-page   The index of the previous page.
 /// - x-total       The total number of items.
 /// - x-total-pages The total number of pages.
+///
+/// The link header is also added if the URL is provided by the request event.
 pub fn build_paginated_response(
     body: Value,
     total_items: u64,
     page: u64,
     page_size: u64,
+    event: &Request,
 ) -> Result<Response<Body>, Error> {
+    // Prepare the pagination values.
     let total_pages = (total_items + page_size - 1) / page_size;
     let previous_page = if page <= 1 { 1 } else { page - 1 };
     let next_page = if page >= total_pages {
@@ -147,7 +150,25 @@ pub fn build_paginated_response(
     } else {
         page + 1
     };
+
+    // Retrieve the URL if present.
+    let uri = event.uri();
+    let mut link_header: String = String::new();
+    if uri.host().is_some() {
+        let uri_scheme = uri.scheme_str().unwrap_or("https");
+        let uri_path = uri.path();
+        let mut url = format!("{}://{}/{}", uri_scheme, uri.host().unwrap(), uri_path);
+        if page_size != DEFAULT_PAGE_SIZE {
+            url.push_str("page_size={page_size}");
+        }
+
+        // Build the link header.
+        link_header = assemble_link_header_string(&url, previous_page, next_page, total_pages);
+    }
+
+    // Build the response.
     Ok(Response::builder()
+        .header("link", link_header)
         .header("x-next-page", next_page)
         .header("x-page", page)
         .header("x-per-page", page_size)
@@ -158,34 +179,13 @@ pub fn build_paginated_response(
         .map_err(Box::new)?)
 }
 
-pub fn build_link_header(event: &Request) -> Option<String> {
-    // Collect the parts.
-    let event_headers = event.headers();
-    let scheme: Option<Scheme> = event_headers
-        .get("X-Forwarded-Proto")
-        .and_then(|h| h.to_str().ok())
-        .and_then(|h| h.parse().ok());
-    let host: Option<&str> = event_headers.get("Host").and_then(|h| h.to_str().ok());
-    let path = event.raw_http_path();
-    let uri = event.uri();
-    let uri_scheme = uri.scheme_str().unwrap();
-    let uri_host = uri.host().unwrap();
-    let uri_path = uri.path();
-
-    // Assemble the links.
-    let url = format!("{}://{}/{}", uri_scheme, uri_host, uri_path);
-    let first = format!(r#"<{}?page=1>; rel="first""#, url);
-    let prev = format!(r#"<{}?page=1>; rel="prev""#, url);
-    let next = format!(r#"<{}?page=1>; rel="next""#, url);
-    let last = format!(r#"<{}?page=1>; rel="last""#, url);
-
-    // Return the link header.
-    let mut link = link_header::Link::new();
-    link.add_link_value_from_str(&first);
-    link.add_link_value_from_str(&prev);
-    link.add_link_value_from_str(&next);
-    link.add_link_value_from_str(&last);
-    Some(link.to_string())
+/// Concatenates the different segments of the link header.
+fn assemble_link_header_string(url: &str, prev: u64, next: u64, last: u64) -> String {
+    let first = format!(r#"<{url}?page=1>; rel="first""#);
+    let prev = format!(r#"<{url}?page={prev}>; rel="prev""#);
+    let next = format!(r#"<{url}?page={next}>; rel="next""#);
+    let last = format!(r#"<{url}?page={last}>; rel="last""#);
+    format!("{first}, {prev}, {next}, {last}")
 }
 
 // Create a TryFrom<&'a str> implementation for a specific type.

@@ -23,7 +23,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 .fetch_page(page)
                 .await?;
             let total_items = city::Entity::find().count(&db).await?;
-            build_paginated_response(json!(body), total_items, page, page_size)
+            build_paginated_response(json!(body), total_items, page, page_size, &event)
         }
         None => Err("The `city_id` parameter is missing.".into()),
     }

@@ -4,9 +4,13 @@ use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestEx
 use lambdas::{build_paginated_response, database_connect, pagination_parameters};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
+use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
+
+    // Just for debugging - To be removed.
+    info!("event: {:?}", event);
 
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -29,7 +33,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 .fetch_page(page)
                 .await?;
             let total_items = bna::Entity::find().count(&db).await?;
-            build_paginated_response(json!(body), total_items, page, page_size)
+            build_paginated_response(json!(body), total_items, page, page_size, &event)
         }
     }
 }
