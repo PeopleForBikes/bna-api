@@ -6,6 +6,11 @@ use serde::Deserialize;
 use serde_json::Value;
 use std::{collections::HashMap, env, num::ParseIntError};
 
+/// Maximum number of items allowed to be returned by a query at once.
+pub const MAX_PAGE_SIZE: u64 = 100;
+/// Number of items to return per page if no argument was provided.
+pub const DEFAULT_PAGE_SIZE: u64 = 50;
+
 /// Represent the contents of the encrypted fields SecretString or SecretBinary
 /// from the specified version of a secret, whichever contains content.
 #[derive(Deserialize)]
@@ -94,7 +99,7 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
 ///
 /// If nothing is provided, the first page is returned and will contain up to 50 items.
 pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
-    let page_size = event
+    let mut page_size = event
         .query_string_parameters()
         .first("page_size")
         .unwrap_or("50")
@@ -104,6 +109,12 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
         .first("page")
         .unwrap_or("0")
         .parse::<u64>()?;
+
+    // Ensure we do not allow the page to go above the max size.
+    if page_size > MAX_PAGE_SIZE {
+        page_size = MAX_PAGE_SIZE;
+    }
+
     Ok((page_size, page))
 }
 
