@@ -110,7 +110,7 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
     let page = event
         .query_string_parameters()
         .first("page")
-        .unwrap_or("1")
+        .unwrap_or("0")
         .parse::<u64>()?;
 
     // Ensure we do not allow the page to go above the max size.
