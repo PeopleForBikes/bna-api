@@ -117,7 +117,6 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
     if page_size > MAX_PAGE_SIZE {
         page_size = MAX_PAGE_SIZE;
     }
-
     Ok((page_size, page))
 }
 
@@ -134,12 +133,16 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
 /// - x-prev-page   The index of the previous page.
 /// - x-total       The total number of items.
 /// - x-total-pages The total number of pages.
+///
+/// The link header is also added if the URL is provided by the request event.
 pub fn build_paginated_response(
     body: Value,
     total_items: u64,
     page: u64,
     page_size: u64,
+    event: &Request,
 ) -> Result<Response<Body>, Error> {
+    // Prepare the pagination values.
     let total_pages = (total_items + page_size - 1) / page_size;
     let previous_page = if page <= 1 { 1 } else { page - 1 };
     let next_page = if page >= total_pages {
@@ -147,7 +150,25 @@ pub fn build_paginated_response(
     } else {
         page + 1
     };
+
+    // Retrieve the URL if present.
+    let uri = event.uri();
+    let mut link_header: String = String::new();
+    if uri.host().is_some() {
+        let uri_scheme = uri.scheme_str().unwrap_or("https");
+        let uri_path = uri.path();
+        let mut url = format!("{}://{}/{}", uri_scheme, uri.host().unwrap(), uri_path);
+        if page_size != DEFAULT_PAGE_SIZE {
+            url.push_str("page_size={page_size}");
+        }
+
+        // Build the link header.
+        link_header = assemble_link_header_string(&url, previous_page, next_page, total_pages);
+    }
+
+    // Build the response.
     Ok(Response::builder()
+        .header("link", link_header)
         .header("x-next-page", next_page)
         .header("x-page", page)
         .header("x-per-page", page_size)
@@ -156,6 +177,15 @@ pub fn build_paginated_response(
         .header("x-total-pages", total_pages)
         .body(body.to_string().into())
         .map_err(Box::new)?)
+}
+
+/// Concatenates the different segments of the link header.
+fn assemble_link_header_string(url: &str, prev: u64, next: u64, last: u64) -> String {
+    let first = format!(r#"<{url}?page=1>; rel="first""#);
+    let prev = format!(r#"<{url}?page={prev}>; rel="prev""#);
+    let next = format!(r#"<{url}?page={next}>; rel="next""#);
+    let last = format!(r#"<{url}?page={last}>; rel="last""#);
+    format!("{first}, {prev}, {next}, {last}")
 }
 
 // Create a TryFrom<&'a str> implementation for a specific type.
