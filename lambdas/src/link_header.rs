@@ -171,7 +171,6 @@ impl<'a> Link<'a> {
 
 #[derive(Debug, PartialEq)]
 pub struct Rel<'a>(&'a str);
-
 #[derive(Debug, PartialEq)]
 pub struct Anchor<'a>(&'a str);
 #[derive(Debug, PartialEq)]

@@ -11,7 +11,7 @@ pub const MAX_PAGE_SIZE: u64 = 100;
 /// Number of items to return per page if no argument was provided.
 pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
-/// Represent the contents of the encrypted fields SecretString or SecretBinary
+/// Represents the contents of the encrypted fields SecretString or SecretBinary
 /// from the specified version of a secret, whichever contains content.
 #[derive(Deserialize)]
 #[serde(rename_all = "PascalCase")]
@@ -45,7 +45,7 @@ pub struct SecretValue {
     pub result_metadata: HashMap<String, String>,
 }
 
-/// Return the database connection.
+/// Returns the database connection.
 ///
 /// Look up for the connection string:
 ///   - first inside the value of the `DATABASE_URL`environment variable,
@@ -76,9 +76,9 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
     Database::connect(database_url).await
 }
 
-/// Retrieve a secret from the AWS Secrets Manager using the Lambda caching layer.
+/// Retrieves a secret from the AWS Secrets Manager using the Lambda caching layer.
 ///
-/// Ref: https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html
+/// Ref: <https://docs.aws.amazon.com/secretsmanager/latest/userguide/retrieving-secrets_lambda.html>
 pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
     let aws_session_token =
         env::var("AWS_SESSION_TOKEN").map_err(|e| format!("Cannot find AWS session token: {e}"))?;
@@ -95,12 +95,12 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
         .map_err(|e| e.to_string())
 }
 
-/// Retrieve the pagination parameters.
+/// Retrieves the pagination parameters.
 ///
 /// If nothing is provided, the first page is returned and will contain up to
-/// `[DEFAULT_PAGE_SIZE]` items.
+/// [`DEFAULT_PAGE_SIZE`] items.
 ///
-/// If `page` does not exist, an empty array is returned.
+/// If `page` does not exist, the lambda functions will return an empty array.
 pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
     let mut page_size = event
         .query_string_parameters()
@@ -120,12 +120,12 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntErro
     Ok((page_size, page))
 }
 
-/// Build a paginated Response.
+/// Builds a paginated Response.
 ///
 /// Builds a Response struct which contains the pagination information in the headers.
 ///
 /// Implements pagination headers, similar to GitLab:
-/// https://docs.gitlab.com/ee/api/rest/index.html#other-pagination-headers
+/// <https://docs.gitlab.com/ee/api/rest/index.html#other-pagination-headers>
 ///
 /// - x-next-page   The index of the next page.
 /// - x-page        The index of the current page (starting at 1).
@@ -142,53 +142,146 @@ pub fn build_paginated_response(
     page_size: u64,
     event: &Request,
 ) -> Result<Response<Body>, Error> {
-    // Prepare the pagination values.
-    let total_pages = (total_items + page_size - 1) / page_size;
-    let previous_page = if page <= 1 { 1 } else { page - 1 };
-    let next_page = if page >= total_pages {
-        total_pages
-    } else {
-        page + 1
-    };
-
-    // Retrieve the URL if present.
-    let uri = event.uri();
-    let mut link_header: String = String::new();
-    if uri.host().is_some() {
-        let uri_scheme = uri.scheme_str().unwrap_or("https");
-        let uri_path = uri.path();
-        let mut url = format!("{}://{}/{}", uri_scheme, uri.host().unwrap(), uri_path);
-        if page_size != DEFAULT_PAGE_SIZE {
-            url.push_str("page_size={page_size}");
-        }
-
-        // Build the link header.
-        link_header = assemble_link_header_string(&url, previous_page, next_page, total_pages);
-    }
+    let paginatron = Paginatron::new(event.uri().host(), total_items, page, page_size);
+    let nav = paginatron.navigation();
 
     // Build the response.
     Ok(Response::builder()
-        .header("link", link_header)
-        .header("x-next-page", next_page)
+        .header("link", paginatron.link_header(Some(DEFAULT_PAGE_SIZE)))
+        .header("x-next-page", nav.next())
         .header("x-page", page)
         .header("x-per-page", page_size)
-        .header("x-prev-page", previous_page)
+        .header("x-prev-page", nav.prev())
         .header("x-total", total_items)
-        .header("x-total-pages", total_pages)
+        .header("x-total-pages", nav.last())
         .body(body.to_string().into())
         .map_err(Box::new)?)
 }
 
-/// Concatenates the different segments of the link header.
-fn assemble_link_header_string(url: &str, prev: u64, next: u64, last: u64) -> String {
-    let first = format!(r#"<{url}?page=1>; rel="first""#);
-    let prev = format!(r#"<{url}?page={prev}>; rel="prev""#);
-    let next = format!(r#"<{url}?page={next}>; rel="next""#);
-    let last = format!(r#"<{url}?page={last}>; rel="last""#);
-    format!("{first}, {prev}, {next}, {last}")
+/// Stores the page values required for pagination.
+pub struct NavigationPages {
+    first: u64,
+    prev: u64,
+    next: u64,
+    last: u64,
 }
 
-// Create a TryFrom<&'a str> implementation for a specific type.
+impl NavigationPages {
+    /// Creates a new NavigationPages.
+    pub fn new(first: u64, prev: u64, next: u64, last: u64) -> Self {
+        Self {
+            first,
+            prev,
+            next,
+            last,
+        }
+    }
+
+    /// Returns the first page number.
+    pub fn first(&self) -> u64 {
+        self.first
+    }
+
+    /// Returns the previous page number.
+    pub fn prev(&self) -> u64 {
+        self.prev
+    }
+
+    /// Returns the next page number.
+    pub fn next(&self) -> u64 {
+        self.next
+    }
+
+    /// Returns the last page number.
+    pub fn last(&self) -> u64 {
+        self.last
+    }
+}
+
+/// Generates the pagination information.
+pub struct Paginatron<'a> {
+    url: Option<&'a str>,
+    total_items: u64,
+    page: u64,
+    page_size: u64,
+}
+
+impl<'a> Paginatron<'a> {
+    /// Creates a new Paginatron.
+    pub fn new(url: Option<&'a str>, total_items: u64, page: u64, page_size: u64) -> Self {
+        Self {
+            url,
+            total_items,
+            page,
+            page_size,
+        }
+    }
+
+    /// Prepares the pagination values.
+    ///
+    /// ```
+    /// use lambdas::Paginatron;
+    ///
+    /// let paginatron = Paginatron::new(None, 200, 3, 25);
+    /// let nav = paginatron.navigation();
+    ///
+    /// assert_eq!(nav.first(), 1);
+    /// assert_eq!(nav.prev(), 2);
+    /// assert_eq!(nav.next(), 4);
+    /// assert_eq!(nav.last(), 8);
+    /// ```
+    pub fn navigation(&self) -> NavigationPages {
+        const FIRST: u64 = 1;
+        let last = (self.total_items + self.page_size - 1) / self.page_size;
+        let previous = if self.page <= 1 { FIRST } else { self.page - 1 };
+        let next = if self.page >= last {
+            last
+        } else {
+            self.page + 1
+        };
+        NavigationPages::new(FIRST, previous, next, last)
+    }
+
+    /// Generates the link header.
+    ///
+    /// If the url is not available, the link will be an empty string.
+    ///
+    /// If the default page size is provided and is different from the paginator
+    /// page size, the page_size query parameter will be omitted.
+    ///
+    /// ```
+    /// use lambdas::Paginatron;
+    ///
+    /// let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 12875, 3, 25);
+    /// assert_eq!(
+    ///   paginatron.link_header(Some(25)),
+    ///   r#"<https://api.peopleforbikes.xyz/bnas?page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page=515>; rel="last""#
+    /// );
+    /// ```
+    ///
+    pub fn link_header(&self, defaul_page_size: Option<u64>) -> String {
+        match self.url {
+            None => String::new(),
+            Some(url) => {
+                let nav = self.navigation();
+                let mut url = url.to_string();
+                url.push('?');
+                if let Some(default_page_size) = defaul_page_size {
+                    if self.page_size != default_page_size {
+                        url.push_str(format!("page_size={}&", self.page_size).as_str());
+                    }
+                }
+                let first = format!(r#"<{}page={}>; rel="first""#, url, nav.first());
+                let prev = format!(r#"<{}page={}>; rel="prev""#, url, nav.prev());
+                let next = format!(r#"<{}page={}>; rel="next""#, url, nav.next());
+                let last = format!(r#"<{}page={}>; rel="last""#, url, nav.last());
+                format!("{first}, {prev}, {next}, {last}")
+            }
+        }
+    }
+}
+
+// Creates a TryFrom<&'a str> implementation for a specific type.
 //
 // This macros expects the following items to be setup before use:
 //   - the type must implement a `parse` function with the following signature
@@ -210,4 +303,18 @@ macro_rules! nomstr {
             }
         }
     };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_paginatron_with_different_page_size() {
+        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 200, 3, 25);
+        assert_eq!(
+            paginatron.link_header(Some(50)),
+            r#"<https://api.peopleforbikes.xyz/bnas?page_size=25&page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=8>; rel="last""#
+        );
+    }
 }
