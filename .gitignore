@@ -1,6 +1,9 @@
+.DS_Store
 *.pdb
 **/*.rs.bk
 /target
 Cargo.lock
 debug/
+lambdas/tests/.hypothesis
+lambdas/tests/.venv
 target/

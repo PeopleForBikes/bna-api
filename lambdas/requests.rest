@@ -32,3 +32,27 @@ GET {{host}}/cities/{{city_id}}
 
 # Query all the BNAs of a specific city.
 GET {{host}}/cities/{{city_id}}/bnas
+
+
+###
+# Bellow this point are the tests from schemathesis.
+###
+
+GET https://api.peopleforbikes.xyz/bnas/1
+X-Schemathesis-TestCaseId: 3bf4a72a4cc04ed589c5eedaf57b3ca2
+
+###
+GET https://api.peopleforbikes.xyz/bnas/0/city
+X-Schemathesis-TestCaseId: 9fa24d92de444fd28180df72fa1fabd6
+
+###
+GET https://api.peopleforbikes.xyz/cities
+X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
+
+###
+GET https://api.peopleforbikes.xyz/cities/0
+X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
+
+###
+GET https://api.peopleforbikes.xyz/cities/0/bnas
+X-Schemathesis-TestCaseId: 1f951094a7f14597bb50cafc52b812e0

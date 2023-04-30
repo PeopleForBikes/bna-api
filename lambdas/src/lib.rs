@@ -110,10 +110,11 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
     {
         Ok(page_size) => page_size,
         Err(e) => {
-            return Err(Response::builder()
-                .status(StatusCode::BAD_REQUEST)
-                .body(format!("Failed to process the page_size parameter: {e}").into())
-                .unwrap())
+            let api_error = APIError::with_parameter(
+                "page_size",
+                format!("Failed to process the page_size parameter: {e}").as_str(),
+            );
+            return Err(APIErrors::new(&[api_error]).to_response());
         }
     };
     let page = match event
@@ -124,10 +125,11 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
     {
         Ok(page) => page,
         Err(e) => {
-            return Err(Response::builder()
-                .status(StatusCode::BAD_REQUEST)
-                .body(format!("Failed to process the page parameter: {e}").into())
-                .unwrap())
+            let api_error = APIError::with_parameter(
+                "page",
+                format!("Failed to process the page parameter: {e}").as_str(),
+            );
+            return Err(APIErrors::new(&[api_error]).to_response());
         }
     };
 
@@ -493,10 +495,8 @@ mod tests {
             Body::Text(message) => message,
             _ => panic!("The body does not match the Text invariant."),
         };
-        assert_eq!(
-            message,
-            "Failed to process the page_size parameter: invalid digit found in string"
-        );
+        let api_error: APIErrors = serde_json::from_str(message).unwrap();
+        assert_eq!(api_error.errors.len(), 1)
     }
 
     #[test]
@@ -520,9 +520,7 @@ mod tests {
             Body::Text(message) => message,
             _ => panic!("The body does not match the Text invariant."),
         };
-        assert_eq!(
-            message,
-            "Failed to process the page parameter: invalid digit found in string"
-        );
+        let api_error: APIErrors = serde_json::from_str(message).unwrap();
+        assert_eq!(api_error.errors.len(), 1)
     }
 }

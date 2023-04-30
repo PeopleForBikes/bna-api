@@ -1,8 +1,9 @@
 use dotenv::dotenv;
 use entity::{bna, city};
-use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
+use lambda_http::{http::StatusCode, run, service_fn, Body, Error, Request, RequestExt, Response};
 use lambdas::{
-    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrors,
+    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrorSource,
+    APIErrors,
 };
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
@@ -30,6 +31,15 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         .paginate(&db, page_size)
                         .fetch_page(page - 1)
                         .await?;
+                    if model.is_empty() {
+                        let api_error = APIError::new(
+                            StatusCode::NOT_FOUND,
+                            String::from("Content Not Found"),
+                            format!("City entry with the id {city_id} was not found."),
+                            APIErrorSource::Pointer(event.uri().path().to_string()),
+                        );
+                        return Ok(APIErrors::new(&[api_error]).to_response());
+                    }
                     let total_items = city::Entity::find().count(&db).await?;
                     build_paginated_response(json!(model), total_items, page, page_size, &event)
                 }
