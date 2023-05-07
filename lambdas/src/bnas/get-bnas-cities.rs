@@ -1,7 +1,9 @@
 use dotenv::dotenv;
 use entity::{bna, city};
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::database_connect;
+use lambda_http::{
+    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
+};
+use lambdas::{database_connect, APIError, APIErrorSource, APIErrors};
 use sea_orm::{prelude::Uuid, EntityTrait};
 use serde_json::json;
 
@@ -13,15 +15,41 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Retrieve a bna result and its related city.
     match event.path_parameters().first("bna_id") {
-        Some(bna_id) => Ok(json!(
-            bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
-                .find_also_related(city::Entity)
-                .one(&db)
-                .await?
-        )
-        .into_response()
-        .await),
-        None => Err("The `bna_id` parameter is missing.".into()),
+        Some(bna_id_str) => {
+            let bna_id = bna_id_str.parse::<Uuid>();
+            match bna_id {
+                Ok(bna_id) => {
+                    let model = bna::Entity::find_by_id(bna_id)
+                        .find_also_related(city::Entity)
+                        .one(&db)
+                        .await?;
+                    let res = match model {
+                        None => {
+                            let api_error = APIError::new(
+                                StatusCode::NOT_FOUND,
+                                String::from("Content Not Found"),
+                                format!("BNA entry with the id {bna_id} was not found."),
+                                APIErrorSource::Pointer(event.uri().path().to_string()),
+                            );
+                            APIErrors::new(&[api_error]).to_response()
+                        }
+                        Some(model) => json!(model).into_response().await,
+                    };
+                    Ok(res)
+                }
+                Err(e) => {
+                    let api_error = APIError::with_parameter(
+                        "bna_id",
+                        format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
+                    );
+                    Ok(APIErrors::new(&[api_error]).to_response())
+                }
+            }
+        }
+        None => {
+            let api_error = APIError::with_parameter("bna_id", "Parameter is missing.");
+            Ok(APIErrors::new(&[api_error]).to_response())
+        }
     }
 }
 

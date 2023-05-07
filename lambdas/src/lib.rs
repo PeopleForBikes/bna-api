@@ -1,10 +1,10 @@
 pub mod link_header;
 
-use lambda_http::{Body, Error, Request, RequestExt, Response};
+use lambda_http::{http::StatusCode, Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
-use serde::Deserialize;
-use serde_json::Value;
-use std::{collections::HashMap, env, num::ParseIntError};
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
+use std::{collections::HashMap, env};
 
 /// Maximum number of items allowed to be returned by a query at once.
 pub const MAX_PAGE_SIZE: u64 = 100;
@@ -101,17 +101,35 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
 /// [`DEFAULT_PAGE_SIZE`] items.
 ///
 /// If `page` does not exist, the lambda functions will return an empty array.
-pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), ParseIntError> {
-    let mut page_size = event
+pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Body>> {
+    let mut page_size = match event
         .query_string_parameters()
         .first("page_size")
         .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
-        .parse::<u64>()?;
-    let page = event
+        .parse::<u64>()
+    {
+        Ok(page_size) => page_size,
+        Err(e) => {
+            return Err(Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(format!("Failed to process the page_size parameter: {e}").into())
+                .unwrap())
+        }
+    };
+    let page = match event
         .query_string_parameters()
         .first("page")
-        .unwrap_or("0")
-        .parse::<u64>()?;
+        .unwrap_or("1")
+        .parse::<u64>()
+    {
+        Ok(page) => page,
+        Err(e) => {
+            return Err(Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(format!("Failed to process the page parameter: {e}").into())
+                .unwrap())
+        }
+    };
 
     // Ensure we do not allow the page to go above the max size.
     if page_size > MAX_PAGE_SIZE {
@@ -281,11 +299,11 @@ impl<'a> Paginatron<'a> {
     }
 }
 
-// Creates a TryFrom<&'a str> implementation for a specific type.
-//
-// This macros expects the following items to be setup before use:
-//   - the type must implement a `parse` function with the following signature
-//       `pub fn parse(i: &str) -> IResult<&str, __type__>`
+/// Generates a TryFrom<&'a str> implementation for a specific type.
+///
+/// This macros expects the following items to be setup before use:
+///   - the type must implement a `parse` function with the following signature
+///       `pub fn parse(i: &str) -> IResult<&str, __type__>`
 #[macro_export]
 macro_rules! nomstr {
     ($a:ident) => {
@@ -305,9 +323,112 @@ macro_rules! nomstr {
     };
 }
 
+/// An object containing references to the primary source of the error.
+///
+/// It SHOULD include one of the following members or be omitted:
+///
+///   - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
+///     value in the request document that caused the error [e.g. "/data" for a primary
+///     data object, or "/data/attributes/title" for a specific attribute].
+///     This MUST point to a value in the request document that exists; if it doesn’t,
+///     the client SHOULD simply ignore the pointer.
+///   - parameter: a string indicating which URI query parameter caused the error.
+///   - header: a string indicating the name of a single request header which caused the
+///     error.
+
+#[derive(Deserialize, Serialize, Clone)]
+pub enum APIErrorSource {
+    Pointer(String),
+    Parameter(String),
+    Header(String),
+}
+/// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
+#[derive(Deserialize, Serialize, Clone)]
+pub struct APIError {
+    #[serde(with = "http_serde::status_code")]
+    status: StatusCode,
+    title: String,
+    details: String,
+    source: APIErrorSource,
+}
+
+impl APIError {
+    /// Creates a new `APIError`.
+    pub fn new(status: StatusCode, title: String, details: String, source: APIErrorSource) -> Self {
+        Self {
+            status,
+            title,
+            details,
+            source,
+        }
+    }
+
+    /// Creates a new `APIError` based off a query parameter error.
+    pub fn with_parameter(parameter: &str, message: &str) -> Self {
+        Self {
+            status: StatusCode::BAD_REQUEST,
+            title: String::from("Invalid Query Parameter"),
+            source: APIErrorSource::Parameter(parameter.into()),
+            details: message.into(),
+        }
+    }
+
+    /// Creates a new `APIError` based off an invalid attribute.
+    pub fn with_pointer(pointer: &str, message: &str) -> Self {
+        Self {
+            status: StatusCode::BAD_REQUEST,
+            title: String::from("Invalid Attribute"),
+            source: APIErrorSource::Pointer(pointer.into()),
+            details: message.into(),
+        }
+    }
+
+    /// Converts this object to a `Response<Body>`.
+    pub fn to_response(&self) -> Response<Body> {
+        Response::builder()
+            .status(self.status)
+            .body(json!(self).to_string().into())
+            .unwrap()
+    }
+}
+
+/// Error objects MUST be returned as an array keyed by errors in the top level of a
+/// JSON:API document.
+#[derive(Deserialize, Serialize)]
+pub struct APIErrors {
+    errors: Vec<APIError>,
+}
+
+impl APIErrors {
+    /// Creates a new `APIErrors`.
+    pub fn new(errors: &[APIError]) -> Self {
+        Self {
+            errors: errors.to_vec(),
+        }
+    }
+
+    /// Converts this object to a `Response<Body>`.
+    ///
+    /// If there is only one error returned, the Response status code will be the same
+    /// as the one of the error. Otherwise it will be set to [StatusCode::BAD_REQUEST].
+    pub fn to_response(&self) -> Response<Body> {
+        let status = if self.errors.len() == 1 {
+            self.errors.first().unwrap().status
+        } else {
+            StatusCode::BAD_REQUEST
+        };
+        Response::builder()
+            .status(status)
+            .body(json!(self).to_string().into())
+            .unwrap()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use query_map::QueryMap;
+    use std::collections::HashMap;
 
     #[test]
     fn test_paginatron_with_different_page_size() {
@@ -315,6 +436,93 @@ mod tests {
         assert_eq!(
             paginatron.link_header(Some(50)),
             r#"<https://api.peopleforbikes.xyz/bnas?page_size=25&page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=8>; rel="last""#
+        );
+    }
+
+    #[test]
+    fn test_pagination_parameters_without_params() {
+        let req = lambda_http::http::Request::get(
+            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99",
+        )
+        .body(lambda_http::Body::Empty)
+        .unwrap();
+        let actual = pagination_parameters(&req).unwrap();
+        assert_eq!(actual.0, DEFAULT_PAGE_SIZE);
+        assert_eq!(actual.1, 1);
+    }
+
+    #[test]
+    fn test_pagination_parameters_with_valid_params() {
+        const PAGE_SIZE: u64 = 25;
+        const PAGE: u64 = 8;
+
+        let mut data = HashMap::new();
+        data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
+        data.insert("page".into(), vec![PAGE.to_string()]);
+
+        let qm: QueryMap = QueryMap::from(data);
+        let req = lambda_http::http::Request::get(format!(
+            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
+        ))
+        .body(lambda_http::Body::Empty)
+        .unwrap()
+        .with_query_string_parameters(qm);
+        let actual = pagination_parameters(&req).unwrap();
+        assert_eq!(actual.0, PAGE_SIZE);
+        assert_eq!(actual.1, PAGE);
+    }
+
+    #[test]
+    fn test_pagination_parameters_with_invalid_page_size() {
+        let mut data = HashMap::new();
+        data.insert("page_size".into(), vec!["-1".to_string()]);
+        data.insert("page".into(), vec!["50".to_string()]);
+        let qm: QueryMap = QueryMap::from(data);
+        let req = lambda_http::http::Request::get(format!(
+            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
+        ))
+        .body(lambda_http::Body::Empty)
+        .unwrap()
+        .with_query_string_parameters(qm);
+        let actual = pagination_parameters(&req).unwrap_err();
+        // Ensure the error had the BAD_REQUEST status.
+        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+        // Ensure the error message is correct.
+        let b = actual.body();
+        let message = match b {
+            Body::Text(message) => message,
+            _ => panic!("The body does not match the Text invariant."),
+        };
+        assert_eq!(
+            message,
+            "Failed to process the page_size parameter: invalid digit found in string"
+        );
+    }
+
+    #[test]
+    fn test_pagination_parameters_with_invalid_page() {
+        let mut data = HashMap::new();
+        data.insert("page_size".into(), vec!["1".to_string()]);
+        data.insert("page".into(), vec!["abc".to_string()]);
+        let qm: QueryMap = QueryMap::from(data);
+        let req = lambda_http::http::Request::get(format!(
+            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
+        ))
+        .body(lambda_http::Body::Empty)
+        .unwrap()
+        .with_query_string_parameters(qm);
+        let actual = pagination_parameters(&req).unwrap_err();
+        // Ensure the error had the BAD_REQUEST status.
+        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+        // Ensure the error message is correct.
+        let b = actual.body();
+        let message = match b {
+            Body::Text(message) => message,
+            _ => panic!("The body does not match the Text invariant."),
+        };
+        assert_eq!(
+            message,
+            "Failed to process the page parameter: invalid digit found in string"
         );
     }
 }
