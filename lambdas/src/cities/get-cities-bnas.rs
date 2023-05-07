@@ -1,7 +1,9 @@
 use dotenv::dotenv;
 use entity::{bna, city};
 use lambda_http::{run, service_fn, Body, Error, Request, RequestExt, Response};
-use lambdas::{build_paginated_response, database_connect, pagination_parameters};
+use lambdas::{
+    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrors,
+};
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 
@@ -12,20 +14,38 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = pagination_parameters(&event)?;
+    let (page_size, page) = match pagination_parameters(&event) {
+        Ok((page_size, page)) => (page_size, page),
+        Err(e) => return Ok(e),
+    };
 
     // Retrieve a city and all its BNAs.
     match event.path_parameters().first("city_id") {
-        Some(city_id) => {
-            let body = city::Entity::find_by_id(city_id.parse::<i32>()?)
-                .find_also_related(bna::Entity)
-                .paginate(&db, page_size)
-                .fetch_page(page)
-                .await?;
-            let total_items = city::Entity::find().count(&db).await?;
-            build_paginated_response(json!(body), total_items, page, page_size, &event)
+        Some(city_id_str) => {
+            let city_id = city_id_str.parse::<i32>();
+            match city_id {
+                Ok(city_id) => {
+                    let model = city::Entity::find_by_id(city_id)
+                        .find_also_related(bna::Entity)
+                        .paginate(&db, page_size)
+                        .fetch_page(page - 1)
+                        .await?;
+                    let total_items = city::Entity::find().count(&db).await?;
+                    build_paginated_response(json!(model), total_items, page, page_size, &event)
+                }
+                Err(e) => {
+                    let api_error = APIError::with_parameter(
+                        "city_id",
+                        format!("{city_id_str} is not a valid city id: {e}").as_str(),
+                    );
+                    Ok(APIErrors::new(&[api_error]).to_response())
+                }
+            }
         }
-        None => Err("The `city_id` parameter is missing.".into()),
+        None => {
+            let api_error = APIError::with_parameter("city_id", "Parameter is missing.");
+            Ok(APIErrors::new(&[api_error]).to_response())
+        }
     }
 }
 

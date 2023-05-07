@@ -1,7 +1,12 @@
 use dotenv::dotenv;
 use entity::city;
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::{build_paginated_response, database_connect, pagination_parameters};
+use lambda_http::{
+    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
+};
+use lambdas::{
+    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrorSource,
+    APIErrors,
+};
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 
@@ -12,21 +17,45 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = pagination_parameters(&event)?;
+    let (page_size, page) = match pagination_parameters(&event) {
+        Ok((page_size, page)) => (page_size, page),
+        Err(e) => return Ok(e),
+    };
 
     // Retrieve all cities or a specific one.
     match event.path_parameters().first("city_id") {
-        Some(city_id) => Ok(json!(
-            city::Entity::find_by_id(city_id.parse::<i32>()?)
-                .one(&db)
-                .await?
-        )
-        .into_response()
-        .await),
+        Some(city_id_str) => {
+            let city_id = city_id_str.parse::<i32>();
+            match city_id {
+                Ok(city_id) => {
+                    let model = city::Entity::find_by_id(city_id).one(&db).await?;
+                    let res = match model {
+                        None => {
+                            let api_error = APIError::new(
+                                StatusCode::NOT_FOUND,
+                                String::from("Content Not Found"),
+                                format!("City entry with the id {city_id} was not found."),
+                                APIErrorSource::Pointer(event.uri().path().to_string()),
+                            );
+                            APIErrors::new(&[api_error]).to_response()
+                        }
+                        Some(model) => json!(model).into_response().await,
+                    };
+                    Ok(res)
+                }
+                Err(e) => {
+                    let api_error = APIError::with_parameter(
+                        "city_id",
+                        format!("{city_id_str} is not a valid city id: {e}").as_str(),
+                    );
+                    Ok(APIErrors::new(&[api_error]).to_response())
+                }
+            }
+        }
         None => {
             let body = city::Entity::find()
                 .paginate(&db, page_size)
-                .fetch_page(page)
+                .fetch_page(page - 1)
                 .await?;
             let total_items = city::Entity::find().count(&db).await?;
             build_paginated_response(json!(body), total_items, page, page_size, &event)

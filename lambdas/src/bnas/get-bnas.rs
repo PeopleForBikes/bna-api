@@ -1,36 +1,61 @@
 use dotenv::dotenv;
 use entity::bna;
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::{build_paginated_response, database_connect, pagination_parameters};
+use lambda_http::{
+    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
+};
+use lambdas::{
+    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrorSource,
+    APIErrors,
+};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
-use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
-
-    // Just for debugging - To be removed.
-    info!("event: {:?}", event);
 
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = pagination_parameters(&event)?;
+    let (page_size, page) = match pagination_parameters(&event) {
+        Ok((page_size, page)) => (page_size, page),
+        Err(e) => return Ok(e),
+    };
 
     // Retrieve all bnas or a specific one.
     match event.path_parameters().first("bna_id") {
-        Some(bna_id) => Ok(json!(
-            bna::Entity::find_by_id(bna_id.parse::<Uuid>()?)
-                .one(&db)
-                .await?
-        )
-        .into_response()
-        .await),
+        Some(bna_id_str) => {
+            let bna_id = bna_id_str.parse::<Uuid>();
+            match bna_id {
+                Ok(bna_id) => {
+                    let model = bna::Entity::find_by_id(bna_id).one(&db).await?;
+                    let res = match model {
+                        None => {
+                            let api_error = APIError::new(
+                                StatusCode::NOT_FOUND,
+                                String::from("Content Not Found"),
+                                format!("BNA entry with the id {bna_id} was not found."),
+                                APIErrorSource::Pointer(event.uri().path().to_string()),
+                            );
+                            APIErrors::new(&[api_error]).to_response()
+                        }
+                        Some(model) => json!(model).into_response().await,
+                    };
+                    Ok(res)
+                }
+                Err(e) => {
+                    let api_error = APIError::with_parameter(
+                        "bna_id",
+                        format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
+                    );
+                    Ok(APIErrors::new(&[api_error]).to_response())
+                }
+            }
+        }
         None => {
             let body = bna::Entity::find()
                 .paginate(&db, page_size)
-                .fetch_page(page)
+                .fetch_page(page - 1)
                 .await?;
             let total_items = bna::Entity::find().count(&db).await?;
             build_paginated_response(json!(body), total_items, page, page_size, &event)

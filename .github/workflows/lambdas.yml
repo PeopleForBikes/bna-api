@@ -26,6 +26,7 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
       - run: cargo check
+      - run: cargo doc --no-deps
 
   test:
     runs-on: ubuntu-latest
