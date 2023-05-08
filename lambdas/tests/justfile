@@ -25,4 +25,4 @@ test-staging-schemathesis:
 
 # Run the integration tests against the stagging environment.
 test-staging:
-  hurl --variables-file staging.vars --test bnas.hurl cities.hurl
+  hurl --variables-file staging.vars --test pagination.hurl bnas.hurl cities.hurl
