@@ -114,7 +114,7 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
                 "page_size",
                 format!("Failed to process the page_size parameter: {e}").as_str(),
             );
-            return Err(APIErrors::new(&[api_error]).to_response());
+            return Err(APIErrors::new(&[api_error]).into());
         }
     };
     let page = match event
@@ -129,7 +129,7 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
                 "page",
                 format!("Failed to process the page parameter: {e}").as_str(),
             );
-            return Err(APIErrors::new(&[api_error]).to_response());
+            return Err(APIErrors::new(&[api_error]).into());
         }
     };
 
@@ -337,7 +337,6 @@ macro_rules! nomstr {
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
-
 #[derive(Deserialize, Serialize, Clone)]
 pub enum APIErrorSource {
     Pointer(String),
@@ -384,12 +383,13 @@ impl APIError {
             details: message.into(),
         }
     }
+}
 
-    /// Converts this object to a `Response<Body>`.
-    pub fn to_response(&self) -> Response<Body> {
+impl From<APIError> for Response<Body> {
+    fn from(value: APIError) -> Self {
         Response::builder()
-            .status(self.status)
-            .body(json!(self).to_string().into())
+            .status(value.status)
+            .body(json!(value).to_string().into())
             .unwrap()
     }
 }
@@ -408,20 +408,22 @@ impl APIErrors {
             errors: errors.to_vec(),
         }
     }
+}
 
+impl From<APIErrors> for Response<Body> {
     /// Converts this object to a `Response<Body>`.
     ///
     /// If there is only one error returned, the Response status code will be the same
     /// as the one of the error. Otherwise it will be set to [StatusCode::BAD_REQUEST].
-    pub fn to_response(&self) -> Response<Body> {
-        let status = if self.errors.len() == 1 {
-            self.errors.first().unwrap().status
+    fn from(value: APIErrors) -> Self {
+        let status = if value.errors.len() == 1 {
+            value.errors.first().unwrap().status
         } else {
             StatusCode::BAD_REQUEST
         };
         Response::builder()
             .status(status)
-            .body(json!(self).to_string().into())
+            .body(json!(value).to_string().into())
             .unwrap()
     }
 }

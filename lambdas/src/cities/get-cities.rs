@@ -29,7 +29,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             match city_id {
                 Ok(city_id) => {
                     let model = city::Entity::find_by_id(city_id).one(&db).await?;
-                    let res = match model {
+                    let res: Response<Body> = match model {
                         None => {
                             let api_error = APIError::new(
                                 StatusCode::NOT_FOUND,
@@ -37,7 +37,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                                 format!("City entry with the id {city_id} was not found."),
                                 APIErrorSource::Pointer(event.uri().path().to_string()),
                             );
-                            APIErrors::new(&[api_error]).to_response()
+                            APIErrors::new(&[api_error]).into()
                         }
                         Some(model) => json!(model).into_response().await,
                     };
@@ -48,7 +48,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         "city_id",
                         format!("{city_id_str} is not a valid city id: {e}").as_str(),
                     );
-                    Ok(APIErrors::new(&[api_error]).to_response())
+                    Ok(APIErrors::new(&[api_error]).into())
                 }
             }
         }
