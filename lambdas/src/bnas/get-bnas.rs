@@ -29,7 +29,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             match bna_id {
                 Ok(bna_id) => {
                     let model = bna::Entity::find_by_id(bna_id).one(&db).await?;
-                    let res = match model {
+                    let res: Response<Body> = match model {
                         None => {
                             let api_error = APIError::new(
                                 StatusCode::NOT_FOUND,
@@ -37,7 +37,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                                 format!("BNA entry with the id {bna_id} was not found."),
                                 APIErrorSource::Pointer(event.uri().path().to_string()),
                             );
-                            APIErrors::new(&[api_error]).to_response()
+                            APIErrors::new(&[api_error]).into()
                         }
                         Some(model) => json!(model).into_response().await,
                     };
@@ -48,7 +48,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         "bna_id",
                         format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
                     );
-                    Ok(APIErrors::new(&[api_error]).to_response())
+                    Ok(APIErrors::new(&[api_error]).into())
                 }
             }
         }

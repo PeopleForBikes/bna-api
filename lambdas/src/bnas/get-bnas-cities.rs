@@ -23,7 +23,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         .find_also_related(city::Entity)
                         .one(&db)
                         .await?;
-                    let res = match model {
+                    let res: Response<Body> = match model {
                         None => {
                             let api_error = APIError::new(
                                 StatusCode::NOT_FOUND,
@@ -31,7 +31,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                                 format!("BNA entry with the id {bna_id} was not found."),
                                 APIErrorSource::Pointer(event.uri().path().to_string()),
                             );
-                            APIErrors::new(&[api_error]).to_response()
+                            APIErrors::new(&[api_error]).into()
                         }
                         Some(model) => json!(model).into_response().await,
                     };
@@ -42,13 +42,13 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         "bna_id",
                         format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
                     );
-                    Ok(APIErrors::new(&[api_error]).to_response())
+                    Ok(APIErrors::new(&[api_error]).into())
                 }
             }
         }
         None => {
             let api_error = APIError::with_parameter("bna_id", "Parameter is missing.");
-            Ok(APIErrors::new(&[api_error]).to_response())
+            Ok(APIErrors::new(&[api_error]).into())
         }
     }
 }

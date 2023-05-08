@@ -38,7 +38,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                             format!("City entry with the id {city_id} was not found."),
                             APIErrorSource::Pointer(event.uri().path().to_string()),
                         );
-                        return Ok(APIErrors::new(&[api_error]).to_response());
+                        return Ok(APIErrors::new(&[api_error]).into());
                     }
                     let total_items = city::Entity::find().count(&db).await?;
                     build_paginated_response(json!(model), total_items, page, page_size, &event)
@@ -48,13 +48,13 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         "city_id",
                         format!("{city_id_str} is not a valid city id: {e}").as_str(),
                     );
-                    Ok(APIErrors::new(&[api_error]).to_response())
+                    Ok(APIErrors::new(&[api_error]).into())
                 }
             }
         }
         None => {
             let api_error = APIError::with_parameter("city_id", "Parameter is missing.");
-            Ok(APIErrors::new(&[api_error]).to_response())
+            Ok(APIErrors::new(&[api_error]).into())
         }
     }
 }
