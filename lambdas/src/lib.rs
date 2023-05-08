@@ -253,12 +253,9 @@ impl<'a> Paginatron<'a> {
     pub fn navigation(&self) -> NavigationPages {
         const FIRST: u64 = 1;
         let last = (self.total_items + self.page_size - 1) / self.page_size;
-        let previous = if self.page <= 1 { FIRST } else { self.page - 1 };
-        let next = if self.page >= last {
-            last
-        } else {
-            self.page + 1
-        };
+        let page = if self.page >= last { last } else { self.page };
+        let previous = if page <= FIRST { FIRST } else { page - 1 };
+        let next = if page >= last { last } else { page + 1 };
         NavigationPages::new(FIRST, previous, next, last)
     }
 
@@ -441,6 +438,16 @@ mod tests {
             paginatron.link_header(Some(50)),
             r#"<https://api.peopleforbikes.xyz/bnas?page_size=25&page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=8>; rel="last""#
         );
+    }
+
+    #[test]
+    fn test_paginatron_invalid_page() {
+        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 42, 3, 25);
+        let nav = paginatron.navigation();
+        assert_eq!(nav.first(), 1);
+        assert_eq!(nav.prev(), 1);
+        assert_eq!(nav.next(), 2);
+        assert_eq!(nav.last(), 2);
     }
 
     #[test]
