@@ -1,0 +1,17 @@
+{
+  "method": "GET",
+  "uri": "https://api.peopleforbikes.xyz/bnas/0, version: HTTP/1.1",
+  "headers": {
+    "accept": "*/*",
+    "accept-encoding": "gzip, deflate",
+    "content-length": "0",
+    "host": "api.peopleforbikes.xyz",
+    "user-agent": "schemathesis/3.19.1",
+    "x-amzn-trace-id": "Root=1-644daf41-6fe263566fadf9fc52805a49;Parent=dcfd753bd2cd7f2a;Sampled=1;Lineage=4fa41f24:0",
+    "x-forwarded-for": "69.187.114.212",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https",
+    "x-schemathesis-testcaseid": "a95ac86fde714b3686e3d31b462e8e5e"
+  },
+  "body": null
+}

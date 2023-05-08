@@ -1,3 +1,28 @@
+# Define variables.
+venv := ".venv"
+venv_bin := venv / "bin"
+activate := venv_bin / "activate"
+
+# Setup the project.
+setup:
+    test -d "{{ venv }}" || python3 -m venv {{ venv }}
+    . {{ activate }} \
+      && pip install --upgrade pip setuptools \
+      && pip install -r requirements.txt
+
+# Export the OpenAPI specification.
+openapi-export:
+  aws apigatewayv2 export-api \
+    --api-id ivyvugk79e \
+    --output-type YAML \
+    --specification OAS30 \
+    --no-include-extensions \
+    openapi.yaml
+
+# Run the schemathesis tests again the openapi schema.
+test-staging-schemathesis:
+  . {{ activate }} && st run openapi.yml --base-url https://api.peopleforbikes.xyz/
+
 # Run the integration tests against the stagging environment.
 test-staging:
   hurl --variables-file staging.vars --test bnas.hurl cities.hurl
