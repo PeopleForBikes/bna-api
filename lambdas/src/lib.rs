@@ -102,13 +102,17 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
 ///
 /// If `page` does not exist, the lambda functions will return an empty array.
 pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Body>> {
-    let mut page_size = match event
+    let page_size = match event
         .query_string_parameters()
         .first("page_size")
         .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
         .parse::<u64>()
     {
-        Ok(page_size) => page_size,
+        Ok(page_size) => match page_size {
+            0 => 1,
+            1..=MAX_PAGE_SIZE => page_size,
+            _ => MAX_PAGE_SIZE,
+        },
         Err(e) => {
             let api_error = APIError::with_parameter(
                 "page_size",
@@ -123,7 +127,10 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
         .unwrap_or("1")
         .parse::<u64>()
     {
-        Ok(page) => page,
+        Ok(page) => match page {
+            0 => 1,
+            _ => page,
+        },
         Err(e) => {
             let api_error = APIError::with_parameter(
                 "page",
@@ -133,10 +140,6 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
         }
     };
 
-    // Ensure we do not allow the page to go above the max size.
-    if page_size > MAX_PAGE_SIZE {
-        page_size = MAX_PAGE_SIZE;
-    }
     Ok((page_size, page))
 }
 
