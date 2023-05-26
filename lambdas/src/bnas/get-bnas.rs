@@ -14,7 +14,18 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
+        Ok(db) => db,
+        Err(e) => {
+            let api_error = APIError::new(
+                StatusCode::INTERNAL_SERVER_ERROR,
+                String::from("Database error"),
+                format!("Cannot connect to the database: {e}"),
+                APIErrorSource::Pointer(event.uri().path().to_string()),
+            );
+            return Ok(APIErrors::new(&[api_error]).into());
+        }
+    };
 
     // Retrieve pagination parameters if any.
     let (page_size, page) = match pagination_parameters(&event) {
