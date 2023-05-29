@@ -383,6 +383,25 @@ impl APIError {
             details: message.into(),
         }
     }
+
+    // Creates a new `APIError` for internal errors.
+    pub fn internal_error(title: String, details: String, source: String) -> Self {
+        Self {
+            status: StatusCode::INTERNAL_SERVER_ERROR,
+            source: APIErrorSource::Pointer(source),
+            title,
+            details,
+        }
+    }
+
+    /// Creates a new `APIError` for database issues.
+    pub fn db_error(source: &str, message: &str) -> Self {
+        APIError::internal_error(
+            String::from("Database error"),
+            message.into(),
+            source.into(),
+        )
+    }
 }
 
 impl From<APIError> for Response<Body> {

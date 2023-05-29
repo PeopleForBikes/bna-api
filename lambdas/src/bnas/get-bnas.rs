@@ -9,31 +9,32 @@ use lambdas::{
 };
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
+use tracing::{debug, error};
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
+    debug!("Connecting to the database...");
     let db = match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
         Ok(db) => db,
         Err(e) => {
-            let api_error = APIError::new(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                String::from("Database error"),
-                format!("Cannot connect to the database: {e}"),
-                APIErrorSource::Pointer(event.uri().path().to_string()),
-            );
+            let error_msg = "cannot connect to the database".to_string();
+            error!("{error_msg}: {e}");
+            let api_error = APIError::db_error(event.uri().path(), &error_msg);
             return Ok(APIErrors::new(&[api_error]).into());
         }
     };
 
     // Retrieve pagination parameters if any.
+    debug!("Retrieving pagination...");
     let (page_size, page) = match pagination_parameters(&event) {
         Ok((page_size, page)) => (page_size, page),
         Err(e) => return Ok(e),
     };
 
     // Retrieve all bnas or a specific one.
+    debug!("Processing the requests...");
     match event.path_parameters().first("bna_id") {
         Some(bna_id_str) => {
             let bna_id = bna_id_str.parse::<Uuid>();
