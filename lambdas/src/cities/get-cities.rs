@@ -4,8 +4,8 @@ use lambda_http::{
     http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
 };
 use lambdas::{
-    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrorSource,
-    APIErrors,
+    build_paginated_response, database_connect, get_apigw_request_id, pagination_parameters,
+    APIError, APIErrorSource, APIErrors,
 };
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
@@ -23,6 +23,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Retrieve all cities or a specific one.
+    let apigw_request_id = get_apigw_request_id(&event);
     match event.path_parameters().first("city_id") {
         Some(city_id_str) => {
             let city_id = city_id_str.parse::<i32>();
@@ -32,6 +33,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                     let res: Response<Body> = match model {
                         None => {
                             let api_error = APIError::new(
+                                apigw_request_id,
                                 StatusCode::NOT_FOUND,
                                 String::from("Content Not Found"),
                                 format!("City entry with the id {city_id} was not found."),
@@ -45,6 +47,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 }
                 Err(e) => {
                     let api_error = APIError::with_parameter(
+                        apigw_request_id,
                         "city_id",
                         format!("{city_id_str} is not a valid city id: {e}").as_str(),
                     );

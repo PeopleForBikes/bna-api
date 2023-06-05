@@ -1,33 +1,24 @@
 use dotenv::dotenv;
 use entity::bna;
-use lambda_http::{
-    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
-};
+use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
 use lambdas::{
-    build_paginated_response, database_connect, pagination_parameters, APIError, APIErrorSource,
-    APIErrors,
+    api_database_connect, build_paginated_response, get_apigw_request_id, pagination_parameters,
+    APIError, APIErrors,
 };
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
-use tracing::{debug, error};
+use tracing::debug;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Set the database connection.
-    debug!("Connecting to the database...");
-    let db = match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
+    let db = match api_database_connect(&event).await {
         Ok(db) => db,
-        Err(e) => {
-            let error_msg = "cannot connect to the database".to_string();
-            error!("{error_msg}: {e}");
-            let api_error = APIError::db_error(event.uri().path(), &error_msg);
-            return Ok(APIErrors::new(&[api_error]).into());
-        }
+        Err(e) => return Ok(e),
     };
 
     // Retrieve pagination parameters if any.
-    debug!("Retrieving pagination...");
     let (page_size, page) = match pagination_parameters(&event) {
         Ok((page_size, page)) => (page_size, page),
         Err(e) => return Ok(e),
@@ -35,6 +26,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Retrieve all bnas or a specific one.
     debug!("Processing the requests...");
+    let apigw_request_id = get_apigw_request_id(&event);
     match event.path_parameters().first("bna_id") {
         Some(bna_id_str) => {
             let bna_id = bna_id_str.parse::<Uuid>();
@@ -42,21 +34,21 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 Ok(bna_id) => {
                     let model = bna::Entity::find_by_id(bna_id).one(&db).await?;
                     let res: Response<Body> = match model {
+                        Some(model) => json!(model).into_response().await,
                         None => {
-                            let api_error = APIError::new(
-                                StatusCode::NOT_FOUND,
-                                String::from("Content Not Found"),
-                                format!("BNA entry with the id {bna_id} was not found."),
-                                APIErrorSource::Pointer(event.uri().path().to_string()),
+                            let api_error = APIError::no_content(
+                                apigw_request_id,
+                                event.uri().path().to_string().as_str(),
+                                format!("BNA entry with the id {bna_id} was not found.").as_str(),
                             );
                             APIErrors::new(&[api_error]).into()
                         }
-                        Some(model) => json!(model).into_response().await,
                     };
                     Ok(res)
                 }
                 Err(e) => {
                     let api_error = APIError::with_parameter(
+                        apigw_request_id,
                         "bna_id",
                         format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
                     );
