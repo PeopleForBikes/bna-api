@@ -3,7 +3,7 @@ use entity::{bna, city};
 use lambda_http::{
     http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
 };
-use lambdas::{database_connect, APIError, APIErrorSource, APIErrors};
+use lambdas::{database_connect, get_apigw_request_id, APIError, APIErrorSource, APIErrors};
 use sea_orm::{prelude::Uuid, EntityTrait};
 use serde_json::json;
 
@@ -14,6 +14,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve a bna result and its related city.
+    let apigw_request_id = get_apigw_request_id(&event);
     match event.path_parameters().first("bna_id") {
         Some(bna_id_str) => {
             let bna_id = bna_id_str.parse::<Uuid>();
@@ -26,6 +27,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                     let res: Response<Body> = match model {
                         None => {
                             let api_error = APIError::new(
+                                apigw_request_id,
                                 StatusCode::NOT_FOUND,
                                 String::from("Content Not Found"),
                                 format!("BNA entry with the id {bna_id} was not found."),
@@ -39,6 +41,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 }
                 Err(e) => {
                     let api_error = APIError::with_parameter(
+                        apigw_request_id,
                         "bna_id",
                         format!("{bna_id_str} is not a valid UUID: {e}").as_str(),
                     );
@@ -47,7 +50,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             }
         }
         None => {
-            let api_error = APIError::with_parameter("bna_id", "Parameter is missing.");
+            let api_error =
+                APIError::with_parameter(apigw_request_id, "bna_id", "Parameter is missing.");
             Ok(APIErrors::new(&[api_error]).into())
         }
     }

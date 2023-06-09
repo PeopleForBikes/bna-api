@@ -5,6 +5,10 @@ use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::{collections::HashMap, env};
+use tracing::{debug, error};
+
+/// The result type to return to the caller of the Lambda API handler.
+pub type APIResult<T> = std::result::Result<T, Response<Body>>;
 
 /// Maximum number of items allowed to be returned by a query at once.
 pub const MAX_PAGE_SIZE: u64 = 100;
@@ -101,7 +105,9 @@ pub async fn get_aws_secrets(secret_id: &str) -> Result<SecretValue, String> {
 /// [`DEFAULT_PAGE_SIZE`] items.
 ///
 /// If `page` does not exist, the lambda functions will return an empty array.
-pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Body>> {
+pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
+    debug!("Retrieving pagination...");
+    let apigw_request_id = get_apigw_request_id(event);
     let page_size = match event
         .query_string_parameters()
         .first("page_size")
@@ -115,6 +121,7 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
         },
         Err(e) => {
             let api_error = APIError::with_parameter(
+                apigw_request_id,
                 "page_size",
                 format!("Failed to process the page_size parameter: {e}").as_str(),
             );
@@ -133,6 +140,7 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
         },
         Err(e) => {
             let api_error = APIError::with_parameter(
+                apigw_request_id,
                 "page",
                 format!("Failed to process the page parameter: {e}").as_str(),
             );
@@ -141,6 +149,17 @@ pub fn pagination_parameters(event: &Request) -> Result<(u64, u64), Response<Bod
     };
 
     Ok((page_size, page))
+}
+
+// Returns the Api Gateway Request ID from an ApiGatewayV2 event.
+//
+// If there is no request ID or the event is not coming from an ApiGatewayV2, the
+// function returns None.
+pub fn get_apigw_request_id(event: &Request) -> Option<String> {
+    match event.request_context() {
+        lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
+        _ => None,
+    }
 }
 
 /// Builds a paginated Response.
@@ -346,6 +365,7 @@ pub enum APIErrorSource {
 /// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
 #[derive(Deserialize, Serialize, Clone)]
 pub struct APIError {
+    id: Option<String>,
     #[serde(with = "http_serde::status_code")]
     status: StatusCode,
     title: String,
@@ -355,8 +375,15 @@ pub struct APIError {
 
 impl APIError {
     /// Creates a new `APIError`.
-    pub fn new(status: StatusCode, title: String, details: String, source: APIErrorSource) -> Self {
+    pub fn new(
+        id: Option<String>,
+        status: StatusCode,
+        title: String,
+        details: String,
+        source: APIErrorSource,
+    ) -> Self {
         Self {
+            id,
             status,
             title,
             details,
@@ -365,8 +392,9 @@ impl APIError {
     }
 
     /// Creates a new `APIError` based off a query parameter error.
-    pub fn with_parameter(parameter: &str, message: &str) -> Self {
+    pub fn with_parameter(id: Option<String>, parameter: &str, message: &str) -> Self {
         Self {
+            id,
             status: StatusCode::BAD_REQUEST,
             title: String::from("Invalid Query Parameter"),
             source: APIErrorSource::Parameter(parameter.into()),
@@ -375,8 +403,9 @@ impl APIError {
     }
 
     /// Creates a new `APIError` based off an invalid attribute.
-    pub fn with_pointer(pointer: &str, message: &str) -> Self {
+    pub fn with_pointer(id: Option<String>, pointer: &str, message: &str) -> Self {
         Self {
+            id,
             status: StatusCode::BAD_REQUEST,
             title: String::from("Invalid Attribute"),
             source: APIErrorSource::Pointer(pointer.into()),
@@ -385,22 +414,30 @@ impl APIError {
     }
 
     // Creates a new `APIError` for internal errors.
-    pub fn internal_error(title: String, details: String, source: String) -> Self {
+    pub fn internal_error(id: Option<String>, title: &str, details: &str, source: &str) -> Self {
         Self {
+            id,
             status: StatusCode::INTERNAL_SERVER_ERROR,
-            source: APIErrorSource::Pointer(source),
-            title,
-            details,
+            source: APIErrorSource::Pointer(source.into()),
+            title: title.into(),
+            details: details.into(),
         }
     }
 
     /// Creates a new `APIError` for database issues.
-    pub fn db_error(source: &str, message: &str) -> Self {
-        APIError::internal_error(
-            String::from("Database error"),
-            message.into(),
-            source.into(),
-        )
+    pub fn db_error(id: Option<String>, source: &str, message: &str) -> Self {
+        APIError::internal_error(id, "Database error", message, source)
+    }
+
+    /// Creates a new `APIError` for no-content issues.
+    pub fn no_content(id: Option<String>, source: &str, message: &str) -> Self {
+        Self {
+            id,
+            status: StatusCode::NOT_FOUND,
+            title: String::from("Content Not Found"),
+            source: APIErrorSource::Pointer(source.into()),
+            details: message.into(),
+        }
     }
 }
 
@@ -447,9 +484,27 @@ impl From<APIErrors> for Response<Body> {
     }
 }
 
+pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnection> {
+    debug!("Connecting to the database...");
+    match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
+        Ok(db) => Ok(db),
+        Err(e) => {
+            let apigw_request_id = get_apigw_request_id(event);
+            let error_msg = "cannot connect to the database".to_string();
+            error!(
+                "{error_msg}: {e}. API GW Request ID: {:?}",
+                apigw_request_id
+            );
+            let api_error = APIError::db_error(apigw_request_id, event.uri().path(), &error_msg);
+            Err(APIErrors::new(&[api_error]).into())
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use lambda_http::request::from_str;
     use query_map::QueryMap;
     use std::collections::HashMap;
 
@@ -474,11 +529,9 @@ mod tests {
 
     #[test]
     fn test_pagination_parameters_without_params() {
-        let req = lambda_http::http::Request::get(
-            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99",
-        )
-        .body(lambda_http::Body::Empty)
-        .unwrap();
+        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let req = from_str(input).unwrap();
+
         let actual = pagination_parameters(&req).unwrap();
         assert_eq!(actual.0, DEFAULT_PAGE_SIZE);
         assert_eq!(actual.1, 1);
@@ -492,14 +545,12 @@ mod tests {
         let mut data = HashMap::new();
         data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
         data.insert("page".into(), vec![PAGE.to_string()]);
-
         let qm: QueryMap = QueryMap::from(data);
-        let req = lambda_http::http::Request::get(format!(
-            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
-        ))
-        .body(lambda_http::Body::Empty)
-        .unwrap()
-        .with_query_string_parameters(qm);
+
+        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let result = from_str(input).unwrap();
+        let req = result.with_query_string_parameters(qm);
+
         let actual = pagination_parameters(&req).unwrap();
         assert_eq!(actual.0, PAGE_SIZE);
         assert_eq!(actual.1, PAGE);
@@ -511,15 +562,16 @@ mod tests {
         data.insert("page_size".into(), vec!["-1".to_string()]);
         data.insert("page".into(), vec!["50".to_string()]);
         let qm: QueryMap = QueryMap::from(data);
-        let req = lambda_http::http::Request::get(format!(
-            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
-        ))
-        .body(lambda_http::Body::Empty)
-        .unwrap()
-        .with_query_string_parameters(qm);
+
+        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let result = from_str(input).unwrap();
+        let req = result.with_query_string_parameters(qm);
+
         let actual = pagination_parameters(&req).unwrap_err();
+
         // Ensure the error had the BAD_REQUEST status.
         assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+
         // Ensure the error message is correct.
         let b = actual.body();
         let message = match b {
@@ -536,15 +588,16 @@ mod tests {
         data.insert("page_size".into(), vec!["1".to_string()]);
         data.insert("page".into(), vec!["abc".to_string()]);
         let qm: QueryMap = QueryMap::from(data);
-        let req = lambda_http::http::Request::get(format!(
-            "https://api.peopleforbikes.xyz/bnas/d84b4c38-cfda-40e3-9112-4fc80bebcd99"
-        ))
-        .body(lambda_http::Body::Empty)
-        .unwrap()
-        .with_query_string_parameters(qm);
+
+        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let result = from_str(input).unwrap();
+        let req = result.with_query_string_parameters(qm);
+
         let actual = pagination_parameters(&req).unwrap_err();
+
         // Ensure the error had the BAD_REQUEST status.
         assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+
         // Ensure the error message is correct.
         let b = actual.body();
         let message = match b {
