@@ -60,7 +60,7 @@ name = "get-cities-bnas"
 path = "src/cities/get-cities-bnas.rs"
 
 [dev-dependencies]
-query_map = "0.6.0"
+query_map = "0.7.0"
 rstest = "0.18.1"
 
 [package.metadata.lambda.deploy]
