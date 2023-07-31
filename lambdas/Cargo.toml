@@ -28,7 +28,7 @@ reqwest = { version = "0.11.16", features = [
   "native-tls-vendored",
   "rustls",
 ] }
-sea-orm = { version = "0.11.0", features = [
+sea-orm = { version = "0.12.1", features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
   "macros",
