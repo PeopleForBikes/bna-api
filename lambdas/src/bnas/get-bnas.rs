@@ -1,5 +1,5 @@
 use dotenv::dotenv;
-use entity::bna;
+use entity::summary;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
 use lambdas::{
     api_database_connect, build_paginated_response, get_apigw_request_id, pagination_parameters,
@@ -32,7 +32,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             let bna_id = bna_id_str.parse::<Uuid>();
             match bna_id {
                 Ok(bna_id) => {
-                    let model = bna::Entity::find_by_id(bna_id).one(&db).await?;
+                    let model = summary::Entity::find_by_id(bna_id).one(&db).await?;
                     let res: Response<Body> = match model {
                         Some(model) => json!(model).into_response().await,
                         None => {
@@ -57,11 +57,11 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             }
         }
         None => {
-            let body = bna::Entity::find()
+            let body = summary::Entity::find()
                 .paginate(&db, page_size)
                 .fetch_page(page - 1)
                 .await?;
-            let total_items = bna::Entity::find().count(&db).await?;
+            let total_items = summary::Entity::find().count(&db).await?;
             build_paginated_response(json!(body), total_items, page, page_size, &event)
         }
     }

@@ -3,6 +3,7 @@
 **/*.rs.bk
 /target
 Cargo.lock
+dbml-error.log
 debug/
 lambdas/tests/.hypothesis
 lambdas/tests/.venv
