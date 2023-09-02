@@ -505,7 +505,6 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
 mod tests {
     use super::*;
     use lambda_http::request::from_str;
-    use query_map::QueryMap;
     use std::collections::HashMap;
 
     #[test]
@@ -545,11 +544,10 @@ mod tests {
         let mut data = HashMap::new();
         data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
         data.insert("page".into(), vec![PAGE.to_string()]);
-        let qm: QueryMap = QueryMap::from(data);
 
         let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
         let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(qm);
+        let req = result.with_query_string_parameters(data);
 
         let actual = pagination_parameters(&req).unwrap();
         assert_eq!(actual.0, PAGE_SIZE);
@@ -561,11 +559,10 @@ mod tests {
         let mut data = HashMap::new();
         data.insert("page_size".into(), vec!["-1".to_string()]);
         data.insert("page".into(), vec!["50".to_string()]);
-        let qm: QueryMap = QueryMap::from(data);
 
         let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
         let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(qm);
+        let req = result.with_query_string_parameters(data);
 
         let actual = pagination_parameters(&req).unwrap_err();
 
@@ -587,11 +584,10 @@ mod tests {
         let mut data = HashMap::new();
         data.insert("page_size".into(), vec!["1".to_string()]);
         data.insert("page".into(), vec!["abc".to_string()]);
-        let qm: QueryMap = QueryMap::from(data);
 
         let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
         let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(qm);
+        let req = result.with_query_string_parameters(data);
 
         let actual = pagination_parameters(&req).unwrap_err();
 
