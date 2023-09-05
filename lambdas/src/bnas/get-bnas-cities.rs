@@ -1,5 +1,5 @@
 use dotenv::dotenv;
-use entity::{bna, city};
+use entity::{city, summary};
 use lambda_http::{
     http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response,
 };
@@ -20,7 +20,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             let bna_id = bna_id_str.parse::<Uuid>();
             match bna_id {
                 Ok(bna_id) => {
-                    let model = bna::Entity::find_by_id(bna_id)
+                    let model = summary::Entity::find_by_id(bna_id)
                         .find_also_related(city::Entity)
                         .one(&db)
                         .await?;

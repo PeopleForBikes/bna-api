@@ -28,3 +28,5 @@ tokio = { version = "1", features = ["full"] }
 csv = "1.2.1"
 dotenv = "0.15.0"
 itertools = "0.11.0"
+# bnacore = { path = "/Users/rgreinhofer/projects/PeopleForBikes/brokenspoke/bnacore" }
+bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "6fa8808" }

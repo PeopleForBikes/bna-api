@@ -1,0 +1,163 @@
+TableGroup analysis {
+  bna.summary
+  bna.features
+  bna.core_services
+  bna.opportunity
+  bna.recreation
+  bna.infrastructure
+}
+
+TableGroup city {
+  bna.city
+  bna.census
+  bna.ranking
+  bna.speed_limit
+}
+
+enum size {
+  small
+  medium
+  large
+}
+
+Table bna.summary [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  city_id uuid
+  created_at date
+  score float
+
+  indexes {
+    bna_uuid
+    city_id
+  }
+}
+
+Table bna.features [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  people float
+  retail float
+  transit float
+
+  indexes {
+    bna_uuid
+  }
+}
+
+Table bna.core_services [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  dentists float
+  doctors float
+  grocery float
+  hospitals float
+  pharmacies float
+  score float
+  social_services float
+
+  indexes {
+    bna_uuid
+  }
+}
+
+Table bna.opportunity [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  employment float
+  higher_education float
+  k12_education float
+  score float
+  technical_vocational_college float
+
+  indexes {
+    bna_uuid
+  }
+}
+
+Table bna.recreation [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  community_centers float
+  parks float
+  recreation_trails float
+  score float
+
+  indexes {
+    bna_uuid
+  }
+}
+
+Table bna.infrastructure [headercolor: #82F0D3] {
+  bna_uuid uuid [pk]
+  low_stress_miles float
+  high_stress_miles float
+
+  indexes {
+    bna_uuid
+  }
+}
+
+Table bna.city [headercolor: #6B41A3] {
+  city_id uuid [pk]
+  country varchar(50)
+  latitude float
+  longitude float
+  name varchar(50)
+  region varchar(50)
+  state varchar(50)
+  state_abbrev char(2)
+
+  indexes {
+    city_id
+    name
+  }
+}
+
+Table bna.census [headercolor: #6B41A3] {
+  census_id int [pk, increment]
+  city_id uuid
+  created_at date
+  fips_code char(7)
+  pop_size size
+  population int
+
+  indexes {
+    census_id
+    city_id
+    fips_code
+  }
+}
+
+Table bna.ranking [headercolor: #6B41A3] {
+  ranking_id int [pk, increment]
+  city_id uuid
+  country int
+  country_size int
+  created_at date
+  global int
+  size int
+  state int
+
+  indexes {
+    city_id
+    ranking_id
+  }
+}
+
+Table bna.speed_limit [headercolor: #6B41A3] {
+  speed_limit_id int [pk, increment]
+  city_id uuid
+  created_at date
+  residential int
+
+  indexes {
+    city_id
+    speed_limit_id
+  }
+}
+
+Ref: bna.city.city_id < bna.summary.city_id
+Ref: bna.city.city_id < bna.census.city_id
+Ref: bna.city.city_id < bna.ranking.city_id
+Ref: bna.city.city_id < bna.speed_limit.city_id
+Ref: bna.summary.bna_uuid - bna.core_services.bna_uuid
+Ref: bna.summary.bna_uuid - bna.opportunity.bna_uuid
+Ref: bna.summary.bna_uuid - bna.recreation.bna_uuid
+Ref: bna.summary.bna_uuid - bna.infrastructure.bna_uuid
+Ref: bna.summary.bna_uuid - bna.features.bna_uuid

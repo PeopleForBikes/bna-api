@@ -34,6 +34,7 @@ lint-spellcheck:
 
 # Generate models
 db-generate-models:
+    rm -fr  {{ entites }}
     sea-orm-cli generate entity -o {{ entites }} --with-serde both
 
 # Apply migrations and seed the database.
@@ -53,3 +54,7 @@ db-reset: db-fresh db-generate-models db-seed
 # Seed the database from a City Ratings CSV file.
 db-seed:
     cargo run --example seeder
+
+# Generate PostgreSQL dump from dbml.
+dbml-sql:
+  npx -y dbml2sql --postgres docs/database.dbml -o docs/database.sql

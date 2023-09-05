@@ -1,11 +1,11 @@
 use dotenv::dotenv;
-use entity::{bna, city};
+use entity::{city, summary};
 use lambda_http::{http::StatusCode, run, service_fn, Body, Error, Request, RequestExt, Response};
 use lambdas::{
     build_paginated_response, database_connect, get_apigw_request_id, pagination_parameters,
     APIError, APIErrorSource, APIErrors,
 };
-use sea_orm::{EntityTrait, PaginatorTrait};
+use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -24,11 +24,11 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let apigw_request_id = get_apigw_request_id(&event);
     match event.path_parameters().first("city_id") {
         Some(city_id_str) => {
-            let city_id = city_id_str.parse::<i32>();
+            let city_id = city_id_str.parse::<Uuid>();
             match city_id {
                 Ok(city_id) => {
                     let model = city::Entity::find_by_id(city_id)
-                        .find_also_related(bna::Entity)
+                        .find_also_related(summary::Entity)
                         .paginate(&db, page_size)
                         .fetch_page(page - 1)
                         .await?;
@@ -49,7 +49,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                     let api_error = APIError::with_parameter(
                         apigw_request_id,
                         "city_id",
-                        format!("{city_id_str} is not a valid city id: {e}").as_str(),
+                        format!("{city_id_str} is not a valid UUID: {e}").as_str(),
                     );
                     Ok(APIErrors::new(&[api_error]).into())
                 }

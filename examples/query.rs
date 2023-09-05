@@ -23,8 +23,8 @@ async fn main() -> Result<(), Report> {
         Ok(city_models) => {
             for city_model in city_models {
                 println!(
-                    "The city of {} with the uuid {} is localted in {}.",
-                    city_model.city, city_model.census_fips_code, city_model.state_full
+                    "The city of {} with the id {} is localted in {}.",
+                    city_model.name, city_model.city_id, city_model.state
                 )
             }
         }

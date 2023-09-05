@@ -7,35 +7,51 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "city")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub census_fips_code: i32,
-    #[sea_orm(column_type = "Double")]
-    pub census_latitude: f64,
-    #[sea_orm(column_type = "Double")]
-    pub census_longitude: f64,
-    pub census_population: i32,
-    pub city: String,
+    pub city_id: Uuid,
     pub country: String,
-    pub pop_size: String,
-    pub rank: i32,
-    pub rank_country: i32,
-    pub rank_country_size: i32,
-    pub rank_size: i32,
-    pub rank_state: i32,
+    #[sea_orm(column_type = "Double")]
+    pub latitude: f64,
+    #[sea_orm(column_type = "Double")]
+    pub longitude: f64,
+    pub name: String,
     pub region: String,
-    pub residential_speed_limit: i32,
     pub state: String,
-    pub state_full: String,
+    pub state_abbrev: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::bna::Entity")]
-    Bna,
+    #[sea_orm(has_many = "super::census::Entity")]
+    Census,
+    #[sea_orm(has_many = "super::ranking::Entity")]
+    Ranking,
+    #[sea_orm(has_many = "super::speed_limit::Entity")]
+    SpeedLimit,
+    #[sea_orm(has_many = "super::summary::Entity")]
+    Summary,
 }
 
-impl Related<super::bna::Entity> for Entity {
+impl Related<super::census::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Bna.def()
+        Relation::Census.def()
+    }
+}
+
+impl Related<super::ranking::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Ranking.def()
+    }
+}
+
+impl Related<super::speed_limit::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::SpeedLimit.def()
+    }
+}
+
+impl Related<super::summary::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Summary.def()
     }
 }
 
