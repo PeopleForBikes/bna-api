@@ -8,7 +8,13 @@ Repository containing all the lambda endpoints for API Gateway.
 
 ## Testing
 
-2 terminal are required to test the functions.
+- 2 terminals are required to test the functions.
+- Start Docker Compose: `docker compose ud [-d]`
+- Export the database URL:
+
+  ```bash
+  export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
+  ```
 
 ### Terminal 1
 
