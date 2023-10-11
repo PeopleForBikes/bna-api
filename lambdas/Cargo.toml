@@ -59,6 +59,10 @@ path = "src/cities/get-cities.rs"
 name = "get-cities-bnas"
 path = "src/cities/get-cities-bnas.rs"
 
+[[bin]]
+name = "post-submissions-city"
+path = "src/submissions/post-submissions-city.rs"
+
 [dev-dependencies]
 rstest = "0.18.1"
 
