@@ -33,28 +33,15 @@ jobs:
       # Build the lambdas in release mode and deploy them.
       - name: Build all lambdas
         run: cd lambdas && cargo lambda build --release
-      - run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
+      - name: Deploy lambdas
+        run: |
+          LAMBDAS="get-bnas
           get-bnas-cities
-      - run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
-          get-bnas
-      - run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
-          get-cities-bnas
-      - run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
           get-cities
-      - run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
-          post-submissions-city
+          get-cities-bnas
+          post-submissions-city"
+          echo $LAMBDAS \
+          | xargs -n1 -t \
+            cargo lambda deploy \
+            --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }} \
+            --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}

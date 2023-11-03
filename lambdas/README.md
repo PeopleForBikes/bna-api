@@ -41,7 +41,7 @@ Such payloads are stored in the `/src/fixtures` folder, and invoking request
 follows the following pattern:
 
 ```bash
-cargo lambda invoke ${LAMBDA} --data-file lambdas/src/fixtures/${LAMBDA}.json
+cargo lambda invoke --data-file lambdas/src/fixtures/${LAMBDA}.json ${LAMBDA}
 ```
 
 For instance:

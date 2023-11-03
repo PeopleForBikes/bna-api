@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "speed_limit")]
 pub struct Model {
     #[sea_orm(primary_key)]
+    #[serde(skip_deserializing)]
     pub speed_limit_id: i32,
     pub city_id: Uuid,
     pub created_at: Option<DateTimeWithTimeZone>,

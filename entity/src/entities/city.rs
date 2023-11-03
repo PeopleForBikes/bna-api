@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "city")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
+    #[serde(skip_deserializing)]
     pub city_id: Uuid,
     pub country: String,
     #[sea_orm(column_type = "Double")]
