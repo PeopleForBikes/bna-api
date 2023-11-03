@@ -18,6 +18,11 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
+                    .col(ColumnDef::new(Submission::FirstName).string().not_null())
+                    .col(ColumnDef::new(Submission::LastName).string().not_null())
+                    .col(ColumnDef::new(Submission::Title).string())
+                    .col(ColumnDef::new(Submission::Organization).string())
+                    .col(ColumnDef::new(Submission::Email).string().not_null())
                     .col(ColumnDef::new(Submission::Country).string().not_null())
                     .col(ColumnDef::new(Submission::City).string().not_null())
                     .col(ColumnDef::new(Submission::Region).string())
@@ -43,6 +48,11 @@ impl MigrationTrait for Migration {
 enum Submission {
     Table,
     Id,
+    FirstName,
+    LastName,
+    Title,
+    Organization,
+    Email,
     Country,
     City,
     Region,

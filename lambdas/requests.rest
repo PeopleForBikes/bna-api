@@ -62,8 +62,13 @@ POST https://api.peopleforbikes.xyz/submissions/city
 content-type: application/json
 
 {
-  "country": "usa",
   "city": "santa rosa",
+  "country": "usa",
+  "email": "jane.dpe@orgllc.com",
+  "fips_code": "3570670",
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "organization": "Organization LLC",
   "region": "new mexico",
-  "fips_code": "3570670"
+  "title": "CTO"
 }
