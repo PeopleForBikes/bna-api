@@ -3,27 +3,19 @@ name = "lambdas"
 version = "0.1.0"
 edition = "2021"
 
-# Starting in Rust 1.62 you can use `cargo add` to add dependencies
-# to your project.
-#
-# If you're using an older Rust version,
-# download cargo-edit(https://github.com/killercup/cargo-edit#installation)
-# to install the `add` subcommand.
-#
-# Running `cargo add DEPENDENCY_NAME` will
-# add the latest version of a dependency to the list,
-# and it will keep the alphabetic ordering for you.
-
 [dependencies]
+aws-config = "1.0.0"
+aws-sdk-sqs = "0.39.0"
 aws_lambda_events = "0.12.0"
+bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "98f20d7" }
 dotenv = "0.15.0"
 entity = { path = "../entity" }
-http-serde = "1.1.2"
+http-serde = "1.1.3"
 lambda_http = "0.8"
 lambda_runtime = "0.8"
 nom = "7.1.3"
 once_cell = "1.17.1"
-reqwest = { version = "0.11.16", features = [
+reqwest = { version = "0.11.22", features = [
   "json",
   "native-tls-vendored",
   "rustls",
@@ -62,6 +54,10 @@ path = "src/cities/get-cities-bnas.rs"
 [[bin]]
 name = "post-submissions-city"
 path = "src/submissions/post-submissions-city.rs"
+
+[[bin]]
+name = "post-enqueue-city"
+path = "src/enqueue/post-city.rs"
 
 [dev-dependencies]
 rstest = "0.18.1"

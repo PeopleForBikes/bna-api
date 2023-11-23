@@ -39,6 +39,7 @@ jobs:
           get-bnas-cities
           get-cities
           get-cities-bnas
+          post-enqueue-city
           post-submissions-city"
           echo $LAMBDAS \
           | xargs -n1 -t \

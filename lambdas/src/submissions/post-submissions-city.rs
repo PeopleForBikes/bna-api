@@ -17,7 +17,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let apigw_request_id = get_apigw_request_id(&event);
     let body = event.body();
     let body_str = std::str::from_utf8(body).expect("invalid utf-8 sequence");
-    dbg!(body_str);
     let model = match serde_json::from_str::<submission::Model>(body_str) {
         Ok(model) => model,
         Err(e) => {
