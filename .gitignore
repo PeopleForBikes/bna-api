@@ -7,4 +7,5 @@ dbml-error.log
 debug/
 lambdas/tests/.hypothesis
 lambdas/tests/.venv
+lambdas/.env
 target/

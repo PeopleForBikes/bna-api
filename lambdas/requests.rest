@@ -72,3 +72,56 @@ content-type: application/json
   "region": "new mexico",
   "title": "CTO"
 }
+
+###
+# https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_InitiateAuth.html#API_InitiateAuth_ResponseSyntax
+# @name cognito_auth
+POST https://cognito-idp.us-west-2.amazonaws.com/
+content-type: application/x-amz-json-1.1
+X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth
+Accept-Encoding: gzip, deflate, br
+Connection: keep-alive
+
+{
+  "AuthParameters" : {
+      "USERNAME" : "{{$dotenv USERNAME}}",
+      "PASSWORD" : "{{$dotenv PASSWORD}}"
+  },
+  "AuthFlow" : "USER_PASSWORD_AUTH",
+  "ClientId" : "{{$dotenv CLIENT_ID}}"
+}
+
+###
+# https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RespondToAuthChallenge.html#CognitoUserPools-RespondToAuthChallenge-request-ChallengeResponses
+# @name cognito_mfa
+# @prompt mfa_code software MFA code
+POST https://cognito-idp.us-west-2.amazonaws.com/
+content-type: application/x-amz-json-1.1
+X-Amz-Target: AWSCognitoIdentityProviderService.RespondToAuthChallenge
+
+{
+  "ChallengeName": "SOFTWARE_TOKEN_MFA",
+  "ChallengeResponses": {
+    "USERNAME": "{{$dotenv USERNAME}}",
+    "SOFTWARE_TOKEN_MFA_CODE": "{{mfa_code}}"
+  },
+  "ClientId": "{{$dotenv CLIENT_ID}}",
+  "Session": "{{cognito_auth.response.body.Session}}"
+}
+
+###
+@cognito_access = {{cognito_mfa.response.body.AuthenticationResult.AccessToken}}
+@cognito_id = {{cognito_mfa.response.body.AuthenticationResult.IdToken}}
+@cognito_refresh = {{cognito_mfa.response.body.AuthenticationResult.RefreshToken}}
+
+###
+POST https://api.peopleforbikes.xyz/enqueue/city
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+  "city": "santa rosa",
+  "country": "usa",
+  "fips_code": "3570670",
+  "region": "new mexico"
+}
