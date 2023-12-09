@@ -37,6 +37,7 @@ jobs:
         run: |
           LAMBDAS="get-bnas
           get-bnas-cities
+          get-bna-results
           get-cities
           get-cities-bnas
           post-enqueue-city
