@@ -24,6 +24,7 @@ AWS Lambda control plane API.
 Launch it with the following command:
 
 ```bash
+cd lambdas
 cargo lambda watch
 ```
 
