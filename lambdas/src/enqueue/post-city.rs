@@ -39,9 +39,9 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Prepare the AWS client.
-    let bna_sqs_queue = get_aws_parameter("BNA_SQS_QUEUE_URL").await?;
     let aws_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let sqs_client = aws_sdk_sqs::Client::new(&aws_config);
+    let bna_sqs_queue = get_aws_parameter("BNA_SQS_QUEUE_URL").await?;
 
     // Enqueue the message.
     let _send_message = match sqs_client

@@ -125,3 +125,8 @@ Authorization: Bearer {{cognito_access}}
   "fips_code": "3570670",
   "region": "new mexico"
 }
+
+###
+GET https://api.peopleforbikes.xyz/bnas/results
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
