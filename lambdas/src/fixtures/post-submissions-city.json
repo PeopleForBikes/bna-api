@@ -51,7 +51,7 @@
     "time": "12/Mar/2020:19:03:58 +0000",
     "timeEpoch": 1583348638390
   },
-  "body": "{\"first_name\": \"Jane\",\"last_name\": \"Doe\",\"organization\": \"Organization LLC\",\"title\": \"CTO\",\"email\": \"jane.dpe@orgllc.com\",\"country\": \"usa\",\"city\": \"santa rosa\",\"region\": \"new mexico\",\"fips_code\": \"3570670\"}",
+  "body": "{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}",
   "pathParameters": {
     "parameter1": "value1"
   },

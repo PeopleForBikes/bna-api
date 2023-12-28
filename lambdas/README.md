@@ -9,7 +9,7 @@ Repository containing all the lambda endpoints for API Gateway.
 ## Testing
 
 - 2 terminals are required to test the functions.
-- Start Docker Compose: `docker compose ud [-d]`
+- Start Docker Compose: `docker compose up [-d]`
 - Export the database URL:
 
   ```bash
@@ -48,7 +48,7 @@ cargo lambda invoke --data-file lambdas/src/fixtures/${LAMBDA}.json ${LAMBDA}
 For instance:
 
 ```bash
-cargo lambda invoke get-cities --data-file lambdas/src/fixtures/get-cities.json
+cargo lambda invoke --data-file lambdas/src/fixtures/get-cities.json get-cities
 ```
 
 [cargo lambda]: https://www.cargo-lambda.info/
