@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "opportunity")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    #[serde(skip_deserializing)]
     pub bna_uuid: Uuid,
     #[sea_orm(column_type = "Double")]
     pub employment: f64,

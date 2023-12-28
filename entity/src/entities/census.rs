@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "census")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    #[serde(skip_deserializing)]
     pub census_id: i32,
     pub city_id: Uuid,
     pub created_at: Option<DateTimeWithTimeZone>,
