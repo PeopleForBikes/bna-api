@@ -70,7 +70,8 @@ content-type: application/json
   "last_name": "Doe",
   "organization": "Organization LLC",
   "region": "new mexico",
-  "title": "CTO"
+  "title": "CTO",
+  "consent": true
 }
 
 ###

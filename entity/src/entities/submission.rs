@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "submission")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    #[serde(skip_deserializing)]
     pub id: i32,
     pub first_name: String,
     pub last_name: String,
@@ -18,6 +17,7 @@ pub struct Model {
     pub city: String,
     pub region: Option<String>,
     pub fips_code: String,
+    pub consent: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

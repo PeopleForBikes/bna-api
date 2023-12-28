@@ -35,8 +35,7 @@ lint-spellcheck:
 # Generate models
 db-generate-models:
     rm -fr  {{ entites }}
-    sea-orm-cli generate entity -o {{ entites }} --with-serde both --serde-skip-deserializing-primary-key
-    # sea-orm-cli generate entity -o {{ entites }} --with-serde both -t submission --serde-skip-deserializing-primary-key
+    sea-orm-cli generate entity -o {{ entites }} --with-serde both
 
 
 # Apply migrations and seed the database.

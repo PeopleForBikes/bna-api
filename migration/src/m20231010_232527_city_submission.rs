@@ -32,6 +32,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default("0"),
                     )
+                    .col(ColumnDef::new(Submission::Consent).boolean().not_null())
                     .to_owned(),
             )
             .await
@@ -57,4 +58,5 @@ enum Submission {
     City,
     Region,
     FIPSCode,
+    Consent,
 }
