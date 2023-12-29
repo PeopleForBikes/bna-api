@@ -8,7 +8,7 @@ aws-config = "1.0.0"
 aws-sdk-s3 = "1.5.0"
 aws-sdk-sqs = "1.3.0"
 aws_lambda_events = "0.13.0"
-bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "98f20d7" }
+bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "f1d9115" }
 dotenv = "0.15.0"
 entity = { path = "../entity" }
 http-serde = "2.0.0"
