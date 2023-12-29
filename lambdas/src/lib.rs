@@ -1,11 +1,11 @@
 pub mod link_header;
 
-use bnacore::aws::get_aws_secrets;
+use bnacore::aws::get_aws_secrets_value;
 use lambda_http::{http::StatusCode, Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
-use std::{collections::HashMap, env};
+use std::env;
 use tracing::{debug, error};
 
 /// The result type to return to the caller of the Lambda API handler.
@@ -28,18 +28,8 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
         Err(_) => match secret_id {
             Some(secret_id) =>
                 match env::var(secret_id) {
-                  Ok(v) => {
-                    let secret_value = get_aws_secrets(&v)
-                        .await
-                        .map_err( DbErr::Custom)?;
-                    let secrets: HashMap<String, String> = serde_json::from_str(&secret_value)
-                        .map_err(|e| DbErr::Custom(format!("Cannot deserialize the cached secret: {e}")))?;
-                    match secrets.get(DATABASE_URL_KEY) {
-                      Some(v) => v.to_owned(),
-                      None => return Err(DbErr::Custom(format!("Cannot find the connection string within the secret {:?}. Ensure `{DATABASE_URL_KEY}` is correctly set.", secret_id))),
-                    }
-                  },
-                  Err(e) => return Err(DbErr::Custom(format!("Cannot find the connection string in the AWS Secrets Manager. Ensure `{:?}` is correctly set. Reason: {e}", secret_id))),
+                  Ok(v) => get_aws_secrets_value(&v, DATABASE_URL_KEY).await.map_err(|e| DbErr::Custom(format!("Cannot find the connection string within the secret {secret_id}. Ensure `{DATABASE_URL_KEY}` is correctly set: {e}")))?,
+                  Err(e) => return Err(DbErr::Custom(format!("Cannot find the connection string in the AWS Secrets Manager. Ensure `{secret_id}` is correctly set. Reason: {e}"))),
             }
             None => return Err(DbErr::Custom(format!("Cannot find the connection string. Ensure `{DATABASE_URL_KEY}` is correctly set."))),
         },
