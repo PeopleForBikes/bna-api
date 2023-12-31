@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub ranking_id: i32,
     pub city_id: Uuid,
-    pub country: i32,
+    pub country: String,
     pub country_size: i32,
     pub created_at: Option<DateTimeWithTimeZone>,
     pub global: i32,

@@ -1,5 +1,5 @@
 /// This example populates the database the database using the city ratings sample file.
-use bnacore::scorecard::scorecard23::ScoreCard23;
+use bnacore::{scorecard::scorecard23::ScoreCard23, versioning::Calver};
 use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
@@ -29,26 +29,47 @@ async fn main() -> Result<(), Report> {
     let mut bna_recreation: Vec<recreation::ActiveModel> = Vec::new();
     let mut bna_opportunity: Vec<opportunity::ActiveModel> = Vec::new();
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
+    let mut versions: HashMap<Uuid, Calver> = HashMap::new();
 
     // Load the CSV file.
-    let mut csv_reader = Reader::from_path("examples/sample.csv")?;
+    let mut csv_reader = Reader::from_path("examples/importer-sample.csv")?;
     for record in csv_reader.deserialize() {
         // Read the record.
         let scorecard: ScoreCard23 = record?;
 
-        // Populate the city model.
+        // Get the record's year.
+        let year = scorecard.bna.year - 2000;
+        let version = Calver::try_from_ubuntu(format!("{year}.1").as_str()).unwrap();
+
+        // Get the City UUID.
         let city_uuid = Uuid::parse_str(&scorecard.city.bna_id).unwrap();
-        let city_model = city::ActiveModel {
-            city_id: ActiveValue::Set(city_uuid.clone()),
-            country: ActiveValue::Set(scorecard.city.country),
-            latitude: ActiveValue::Set(scorecard.city.census_latitude),
-            longitude: ActiveValue::Set(scorecard.city.census_longitude),
-            name: ActiveValue::Set(scorecard.city.city),
-            region: ActiveValue::Set(scorecard.city.region),
-            state: ActiveValue::Set(scorecard.city.state_full),
-            state_abbrev: ActiveValue::Set(scorecard.city.state),
-        };
-        cities.insert(city_uuid.clone(), city_model);
+
+        // Look for a newer summary entry than this one.
+        let mut has_newer = false;
+        if versions.contains_key(&city_uuid) {
+            let v = versions.get(&city_uuid).clone().unwrap();
+            if version > *v {
+                versions.insert(city_uuid.clone(), version.clone());
+                has_newer = true;
+            }
+        } else {
+            versions.insert(city_uuid.clone(), version.clone());
+        }
+
+        // Populate the city model.
+        if !has_newer {
+            let city_model = city::ActiveModel {
+                city_id: ActiveValue::Set(city_uuid.clone()),
+                country: ActiveValue::Set(scorecard.city.country.clone()),
+                latitude: ActiveValue::Set(scorecard.city.census_latitude),
+                longitude: ActiveValue::Set(scorecard.city.census_longitude),
+                name: ActiveValue::Set(scorecard.city.city),
+                region: ActiveValue::Set(scorecard.city.region),
+                state: ActiveValue::Set(scorecard.city.state_full),
+                state_abbrev: ActiveValue::Set(scorecard.city.state),
+            };
+            cities.insert(city_uuid.clone(), city_model);
+        }
 
         // Populate the census population model.
         let census_model = census::ActiveModel {
@@ -69,7 +90,7 @@ async fn main() -> Result<(), Report> {
         let rankings_model = ranking::ActiveModel {
             ranking_id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(city_uuid.clone()),
-            country: ActiveValue::Set(scorecard.bna.rank_country.try_into().unwrap()),
+            country: ActiveValue::Set(scorecard.city.country.clone()),
             country_size: ActiveValue::Set(scorecard.bna.rank_country_size.try_into().unwrap()),
             created_at: ActiveValue::NotSet,
             global: ActiveValue::Set(scorecard.bna.rank.try_into().unwrap()),
@@ -96,6 +117,7 @@ async fn main() -> Result<(), Report> {
             city_id: ActiveValue::Set(city_uuid.clone()),
             created_at: ActiveValue::NotSet,
             score: ActiveValue::Set(scorecard.bna.bna_rounded_score.try_into().unwrap()),
+            version: ActiveValue::Set(version.to_ubuntu()),
         };
         summaries.push(summary_model);
 
