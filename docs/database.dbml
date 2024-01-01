@@ -25,6 +25,7 @@ Table bna.summary [headercolor: #82F0D3] {
   city_id uuid
   created_at date
   score float
+  version varchar(10)
 
   indexes {
     bna_uuid
