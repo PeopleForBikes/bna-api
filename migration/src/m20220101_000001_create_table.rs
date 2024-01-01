@@ -98,7 +98,7 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Ranking::CityId).uuid().not_null())
-                    .col(ColumnDef::new(Ranking::Country).integer().not_null())
+                    .col(ColumnDef::new(Ranking::Country).string().not_null())
                     .col(ColumnDef::new(Ranking::CountrySize).integer().not_null())
                     .col(ColumnDef::new(Ranking::CreatedAt).timestamp_with_time_zone())
                     .col(ColumnDef::new(Ranking::Global).integer().not_null())
@@ -180,6 +180,7 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Summary::CityId).uuid().not_null())
                     .col(ColumnDef::new(Summary::CreatedAt).timestamp_with_time_zone())
                     .col(ColumnDef::new(Summary::Score).double().not_null())
+                    .col(ColumnDef::new(Summary::Version).string().not_null())
                     .primary_key(Index::create().col(Summary::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -446,6 +447,8 @@ enum Summary {
     CreatedAt,
     /// BNA total score.
     Score,
+    /// Analysis version in Calver format (YY.0M.[Micro])
+    Version,
 }
 
 #[derive(Iden)]

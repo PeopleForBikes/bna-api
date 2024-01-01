@@ -12,6 +12,7 @@ pub struct Model {
     pub created_at: Option<DateTimeWithTimeZone>,
     #[sea_orm(column_type = "Double")]
     pub score: f64,
+    pub version: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
