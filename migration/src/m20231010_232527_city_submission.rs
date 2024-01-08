@@ -1,4 +1,5 @@
-use sea_orm_migration::prelude::*;
+use sea_orm::{EnumIter, Iterable};
+use sea_orm_migration::{prelude::*, sea_query::extension::postgres::Type};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -6,6 +7,17 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Create the approval status type.
+        manager
+            .create_type(
+                Type::create()
+                    .as_enum(ApprovalStatus::Table)
+                    .values(ApprovalStatus::iter().skip(1))
+                    .to_owned(),
+            )
+            .await?;
+
+        // Create the Submission table.
         manager
             .create_table(
                 Table::create()
@@ -33,9 +45,16 @@ impl MigrationTrait for Migration {
                             .default("0"),
                     )
                     .col(ColumnDef::new(Submission::Consent).boolean().not_null())
+                    .col(
+                        ColumnDef::new(Submission::Status)
+                            .enumeration(ApprovalStatus::Table, ApprovalStatus::iter().skip(1))
+                            .default(ApprovalStatus::Pending.to_string()),
+                    )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -59,4 +78,16 @@ enum Submission {
     Region,
     FIPSCode,
     Consent,
+    Status,
+}
+
+#[derive(Iden, EnumIter)]
+pub enum ApprovalStatus {
+    Table,
+    #[iden = "Pending"]
+    Pending,
+    #[iden = "Approved"]
+    Approved,
+    #[iden = "Rejected"]
+    Rejected,
 }

@@ -58,4 +58,8 @@ db-seed:
 
 # Generate PostgreSQL dump from dbml.
 dbml-sql:
-  npx -y dbml2sql --postgres docs/database.dbml -o docs/database.sql
+  npx -y --package=@dbml/cli dbml2sql --postgres docs/database.dbml -o docs/database.sql
+
+# Generate the SVG diagram from dbml.
+dbml-svg:
+  npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i docs/database.dbml -o docs/database.svg

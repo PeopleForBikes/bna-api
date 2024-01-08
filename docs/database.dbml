@@ -20,6 +20,12 @@ enum size {
   large
 }
 
+enum approval_status {
+  pending
+  approved
+  rejected
+}
+
 Table bna.summary [headercolor: #82F0D3] {
   bna_uuid uuid [pk]
   city_id uuid
@@ -150,6 +156,25 @@ Table bna.speed_limit [headercolor: #6B41A3] {
   indexes {
     city_id
     speed_limit_id
+  }
+}
+
+Table bna.submission {
+  submission_id int [pk, increment]
+  firstname varchar(50)
+  lastname varchar(50)
+  title varchar(50)
+  organization varchar(50)
+  email varchar(50)
+  country varchar(50)
+  city varchar(50)
+  region varchar(50)
+  fipscode varchar(50)
+  consent varchar(50)
+  status approval_status
+
+  indexes {
+    submission_id
   }
 }
 
