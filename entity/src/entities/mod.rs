@@ -10,6 +10,7 @@ pub mod infrastructure;
 pub mod opportunity;
 pub mod ranking;
 pub mod recreation;
+pub mod sea_orm_active_enums;
 pub mod speed_limit;
 pub mod submission;
 pub mod summary;
