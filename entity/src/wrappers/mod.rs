@@ -1,3 +1,4 @@
+use crate::entities::sea_orm_active_enums::ApprovalStatus;
 use crate::entities::submission;
 use sea_orm::{ActiveValue, IntoActiveModel};
 use serde::{Deserialize, Serialize};
@@ -14,6 +15,7 @@ pub struct Submission {
     pub region: Option<String>,
     pub fips_code: String,
     pub consent: bool,
+    pub status: Option<ApprovalStatus>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for Submission {
@@ -30,6 +32,7 @@ impl IntoActiveModel<submission::ActiveModel> for Submission {
             region: ActiveValue::Set(self.region),
             fips_code: ActiveValue::Set(self.fips_code),
             consent: ActiveValue::Set(self.consent),
+            status: ActiveValue::Set(self.status),
         }
     }
 }
@@ -50,6 +53,7 @@ mod tests {
         let region = Some("texas".to_string());
         let fips_code = "0123456".to_string();
         let consent = true;
+        let status = Some(ApprovalStatus::Pending);
         let wrapper = Submission {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -61,6 +65,7 @@ mod tests {
             region: region.clone(),
             fips_code: fips_code.clone(),
             consent,
+            status: status.clone(),
         };
         let active_model = wrapper.into_active_model();
         let expected = submission::ActiveModel {
@@ -75,6 +80,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
+            status: ActiveValue::Set(status),
         };
         assert_eq!(active_model, expected);
     }
@@ -91,6 +97,7 @@ mod tests {
         let region = None;
         let fips_code = "0123456".to_string();
         let consent = true;
+        let status = Some(ApprovalStatus::Pending);
         let wrapper = Submission {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -102,6 +109,7 @@ mod tests {
             region: region.clone(),
             fips_code: fips_code.clone(),
             consent,
+            status: status.clone(),
         };
         let active_model = wrapper.into_active_model();
         let expected = submission::ActiveModel {
@@ -116,6 +124,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
+            status: ActiveValue::Set(status),
         };
         assert_eq!(active_model, expected);
     }
