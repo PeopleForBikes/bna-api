@@ -29,17 +29,17 @@ GET {{host}}/cities/{{city_id}}/bnas
 
 ###
 # Query all the submissions.
-GET https://api.peopleforbikes.xyz/submissions
+GET https://api.peopleforbikes.xyz/cities/submissions
 content-type: application/json
 
 ###
 # Query all the pending submissions.
-GET https://api.peopleforbikes.xyz/submissions?status=pending
+GET https://api.peopleforbikes.xyz/cities/submissions?status=Pending
 content-type: application/json
 
 ###
 # Submit a new submission.
-POST https://api.peopleforbikes.xyz/submissions
+POST https://api.peopleforbikes.xyz/cities/submissions
 content-type: application/json
 
 {
@@ -98,7 +98,7 @@ X-Amz-Target: AWSCognitoIdentityProviderService.RespondToAuthChallenge
 
 ###
 # Enqueue a new city to be analyzed.
-POST https://api.peopleforbikes.xyz/enqueue/city
+POST https://api.peopleforbikes.xyz/cities/enqueue
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
