@@ -28,6 +28,7 @@ sea-orm = { version = "0.12.1", features = [
 ] }
 serde = { version = "1.0.159", features = ["derive"] }
 serde_json = "1.0.95"
+serde_plain = "1.0.2"
 tokio = { version = "1", features = ["macros"] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = [
@@ -57,8 +58,12 @@ name = "get-bna-results"
 path = "src/bna-results/get-bna-results.rs"
 
 [[bin]]
-name = "post-submissions-city"
-path = "src/submissions/post-submissions-city.rs"
+name = "get-submissions"
+path = "src/submissions/get-submissions.rs"
+
+[[bin]]
+name = "post-submissions"
+path = "src/submissions/post-submissions.rs"
 
 [[bin]]
 name = "post-enqueue-city"

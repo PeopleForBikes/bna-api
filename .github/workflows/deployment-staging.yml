@@ -40,8 +40,9 @@ jobs:
           get-bna-results
           get-cities
           get-cities-bnas
+          get-submissions
           post-enqueue-city
-          post-submissions-city"
+          post-submissions"
           echo $LAMBDAS \
           | xargs -n1 -t \
             cargo lambda deploy \
