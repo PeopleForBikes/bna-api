@@ -468,7 +468,7 @@ mod tests {
 
     #[test]
     fn test_pagination_parameters_without_params() {
-        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
         let req = from_str(input).unwrap();
 
         let actual = pagination_parameters(&req).unwrap();
@@ -485,7 +485,7 @@ mod tests {
         data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
         data.insert("page".into(), vec![PAGE.to_string()]);
 
-        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
         let result = from_str(input).unwrap();
         let req = result.with_query_string_parameters(data);
 
@@ -500,7 +500,7 @@ mod tests {
         data.insert("page_size".into(), vec!["-1".to_string()]);
         data.insert("page".into(), vec!["50".to_string()]);
 
-        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
         let result = from_str(input).unwrap();
         let req = result.with_query_string_parameters(data);
 
@@ -525,7 +525,7 @@ mod tests {
         data.insert("page_size".into(), vec!["1".to_string()]);
         data.insert("page".into(), vec!["abc".to_string()]);
 
-        let input = include_str!("fixtures/apigw_v2_proxy_request_minimal.json");
+        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
         let result = from_str(input).unwrap();
         let req = result.with_query_string_parameters(data);
 

@@ -54,20 +54,20 @@ name = "get-cities-bnas"
 path = "src/cities/get-cities-bnas.rs"
 
 [[bin]]
-name = "get-bna-results"
-path = "src/bna-results/get-bna-results.rs"
+name = "get-cities-submissions"
+path = "src/cities-submissions/get-cities-submissions.rs"
 
 [[bin]]
-name = "get-submissions"
-path = "src/submissions/get-submissions.rs"
+name = "post-cities-submissions"
+path = "src/cities-submissions/post-cities-submissions.rs"
 
 [[bin]]
-name = "post-submissions"
-path = "src/submissions/post-submissions.rs"
+name = "post-bnas-enqueue"
+path = "src/bnas-enqueue/post-bnas-enqueue.rs"
 
 [[bin]]
-name = "post-enqueue-city"
-path = "src/enqueue/post-city.rs"
+name = "get-bnas-results"
+path = "src/bnas-results/get-bnas-results.rs"
 
 [dev-dependencies]
 color-eyre = "0.6.2"
