@@ -32,7 +32,9 @@ impl IntoActiveModel<submission::ActiveModel> for Submission {
             region: ActiveValue::Set(self.region),
             fips_code: ActiveValue::Set(self.fips_code),
             consent: ActiveValue::Set(self.consent),
-            status: ActiveValue::Set(self.status),
+            status: self
+                .status
+                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s)),
         }
     }
 }
@@ -53,7 +55,7 @@ mod tests {
         let region = Some("texas".to_string());
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = Some(ApprovalStatus::Pending);
+        let status = None;
         let wrapper = Submission {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -80,7 +82,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::Set(status),
+            status: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
     }
@@ -97,7 +99,7 @@ mod tests {
         let region = None;
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = Some(ApprovalStatus::Pending);
+        let status = Some(ApprovalStatus::Approved);
         let wrapper = Submission {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -124,7 +126,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::Set(status),
+            status: ActiveValue::Set(ApprovalStatus::Approved),
         };
         assert_eq!(active_model, expected);
     }
