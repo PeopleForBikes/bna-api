@@ -2,16 +2,11 @@
 /// information about each of them.
 use color_eyre::{eyre::Report, Result};
 use dotenv::dotenv;
-use entity::recreation;
-use entity::{city, core_services, summary};
-use migration::Alias;
+use entity::{prelude::*, sea_orm_active_enums::ApprovalStatus};
 use once_cell::sync::OnceCell;
-use sea_orm::sea_query::Expr;
-use sea_orm::DbBackend;
-use sea_orm::FromQueryResult;
-use sea_orm::QueryTrait;
 use sea_orm::{
-    prelude::Uuid, Database, DatabaseConnection, EntityTrait, QuerySelect, RelationTrait,
+    prelude::Uuid, ActiveValue, Database, DatabaseConnection, DbBackend, EntityTrait,
+    FromQueryResult, QueryTrait,
 };
 
 static DATABASE_CONNECTION: OnceCell<DatabaseConnection> = OnceCell::new();
@@ -30,43 +25,62 @@ async fn main() -> Result<(), Report> {
     dotenv().ok();
 
     // Set the database connection.
-    let database_url = dotenv::var("DATABASE_URL")?;
-    let db = Database::connect(database_url).await?;
-    DATABASE_CONNECTION.set(db).unwrap();
-    let db = DATABASE_CONNECTION.get().unwrap();
-    let bna_uuid = Uuid::parse_str("18ca9450-2bfa-43a0-b8f3-2cd16952eba1").unwrap();
-    let summ: Option<BnaReport> = summary::Entity::find_by_id(bna_uuid)
-        .column(summary::Column::BnaUuid)
-        .column(summary::Column::CityId)
-        .column_as(core_services::Column::Score, "cs_score")
-        .column_as(recreation::Column::Score, "rec_score")
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            summary::Relation::CoreServices.def(),
-        )
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            summary::Relation::Infrastructure.def(),
-        )
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            summary::Relation::Recreation.def(),
-        )
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            summary::Relation::Opportunity.def(),
-        )
-        .join(
-            sea_orm::JoinType::InnerJoin,
-            summary::Relation::Features.def(),
-        )
-        // .build(DbBackend::Postgres)
-        // .to_string();
-        .into_model::<BnaReport>()
-        .one(db)
-        .await?;
+    // let database_url = dotenv::var("DATABASE_URL")?;
+    // let db = Database::connect(database_url).await?;
+    // DATABASE_CONNECTION.set(db).unwrap();
+    // let db = DATABASE_CONNECTION.get().unwrap();
+    // let bna_uuid = Uuid::parse_str("18ca9450-2bfa-43a0-b8f3-2cd16952eba1").unwrap();
+    // let summ: Option<BnaReport> = summary::Entity::find_by_id(bna_uuid)
+    //     .column(summary::Column::BnaUuid)
+    //     .column(summary::Column::CityId)
+    //     .column_as(core_services::Column::Score, "cs_score")
+    //     .column_as(recreation::Column::Score, "rec_score")
+    //     .join(
+    //         sea_orm::JoinType::InnerJoin,
+    //         summary::Relation::CoreServices.def(),
+    //     )
+    //     .join(
+    //         sea_orm::JoinType::InnerJoin,
+    //         summary::Relation::Infrastructure.def(),
+    //     )
+    //     .join(
+    //         sea_orm::JoinType::InnerJoin,
+    //         summary::Relation::Recreation.def(),
+    //     )
+    //     .join(
+    //         sea_orm::JoinType::InnerJoin,
+    //         summary::Relation::Opportunity.def(),
+    //     )
+    //     .join(
+    //         sea_orm::JoinType::InnerJoin,
+    //         summary::Relation::Features.def(),
+    //     )
+    //     .build(DbBackend::Postgres)
+    //     .to_string();
+    // .into_model::<BnaReport>()
+    // .one(db)
+    // .await?;
+    // dbg!(summ);
 
-    dbg!(summ);
+    let submission_model = entity::submission::ActiveModel {
+        id: ActiveValue::NotSet,
+        first_name: ActiveValue::Set("Floyd".to_string()),
+        last_name: ActiveValue::Set("Martin".to_string()),
+        title: ActiveValue::Set(None),
+        organization: ActiveValue::Set(Some("organization".to_string())),
+        email: ActiveValue::Set("floyd.martin@organization.com".to_string()),
+        country: ActiveValue::Set("usa".to_string()),
+        city: ActiveValue::Set("Provincetown".to_string()),
+        region: ActiveValue::Set(Some("Massachussets".to_string())),
+        fips_code: ActiveValue::Set("1234567".to_string()),
+        consent: ActiveValue::Set(true),
+        status: ActiveValue::NotSet,
+    };
+    let res = Submission::insert(submission_model)
+        .build(DbBackend::Postgres)
+        .to_string();
+    dbg!(res);
+
     Ok(())
 }
 

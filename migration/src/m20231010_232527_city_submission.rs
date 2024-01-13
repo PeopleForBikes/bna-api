@@ -48,6 +48,7 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(Submission::Status)
                             .enumeration(ApprovalStatus::Table, ApprovalStatus::iter().skip(1))
+                            .not_null()
                             .default(ApprovalStatus::Pending.to_string()),
                     )
                     .to_owned(),

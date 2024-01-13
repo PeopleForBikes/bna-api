@@ -19,7 +19,7 @@ pub struct Model {
     pub region: Option<String>,
     pub fips_code: String,
     pub consent: bool,
-    pub status: Option<ApprovalStatus>,
+    pub status: ApprovalStatus,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
