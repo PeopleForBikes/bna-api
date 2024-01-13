@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Submission {
+    pub id: Option<i32>,
     pub first_name: String,
     pub last_name: String,
     pub title: Option<String>,
@@ -21,7 +22,7 @@ pub struct Submission {
 impl IntoActiveModel<submission::ActiveModel> for Submission {
     fn into_active_model(self) -> submission::ActiveModel {
         submission::ActiveModel {
-            id: ActiveValue::NotSet,
+            id: self.id.map_or(ActiveValue::NotSet, ActiveValue::Set),
             first_name: ActiveValue::Set(self.first_name),
             last_name: ActiveValue::Set(self.last_name),
             title: ActiveValue::Set(self.title),
@@ -32,9 +33,7 @@ impl IntoActiveModel<submission::ActiveModel> for Submission {
             region: ActiveValue::Set(self.region),
             fips_code: ActiveValue::Set(self.fips_code),
             consent: ActiveValue::Set(self.consent),
-            status: self
-                .status
-                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s)),
+            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }
@@ -57,6 +56,7 @@ mod tests {
         let consent = true;
         let status = None;
         let wrapper = Submission {
+            id: None,
             first_name: first_name.clone(),
             last_name: last_name.clone(),
             title: title.clone(),
@@ -101,6 +101,7 @@ mod tests {
         let consent = true;
         let status = Some(ApprovalStatus::Approved);
         let wrapper = Submission {
+            id: None,
             first_name: first_name.clone(),
             last_name: last_name.clone(),
             title: title.clone(),
