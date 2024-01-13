@@ -20,7 +20,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let body_str = std::str::from_utf8(body).expect("invalid utf-8 sequence");
     info!(body_str);
     let wrapper = match serde_json::from_str::<wrappers::Submission>(body_str) {
-        Ok(model) => model,
+        Ok(wrapper) => wrapper,
         Err(e) => {
             let api_error = APIError::new(
                 apigw_request_id,
@@ -33,16 +33,29 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         }
     };
 
-    // Turn the model wrapper into an active model and unset the primary key.
+    // Turn the model wrapper into an active model.
     let active_submission = wrapper.into_active_model();
-    info!(
-        "inserting Submission into database: {:?}",
-        active_submission
-    );
 
-    // Insert the submission into the database.
-    let res = Submission::insert(active_submission).exec(&db).await?;
-    Ok(json!(res.last_insert_id).into_response().await)
+    // And insert a new entry or update an existing one.
+    if active_submission.id.is_not_set() {
+        info!(
+            "inserting Submission into database: {:?}",
+            active_submission
+        );
+
+        // Insert the Submission into the database.
+        let res = Submission::insert(active_submission).exec(&db).await?;
+        Ok(json!(res.last_insert_id).into_response().await)
+    } else {
+        info!(
+            "updating Submission {:?} into database: {:?}",
+            active_submission.id, active_submission
+        );
+
+        // Update the Submission entryq.
+        let res = Submission::update(active_submission).exec(&db).await?;
+        Ok(json!(res.id).into_response().await)
+    }
 }
 
 #[tokio::main]
