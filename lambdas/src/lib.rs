@@ -1,10 +1,13 @@
 pub mod link_header;
 
 use bnacore::aws::get_aws_secrets_value;
-use lambda_http::{http::StatusCode, Body, Error, Request, RequestExt, Response};
+use effortless::{
+    error::{APIError, APIErrors},
+    fragment::get_apigw_request_id,
+};
+use lambda_http::{Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
-use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::env;
 use tracing::{debug, error};
 
@@ -87,17 +90,6 @@ pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
     };
 
     Ok((page_size, page))
-}
-
-// Returns the Api Gateway Request ID from an ApiGatewayV2 event.
-//
-// If there is no request ID or the event is not coming from an ApiGatewayV2, the
-// function returns None.
-pub fn get_apigw_request_id(event: &Request) -> Option<String> {
-    match event.request_context() {
-        lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
-        _ => None,
-    }
 }
 
 /// Builds a paginated Response.
@@ -282,148 +274,6 @@ macro_rules! nomstr {
     };
 }
 
-/// An object containing references to the primary source of the error.
-///
-/// It SHOULD include one of the following members or be omitted:
-///
-///   - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
-///     value in the request document that caused the error [e.g. "/data" for a primary
-///     data object, or "/data/attributes/title" for a specific attribute].
-///     This MUST point to a value in the request document that exists; if it doesn’t,
-///     the client SHOULD simply ignore the pointer.
-///   - parameter: a string indicating which URI query parameter caused the error.
-///   - header: a string indicating the name of a single request header which caused the
-///     error.
-#[derive(Deserialize, Serialize, Clone)]
-pub enum APIErrorSource {
-    Pointer(String),
-    Parameter(String),
-    Header(String),
-}
-
-/// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
-#[derive(Deserialize, Serialize, Clone)]
-pub struct APIError {
-    id: Option<String>,
-    // Cannot use http_serde 2.0.0 until lambda_http upgraded the http crate to 1.0.0.
-    #[serde(with = "http_serde::status_code")]
-    status: StatusCode,
-    title: String,
-    details: String,
-    source: APIErrorSource,
-}
-
-impl APIError {
-    /// Creates a new `APIError`.
-    pub fn new(
-        id: Option<String>,
-        status: StatusCode,
-        title: String,
-        details: String,
-        source: APIErrorSource,
-    ) -> Self {
-        Self {
-            id,
-            status,
-            title,
-            details,
-            source,
-        }
-    }
-
-    /// Creates a new `APIError` based off a query parameter error.
-    pub fn with_parameter(id: Option<String>, parameter: &str, message: &str) -> Self {
-        Self {
-            id,
-            status: StatusCode::BAD_REQUEST,
-            title: String::from("Invalid Query Parameter"),
-            source: APIErrorSource::Parameter(parameter.into()),
-            details: message.into(),
-        }
-    }
-
-    /// Creates a new `APIError` based off an invalid attribute.
-    pub fn with_pointer(id: Option<String>, pointer: &str, message: &str) -> Self {
-        Self {
-            id,
-            status: StatusCode::BAD_REQUEST,
-            title: String::from("Invalid Attribute"),
-            source: APIErrorSource::Pointer(pointer.into()),
-            details: message.into(),
-        }
-    }
-
-    // Creates a new `APIError` for internal errors.
-    pub fn internal_error(id: Option<String>, title: &str, details: &str, source: &str) -> Self {
-        Self {
-            id,
-            status: StatusCode::INTERNAL_SERVER_ERROR,
-            source: APIErrorSource::Pointer(source.into()),
-            title: title.into(),
-            details: details.into(),
-        }
-    }
-
-    /// Creates a new `APIError` for database issues.
-    pub fn db_error(id: Option<String>, source: &str, message: &str) -> Self {
-        APIError::internal_error(id, "Database error", message, source)
-    }
-
-    /// Creates a new `APIError` for no-content issues.
-    pub fn no_content(id: Option<String>, source: &str, message: &str) -> Self {
-        Self {
-            id,
-            status: StatusCode::NOT_FOUND,
-            title: String::from("Content Not Found"),
-            source: APIErrorSource::Pointer(source.into()),
-            details: message.into(),
-        }
-    }
-}
-
-impl From<APIError> for Response<Body> {
-    fn from(value: APIError) -> Self {
-        Response::builder()
-            .status(value.status)
-            .body(json!(value).to_string().into())
-            .unwrap()
-    }
-}
-
-/// Error objects MUST be returned as an array keyed by errors in the top level of a
-/// JSON:API document.
-#[derive(Deserialize, Serialize)]
-pub struct APIErrors {
-    errors: Vec<APIError>,
-}
-
-impl APIErrors {
-    /// Creates a new `APIErrors`.
-    pub fn new(errors: &[APIError]) -> Self {
-        Self {
-            errors: errors.to_vec(),
-        }
-    }
-}
-
-impl From<APIErrors> for Response<Body> {
-    /// Converts this object to a `Response<Body>`.
-    ///
-    /// If there is only one error returned, the Response status code will be the same
-    /// as the one of the error. Otherwise it will be set to [StatusCode::BAD_REQUEST].
-    fn from(value: APIErrors) -> Self {
-        let status = if value.errors.len() == 1 {
-            value.errors.first().unwrap().status
-        } else {
-            StatusCode::BAD_REQUEST
-        };
-        Response::builder()
-            .status(status)
-            .body(json!(value).to_string().into())
-            .unwrap()
-    }
-}
-
 pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnection> {
     debug!("Connecting to the database...");
     match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
@@ -444,7 +294,9 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lambda_http::request::from_str;
+    use effortless::api::{parse_path_parameter, parse_request_body};
+    use entity::wrappers::Submission;
+    use lambda_http::{http::StatusCode, request::from_str, RequestExt};
     use std::collections::HashMap;
 
     #[test]
@@ -542,5 +394,40 @@ mod tests {
         };
         let api_error: APIErrors = serde_json::from_str(message).unwrap();
         assert_eq!(api_error.errors.len(), 1)
+    }
+
+    #[test]
+    fn test_parse_path_parameter() {
+        let event = Request::default()
+            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]));
+        let p = parse_path_parameter::<i32>(&event, "id");
+        assert_eq!(p.unwrap(), Some(1));
+    }
+
+    #[test]
+    fn test_apigw_parse_path_parameter() {
+        let event = Request::default()
+            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+            ));
+        let id_param = parse_path_parameter::<i32>(&event, "id").unwrap();
+        assert_eq!(id_param, Some(1));
+    }
+
+    #[test]
+    fn test_parse_request_body() {
+        let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into());
+        let submission = parse_request_body::<Submission>(&event).unwrap();
+        assert_eq!(submission.country, "usa")
+    }
+
+    #[test]
+    fn test_apigw_parse_request_body() {
+        let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into()).with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+          lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+      ));
+        let submission = parse_request_body::<Submission>(&event).unwrap();
+        assert_eq!(submission.country, "usa")
     }
 }
