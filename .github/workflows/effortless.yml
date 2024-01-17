@@ -1,15 +1,14 @@
-name: lambdas
+name: effortless
 
 defaults:
   run:
-    working-directory: lambdas
+    working-directory: effortless
 
 on:
   pull_request:
     paths:
-      - ".github/workflows/lambdas.yml"
-      - "lambdas/**"
-      - "!lambdas/requests.rest"
+      - ".github/workflows/effortless.yml"
+      - "effortless/**"
     types:
       - opened
       - synchronize
@@ -27,7 +26,6 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy -- -D warnings
       - run: cargo check
-      - run: cargo doc --no-deps
 
   test:
     runs-on: ubuntu-latest
@@ -44,6 +42,4 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Install cargo lambda
-        run: pip install cargo-lambda
-      - run: cargo lambda build
+      - run: cargo build

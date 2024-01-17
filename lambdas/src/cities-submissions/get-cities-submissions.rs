@@ -1,10 +1,12 @@
 use dotenv::dotenv;
-use entity::{prelude::*, sea_orm_active_enums::ApprovalStatus};
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, RequestExt, Response};
-use lambdas::{
-    api_database_connect, build_paginated_response, get_apigw_request_id, pagination_parameters,
-    APIError, APIErrors,
+use effortless::{
+    api::{entry_not_found, parse_path_parameter, parse_query_string_parameter},
+    error::{APIError, APIErrors},
+    fragment::get_apigw_request_id,
 };
+use entity::{prelude::*, wrappers};
+use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 use serde_json::json;
 use tracing::debug;
@@ -24,69 +26,48 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    // Retrieve the API Gateway request ID if any.
-    let apigw_request_id = get_apigw_request_id(&event);
-
     // Filter the query if needed.
     let mut conditions = Condition::all();
-    let query_strings = event.query_string_parameters();
 
     // Retrieve the status parameter if available.
     let query_param_key = "status";
-    let status_str = query_strings.first(query_param_key);
-    if let Some(status) = status_str {
-        match serde_plain::from_str::<ApprovalStatus>(status) {
-            Ok(status) => {
-                conditions = conditions.add(entity::submission::Column::Status.eq(status))
+    match parse_query_string_parameter::<wrappers::ApprovalStatus>(&event, query_param_key) {
+        Ok(status) => match status {
+            Some(status) => {
+                let s: entity::sea_orm_active_enums::ApprovalStatus = status.into();
+                conditions = conditions.add(entity::submission::Column::Status.eq(s))
             }
-            Err(e) => {
+            None => {
                 let api_error = APIError::with_parameter(
-                    apigw_request_id,
+                    get_apigw_request_id(&event),
                     query_param_key,
-                    format!("{query_param_key} is not a valid status: {e}").as_str(),
+                    format!("{query_param_key} parameter not found").as_str(),
                 );
                 return Ok(APIErrors::new(&[api_error]).into());
             }
-        }
+        },
+        Err(e) => return Ok(e.into()),
     }
+
+    // Retrieve the ID of the Submission to get if any.
+    let submission_id = match parse_path_parameter::<i32>(&event, "id") {
+        Ok(value) => value,
+        Err(e) => return Ok(e.into()),
+    };
 
     // Retrieve all submissions or a specific one.
     debug!("Processing the requests...");
-    let param_key = "submission_id";
-    match event.path_parameters().first(param_key) {
-        Some(submission_id_str) => {
-            let submission_id = submission_id_str.parse::<i32>();
-            match submission_id {
-                Ok(submission_id) => {
-                    let model = Submission::find_by_id(submission_id)
-                        .filter(conditions)
-                        .one(&db)
-                        .await?;
-                    let res: Response<Body> = match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => {
-                            let api_error = APIError::no_content(
-                                apigw_request_id,
-                                event.uri().path().to_string().as_str(),
-                                format!(
-                                    "submission entry with the id {submission_id} was not found"
-                                )
-                                .as_str(),
-                            );
-                            APIErrors::new(&[api_error]).into()
-                        }
-                    };
-                    Ok(res)
-                }
-                Err(e) => {
-                    let api_error = APIError::with_parameter(
-                        apigw_request_id,
-                        param_key,
-                        format!("{submission_id_str} is not a valid id: {e}").as_str(),
-                    );
-                    Ok(APIErrors::new(&[api_error]).into())
-                }
-            }
+    let res = match submission_id {
+        Some(id) => {
+            let model = Submission::find_by_id(id)
+                .filter(conditions)
+                .one(&db)
+                .await?;
+            let res: Response<Body> = match model {
+                Some(model) => json!(model).into_response().await,
+                None => entry_not_found(&event).into(),
+            };
+            res
         }
         None => {
             let query = Submission::find()
@@ -101,16 +82,18 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                 }
                 Err(e) => {
                     let api_error = APIError::with_pointer(
-                        apigw_request_id,
+                        get_apigw_request_id(&event),
                         event.uri().path().to_string().as_str(),
                         e.to_string().as_str(),
                     );
                     APIErrors::new(&[api_error]).into()
                 }
             };
-            Ok(res)
+            res
         }
-    }
+    };
+
+    Ok(res)
 }
 
 #[tokio::main]
