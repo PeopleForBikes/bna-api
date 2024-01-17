@@ -41,6 +41,7 @@ jobs:
           get-cities
           get-cities-bnas
           get-cities-submissions
+          patch-cities-submissions
           post-bnas-enqueue
           post-cities-submissions"
           echo $LAMBDAS \
