@@ -2,10 +2,10 @@ use aws_config::BehaviorVersion;
 use aws_sdk_sqs::{self};
 use bnacore::aws::get_aws_parameter;
 use dotenv::dotenv;
+use effortless::{api::parse_request_body, error::APIError, fragment::get_apigw_request_id};
 use lambda_http::{
     http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, Response,
 };
-use lambdas::{get_apigw_request_id, APIError, APIErrorSource, APIErrors};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -20,22 +20,10 @@ pub struct EnqueueCity {
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Extract and serialize the data.
-    let apigw_request_id = get_apigw_request_id(&event);
-    let body = event.body();
-    let body_str = std::str::from_utf8(body).expect("invalid utf-8 sequence");
-    let enqueued_city = match serde_json::from_str::<EnqueueCity>(body_str) {
-        Ok(data) => data,
-        Err(e) => {
-            let api_error = APIError::new(
-                apigw_request_id,
-                StatusCode::BAD_REQUEST,
-                String::from("Invalid data"),
-                format!("The following submission is invalid: {body_str}. {e}"),
-                APIErrorSource::Pointer(event.uri().path().to_string()),
-            );
-            return Ok(APIErrors::new(&[api_error]).into());
-        }
+    // Extract and deserialize the data.
+    let enqueued_city = match parse_request_body::<EnqueueCity>(&event) {
+        Ok(value) => value,
+        Err(e) => return Ok(e.into()),
     };
 
     // Prepare the AWS client.
@@ -54,13 +42,13 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(message) => message,
         Err(e) => {
             let api_error = APIError::new(
-                apigw_request_id,
+                get_apigw_request_id(&event),
                 StatusCode::BAD_REQUEST,
-                String::from("Invalid data"),
-                format!("cannot enqueue the message: {e}"),
-                APIErrorSource::Pointer(event.uri().path().to_string()),
+                "SQS Client Error",
+                format!("cannot enqueue the message: {e}").as_str(),
+                None,
             );
-            return Ok(APIErrors::new(&[api_error]).into());
+            return Ok(api_error.into());
         }
     };
 

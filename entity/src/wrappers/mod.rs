@@ -1,4 +1,6 @@
-use crate::entities::sea_orm_active_enums::ApprovalStatus;
+use std::str::FromStr;
+
+use crate::entities::sea_orm_active_enums;
 use crate::entities::submission;
 use sea_orm::{ActiveValue, IntoActiveModel};
 use serde::{Deserialize, Serialize};
@@ -16,7 +18,7 @@ pub struct Submission {
     pub region: Option<String>,
     pub fips_code: String,
     pub consent: bool,
-    pub status: Option<ApprovalStatus>,
+    pub status: Option<sea_orm_active_enums::ApprovalStatus>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for Submission {
@@ -35,6 +37,41 @@ impl IntoActiveModel<submission::ActiveModel> for Submission {
             consent: ActiveValue::Set(self.consent),
             status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum ApprovalStatus {
+    Approved,
+    Pending,
+    Rejected,
+}
+
+impl From<sea_orm_active_enums::ApprovalStatus> for ApprovalStatus {
+    fn from(value: sea_orm_active_enums::ApprovalStatus) -> Self {
+        match value {
+            sea_orm_active_enums::ApprovalStatus::Approved => Self::Approved,
+            sea_orm_active_enums::ApprovalStatus::Rejected => Self::Rejected,
+            sea_orm_active_enums::ApprovalStatus::Pending => Self::Pending,
+        }
+    }
+}
+
+impl From<ApprovalStatus> for sea_orm_active_enums::ApprovalStatus {
+    fn from(val: ApprovalStatus) -> Self {
+        match val {
+            ApprovalStatus::Approved => sea_orm_active_enums::ApprovalStatus::Approved,
+            ApprovalStatus::Rejected => sea_orm_active_enums::ApprovalStatus::Rejected,
+            ApprovalStatus::Pending => sea_orm_active_enums::ApprovalStatus::Pending,
+        }
+    }
+}
+
+impl FromStr for ApprovalStatus {
+    type Err = serde_plain::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        serde_plain::from_str::<Self>(s)
     }
 }
 
@@ -99,7 +136,7 @@ mod tests {
         let region = None;
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = Some(ApprovalStatus::Approved);
+        let status = Some(sea_orm_active_enums::ApprovalStatus::Approved);
         let wrapper = Submission {
             id: None,
             first_name: first_name.clone(),
@@ -127,7 +164,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::Set(ApprovalStatus::Approved),
+            status: ActiveValue::Set(sea_orm_active_enums::ApprovalStatus::Approved),
         };
         assert_eq!(active_model, expected);
     }

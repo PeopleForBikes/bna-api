@@ -1,7 +1,9 @@
 use aws_config::BehaviorVersion;
 use dotenv::dotenv;
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{get_apigw_request_id, APIError, APIErrors};
+use effortless::{error::APIError, fragment::get_apigw_request_id};
+use lambda_http::{
+    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, Response,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
@@ -14,9 +16,6 @@ pub struct BNAResults {
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
-
-    // Get the API Gateway request ID.
-    let apigw_request_id = get_apigw_request_id(&event);
 
     // Configure the AWS S3 client.
     let aws_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
@@ -36,12 +35,14 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Ok(json!(bna_results).into_response().await)
         }
         Err(e) => {
-            let api_error = APIError::no_content(
-                apigw_request_id,
-                event.uri().path(),
+            let api_error = APIError::new(
+                get_apigw_request_id(&event),
+                StatusCode::BAD_REQUEST,
+                "S3 Client Error",
                 format!("Cannot retrieve the content of the {BUCKET_NAME} bucket: {e}").as_str(),
+                None,
             );
-            Ok(APIErrors::new(&[api_error]).into())
+            Ok(api_error.into())
         }
     }
 }
