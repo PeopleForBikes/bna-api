@@ -10,10 +10,11 @@ members = ["lambdas", "entity", "migration", "effortless"]
 [workspace.dependencies]
 color-eyre = "0.6.2"
 chrono = "0.4.24"
+dotenv = "0.15.0"
 entity = { path = "entity" }
 futures = "0.3.21"
-http-serde = "1.1.3"
-lambda_http = "0.8"
+http-serde = "2.0.0"
+lambda_http = "0.9.1"
 migration = { path = "migration" }
 once_cell = "1.17.1"
 sea-orm = { version = "0.12.1", features = [
@@ -30,6 +31,7 @@ tokio = { version = "1", features = ["full"] }
 [dependencies]
 color-eyre = { workspace = true }
 chrono = { workspace = true }
+dotenv = { workspace = true }
 entity = { workspace = true }
 futures = { workspace = true }
 http-serde = { workspace = true }
@@ -44,6 +46,5 @@ tokio = { workspace = true }
 
 [dev-dependencies]
 csv = "1.2.1"
-dotenv = "0.15.0"
 itertools = "0.12.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "81c1c7f" }

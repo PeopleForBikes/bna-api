@@ -9,24 +9,20 @@ aws-sdk-s3 = "1.5.0"
 aws-sdk-sqs = "1.3.0"
 aws_lambda_events = "0.13.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "f1d9115" }
-dotenv = "0.15.0"
+dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
-http-serde = "2.0.0"
-lambda_http = "0.8"
+http-serde = { workspace = true }
+lambda_http = { workspace = true }
 lambda_runtime = "0.9"
 nom = "7.1.3"
-once_cell = "1.17.1"
+once_cell = { workspace = true }
 reqwest = { version = "0.11.22", features = [
   "json",
   "native-tls-vendored",
   "rustls",
 ] }
-sea-orm = { version = "0.12.1", features = [
-  "sqlx-postgres",
-  "runtime-tokio-rustls",
-  "macros",
-] }
+sea-orm = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_plain = { workspace = true }
