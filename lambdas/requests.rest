@@ -29,17 +29,22 @@ GET {{host}}/cities/{{city_id}}/bnas
 
 ###
 # Query all the submissions.
-GET https://api.peopleforbikes.xyz/cities/submissions
+GET {{host}}/cities/submissions
 content-type: application/json
 
 ###
 # Query all the pending submissions.
-GET https://api.peopleforbikes.xyz/cities/submissions?status=Pending
+GET {{host}}/cities/submissions?status=Pending
 content-type: application/json
 
 ###
-# Submit a new submission.
-POST https://api.peopleforbikes.xyz/cities/submissions
+# Query a specific submission.
+GET {{host}}/cities/submissions/1
+content-type: application/json
+
+###
+# Create a new submission.
+POST {{host}}/cities/submissions
 content-type: application/json
 
 {
@@ -98,7 +103,7 @@ X-Amz-Target: AWSCognitoIdentityProviderService.RespondToAuthChallenge
 
 ###
 # Enqueue a new city to be analyzed.
-POST https://api.peopleforbikes.xyz/cities/enqueue
+POST {{host}}/cities/enqueue
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
@@ -111,29 +116,50 @@ Authorization: Bearer {{cognito_access}}
 
 ###
 # Collect the list of analysis that completed.
-GET https://api.peopleforbikes.xyz/bnas/results
+GET {{host}}/bnas/results
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 ###
-# Bellow this point are the tests from schemathesis.
-###
+# Update a specific submission.
+PATCH  {{host}}/cities/submissions/1
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
 
-GET https://api.peopleforbikes.xyz/bnas/1
+{
+  "city": "santa rosa",
+  "country": "usa",
+  "email": "jane.dpe@orgllc.com",
+  "fips_code": "3570670",
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "organization": "Organization LLC",
+  "region": "new mexico",
+  "title": "CTO",
+  "consent": true,
+  "status": "Accepted"
+}
+
+
+################################################################################
+# Bellow this point are the tests from schemathesis.
+################################################################################
+
+GET {{host}}/bnas/1
 X-Schemathesis-TestCaseId: 3bf4a72a4cc04ed589c5eedaf57b3ca2
 
 ###
-GET https://api.peopleforbikes.xyz/bnas/0/city
+GET {{host}}/bnas/0/city
 X-Schemathesis-TestCaseId: 9fa24d92de444fd28180df72fa1fabd6
 
 ###
-GET https://api.peopleforbikes.xyz/cities
+GET {{host}}/cities
 X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
 
 ###
-GET https://api.peopleforbikes.xyz/cities/0
+GET {{host}}/cities/0
 X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
 
 ###
-GET https://api.peopleforbikes.xyz/cities/0/bnas
+GET {{host}}/cities/0/bnas
 X-Schemathesis-TestCaseId: 1f951094a7f14597bb50cafc52b812e0
