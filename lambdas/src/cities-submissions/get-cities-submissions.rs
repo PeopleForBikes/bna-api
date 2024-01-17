@@ -32,20 +32,12 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Retrieve the status parameter if available.
     let query_param_key = "status";
     match parse_query_string_parameter::<wrappers::ApprovalStatus>(&event, query_param_key) {
-        Ok(status) => match status {
-            Some(status) => {
+        Ok(status) => {
+            if let Some(status) = status {
                 let s: entity::sea_orm_active_enums::ApprovalStatus = status.into();
                 conditions = conditions.add(entity::submission::Column::Status.eq(s))
             }
-            None => {
-                let api_error = APIError::with_parameter(
-                    get_apigw_request_id(&event),
-                    query_param_key,
-                    format!("{query_param_key} parameter not found").as_str(),
-                );
-                return Ok(APIErrors::new(&[api_error]).into());
-            }
-        },
+        }
         Err(e) => return Ok(e.into()),
     }
 
