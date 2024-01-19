@@ -138,7 +138,7 @@ pub fn entry_not_found(event: &Request) -> APIError {
     )
 }
 
-/// Create an APIError indicating that a parameter was missing.
+/// Create an APIError from an API Gateway event, indicating that a parameter was missing.
 pub fn missing_parameter(event: &Request, parameter: &str) -> APIError {
     APIError::new(
         get_apigw_request_id(event),
@@ -149,5 +149,30 @@ pub fn missing_parameter(event: &Request, parameter: &str) -> APIError {
             .uri()
             .path_and_query()
             .map(|p| APIErrorSource::Parameter(p.to_string())),
+    )
+}
+
+/// Create an APIError from an API Gateway event, representing an internal error.
+pub fn internal_error(event: &Request, details: &str) -> APIError {
+    APIError::new(
+        get_apigw_request_id(event),
+        StatusCode::INTERNAL_SERVER_ERROR,
+        "Internal Server Error",
+        details,
+        event
+            .uri()
+            .path_and_query()
+            .map(|p| APIErrorSource::Parameter(p.to_string())),
+    )
+}
+
+/// Create an APIError from an API Gateway event, representing an invalid body issue.
+pub fn invalid_body(event: &Request, details: &str) -> APIError {
+    APIError::new(
+        get_apigw_request_id(event),
+        StatusCode::BAD_REQUEST,
+        "Invalid Body",
+        details,
+        None,
     )
 }
