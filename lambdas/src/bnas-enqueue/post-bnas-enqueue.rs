@@ -1,13 +1,11 @@
 use aws_config::BehaviorVersion;
-use aws_sdk_sqs::{self};
 use bnacore::aws::get_aws_parameter;
 use dotenv::dotenv;
-use effortless::{api::parse_request_body, error::APIError, fragment::get_apigw_request_id};
-use lambda_http::{
-    http::StatusCode, run, service_fn, Body, Error, IntoResponse, Request, Response,
-};
+use effortless::api::{internal_error, invalid_body, parse_request_body};
+use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tracing::info;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct EnqueueCity {
@@ -25,34 +23,40 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
+    let enqueued_city_string = match serde_json::to_string(&enqueued_city) {
+        Ok(s) => s,
+        Err(e) => return Ok(invalid_body(&event, e.to_string().as_str()).into()),
+    };
 
     // Prepare the AWS client.
     let aws_config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let sqs_client = aws_sdk_sqs::Client::new(&aws_config);
-    let bna_sqs_queue = get_aws_parameter("BNA_SQS_QUEUE_URL").await?;
-
-    // Enqueue the message.
-    let _send_message = match sqs_client
-        .send_message()
-        .queue_url(bna_sqs_queue)
-        .message_body(serde_json::to_string(&enqueued_city)?)
-        .send()
-        .await
-    {
-        Ok(message) => message,
+    let bna_sqs_queue = match get_aws_parameter("BNA_SQS_QUEUE_URL").await {
+        Ok(param) => param,
         Err(e) => {
-            let api_error = APIError::new(
-                get_apigw_request_id(&event),
-                StatusCode::BAD_REQUEST,
-                "SQS Client Error",
-                format!("cannot enqueue the message: {e}").as_str(),
-                None,
-            );
-            return Ok(api_error.into());
+            let message = format!("cannot retrieve the SQS Queue URL: {e}");
+            info!(message);
+            return Ok(internal_error(&event, &message).into());
         }
     };
 
-    Ok(json!(enqueued_city).into_response().await)
+    // Enqueue the message.
+    let send_message = sqs_client
+        .send_message()
+        .queue_url(bna_sqs_queue)
+        .message_body(enqueued_city_string)
+        .send()
+        .await;
+
+    // Return the message ID or the error message.
+    match send_message {
+        Ok(output) => Ok(json!(output.message_id).into_response().await),
+        Err(e) => {
+            let message = format!("cannot send the message to the SQS queue: {e}");
+            info!(message);
+            Ok(internal_error(&event, &message).into())
+        }
+    }
 }
 
 #[tokio::main]
