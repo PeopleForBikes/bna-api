@@ -13,11 +13,12 @@ use tracing::info;
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Retrieve the model to update.
+    // Prepare the model to update.
     let active_submission = match prepare_active_model(&event) {
         Ok(submission) => submission,
         Err(e) => return Ok(e.into()),
     };
+
     info!(
         "updating Submission {:?} into database: {:?}",
         active_submission.id, active_submission
@@ -47,25 +48,15 @@ async fn main() -> Result<(), Error> {
 pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
     // Retrieve the ID of the Submission to update.
     let parameter = "id";
-    let submission_id = match parse_path_parameter::<i32>(event, parameter) {
-        Ok(value) => match value {
-            Some(v) => v,
-            None => {
-                return Err(missing_parameter(event, parameter).into());
-            }
-        },
-        Err(e) => return Err(e),
-    };
+    let submission_id = parse_path_parameter::<i32>(event, parameter)?
+        .ok_or(missing_parameter(event, parameter))?;
 
     // Extract and deserialize the data.
-    let wrapper = match parse_request_body::<wrappers::Submission>(event) {
-        Ok(value) => value,
-        Err(e) => return Err(e),
-    };
+    let wrapper = parse_request_body::<wrappers::SubmissionPatch>(event)?;
 
     // Turn the wrapper into an active model.
     let mut active_submission = wrapper.into_active_model();
-    active_submission.id = ActiveValue::Set(submission_id);
+    active_submission.id = ActiveValue::Unchanged(submission_id);
     Ok(active_submission)
 }
 
