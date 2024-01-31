@@ -11,7 +11,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Extract and serialize the data.
-    let wrapper = match parse_request_body::<wrappers::Submission>(&event) {
+    let wrapper = match parse_request_body::<wrappers::SubmissionPost>(&event) {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };

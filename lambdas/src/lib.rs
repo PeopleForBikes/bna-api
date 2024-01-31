@@ -295,7 +295,7 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
 mod tests {
     use super::*;
     use effortless::api::{parse_path_parameter, parse_request_body};
-    use entity::wrappers::Submission;
+    use entity::wrappers::SubmissionPost;
     use lambda_http::{http::StatusCode, request::from_str, RequestExt};
     use std::collections::HashMap;
 
@@ -418,7 +418,7 @@ mod tests {
     #[test]
     fn test_parse_request_body() {
         let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into());
-        let submission = parse_request_body::<Submission>(&event).unwrap();
+        let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
         assert_eq!(submission.country, "usa")
     }
 
@@ -427,7 +427,7 @@ mod tests {
         let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into()).with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
           lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
       ));
-        let submission = parse_request_body::<Submission>(&event).unwrap();
+        let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
         assert_eq!(submission.country, "usa")
     }
 }
