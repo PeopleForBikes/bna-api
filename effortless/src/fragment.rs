@@ -1,4 +1,4 @@
-use lambda_http::{aws_lambda_events::query_map::QueryMap, Request, RequestExt};
+use lambda_http::{aws_lambda_events::query_map::QueryMap, http, Request, RequestExt};
 use serde::Deserialize;
 use std::str::FromStr;
 
@@ -6,16 +6,11 @@ fn parse_parameter<T>(qm: &QueryMap, parameter: &str) -> Option<Result<T, <T as 
 where
     T: FromStr,
 {
-    match qm.first(parameter) {
-        Some(parameter_str) => {
-            let parsed_parameter = parameter_str.parse::<T>();
-            match parsed_parameter {
-                Ok(param) => Some(Ok(param)),
-                Err(e) => Some(Err(e)),
-            }
-        }
-        None => None,
-    }
+    qm.first(parameter)
+        .map(|parameter_str| match parameter_str.parse::<T>() {
+            Ok(param) => Some(Ok(param)),
+            Err(e) => Some(Err(e)),
+        })?
 }
 
 /// Parse the first matching path parameter into the provided type.
@@ -102,5 +97,75 @@ pub fn get_apigw_request_id(event: &Request) -> Option<String> {
     match event.request_context() {
         lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
         _ => None,
+    }
+}
+
+/// Attempt to create an extension trait for [`lambda_http::Request`].
+pub trait BnaRequestExt {
+    /// Return the first matching parameter from the QueryMap, deserialized into its type T, if it exists.
+    fn parse_parameter<T>(qm: &QueryMap, parameter: &str) -> Option<Result<T, <T as FromStr>::Err>>
+    where
+        T: FromStr,
+    {
+        qm.first(parameter)
+            .map(|parameter_str| match parameter_str.parse::<T>() {
+                Ok(param) => Some(Ok(param)),
+                Err(e) => Some(Err(e)),
+            })?
+    }
+
+    /// Return the first matching path parameter if it exists.
+    fn first_path_parameter(&self, parameter: &str) -> Option<String>;
+
+    /// Return the first matching query string parameter if it exists.
+    fn first_query_string_parameter(&self, parameter: &str) -> Option<String>;
+
+    /// Return the first matching path parameter deserialized into its type T, if it exists.
+    fn path_parameter<T>(&self, parameter: &str) -> Option<Result<T, T::Err>>
+    where
+        T: FromStr;
+
+    /// Return the first matching path parameter deserialized into its type T, if it exists.
+    fn query_string_parameter<T>(&self, parameter: &str) -> Option<Result<T, T::Err>>
+    where
+        T: FromStr;
+
+    /// Returns the Api Gateway Request ID from an ApiGatewayV2 event.
+    ///
+    /// If there is no request ID or the event is not coming from an ApiGatewayV2, the
+    /// function returns None.
+    fn apigw_request_id(&self) -> Option<String>;
+}
+
+impl<B> BnaRequestExt for http::Request<B> {
+    fn first_path_parameter(&self, parameter: &str) -> Option<String> {
+        self.path_parameters().first(parameter).map(String::from)
+    }
+
+    fn first_query_string_parameter(&self, parameter: &str) -> Option<String> {
+        self.query_string_parameters()
+            .first(parameter)
+            .map(String::from)
+    }
+
+    fn path_parameter<T>(&self, parameter: &str) -> Option<Result<T, <T as FromStr>::Err>>
+    where
+        T: FromStr,
+    {
+        Self::parse_parameter::<T>(&self.path_parameters(), parameter)
+    }
+
+    fn query_string_parameter<T>(&self, parameter: &str) -> Option<Result<T, <T as FromStr>::Err>>
+    where
+        T: FromStr,
+    {
+        Self::parse_parameter::<T>(&self.query_string_parameters(), parameter)
+    }
+
+    fn apigw_request_id(&self) -> Option<String> {
+        match self.request_context() {
+            lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
+            _ => None,
+        }
     }
 }

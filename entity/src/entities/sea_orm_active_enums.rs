@@ -13,3 +13,17 @@ pub enum ApprovalStatus {
     #[sea_orm(string_value = "Rejected")]
     Rejected,
 }
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "brokenspoke_state")]
+pub enum BrokenspokeState {
+    #[sea_orm(string_value = "analysis")]
+    Analysis,
+    #[sea_orm(string_value = "export")]
+    Export,
+    #[sea_orm(string_value = "pipeline")]
+    Pipeline,
+    #[sea_orm(string_value = "setup")]
+    Setup,
+    #[sea_orm(string_value = "sqs_message")]
+    SqsMessage,
+}

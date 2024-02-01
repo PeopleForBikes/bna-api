@@ -2,8 +2,8 @@ use crate::{
     error::{APIError, APIErrorSource, APIErrors},
     fragment::{self, get_apigw_request_id},
 };
-use lambda_http::{http::StatusCode, Request};
-use serde::Deserialize;
+use lambda_http::{http::StatusCode, Request, RequestPayloadExt};
+use serde::de::DeserializeOwned;
 use std::{fmt::Display, str::FromStr};
 
 /// Parse the first path parameter found in the API Gateway request, into the provided type.
@@ -87,7 +87,7 @@ where
 ///
 /// ```rust
 /// use effortless::api::parse_request_body;
-/// use lambda_http::{Request, RequestExt};
+/// use lambda_http::{http::{self, StatusCode}, Body, Request, RequestExt};
 ///
 /// use serde::Deserialize;
 ///
@@ -97,31 +97,22 @@ where
 ///   pub last_name: String
 /// }
 ///
-/// let event = Request::new("{\n  \"first_name\": \"Rosa\",\n  \"last_name\": \"Maria\"\n}".into())
-///   .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-///     lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-/// ));
+/// let event = http::Request::builder()
+///   .header(http::header::CONTENT_TYPE, "application/json")
+///   .body(Body::from(r#"{"first_name": "Rosa","last_name": "Maria"}"#))
+///   .expect("failed to build request");
 /// let person = parse_request_body::<Person>(&event).unwrap();
 /// assert_eq!(person.first_name, "Rosa");
 /// assert_eq!(person.last_name, "Maria");
 /// ```
 pub fn parse_request_body<T>(event: &Request) -> Result<T, APIErrors>
 where
-    T: for<'a> Deserialize<'a>,
+    T: DeserializeOwned,
 {
-    match fragment::parse_request_body::<T>(event) {
-        Ok(o) => Ok(o),
-        Err(e) => {
-            let api_error = APIError::new(
-                get_apigw_request_id(event),
-                StatusCode::BAD_REQUEST,
-                "Invalid Body",
-                e.to_string().as_str(),
-                None,
-            );
-            Err(APIErrors::new(&[api_error]))
-        }
-    }
+    let payload = event
+        .payload::<T>()
+        .map_err(|e| invalid_body(event, e.to_string().as_str()))?;
+    Ok(payload.ok_or_else(|| invalid_body(event, "No request body was provided."))?)
 }
 
 /// Create an APIError representing an item not found error.
@@ -174,5 +165,14 @@ pub fn invalid_body(event: &Request, details: &str) -> APIError {
         "Invalid Body",
         details,
         None,
+    )
+}
+
+/// Create and APIError from and API Gateway event, representing a parameter issue.
+pub fn invalid_path_parameter(event: &Request, parameter: &str, details: &str) -> APIError {
+    APIError::with_pointer(
+        get_apigw_request_id(event),
+        parameter,
+        format!("invalid path parameter `{parameter}`: {details}").as_str(),
     )
 }

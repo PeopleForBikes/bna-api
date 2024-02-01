@@ -294,6 +294,7 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
 #[cfg(test)]
 mod tests {
     use super::*;
+    use aws_lambda_events::http;
     use effortless::api::{parse_path_parameter, parse_request_body};
     use entity::wrappers::SubmissionPost;
     use lambda_http::{http::StatusCode, request::from_str, RequestExt};
@@ -417,16 +418,20 @@ mod tests {
 
     #[test]
     fn test_parse_request_body() {
-        let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into());
+        let event = http::Request::builder()
+            .header(http::header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
+            .expect("failed to build request");
         let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
         assert_eq!(submission.country, "usa")
     }
 
     #[test]
     fn test_apigw_parse_request_body() {
-        let event = Request::new("{\n  \"city\": \"santa rosa\",\n  \"country\": \"usa\",\n  \"email\": \"jane.dpe@orgllc.com\",\n  \"fips_code\": \"3570670\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Doe\",\n  \"organization\": \"Organization LLC\",\n  \"region\": \"new mexico\",\n  \"title\": \"CTO\",\n  \"consent\": true\n}".into()).with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-          lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-      ));
+        let event = http::Request::builder()
+      .header(http::header::CONTENT_TYPE, "application/json")
+      .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
+      .expect("failed to build request");
         let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
         assert_eq!(submission.country, "usa")
     }

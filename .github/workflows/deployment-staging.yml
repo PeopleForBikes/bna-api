@@ -36,12 +36,15 @@ jobs:
       - name: Deploy lambdas
         run: |
           LAMBDAS="get-bnas
+          get-bnas-analysis
           get-bnas-cities
           get-bnas-results
           get-cities
           get-cities-bnas
           get-cities-submissions
+          patch-bnas-analysis
           patch-cities-submissions
+          post-bnas-analysis
           post-bnas-enqueue
           post-cities-submissions"
           echo $LAMBDAS \
