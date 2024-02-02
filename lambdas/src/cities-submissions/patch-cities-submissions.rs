@@ -14,21 +14,21 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Prepare the model to update.
-    let active_submission = match prepare_active_model(&event) {
-        Ok(submission) => submission,
+    let active_model = match prepare_active_model(&event) {
+        Ok(model) => model,
         Err(e) => return Ok(e.into()),
     };
 
     info!(
         "updating Submission {:?} into database: {:?}",
-        active_submission.id, active_submission
+        active_model.id, active_model
     );
 
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
-    // Update the Submission entry.
-    let res = Submission::update(active_submission).exec(&db).await?;
+    // Update the entry.
+    let res = Submission::update(active_model).exec(&db).await?;
     Ok(json!(res.id).into_response().await)
 }
 
@@ -63,15 +63,18 @@ pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use aws_lambda_events::http;
     use lambda_http::RequestExt;
     use std::collections::HashMap;
 
     #[test]
     fn test_prepare_active_model() {
-        let event = Request::new("{\"city\":\"santa rosa\",\"consent\":true,\"country\":\"usa\",\"email\":\"jane.dpe@orgllc.com\",\"fips_code\":\"3570670\",\"first_name\":\"Jane\",\"id\":1,\"last_name\":\"Doe\",\"organization\":\"Organization LLC\",\"region\":\"new mexico\",\"status\":\"Approved\",\"title\":\"CTO\"}"
-        .into()).with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())])).with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-        lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-    ));
+        let event = http::Request::builder()
+            .header(http::header::CONTENT_TYPE, "application/json")
+            .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
+            .expect("failed to build request")
+            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default()));
         let active_submission = prepare_active_model(&event).unwrap();
         assert_eq!(
             active_submission.country,

@@ -187,3 +187,31 @@ Ref: bna.summary.bna_uuid - bna.opportunity.bna_uuid
 Ref: bna.summary.bna_uuid - bna.recreation.bna_uuid
 Ref: bna.summary.bna_uuid - bna.infrastructure.bna_uuid
 Ref: bna.summary.bna_uuid - bna.features.bna_uuid
+
+enum brokenspoke_status {
+  pending
+  started
+  complete
+}
+
+enum brokenspoke_state {
+  pipeline
+  sqs_message
+  setup
+  analysis
+  export
+}
+
+Table bna.brokenspoke_pipeline {
+  brokenspoke_pipeline_id int [pk, increment]
+  state brokenspoke_state
+  state_machine_id uuid
+  sqs_message json
+  neon_branch_id varchar(50)
+  fargate_task_id uuid
+  s3_bucket varchar(50)
+
+  indexes {
+    broken_spoke_pipeline_id
+  }
+}

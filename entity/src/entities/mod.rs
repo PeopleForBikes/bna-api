@@ -2,6 +2,7 @@
 
 pub mod prelude;
 
+pub mod brokenspoke_pipeline;
 pub mod census;
 pub mod city;
 pub mod core_services;

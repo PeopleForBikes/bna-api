@@ -1,8 +1,10 @@
 use std::str::FromStr;
 
-use crate::entities::sea_orm_active_enums;
-use crate::entities::submission;
-use sea_orm::{ActiveValue, IntoActiveModel};
+use crate::entities::{brokenspoke_pipeline, sea_orm_active_enums, submission};
+use sea_orm::{
+    prelude::{Json, Uuid},
+    ActiveValue, IntoActiveModel,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -39,9 +41,50 @@ impl FromStr for ApprovalStatus {
         serde_plain::from_str::<Self>(s)
     }
 }
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BrokenspokeState {
+    Analysis,
+    Export,
+    Pipeline,
+    Setup,
+    SqsMessage,
+}
+
+impl From<sea_orm_active_enums::BrokenspokeState> for BrokenspokeState {
+    fn from(value: sea_orm_active_enums::BrokenspokeState) -> Self {
+        match value {
+            sea_orm_active_enums::BrokenspokeState::Analysis => Self::Analysis,
+            sea_orm_active_enums::BrokenspokeState::Export => Self::Export,
+            sea_orm_active_enums::BrokenspokeState::Pipeline => Self::Pipeline,
+            sea_orm_active_enums::BrokenspokeState::Setup => Self::Setup,
+            sea_orm_active_enums::BrokenspokeState::SqsMessage => Self::SqsMessage,
+        }
+    }
+}
+
+impl From<BrokenspokeState> for sea_orm_active_enums::BrokenspokeState {
+    fn from(val: BrokenspokeState) -> Self {
+        match val {
+            BrokenspokeState::Analysis => sea_orm_active_enums::BrokenspokeState::Analysis,
+            BrokenspokeState::Export => sea_orm_active_enums::BrokenspokeState::Export,
+            BrokenspokeState::Pipeline => sea_orm_active_enums::BrokenspokeState::Pipeline,
+            BrokenspokeState::Setup => sea_orm_active_enums::BrokenspokeState::Setup,
+            BrokenspokeState::SqsMessage => sea_orm_active_enums::BrokenspokeState::SqsMessage,
+        }
+    }
+}
+
+impl FromStr for BrokenspokeState {
+    type Err = serde_plain::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        serde_plain::from_str::<Self>(s)
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SubmissionPost {
-    pub id: Option<i32>,
     pub first_name: String,
     pub last_name: String,
     pub title: Option<String>,
@@ -58,7 +101,7 @@ pub struct SubmissionPost {
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
     fn into_active_model(self) -> submission::ActiveModel {
         submission::ActiveModel {
-            id: self.id.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(self.first_name),
             last_name: ActiveValue::Set(self.last_name),
             title: ActiveValue::Set(self.title),
@@ -76,7 +119,6 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SubmissionPatch {
-    pub id: Option<i32>,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
     pub title: Option<Option<String>>,
@@ -93,7 +135,7 @@ pub struct SubmissionPatch {
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
     fn into_active_model(self) -> submission::ActiveModel {
         submission::ActiveModel {
-            id: self.id.map_or(ActiveValue::NotSet, ActiveValue::Unchanged),
+            id: ActiveValue::NotSet,
             first_name: self
                 .first_name
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
@@ -109,6 +151,62 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
             fips_code: self.fips_code.map_or(ActiveValue::NotSet, ActiveValue::Set),
             consent: self.consent.map_or(ActiveValue::NotSet, ActiveValue::Set),
             status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BrokenspokePipelinePost {
+    pub state: Option<sea_orm_active_enums::BrokenspokeState>,
+    pub state_machine_id: Option<String>,
+    pub sqs_message: Option<Json>,
+    pub neon_branch_id: Option<String>,
+    pub fargate_task_id: Option<Uuid>,
+    pub s3_bucket: Option<String>,
+}
+
+impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
+    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
+        brokenspoke_pipeline::ActiveModel {
+            id: ActiveValue::NotSet,
+            state: ActiveValue::Set(self.state),
+            state_machine_id: ActiveValue::Set(self.state_machine_id),
+            sqs_message: ActiveValue::Set(self.sqs_message),
+            neon_branch_id: ActiveValue::Set(self.neon_branch_id),
+            fargate_task_id: ActiveValue::Set(self.fargate_task_id),
+            s3_bucket: ActiveValue::Set(self.s3_bucket),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BrokenspokePipelinePatch {
+    pub state: Option<Option<sea_orm_active_enums::BrokenspokeState>>,
+    pub state_machine_id: Option<Option<String>>,
+    pub sqs_message: Option<Option<Json>>,
+    pub neon_branch_id: Option<Option<String>>,
+    pub fargate_task_id: Option<Option<Uuid>>,
+    pub s3_bucket: Option<Option<String>>,
+}
+
+impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
+    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
+        brokenspoke_pipeline::ActiveModel {
+            id: ActiveValue::NotSet,
+            state: self.state.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            state_machine_id: self
+                .state_machine_id
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            sqs_message: self
+                .sqs_message
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            neon_branch_id: self
+                .neon_branch_id
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            fargate_task_id: self
+                .fargate_task_id
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            s3_bucket: self.s3_bucket.map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }
@@ -131,7 +229,6 @@ mod tests {
         let consent = true;
         let status = None;
         let wrapper = SubmissionPost {
-            id: None,
             first_name: first_name.clone(),
             last_name: last_name.clone(),
             title: title.clone(),
@@ -176,7 +273,6 @@ mod tests {
         let consent = true;
         let status = Some(sea_orm_active_enums::ApprovalStatus::Approved);
         let wrapper = SubmissionPost {
-            id: None,
             first_name: first_name.clone(),
             last_name: last_name.clone(),
             title: title.clone(),
@@ -212,7 +308,6 @@ mod tests {
         let id = 42;
         let first_name = "John".to_string();
         let wrapper = SubmissionPatch {
-            id: Some(id),
             first_name: Some(first_name.clone()),
             last_name: None,
             title: None,
