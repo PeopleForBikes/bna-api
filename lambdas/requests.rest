@@ -30,17 +30,14 @@ GET {{host}}/cities/{{city_id}}/bnas
 ###
 # Query all the submissions.
 GET {{host}}/cities/submissions
-content-type: application/json
 
 ###
 # Query all the pending submissions.
 GET {{host}}/cities/submissions?status=Pending
-content-type: application/json
 
 ###
 # Query a specific submission.
 GET {{host}}/cities/submissions/1
-content-type: application/json
 
 ###
 # Create a new submission.
@@ -117,7 +114,6 @@ Authorization: Bearer {{cognito_access}}
 ###
 # Collect the list of analysis that completed.
 GET {{host}}/bnas/results
-content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 ###
@@ -138,6 +134,37 @@ Authorization: Bearer {{cognito_access}}
   "title": "CTO",
   "consent": true,
   "status": "Accepted"
+}
+
+### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
+GET {{host}}/bnas/analysis
+Authorization: Bearer {{cognito_access}}
+
+### Query a specific BNA analysis performed by the Brokenspoke-analyzer pipeline.
+GET {{host}}/bnas/analysis/1
+Authorization: Bearer {{cognito_access}}
+
+### Create a new BNA analysis performed by the Brokenspoke-analyzer pipeline.
+POST {{host}}/bnas/analysis
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+  "state": "Analysis",
+  "state_machine_id": "166680c0-4e74-409b-b095-ae45ae458f0a",
+  "sqs_message": "{\"city\": \"Valetta\", \"country\": \"Malta\"}",
+  "neon_branch_id": null,
+  "fargate_task_id": null,
+  "s3_bucket": null
+}
+
+### Update an existing BNA analysis performed by the Brokenspoke-analyzer pipeline.
+PATCH {{host}}/bnas/analysis/1
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+  "neon_branch_id": "br-aged-salad-637688"
 }
 
 
