@@ -158,7 +158,8 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrokenspokePipelinePost {
     pub state: Option<sea_orm_active_enums::BrokenspokeState>,
-    pub state_machine_id: Option<String>,
+    pub state_machine_id: Uuid,
+    pub scheduled_trigger_id: Option<Uuid>,
     pub sqs_message: Option<Json>,
     pub neon_branch_id: Option<String>,
     pub fargate_task_id: Option<Uuid>,
@@ -168,13 +169,13 @@ pub struct BrokenspokePipelinePost {
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
     fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
         brokenspoke_pipeline::ActiveModel {
-            id: ActiveValue::NotSet,
             state: ActiveValue::Set(self.state),
             state_machine_id: ActiveValue::Set(self.state_machine_id),
             sqs_message: ActiveValue::Set(self.sqs_message),
             neon_branch_id: ActiveValue::Set(self.neon_branch_id),
             fargate_task_id: ActiveValue::Set(self.fargate_task_id),
             s3_bucket: ActiveValue::Set(self.s3_bucket),
+            scheduled_trigger_id: ActiveValue::Set(self.scheduled_trigger_id),
         }
     }
 }
@@ -182,7 +183,8 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrokenspokePipelinePatch {
     pub state: Option<Option<sea_orm_active_enums::BrokenspokeState>>,
-    pub state_machine_id: Option<Option<String>>,
+    pub state_machine_id: Uuid,
+    pub scheduled_trigger_id: Option<Option<Uuid>>,
     pub sqs_message: Option<Option<Json>>,
     pub neon_branch_id: Option<Option<String>>,
     pub fargate_task_id: Option<Option<Uuid>>,
@@ -192,11 +194,8 @@ pub struct BrokenspokePipelinePatch {
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
     fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
         brokenspoke_pipeline::ActiveModel {
-            id: ActiveValue::NotSet,
             state: self.state.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            state_machine_id: self
-                .state_machine_id
-                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            state_machine_id: ActiveValue::Unchanged(self.state_machine_id),
             sqs_message: self
                 .sqs_message
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
@@ -207,6 +206,9 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
                 .fargate_task_id
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
             s3_bucket: self.s3_bucket.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            scheduled_trigger_id: self
+                .scheduled_trigger_id
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }

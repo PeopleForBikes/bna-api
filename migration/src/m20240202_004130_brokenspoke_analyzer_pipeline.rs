@@ -33,17 +33,20 @@ impl MigrationTrait for Migration {
                     .table(BrokenspokePipeline::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(BrokenspokePipeline::Id)
-                            .integer()
+                        ColumnDef::new(BrokenspokePipeline::StateMachineId)
+                            .uuid()
                             .not_null()
-                            .auto_increment()
                             .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(BrokenspokePipeline::ScheduledTriggerId)
+                            .uuid()
+                            .unique_key(),
                     )
                     .col(
                         ColumnDef::new(BrokenspokePipeline::State)
                             .enumeration(BrokenspokeState::Table, BrokenspokeState::iter().skip(1)),
                     )
-                    .col(ColumnDef::new(BrokenspokePipeline::StateMachineId).string())
                     .col(ColumnDef::new(BrokenspokePipeline::SqsMessage).json())
                     .col(ColumnDef::new(BrokenspokePipeline::NeonBranchId).string())
                     .col(ColumnDef::new(BrokenspokePipeline::FargateTaskId).uuid())
@@ -63,9 +66,9 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum BrokenspokePipeline {
     Table,
-    Id,
-    State,
     StateMachineId,
+    ScheduledTriggerId,
+    State,
     SqsMessage,
     NeonBranchId,
     FargateTaskId,

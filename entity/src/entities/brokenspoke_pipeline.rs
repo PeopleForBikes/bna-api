@@ -7,10 +7,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "brokenspoke_pipeline")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub state_machine_id: Uuid,
+    #[sea_orm(unique)]
+    pub scheduled_trigger_id: Option<Uuid>,
     pub state: Option<BrokenspokeState>,
-    pub state_machine_id: Option<String>,
     pub sqs_message: Option<Json>,
     pub neon_branch_id: Option<String>,
     pub fargate_task_id: Option<Uuid>,
