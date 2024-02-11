@@ -7,7 +7,7 @@ use effortless::{
 use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
-use sea_orm::{EntityTrait, PaginatorTrait};
+use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
 use tracing::debug;
 
@@ -22,7 +22,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Retrieve the ID of the entry to update.
     let parameter = "id";
-    let id = event.path_parameter::<i32>(parameter);
+    let id = event.path_parameter::<Uuid>(parameter);
 
     // Set the database connection.
     let db = match api_database_connect(&event).await {

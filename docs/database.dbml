@@ -203,15 +203,15 @@ enum brokenspoke_state {
 }
 
 Table bna.brokenspoke_pipeline {
-  brokenspoke_pipeline_id int [pk, increment]
+  state_machine_id uuid [pk]
+  scheduled_trigger_id uuid [unique]
   state brokenspoke_state
-  state_machine_id uuid
   sqs_message json
   neon_branch_id varchar(50)
   fargate_task_id uuid
   s3_bucket varchar(50)
 
   indexes {
-    broken_spoke_pipeline_id
+    state_machine_id
   }
 }

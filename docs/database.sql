@@ -1,6 +1,6 @@
 -- SQL dump generated using DBML (dbml-lang.org)
 -- Database: PostgreSQL
--- Generated at: 2024-01-08T03:21:17.522Z
+-- Generated at: 2024-02-11T19:57:43.906Z
 
 CREATE SCHEMA "bna";
 
@@ -14,6 +14,20 @@ CREATE TYPE "approval_status" AS ENUM (
   'pending',
   'approved',
   'rejected'
+);
+
+CREATE TYPE "brokenspoke_status" AS ENUM (
+  'pending',
+  'started',
+  'complete'
+);
+
+CREATE TYPE "brokenspoke_state" AS ENUM (
+  'pipeline',
+  'sqs_message',
+  'setup',
+  'analysis',
+  'export'
 );
 
 CREATE TABLE "bna"."summary" (
@@ -118,6 +132,16 @@ CREATE TABLE "bna"."submission" (
   "status" approval_status
 );
 
+CREATE TABLE "bna"."brokenspoke_pipeline" (
+  "state_machine_id" uuid PRIMARY KEY,
+  "scheduled_trigger_id" uuid UNIQUE,
+  "state" brokenspoke_state,
+  "sqs_message" json,
+  "neon_branch_id" varchar(50),
+  "fargate_task_id" uuid,
+  "s3_bucket" varchar(50)
+);
+
 CREATE INDEX ON "bna"."summary" ("bna_uuid");
 
 CREATE INDEX ON "bna"."summary" ("city_id");
@@ -151,6 +175,8 @@ CREATE INDEX ON "bna"."speed_limit" ("city_id");
 CREATE INDEX ON "bna"."speed_limit" ("speed_limit_id");
 
 CREATE INDEX ON "bna"."submission" ("submission_id");
+
+CREATE INDEX ON "bna"."brokenspoke_pipeline" ("state_machine_id");
 
 ALTER TABLE "bna"."summary" ADD FOREIGN KEY ("city_id") REFERENCES "bna"."city" ("city_id");
 
