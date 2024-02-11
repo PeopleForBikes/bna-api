@@ -136,7 +136,7 @@ Authorization: Bearer {{cognito_access}}
   "status": "Accepted"
 }
 
-@state_machine_id=166680c0-4e74-409b-b095-ae45ae458f0
+@state_machine_id=e6aade5a-b343-120b-dbaa-bd916cd99221
 
 ### Create a new BNA analysis performed by the Brokenspoke-analyzer pipeline.
 POST {{host}}/bnas/analysis

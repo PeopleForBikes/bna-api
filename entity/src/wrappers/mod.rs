@@ -183,7 +183,6 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BrokenspokePipelinePatch {
     pub state: Option<Option<sea_orm_active_enums::BrokenspokeState>>,
-    pub state_machine_id: Uuid,
     pub scheduled_trigger_id: Option<Option<Uuid>>,
     pub sqs_message: Option<Option<Json>>,
     pub neon_branch_id: Option<Option<String>>,
@@ -194,8 +193,8 @@ pub struct BrokenspokePipelinePatch {
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
     fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
         brokenspoke_pipeline::ActiveModel {
+            state_machine_id: ActiveValue::NotSet,
             state: self.state.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            state_machine_id: ActiveValue::Unchanged(self.state_machine_id),
             sqs_message: self
                 .sqs_message
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
