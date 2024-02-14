@@ -1,6 +1,6 @@
 use crate::entities::{brokenspoke_pipeline, sea_orm_active_enums, submission};
 use sea_orm::{
-    prelude::{DateTimeWithTimeZone, Json, Uuid},
+    prelude::{Json, TimeDateTimeWithTimeZone, Uuid},
     ActiveValue, IntoActiveModel,
 };
 use serde::{Deserialize, Serialize};
@@ -160,8 +160,8 @@ pub struct BrokenspokePipelinePost {
     pub neon_branch_id: Option<String>,
     pub fargate_task_arn: Option<String>,
     pub s3_bucket: Option<String>,
-    pub start_time: DateTimeWithTimeZone,
-    pub end_time: Option<DateTimeWithTimeZone>,
+    pub start_time: TimeDateTimeWithTimeZone,
+    pub end_time: Option<TimeDateTimeWithTimeZone>,
     pub torn_down: Option<bool>,
 }
 
@@ -190,8 +190,8 @@ pub struct BrokenspokePipelinePatch {
     pub neon_branch_id: Option<Option<String>>,
     pub fargate_task_arn: Option<Option<String>>,
     pub s3_bucket: Option<Option<String>>,
-    pub start_time: Option<Option<DateTimeWithTimeZone>>,
-    pub end_time: Option<Option<DateTimeWithTimeZone>>,
+    pub start_time: Option<Option<TimeDateTimeWithTimeZone>>,
+    pub end_time: Option<Option<TimeDateTimeWithTimeZone>>,
     pub torn_down: Option<Option<bool>>,
 }
 

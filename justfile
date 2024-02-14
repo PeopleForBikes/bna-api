@@ -35,7 +35,7 @@ lint-spellcheck:
 # Generate models
 db-generate-models:
     rm -fr  {{ entites }}
-    sea-orm-cli generate entity -o {{ entites }} --with-serde both
+    sea-orm-cli generate entity -o {{ entites }} --with-serde both --date-time-crate time
 
 
 # Apply migrations and seed the database.

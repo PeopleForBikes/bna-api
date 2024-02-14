@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub speed_limit_id: i32,
     pub city_id: Uuid,
-    pub created_at: Option<DateTimeWithTimeZone>,
+    pub created_at: Option<TimeDateTimeWithTimeZone>,
     pub residential: i32,
 }
 

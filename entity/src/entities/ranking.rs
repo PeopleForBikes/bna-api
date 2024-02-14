@@ -11,7 +11,7 @@ pub struct Model {
     pub city_id: Uuid,
     pub country: String,
     pub country_size: i32,
-    pub created_at: Option<DateTimeWithTimeZone>,
+    pub created_at: Option<TimeDateTimeWithTimeZone>,
     pub global: i32,
     pub size: i32,
     pub state: i32,
