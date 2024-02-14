@@ -14,8 +14,11 @@ pub struct Model {
     pub state: Option<BrokenspokeState>,
     pub sqs_message: Option<Json>,
     pub neon_branch_id: Option<String>,
-    pub fargate_task_id: Option<Uuid>,
+    pub fargate_task_arn: Option<String>,
     pub s3_bucket: Option<String>,
+    pub start_time: DateTimeWithTimeZone,
+    pub end_time: Option<DateTimeWithTimeZone>,
+    pub torn_down: Option<bool>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -49,8 +49,15 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(BrokenspokePipeline::SqsMessage).json())
                     .col(ColumnDef::new(BrokenspokePipeline::NeonBranchId).string())
-                    .col(ColumnDef::new(BrokenspokePipeline::FargateTaskId).uuid())
+                    .col(ColumnDef::new(BrokenspokePipeline::FargateTaskARN).string())
                     .col(ColumnDef::new(BrokenspokePipeline::S3Bucket).string())
+                    .col(
+                        ColumnDef::new(BrokenspokePipeline::StartTime)
+                            .timestamp_with_time_zone()
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(BrokenspokePipeline::EndTime).timestamp_with_time_zone())
+                    .col(ColumnDef::new(BrokenspokePipeline::TornDown).boolean())
                     .to_owned(),
             )
             .await
@@ -71,8 +78,11 @@ enum BrokenspokePipeline {
     State,
     SqsMessage,
     NeonBranchId,
-    FargateTaskId,
+    FargateTaskARN,
     S3Bucket,
+    StartTime,
+    EndTime,
+    TornDown,
 }
 
 #[derive(Iden, EnumIter)]
@@ -86,9 +96,8 @@ pub enum BrokenspokeStatus {
 #[derive(Iden, EnumIter)]
 pub enum BrokenspokeState {
     Table,
-    Pipeline,
     SqsMessage,
     Setup,
     Analysis,
-    Export,
+    Cleanup,
 }

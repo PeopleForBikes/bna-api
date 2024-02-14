@@ -1,11 +1,10 @@
-use std::str::FromStr;
-
 use crate::entities::{brokenspoke_pipeline, sea_orm_active_enums, submission};
 use sea_orm::{
-    prelude::{Json, Uuid},
+    prelude::{DateTimeWithTimeZone, Json, Uuid},
     ActiveValue, IntoActiveModel,
 };
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ApprovalStatus {
@@ -44,19 +43,17 @@ impl FromStr for ApprovalStatus {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BrokenspokeState {
-    Analysis,
-    Export,
-    Pipeline,
-    Setup,
     SqsMessage,
+    Setup,
+    Analysis,
+    Cleanup,
 }
 
 impl From<sea_orm_active_enums::BrokenspokeState> for BrokenspokeState {
     fn from(value: sea_orm_active_enums::BrokenspokeState) -> Self {
         match value {
             sea_orm_active_enums::BrokenspokeState::Analysis => Self::Analysis,
-            sea_orm_active_enums::BrokenspokeState::Export => Self::Export,
-            sea_orm_active_enums::BrokenspokeState::Pipeline => Self::Pipeline,
+            sea_orm_active_enums::BrokenspokeState::Cleanup => Self::Cleanup,
             sea_orm_active_enums::BrokenspokeState::Setup => Self::Setup,
             sea_orm_active_enums::BrokenspokeState::SqsMessage => Self::SqsMessage,
         }
@@ -67,8 +64,7 @@ impl From<BrokenspokeState> for sea_orm_active_enums::BrokenspokeState {
     fn from(val: BrokenspokeState) -> Self {
         match val {
             BrokenspokeState::Analysis => sea_orm_active_enums::BrokenspokeState::Analysis,
-            BrokenspokeState::Export => sea_orm_active_enums::BrokenspokeState::Export,
-            BrokenspokeState::Pipeline => sea_orm_active_enums::BrokenspokeState::Pipeline,
+            BrokenspokeState::Cleanup => sea_orm_active_enums::BrokenspokeState::Cleanup,
             BrokenspokeState::Setup => sea_orm_active_enums::BrokenspokeState::Setup,
             BrokenspokeState::SqsMessage => sea_orm_active_enums::BrokenspokeState::SqsMessage,
         }
@@ -162,8 +158,11 @@ pub struct BrokenspokePipelinePost {
     pub scheduled_trigger_id: Option<Uuid>,
     pub sqs_message: Option<Json>,
     pub neon_branch_id: Option<String>,
-    pub fargate_task_id: Option<Uuid>,
+    pub fargate_task_arn: Option<String>,
     pub s3_bucket: Option<String>,
+    pub start_time: DateTimeWithTimeZone,
+    pub end_time: Option<DateTimeWithTimeZone>,
+    pub torn_down: Option<bool>,
 }
 
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
@@ -173,9 +172,12 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             state_machine_id: ActiveValue::Set(self.state_machine_id),
             sqs_message: ActiveValue::Set(self.sqs_message),
             neon_branch_id: ActiveValue::Set(self.neon_branch_id),
-            fargate_task_id: ActiveValue::Set(self.fargate_task_id),
+            fargate_task_arn: ActiveValue::Set(self.fargate_task_arn),
             s3_bucket: ActiveValue::Set(self.s3_bucket),
             scheduled_trigger_id: ActiveValue::Set(self.scheduled_trigger_id),
+            start_time: ActiveValue::Set(self.start_time),
+            end_time: ActiveValue::Set(self.end_time),
+            torn_down: ActiveValue::Set(self.torn_down),
         }
     }
 }
@@ -186,8 +188,11 @@ pub struct BrokenspokePipelinePatch {
     pub scheduled_trigger_id: Option<Option<Uuid>>,
     pub sqs_message: Option<Option<Json>>,
     pub neon_branch_id: Option<Option<String>>,
-    pub fargate_task_id: Option<Option<Uuid>>,
+    pub fargate_task_arn: Option<Option<String>>,
     pub s3_bucket: Option<Option<String>>,
+    pub start_time: Option<Option<DateTimeWithTimeZone>>,
+    pub end_time: Option<Option<DateTimeWithTimeZone>>,
+    pub torn_down: Option<Option<bool>>,
 }
 
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
@@ -201,13 +206,16 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             neon_branch_id: self
                 .neon_branch_id
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
-            fargate_task_id: self
-                .fargate_task_id
+            fargate_task_arn: self
+                .fargate_task_arn
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
             s3_bucket: self.s3_bucket.map_or(ActiveValue::NotSet, ActiveValue::Set),
             scheduled_trigger_id: self
                 .scheduled_trigger_id
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            start_time: ActiveValue::NotSet,
+            end_time: self.end_time.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            torn_down: self.torn_down.map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }

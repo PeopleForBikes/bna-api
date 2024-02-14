@@ -18,10 +18,8 @@ pub enum ApprovalStatus {
 pub enum BrokenspokeState {
     #[sea_orm(string_value = "analysis")]
     Analysis,
-    #[sea_orm(string_value = "export")]
-    Export,
-    #[sea_orm(string_value = "pipeline")]
-    Pipeline,
+    #[sea_orm(string_value = "cleanup")]
+    Cleanup,
     #[sea_orm(string_value = "setup")]
     Setup,
     #[sea_orm(string_value = "sqs_message")]
