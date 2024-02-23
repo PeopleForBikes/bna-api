@@ -51,6 +51,12 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .default(ApprovalStatus::Pending.to_string()),
                     )
+                    .col(
+                        ColumnDef::new(Submission::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -80,6 +86,7 @@ enum Submission {
     FIPSCode,
     Consent,
     Status,
+    CreatedAt,
 }
 
 #[derive(Iden, EnumIter)]

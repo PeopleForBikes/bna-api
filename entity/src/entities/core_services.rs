@@ -8,20 +8,20 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub bna_uuid: Uuid,
-    #[sea_orm(column_type = "Double")]
-    pub dentists: f64,
-    #[sea_orm(column_type = "Double")]
-    pub doctors: f64,
-    #[sea_orm(column_type = "Double")]
-    pub grocery: f64,
-    #[sea_orm(column_type = "Double")]
-    pub hospitals: f64,
-    #[sea_orm(column_type = "Double")]
-    pub pharmacies: f64,
-    #[sea_orm(column_type = "Double")]
-    pub score: f64,
-    #[sea_orm(column_type = "Double")]
-    pub social_services: f64,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub dentists: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub doctors: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub grocery: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub hospitals: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub pharmacies: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub score: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub social_services: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -8,12 +8,12 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub bna_uuid: Uuid,
-    #[sea_orm(column_type = "Double")]
-    pub people: f64,
-    #[sea_orm(column_type = "Double")]
-    pub retail: f64,
-    #[sea_orm(column_type = "Double")]
-    pub transit: f64,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub people: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub retail: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub transit: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

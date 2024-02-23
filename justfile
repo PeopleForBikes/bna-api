@@ -52,6 +52,9 @@ db-migrate:
 # Drop the tables, apply the migrations, generate the models and seed the database.
 db-reset: db-fresh db-generate-models db-seed
 
+# Drop the table and seed the database.
+db-reseed: db-fresh db-seed
+
 # Seed the database from a City Ratings CSV file.
 db-seed:
     cargo run --example seeder
