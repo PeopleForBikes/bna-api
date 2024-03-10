@@ -41,5 +41,8 @@ async fn main() -> Result<(), Error> {
         .without_time()
         .init();
 
-    run(service_fn(function_handler)).await
+    run(service_fn(function_handler)).await.map_err(|e| {
+        info!("{e}");
+        e
+    })
 }
