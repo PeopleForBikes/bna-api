@@ -5,7 +5,7 @@ use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response}
 use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
-use tracing::debug;
+use tracing::{debug, info};
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
@@ -61,5 +61,8 @@ async fn main() -> Result<(), Error> {
         .without_time()
         .init();
 
-    run(service_fn(function_handler)).await
+    run(service_fn(function_handler)).await.map_err(|e| {
+        info!("{e}");
+        e
+    })
 }

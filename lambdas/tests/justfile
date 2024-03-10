@@ -23,6 +23,10 @@ openapi-export:
 test-staging-schemathesis:
   . {{ activate }} && st run openapi.yml --base-url https://api.peopleforbikes.xyz/
 
-# Run the integration tests against the stagging environment.
+# Run the integration tests against the staging environment.
 test-staging:
   hurl --variables-file staging.vars --test pagination.hurl bnas.hurl cities.hurl
+
+# Run the smoke tests against the staging environment.
+test-smoke-readonly-staging:
+  hurl --variables-file staging.vars --test smoke/public-readonly.hurl

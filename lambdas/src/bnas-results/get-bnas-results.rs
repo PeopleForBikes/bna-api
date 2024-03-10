@@ -6,6 +6,7 @@ use lambda_http::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
+use tracing::info;
 
 const BUCKET_NAME: &str = "brokenspoke-analyzer";
 
@@ -57,5 +58,8 @@ async fn main() -> Result<(), Error> {
         .without_time()
         .init();
 
-    run(service_fn(function_handler)).await
+    run(service_fn(function_handler)).await.map_err(|e| {
+        info!("{e}");
+        e
+    })
 }
