@@ -109,6 +109,7 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
             fips_code: ActiveValue::Set(self.fips_code),
             consent: ActiveValue::Set(self.consent),
             status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            created_at: ActiveValue::NotSet,
         }
     }
 }
@@ -147,6 +148,7 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
             fips_code: self.fips_code.map_or(ActiveValue::NotSet, ActiveValue::Set),
             consent: self.consent.map_or(ActiveValue::NotSet, ActiveValue::Set),
             status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            created_at: ActiveValue::NotSet,
         }
     }
 }
@@ -264,6 +266,7 @@ mod tests {
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
             status: ActiveValue::NotSet,
+            created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
     }
@@ -308,6 +311,7 @@ mod tests {
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
             status: ActiveValue::Set(sea_orm_active_enums::ApprovalStatus::Approved),
+            created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
     }
@@ -343,6 +347,7 @@ mod tests {
             fips_code: ActiveValue::NotSet,
             consent: ActiveValue::NotSet,
             status: ActiveValue::NotSet,
+            created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
     }

@@ -20,6 +20,7 @@ pub struct Model {
     pub fips_code: String,
     pub consent: bool,
     pub status: ApprovalStatus,
+    pub created_at: TimeDateTimeWithTimeZone,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -8,14 +8,14 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub bna_uuid: Uuid,
-    #[sea_orm(column_type = "Double")]
-    pub community_centers: f64,
-    #[sea_orm(column_type = "Double")]
-    pub parks: f64,
-    #[sea_orm(column_type = "Double")]
-    pub recreation_trails: f64,
-    #[sea_orm(column_type = "Double")]
-    pub score: f64,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub community_centers: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub parks: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub recreation_trails: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub score: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

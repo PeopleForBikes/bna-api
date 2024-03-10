@@ -1,3 +1,8 @@
+Project brokenspoke_analyzer {
+  database_type: 'PostgreSQL'
+  Note: 'Brokenspoke-analyzer schema'
+}
+
 TableGroup analysis {
   bna.summary
   bna.features
@@ -10,8 +15,8 @@ TableGroup analysis {
 TableGroup city {
   bna.city
   bna.census
-  bna.ranking
   bna.speed_limit
+  bna.state_speed_limit
 }
 
 enum size {
@@ -29,7 +34,7 @@ enum approval_status {
 Table bna.summary [headercolor: #82F0D3] {
   bna_uuid uuid [pk]
   city_id uuid
-  created_at date
+  created_at date [not null]
   score float
   version varchar(10)
 
@@ -102,13 +107,17 @@ Table bna.infrastructure [headercolor: #82F0D3] {
 
 Table bna.city [headercolor: #6B41A3] {
   city_id uuid [pk]
-  country varchar(50)
-  latitude float
-  longitude float
-  name varchar(50)
-  region varchar(50)
-  state varchar(50)
-  state_abbrev char(2)
+  country varchar(50) [not null]
+  latitude float [not null]
+  longitude float [not null]
+  name varchar(50) [not null]
+  region varchar(50) [not null]
+  state varchar(50) [not null]
+  state_abbrev varchar(4)
+  size int [not null]
+  speed_limit int
+  created_at date [not null]
+  updated_at date
 
   indexes {
     city_id
@@ -119,7 +128,7 @@ Table bna.city [headercolor: #6B41A3] {
 Table bna.census [headercolor: #6B41A3] {
   census_id int [pk, increment]
   city_id uuid
-  created_at date
+  created_at date [not null]
   fips_code char(7)
   pop_size size
   population int
@@ -131,31 +140,28 @@ Table bna.census [headercolor: #6B41A3] {
   }
 }
 
-Table bna.ranking [headercolor: #6B41A3] {
-  ranking_id int [pk, increment]
-  city_id uuid
-  country int
-  country_size int
-  created_at date
-  global int
-  size int
-  state int
-
-  indexes {
-    city_id
-    ranking_id
-  }
-}
-
 Table bna.speed_limit [headercolor: #6B41A3] {
   speed_limit_id int [pk, increment]
   city_id uuid
-  created_at date
+  created_at date [not null]
   residential int
 
   indexes {
-    city_id
     speed_limit_id
+    city_id
+  }
+}
+
+Table bna.state_speed_limit [headercolor: #6B41A3] {
+  state_abbrev char(2) [pk]
+  fips_code_state char(2) [not null, unique]
+  speed int [not null]
+  created_at date [not null]
+  updated_at date
+
+  indexes {
+    state_abbrev
+    fips_code_state
   }
 }
 
@@ -172,6 +178,7 @@ Table bna.submission {
   fipscode varchar(50)
   consent varchar(50)
   status approval_status
+  created_at date [not null]
 
   indexes {
     submission_id
@@ -180,7 +187,6 @@ Table bna.submission {
 
 Ref: bna.city.city_id < bna.summary.city_id
 Ref: bna.city.city_id < bna.census.city_id
-Ref: bna.city.city_id < bna.ranking.city_id
 Ref: bna.city.city_id < bna.speed_limit.city_id
 Ref: bna.summary.bna_uuid - bna.core_services.bna_uuid
 Ref: bna.summary.bna_uuid - bna.opportunity.bna_uuid
@@ -208,10 +214,15 @@ Table bna.brokenspoke_pipeline {
   state brokenspoke_state
   sqs_message json
   neon_branch_id varchar(50)
-  fargate_task_id uuid
+  fargate_task_arn varchar(50) [unique]
   s3_bucket varchar(50)
+  start_time date [not null]
+  end_time date
+  torndown bool
 
   indexes {
     state_machine_id
   }
 }
+
+

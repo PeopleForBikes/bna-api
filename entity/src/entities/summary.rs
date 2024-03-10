@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub bna_uuid: Uuid,
     pub city_id: Uuid,
-    pub created_at: Option<TimeDateTimeWithTimeZone>,
+    pub created_at: TimeDateTimeWithTimeZone,
     #[sea_orm(column_type = "Double")]
     pub score: f64,
     pub version: String,

@@ -16,15 +16,16 @@ pub struct Model {
     pub name: String,
     pub region: String,
     pub state: String,
-    pub state_abbrev: String,
+    pub state_abbrev: Option<String>,
+    pub speed_limit: Option<i32>,
+    pub created_at: TimeDateTimeWithTimeZone,
+    pub updated_at: Option<TimeDateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(has_many = "super::census::Entity")]
     Census,
-    #[sea_orm(has_many = "super::ranking::Entity")]
-    Ranking,
     #[sea_orm(has_many = "super::speed_limit::Entity")]
     SpeedLimit,
     #[sea_orm(has_many = "super::summary::Entity")]
@@ -34,12 +35,6 @@ pub enum Relation {
 impl Related<super::census::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Census.def()
-    }
-}
-
-impl Related<super::ranking::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Ranking.def()
     }
 }
 

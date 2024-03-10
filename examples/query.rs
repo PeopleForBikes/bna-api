@@ -2,22 +2,22 @@
 /// information about each of them.
 use color_eyre::{eyre::Report, Result};
 use dotenv::dotenv;
-use entity::{prelude::*, sea_orm_active_enums::ApprovalStatus};
+use entity::prelude::*;
 use once_cell::sync::OnceCell;
 use sea_orm::{
-    prelude::Uuid, ActiveValue, Database, DatabaseConnection, DbBackend, EntityTrait,
-    FromQueryResult, QueryTrait,
+    prelude::Uuid, ActiveValue, DatabaseConnection, DbBackend, EntityTrait, FromQueryResult,
+    QueryTrait,
 };
 
-static DATABASE_CONNECTION: OnceCell<DatabaseConnection> = OnceCell::new();
+static _DATABASE_CONNECTION: OnceCell<DatabaseConnection> = OnceCell::new();
 
 #[derive(Debug, FromQueryResult)]
 struct BnaReport {
-    bna_uuid: Uuid,
-    city_id: Uuid,
-    score: f64,
-    cs_score: f64,
-    rec_score: f64,
+    pub bna_uuid: Uuid,
+    pub city_id: Uuid,
+    pub score: f64,
+    pub cs_score: f64,
+    pub rec_score: f64,
 }
 
 #[tokio::main]
@@ -75,6 +75,7 @@ async fn main() -> Result<(), Report> {
         fips_code: ActiveValue::Set("1234567".to_string()),
         consent: ActiveValue::Set(true),
         status: ActiveValue::NotSet,
+        created_at: ActiveValue::NotSet,
     };
     let res = Submission::insert(submission_model)
         .build(DbBackend::Postgres)

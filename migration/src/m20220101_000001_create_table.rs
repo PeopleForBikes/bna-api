@@ -7,6 +7,34 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Create the StateSpeedLimit table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(StateSpeedLimit::Table)
+                    .col(
+                        ColumnDef::new(StateSpeedLimit::StateAbbrev)
+                            .char_len(2)
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(StateSpeedLimit::StateFIPSCode)
+                            .char_len(2)
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(StateSpeedLimit::Speed).integer().not_null())
+                    .col(
+                        ColumnDef::new(StateSpeedLimit::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(StateSpeedLimit::UpdatedAt).timestamp_with_time_zone())
+                    .primary_key(Index::create().col(StateSpeedLimit::StateAbbrev))
+                    .to_owned(),
+            )
+            .await?;
+
         // Create the city table.
         manager
             .create_table(
@@ -20,7 +48,15 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(City::Name).string().not_null())
                     .col(ColumnDef::new(City::Region).string().not_null())
                     .col(ColumnDef::new(City::State).string().not_null())
-                    .col(ColumnDef::new(City::StateAbbrev).string().not_null())
+                    .col(ColumnDef::new(City::StateAbbrev).string())
+                    .col(ColumnDef::new(City::SpeedLimit).integer())
+                    .col(
+                        ColumnDef::new(City::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
+                    .col(ColumnDef::new(City::UpdatedAt).timestamp_with_time_zone())
                     .to_owned(),
             )
             .await?;
@@ -55,7 +91,12 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(Census::CityId).uuid().not_null())
-                    .col(ColumnDef::new(Census::CreatedAt).timestamp_with_time_zone())
+                    .col(
+                        ColumnDef::new(Census::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Census::FIPSCode).string().not_null())
                     .col(ColumnDef::new(Census::PopSize).integer().not_null())
                     .col(ColumnDef::new(Census::Population).integer().not_null())
@@ -85,51 +126,6 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        // Create Ranking table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(Ranking::Table)
-                    .col(
-                        ColumnDef::new(Ranking::RankingId)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Ranking::CityId).uuid().not_null())
-                    .col(ColumnDef::new(Ranking::Country).string().not_null())
-                    .col(ColumnDef::new(Ranking::CountrySize).integer().not_null())
-                    .col(ColumnDef::new(Ranking::CreatedAt).timestamp_with_time_zone())
-                    .col(ColumnDef::new(Ranking::Global).integer().not_null())
-                    .col(ColumnDef::new(Ranking::Size).integer().not_null())
-                    .col(ColumnDef::new(Ranking::State).integer().not_null())
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from(Ranking::Table, Ranking::CityId)
-                            .to(City::Table, City::CityId)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(Ranking::Table)
-                    .col(Ranking::RankingId)
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(Ranking::Table)
-                    .col(Ranking::CityId)
-                    .to_owned(),
-            )
-            .await?;
-
         // Create the speed limit table.
         manager
             .create_table(
@@ -143,7 +139,12 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(SpeedLimit::CityId).uuid().not_null())
-                    .col(ColumnDef::new(SpeedLimit::CreatedAt).timestamp_with_time_zone())
+                    .col(
+                        ColumnDef::new(SpeedLimit::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(SpeedLimit::Residential).integer().not_null())
                     .foreign_key(
                         ForeignKey::create()
@@ -178,7 +179,12 @@ impl MigrationTrait for Migration {
                     .table(Summary::Table)
                     .col(ColumnDef::new(Summary::BNAUuid).uuid().not_null())
                     .col(ColumnDef::new(Summary::CityId).uuid().not_null())
-                    .col(ColumnDef::new(Summary::CreatedAt).timestamp_with_time_zone())
+                    .col(
+                        ColumnDef::new(Summary::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .default(Expr::current_timestamp())
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Summary::Score).double().not_null())
                     .col(ColumnDef::new(Summary::Version).string().not_null())
                     .primary_key(Index::create().col(Summary::BNAUuid))
@@ -198,9 +204,9 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Features::Table)
                     .col(ColumnDef::new(Features::BNAUuid).uuid().not_null())
-                    .col(ColumnDef::new(Features::People).double().not_null())
-                    .col(ColumnDef::new(Features::Retail).double().not_null())
-                    .col(ColumnDef::new(Features::Transit).double().not_null())
+                    .col(ColumnDef::new(Features::People).double())
+                    .col(ColumnDef::new(Features::Retail).double())
+                    .col(ColumnDef::new(Features::Transit).double())
                     .primary_key(Index::create().col(Features::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -217,18 +223,14 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CoreServices::Table)
-                    .col(ColumnDef::new(CoreServices::BNAUuid).uuid().not_null())
-                    .col(ColumnDef::new(CoreServices::Dentists).double().not_null())
-                    .col(ColumnDef::new(CoreServices::Doctors).double().not_null())
-                    .col(ColumnDef::new(CoreServices::Grocery).double().not_null())
-                    .col(ColumnDef::new(CoreServices::Hospitals).double().not_null())
-                    .col(ColumnDef::new(CoreServices::Pharmacies).double().not_null())
-                    .col(ColumnDef::new(CoreServices::Score).double().not_null())
-                    .col(
-                        ColumnDef::new(CoreServices::SocialServices)
-                            .double()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(CoreServices::BNAUuid).uuid())
+                    .col(ColumnDef::new(CoreServices::Dentists).double())
+                    .col(ColumnDef::new(CoreServices::Doctors).double())
+                    .col(ColumnDef::new(CoreServices::Grocery).double())
+                    .col(ColumnDef::new(CoreServices::Hospitals).double())
+                    .col(ColumnDef::new(CoreServices::Pharmacies).double())
+                    .col(ColumnDef::new(CoreServices::Score).double())
+                    .col(ColumnDef::new(CoreServices::SocialServices).double())
                     .primary_key(Index::create().col(CoreServices::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -246,23 +248,11 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Opportunity::Table)
                     .col(ColumnDef::new(Opportunity::BNAUuid).uuid().not_null())
-                    .col(ColumnDef::new(Opportunity::Employment).double().not_null())
-                    .col(
-                        ColumnDef::new(Opportunity::HigherEducation)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Opportunity::K12Education)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Opportunity::Score).double().not_null())
-                    .col(
-                        ColumnDef::new(Opportunity::TechnicalVocationalCollege)
-                            .double()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Opportunity::Employment).double())
+                    .col(ColumnDef::new(Opportunity::HigherEducation).double())
+                    .col(ColumnDef::new(Opportunity::K12Education).double())
+                    .col(ColumnDef::new(Opportunity::Score).double())
+                    .col(ColumnDef::new(Opportunity::TechnicalVocationalCollege).double())
                     .primary_key(Index::create().col(Opportunity::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -280,18 +270,10 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Recreation::Table)
                     .col(ColumnDef::new(Recreation::BNAUuid).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Recreation::CommunityCenters)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Recreation::Parks).double().not_null())
-                    .col(
-                        ColumnDef::new(Recreation::RecreationTrails)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Recreation::Score).double().not_null())
+                    .col(ColumnDef::new(Recreation::CommunityCenters).double())
+                    .col(ColumnDef::new(Recreation::Parks).double())
+                    .col(ColumnDef::new(Recreation::RecreationTrails).double())
+                    .col(ColumnDef::new(Recreation::Score).double())
                     .primary_key(Index::create().col(Recreation::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -309,16 +291,8 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Infrastructure::Table)
                     .col(ColumnDef::new(Infrastructure::BNAUuid).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Infrastructure::LowStressMiles)
-                            .double()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(Infrastructure::HighStressMiles)
-                            .double()
-                            .not_null(),
-                    )
+                    .col(ColumnDef::new(Infrastructure::LowStressMiles).double())
+                    .col(ColumnDef::new(Infrastructure::HighStressMiles).double())
                     .primary_key(Index::create().col(Infrastructure::BNAUuid))
                     .foreign_key(
                         ForeignKey::create()
@@ -341,9 +315,6 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(Census::Table).to_owned())
             .await?;
         manager
-            .drop_table(Table::drop().table(Ranking::Table).to_owned())
-            .await?;
-        manager
             .drop_table(Table::drop().table(SpeedLimit::Table).to_owned())
             .await?;
         manager
@@ -363,6 +334,9 @@ impl MigrationTrait for Migration {
             .await?;
         manager
             .drop_table(Table::drop().table(Infrastructure::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(StateSpeedLimit::Table).to_owned())
             .await?;
 
         Ok(())
@@ -388,6 +362,12 @@ enum City {
     State,
     /// Two-letter state abbreviation.
     StateAbbrev,
+    /// City speed limit (if different from the state speed limit).
+    SpeedLimit,
+    /// Creation date.
+    CreatedAt,
+    /// Update date.
+    UpdatedAt,
 }
 
 #[derive(Iden)]
@@ -404,24 +384,6 @@ enum Census {
     PopSize,
     /// City population based on the annual U.S. Census American Community Survey.
     Population,
-}
-
-#[derive(Iden)]
-enum Ranking {
-    Table,
-    RankingId,
-    /// City identifier.
-    CityId,
-    /// Creation date.
-    CreatedAt,
-    /// Country ranking.
-    Country,
-    /// Country size.
-    CountrySize,
-    /// Global ranking.
-    Global,
-    Size,
-    State,
 }
 
 #[derive(Iden)]
@@ -526,4 +488,19 @@ enum Infrastructure {
     LowStressMiles,
     /// Total miles of high-stress streets in the measured area.
     HighStressMiles,
+}
+
+#[derive(Iden)]
+enum StateSpeedLimit {
+    Table,
+    /// Two-letter state abbreviation.
+    StateAbbrev,
+    /// State FIPS code.
+    StateFIPSCode,
+    /// State speed limit.
+    Speed,
+    /// Creation date.
+    CreatedAt,
+    /// Update date.
+    UpdatedAt,
 }
