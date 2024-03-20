@@ -82,6 +82,9 @@ async fn main() -> Result<(), Report> {
         let year = scorecard.year - 2000;
         let version = Calver::try_from_ubuntu(format!("{year}.1").as_str()).unwrap();
 
+        // Get the records creation date.
+        let created_at = scorecard.creation_date;
+
         // Get the City UUID.
         let city_uuid = Uuid::parse_str(&scorecard.bna_id).unwrap();
 
@@ -113,7 +116,7 @@ async fn main() -> Result<(), Report> {
                 state: ActiveValue::Set(scorecard.state_full),
                 state_abbrev: ActiveValue::Set(scorecard.state),
                 speed_limit: ActiveValue::Set(city_speed_limit),
-                created_at: ActiveValue::NotSet,
+                created_at: ActiveValue::Set(created_at),
                 updated_at: ActiveValue::NotSet,
             };
             cities.insert(city_uuid, city_model);
@@ -123,7 +126,7 @@ async fn main() -> Result<(), Report> {
         let census_model = census::ActiveModel {
             census_id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(city_uuid),
-            created_at: ActiveValue::NotSet,
+            created_at: ActiveValue::Set(created_at),
             fips_code: scorecard
                 .census_fips_code
                 .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(v.to_string())),
@@ -140,7 +143,7 @@ async fn main() -> Result<(), Report> {
         let speed_limit_model = speed_limit::ActiveModel {
             speed_limit_id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(city_uuid),
-            created_at: ActiveValue::NotSet,
+            created_at: ActiveValue::Set(created_at),
             residential: scorecard
                 .residential_speed_limit
                 .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(v.into())),
@@ -152,7 +155,7 @@ async fn main() -> Result<(), Report> {
         let summary_model = summary::ActiveModel {
             bna_uuid: ActiveValue::Set(bna_uuid),
             city_id: ActiveValue::Set(city_uuid),
-            created_at: ActiveValue::NotSet,
+            created_at: ActiveValue::Set(created_at),
             score: ActiveValue::Set(scorecard.bna_rounded_score.into()),
             version: ActiveValue::Set(version.to_ubuntu()),
         };

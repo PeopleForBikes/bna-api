@@ -4,7 +4,10 @@ use effortless::{
     error::APIErrors,
     fragment::BnaRequestExt,
 };
-use entity::{brokenspoke_pipeline::ActiveModel, prelude::*, wrappers};
+use entity::{
+    brokenspoke_pipeline::ActiveModel, prelude::*,
+    wrappers::brokenspoke_pipeline::BrokenspokePipelinePatch,
+};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
 use sea_orm::{prelude::Uuid, ActiveValue, EntityTrait, IntoActiveModel};
@@ -42,7 +45,7 @@ pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
         .map_err(|e| invalid_path_parameter(event, parameter, e.to_string().as_str()))?;
 
     // Extract and deserialize the data.
-    let wrapper = parse_request_body::<wrappers::BrokenspokePipelinePatch>(event)?;
+    let wrapper = parse_request_body::<BrokenspokePipelinePatch>(event)?;
 
     // Turn the wrapper into an active model.
     let mut active_model = wrapper.into_active_model();

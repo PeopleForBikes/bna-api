@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use effortless::api::parse_request_body;
-use entity::{prelude::*, wrappers};
+use entity::{prelude::*, wrappers::submission::SubmissionPost};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
 use sea_orm::{EntityTrait, IntoActiveModel};
@@ -11,7 +11,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Extract and serialize the data.
-    let wrapper = match parse_request_body::<wrappers::SubmissionPost>(&event) {
+    let wrapper = match parse_request_body::<SubmissionPost>(&event) {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
