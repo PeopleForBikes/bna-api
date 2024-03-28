@@ -28,6 +28,10 @@ GET {{host}}/cities/{{city_id}}
 GET {{host}}/cities/{{city_id}}/bnas
 
 ###
+# Query all the Census of a specific city.
+GET {{host}}/cities/{{city_id}}/census
+
+###
 # Query all the submissions.
 GET {{host}}/cities/submissions
 

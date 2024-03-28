@@ -14,14 +14,10 @@ effortless = { path = "../effortless" }
 entity = { path = "../entity" }
 http-serde = { workspace = true }
 lambda_http = { workspace = true }
-lambda_runtime = "0.10"
+lambda_runtime = "0.11.0"
 nom = "7.1.3"
 once_cell = { workspace = true }
-reqwest = { version = "0.11.22", features = [
-  "json",
-  "native-tls-vendored",
-  "rustls",
-] }
+reqwest = { version = "0.12.1", features = ["json", "native-tls-vendored"] }
 sea-orm = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
@@ -33,18 +29,25 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 ] }
 url = "2.3.1"
 
-
 [[bin]]
 name = "get-bnas"
 path = "src/bnas/get-bnas.rs"
 
 [[bin]]
-name = "get-bnas-analysis"
-path = "src/bnas-analysis/get-bnas-analysis.rs"
+name = "post-bnas"
+path = "src/bnas/post-bnas.rs"
+
+# [[bin]]
+# name = "patch-bnas"
+# path = "src/bnas/patch-bnas.rs"
 
 [[bin]]
 name = "get-bnas-cities"
 path = "src/bnas/get-bnas-cities.rs"
+
+[[bin]]
+name = "get-bnas-analysis"
+path = "src/bnas-analysis/get-bnas-analysis.rs"
 
 [[bin]]
 name = "get-cities"
@@ -53,6 +56,10 @@ path = "src/cities/get-cities.rs"
 [[bin]]
 name = "get-cities-bnas"
 path = "src/cities/get-cities-bnas.rs"
+
+[[bin]]
+name = "get-cities-census"
+path = "src/cities/get-cities-census.rs"
 
 [[bin]]
 name = "get-cities-submissions"

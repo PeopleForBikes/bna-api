@@ -296,7 +296,7 @@ mod tests {
     use super::*;
     use aws_lambda_events::http;
     use effortless::api::{parse_path_parameter, parse_request_body};
-    use entity::wrappers::SubmissionPost;
+    use entity::wrappers::submission::SubmissionPost;
     use lambda_http::{http::StatusCode, request::from_str, RequestExt};
     use std::collections::HashMap;
 

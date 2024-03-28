@@ -49,13 +49,15 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             }
         },
         None => {
-            let query = BrokenspokePipeline::find()
+            let select = BrokenspokePipeline::find();
+            let query = select
+                .clone()
                 .paginate(&db, page_size)
                 .fetch_page(page - 1)
                 .await;
             let res: Response<Body> = match query {
                 Ok(models) => {
-                    let total_items = BrokenspokePipeline::find().count(&db).await?;
+                    let total_items = select.count(&db).await?;
                     build_paginated_response(json!(models), total_items, page, page_size, &event)?
                 }
                 Err(e) => APIError::with_pointer(

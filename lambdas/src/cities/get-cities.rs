@@ -36,11 +36,13 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Ok(res)
         }
         None => {
-            let body = city::Entity::find()
+            let select = city::Entity::find();
+            let body = select
+                .clone()
                 .paginate(&db, page_size)
                 .fetch_page(page - 1)
                 .await?;
-            let total_items = city::Entity::find().count(&db).await?;
+            let total_items = select.count(&db).await?;
             build_paginated_response(json!(body), total_items, page, page_size, &event)
         }
     }

@@ -28,15 +28,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     //
     match id {
         Some(id) => {
-            let model = city::Entity::find_by_id(id)
-                .find_also_related(summary::Entity)
+            let select = city::Entity::find_by_id(id).find_also_related(summary::Entity);
+            let model = select
+                .clone()
                 .paginate(&db, page_size)
                 .fetch_page(page - 1)
                 .await?;
             if model.is_empty() {
                 return Ok(entry_not_found(&event).into());
             }
-            let total_items = city::Entity::find().count(&db).await?;
+            let total_items = select.count(&db).await?;
             build_paginated_response(json!(model), total_items, page, page_size, &event)
         }
         None => Ok(missing_parameter(&event, "id").into()),

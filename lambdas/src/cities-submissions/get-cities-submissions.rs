@@ -62,14 +62,15 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             res
         }
         None => {
-            let query = Submission::find()
-                .filter(conditions.clone())
+            let select = Submission::find().filter(conditions);
+            let query = select
+                .clone()
                 .paginate(&db, page_size)
                 .fetch_page(page - 1)
                 .await;
             let res: Response<Body> = match query {
                 Ok(models) => {
-                    let total_items = Submission::find().filter(conditions).count(&db).await?;
+                    let total_items = select.count(&db).await?;
                     build_paginated_response(json!(models), total_items, page, page_size, &event)?
                 }
                 Err(e) => {

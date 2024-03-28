@@ -41,9 +41,11 @@ jobs:
           get-bnas-results
           get-cities
           get-cities-bnas
+          get-cities-census
           get-cities-submissions
           patch-bnas-analysis
           patch-cities-submissions
+          post-bnas
           post-bnas-analysis
           post-bnas-enqueue
           post-cities-submissions"
