@@ -1,11 +1,27 @@
 use dotenv::dotenv;
 use effortless::api::{entry_not_found, missing_parameter, parse_path_parameter};
-use entity::{city, summary};
+use entity::{census, city};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::{build_paginated_response, database_connect, pagination_parameters};
 use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
 use serde_json::json;
 use tracing::info;
+
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt()
+        .with_max_level(tracing::Level::INFO)
+        // disable printing the name of the module in every log line.
+        .with_target(false)
+        // disabling time is handy because CloudWatch will add the ingestion time.
+        .without_time()
+        .init();
+
+    run(service_fn(function_handler)).await.map_err(|e| {
+        info!("{e}");
+        e
+    })
+}
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
@@ -28,7 +44,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     //
     match id {
         Some(id) => {
-            let select = city::Entity::find_by_id(id).find_also_related(summary::Entity);
+            let select = city::Entity::find_by_id(id).find_also_related(census::Entity);
             let model = select
                 .clone()
                 .paginate(&db, page_size)
@@ -44,18 +60,28 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     }
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Error> {
-    tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
-        // disable printing the name of the module in every log line.
-        .with_target(false)
-        // disabling time is handy because CloudWatch will add the ingestion time.
-        .without_time()
-        .init();
+#[cfg(test)]
+mod tests {
 
-    run(service_fn(function_handler)).await.map_err(|e| {
-        info!("{e}");
-        e
-    })
+    use super::*;
+    use aws_lambda_events::http;
+    use lambda_http::RequestExt;
+    use std::collections::HashMap;
+
+    #[tokio::test]
+    async fn test_handler() {
+        let event = http::Request::builder()
+            .header(http::header::CONTENT_TYPE, "application/json")
+            .body(Body::Empty)
+            .expect("failed to build request")
+            .with_path_parameters(HashMap::from([(
+                "id".to_string(),
+                "c49fa94e-542d-421f-9826-e233538be929".to_string(), // Santa Monica, CA
+            )]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+            ));
+        let r = function_handler(event).await.unwrap();
+        dbg!(r);
+    }
 }

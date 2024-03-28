@@ -3,7 +3,7 @@ use effortless::{
     api::{missing_parameter, parse_path_parameter, parse_request_body},
     error::APIErrors,
 };
-use entity::{prelude::*, submission::ActiveModel, wrappers};
+use entity::{prelude::*, submission::ActiveModel, wrappers::submission::SubmissionPatch};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
 use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
@@ -55,7 +55,7 @@ pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
         .ok_or(missing_parameter(event, parameter))?;
 
     // Extract and deserialize the data.
-    let wrapper = parse_request_body::<wrappers::SubmissionPatch>(event)?;
+    let wrapper = parse_request_body::<SubmissionPatch>(event)?;
 
     // Turn the wrapper into an active model.
     let mut active_submission = wrapper.into_active_model();
