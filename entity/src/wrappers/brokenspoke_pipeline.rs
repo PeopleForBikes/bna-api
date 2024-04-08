@@ -17,6 +17,7 @@ pub struct BrokenspokePipelinePost {
     pub start_time: TimeDateTimeWithTimeZone,
     pub end_time: Option<TimeDateTimeWithTimeZone>,
     pub torn_down: Option<bool>,
+    pub result_posted: Option<bool>,
 }
 
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
@@ -32,6 +33,7 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             start_time: ActiveValue::Set(self.start_time),
             end_time: ActiveValue::Set(self.end_time),
             torn_down: ActiveValue::Set(self.torn_down),
+            results_posted: ActiveValue::Set(self.result_posted),
         }
     }
 }
@@ -47,6 +49,7 @@ pub struct BrokenspokePipelinePatch {
     pub start_time: Option<Option<TimeDateTimeWithTimeZone>>,
     pub end_time: Option<Option<TimeDateTimeWithTimeZone>>,
     pub torn_down: Option<Option<bool>>,
+    pub result_posted: Option<Option<bool>>,
 }
 
 impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
@@ -70,6 +73,9 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             start_time: ActiveValue::NotSet,
             end_time: self.end_time.map_or(ActiveValue::NotSet, ActiveValue::Set),
             torn_down: self.torn_down.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            results_posted: self
+                .result_posted
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }

@@ -58,6 +58,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(BrokenspokePipeline::EndTime).timestamp_with_time_zone())
                     .col(ColumnDef::new(BrokenspokePipeline::TornDown).boolean())
+                    .col(ColumnDef::new(BrokenspokePipeline::ResultsPosted).boolean())
                     .to_owned(),
             )
             .await
@@ -73,15 +74,16 @@ impl MigrationTrait for Migration {
 #[derive(DeriveIden)]
 enum BrokenspokePipeline {
     Table,
-    StateMachineId,
-    ScheduledTriggerId,
-    State,
-    SqsMessage,
-    NeonBranchId,
-    FargateTaskARN,
-    S3Bucket,
-    StartTime,
     EndTime,
+    FargateTaskARN,
+    NeonBranchId,
+    ResultsPosted,
+    S3Bucket,
+    ScheduledTriggerId,
+    SqsMessage,
+    StartTime,
+    State,
+    StateMachineId,
     TornDown,
 }
 

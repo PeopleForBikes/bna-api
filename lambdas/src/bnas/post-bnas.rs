@@ -30,10 +30,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Extract and serialize the data.
-    let wrapper = match parse_request_body::<BNAPost>(&event) {
+    let mut wrapper = match parse_request_body::<BNAPost>(&event) {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
+
+    // Refresh the scores.
+    wrapper.core_services.refresh_score();
+    wrapper.opportunity.refresh_score();
+    wrapper.recreation.refresh_score();
+    wrapper.refresh_score();
 
     // Turn the model wrapper into active models.
     let summary = summary::ActiveModel {
