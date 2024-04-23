@@ -41,12 +41,12 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(City::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(City::CityId).uuid().not_null().primary_key())
+                    .col(ColumnDef::new(City::CityId).uuid().unique_key().not_null())
                     .col(ColumnDef::new(City::Country).string().not_null())
-                    .col(ColumnDef::new(City::Latitude).double().not_null())
-                    .col(ColumnDef::new(City::Longitude).double().not_null())
+                    .col(ColumnDef::new(City::Latitude).double())
+                    .col(ColumnDef::new(City::Longitude).double())
                     .col(ColumnDef::new(City::Name).string().not_null())
-                    .col(ColumnDef::new(City::Region).string().not_null())
+                    .col(ColumnDef::new(City::Region).string())
                     .col(ColumnDef::new(City::State).string().not_null())
                     .col(ColumnDef::new(City::StateAbbrev).string())
                     .col(ColumnDef::new(City::SpeedLimit).integer())
@@ -57,6 +57,12 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(ColumnDef::new(City::UpdatedAt).timestamp_with_time_zone())
+                    .primary_key(
+                        Index::create()
+                            .col(City::Country)
+                            .col(City::State)
+                            .col(City::Name),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -68,14 +74,14 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(City::Table)
-                    .col(City::Name)
-                    .to_owned(),
-            )
-            .await?;
+        // manager
+        //     .create_index(
+        //         Index::create()
+        //             .table(City::Table)
+        //             .col(City::Name)
+        //             .to_owned(),
+        //     )
+        //     .await?;
 
         // Create CensusPopulation table.
         manager

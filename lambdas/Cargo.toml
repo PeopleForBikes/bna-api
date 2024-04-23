@@ -91,6 +91,10 @@ path = "src/bnas-enqueue/post-bnas-enqueue.rs"
 name = "get-bnas-results"
 path = "src/bnas-results/get-bnas-results.rs"
 
+[[bin]]
+name = "post-cities"
+path = "src/cities/post-cities.rs"
+
 [dev-dependencies]
 color-eyre = { workspace = true }
 rstest = { workspace = true }

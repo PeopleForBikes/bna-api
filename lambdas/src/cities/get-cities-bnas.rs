@@ -3,7 +3,7 @@ use effortless::api::{entry_not_found, missing_parameter, parse_path_parameter};
 use entity::{city, summary};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::{build_paginated_response, database_connect, pagination_parameters};
-use sea_orm::{prelude::Uuid, EntityTrait, PaginatorTrait};
+use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 use tracing::info;
 
@@ -19,28 +19,34 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    // Retrieve the ID of the entry to get if any.
-    let id = match parse_path_parameter::<Uuid>(&event, "id") {
+    let country = match parse_path_parameter::<String>(&event, "country") {
+        Ok(value) => value,
+        Err(e) => return Ok(e.into()),
+    };
+    let region = match parse_path_parameter::<String>(&event, "region") {
+        Ok(value) => value,
+        Err(e) => return Ok(e.into()),
+    };
+    let name = match parse_path_parameter::<String>(&event, "name") {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
 
-    //
-    match id {
-        Some(id) => {
-            let select = city::Entity::find_by_id(id).find_also_related(summary::Entity);
-            let model = select
-                .clone()
-                .paginate(&db, page_size)
-                .fetch_page(page - 1)
-                .await?;
-            if model.is_empty() {
-                return Ok(entry_not_found(&event).into());
-            }
-            let total_items = select.count(&db).await?;
-            build_paginated_response(json!(model), total_items, page, page_size, &event)
+    if country.is_some() && region.is_some() && name.is_some() {
+        let select = city::Entity::find_by_id((country.unwrap(), region.unwrap(), name.unwrap()))
+            .find_also_related(summary::Entity);
+        let model = select
+            .clone()
+            .paginate(&db, page_size)
+            .fetch_page(page - 1)
+            .await?;
+        if model.is_empty() {
+            return Ok(entry_not_found(&event).into());
         }
-        None => Ok(missing_parameter(&event, "id").into()),
+        let total_items = select.count(&db).await?;
+        build_paginated_response(json!(model), total_items, page, page_size, &event)
+    } else {
+        Ok(missing_parameter(&event, "country or region or name").into())
     }
 }
 

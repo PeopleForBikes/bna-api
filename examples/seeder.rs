@@ -1,5 +1,8 @@
 /// This example populates the database the database using the city ratings sample file.
-use bnacore::{scorecard::scorecard24::ScoreCard24, versioning::Calver};
+use bnacore::{
+    scorecard::{scorecard24::ScoreCard24, Scorecard},
+    versioning::Calver,
+};
 use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
@@ -7,11 +10,7 @@ use entity::{
     census, city, core_services, features, infrastructure, opportunity, prelude::*, recreation,
     speed_limit, state_speed_limit, summary,
 };
-use sea_orm::{
-    prelude::Uuid,
-    ActiveValue::{self},
-    Database, EntityTrait,
-};
+use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, Database, EntityTrait, TryIntoModel};
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -79,8 +78,10 @@ async fn main() -> Result<(), Report> {
         let scorecard: ScoreCard24 = record?;
 
         // Get the record's year.
-        let year = scorecard.year - 2000;
-        let version = Calver::try_from_ubuntu(format!("{year}.1").as_str()).unwrap();
+        // let year = scorecard.year - 2000;
+        // let version = Calver::try_from_ubuntu(format!("{year}.1").as_str()).unwrap();
+        let calver = scorecard.version();
+        let version = Calver::try_from_ubuntu(&calver).unwrap();
 
         // Get the records creation date.
         let created_at = scorecard.creation_date;
@@ -109,10 +110,10 @@ async fn main() -> Result<(), Report> {
             let city_model = city::ActiveModel {
                 city_id: ActiveValue::Set(city_uuid),
                 country: ActiveValue::Set(scorecard.country.clone()),
-                latitude: ActiveValue::Set(scorecard.census_latitude),
-                longitude: ActiveValue::Set(scorecard.census_longitude),
+                latitude: ActiveValue::Set(Some(scorecard.census_latitude)),
+                longitude: ActiveValue::Set(Some(scorecard.census_longitude)),
                 name: ActiveValue::Set(scorecard.city.clone()),
-                region: ActiveValue::Set(scorecard.region),
+                region: ActiveValue::Set(Some(scorecard.region)),
                 state: ActiveValue::Set(scorecard.state_full),
                 state_abbrev: ActiveValue::Set(scorecard.state),
                 speed_limit: ActiveValue::Set(city_speed_limit),
@@ -223,7 +224,18 @@ async fn main() -> Result<(), Report> {
     StateSpeedLimit::insert_many(state_speed_limits)
         .exec(&db)
         .await?;
-    City::insert_many(cities.into_values()).exec(&db).await?;
+
+    // FIXME: Insert cities one by one to debug the cities not matching the uniqueness
+    // constraint on the triplet (country,state,name).
+    // Arlington, VA
+    let c = cities.clone();
+    for city in c.into_values() {
+        let r = city.clone().insert(&db).await;
+        if r.is_err() {
+            dbg!(&city);
+        }
+    }
+    // City::insert_many(cities.into_values()).exec(&db).await?;
     Census::insert_many(census_populations).exec(&db).await?;
     SpeedLimit::insert_many(speed_limits).exec(&db).await?;
     Summary::insert_many(summaries).exec(&db).await?;
