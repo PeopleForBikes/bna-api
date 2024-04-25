@@ -2,6 +2,9 @@
 # Walla Walla, WA.
 @city_id=1c8f4f93-3537-4f31-ba0c-e165ebf67b74
 @bna_id=1a759b85-cd87-4bb1-9efa-5789e38e9982
+@country=usa
+@region=texas
+@name=austin
 
 ###
 # Query the first page of the bnas.
@@ -21,15 +24,15 @@ GET {{host}}/cities
 
 ###
 # Query a specific city.
-GET {{host}}/cities/{{city_id}}
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}
 
 ###
 # Query all the BNAs of a specific city.
-GET {{host}}/cities/{{city_id}}/bnas
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/bnas
 
 ###
 # Query all the Census of a specific city.
-GET {{host}}/cities/{{city_id}}/census
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/census
 
 ###
 # Query all the submissions.
@@ -174,6 +177,61 @@ Authorization: Bearer {{cognito_access}}
   "neon_branch_id": "br-aged-salad-637688"
 }
 
+### Create a new BNA .
+POST {{host}}/bnas
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+  "core_services": {
+    "dentists": 0,
+    "doctors": 0,
+    "grocery": 1.69,
+    "hospitals": 5.18,
+    "pharmacies": 0,
+    "social_services": 0
+  },
+  "features": {
+    "people": 19.17,
+    "retail": 0,
+    "transit": 0
+  },
+  "infrastructure": {
+    "low_stress_miles": 9.3,
+    "high_stress_miles": 64.5
+  },
+  "opportunity": {
+    "employment": 8.26,
+    "higher_education": 0,
+    "k12_education": 8.31,
+    "technical_vocational_college": 0
+  },
+  "recreation": {
+    "community_centers": 0,
+    "parks": 7.13,
+    "recreation_trails": 0
+  },
+  "summary": {
+    "bna_uuid": "3414afd2-42be-412b-9fce-3597b466e291",
+    "version": "24.04.8"
+  }
+}
+
+### Create a new city.
+POST {{host}}/cities/
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+    "country": "Spain",
+    "latitude": 39.46975 9,
+    "longitude": -0.3773,
+    "name": "Valencia",
+    "region": "Europe",
+    "state": "Valencia",
+    "state_abbrev": "VC",
+    "speed_limit": null,
+}
 
 ################################################################################
 # Bellow this point are the tests from schemathesis.

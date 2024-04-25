@@ -35,6 +35,9 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e.into()),
     };
 
+    // Get the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
     // Refresh the scores.
     wrapper.core_services.refresh_score();
     wrapper.opportunity.refresh_score();
@@ -87,9 +90,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         recreation_trails: ActiveValue::Set(wrapper.recreation.recreation_trails),
         score: ActiveValue::Set(wrapper.recreation.score),
     };
-
-    // Get the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // And insert a new entry for each model.
     let summary_res = Summary::insert(summary).exec(&db).await?;

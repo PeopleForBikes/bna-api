@@ -106,13 +106,13 @@ Table bna.infrastructure [headercolor: #82F0D3] {
 }
 
 Table bna.city [headercolor: #6B41A3] {
-  city_id uuid [pk]
-  country varchar(50) [not null]
-  latitude float [not null]
-  longitude float [not null]
-  name varchar(50) [not null]
-  region varchar(50) [not null]
-  state varchar(50) [not null]
+  city_id uuid
+  country varchar(50) [not null][pk]
+  latitude float
+  longitude float
+  name varchar(50) [not null][pk]
+  region varchar(50)
+  state varchar(50) [not null][pk]
   state_abbrev varchar(4)
   size int [not null]
   speed_limit int

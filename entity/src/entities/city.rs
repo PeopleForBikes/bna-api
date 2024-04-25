@@ -6,15 +6,18 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
 #[sea_orm(table_name = "city")]
 pub struct Model {
-    #[sea_orm(primary_key, auto_increment = false)]
+    #[sea_orm(unique)]
     pub city_id: Uuid,
+    #[sea_orm(primary_key, auto_increment = false)]
     pub country: String,
-    #[sea_orm(column_type = "Double")]
-    pub latitude: f64,
-    #[sea_orm(column_type = "Double")]
-    pub longitude: f64,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub latitude: Option<f64>,
+    #[sea_orm(column_type = "Double", nullable)]
+    pub longitude: Option<f64>,
+    #[sea_orm(primary_key, auto_increment = false)]
     pub name: String,
-    pub region: String,
+    pub region: Option<String>,
+    #[sea_orm(primary_key, auto_increment = false)]
     pub state: String,
     pub state_abbrev: Option<String>,
     pub speed_limit: Option<i32>,

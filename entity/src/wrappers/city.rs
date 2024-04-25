@@ -5,10 +5,10 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CityPost {
     pub country: String,
-    pub latitude: f64,
-    pub longitude: f64,
+    pub latitude: Option<f64>,
+    pub longitude: Option<f64>,
     pub name: String,
-    pub region: String,
+    pub region: Option<String>,
     pub state: String,
     pub state_abbrev: Option<String>,
     pub speed_limit: Option<i32>,
@@ -35,10 +35,10 @@ impl IntoActiveModel<city::ActiveModel> for CityPost {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CityPatch {
     pub country: Option<String>,
-    pub latitude: Option<f64>,
-    pub longitude: Option<f64>,
+    pub latitude: Option<Option<f64>>,
+    pub longitude: Option<Option<f64>>,
     pub name: Option<String>,
-    pub region: Option<String>,
+    pub region: Option<Option<String>>,
     pub state: Option<String>,
     pub state_abbrev: Option<Option<String>>,
     pub speed_limit: Option<Option<i32>>,
