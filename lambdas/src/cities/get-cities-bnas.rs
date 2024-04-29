@@ -23,6 +23,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
+    dbg!(&country);
     let region = match parse_path_parameter::<String>(&event, "region") {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
@@ -64,4 +65,36 @@ async fn main() -> Result<(), Error> {
         info!("{e}");
         e
     })
+}
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+    // use lambda_http::{http, RequestExt};
+    // use std::collections::HashMap;
+
+    // #[tokio::test]
+    // async fn test_handler_opportunity() {
+    //     let event = http::Request::builder()
+    //         .header(http::header::CONTENT_TYPE, "application/json")
+    //         .body(Body::Empty)
+    //         .expect("failed to build request")
+    //         .with_path_parameters(HashMap::from([(
+    //             "country".to_string(),
+    //             "United%20States".to_string(),
+    //         )]))
+    //         .with_query_string_parameters(HashMap::from([(
+    //             "region".to_string(),
+    //             "Texas".to_string(),
+    //         )]))
+    //         .with_query_string_parameters(HashMap::from([(
+    //             "name".to_string(),
+    //             "Austin".to_string(),
+    //         )]))
+    //         .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+    //             lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+    //         ));
+    //     let r = function_handler(event).await.unwrap();
+    //     dbg!(r);
+    // }
 }
