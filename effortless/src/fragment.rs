@@ -1,15 +1,30 @@
 use lambda_http::{aws_lambda_events::query_map::QueryMap, http, Request, RequestExt};
 use serde::Deserialize;
-use std::str::FromStr;
+use std::{str::FromStr, string::FromUtf8Error};
+use thiserror::Error;
+use urlencoding::decode;
 
-fn parse_parameter<T>(qm: &QueryMap, parameter: &str) -> Option<Result<T, <T as FromStr>::Err>>
+#[derive(Error, Debug)]
+pub enum ParseParameterError {
+    #[error("parsing error: {0}")]
+    ParseError(String),
+    #[error("encoding error: {0}")]
+    URLEncodingError(#[from] FromUtf8Error),
+}
+
+fn parse_parameter<T>(qm: &QueryMap, parameter: &str) -> Option<Result<T, ParseParameterError>>
 where
     T: FromStr,
 {
     qm.first(parameter)
-        .map(|parameter_str| match parameter_str.parse::<T>() {
-            Ok(param) => Some(Ok(param)),
-            Err(e) => Some(Err(e)),
+        .map(|parameter_str| match decode(parameter_str) {
+            Ok(param) => match param.parse::<T>() {
+                Ok(param) => Some(Ok(param)),
+                Err(_) => Some(Err(ParseParameterError::ParseError(format!(
+                    "cannot parse parameter {parameter_str}"
+                )))),
+            },
+            Err(e) => Some(Err(e.into())),
         })?
 }
 
@@ -31,7 +46,7 @@ where
 pub fn parse_path_parameter<T>(
     event: &Request,
     parameter: &str,
-) -> Option<Result<T, <T as FromStr>::Err>>
+) -> Option<Result<T, ParseParameterError>>
 where
     T: FromStr,
 {
@@ -54,7 +69,7 @@ where
 pub fn parse_query_string_parameter<T>(
     event: &Request,
     parameter: &str,
-) -> Option<Result<T, <T as FromStr>::Err>>
+) -> Option<Result<T, ParseParameterError>>
 where
     T: FromStr,
 {
@@ -167,5 +182,22 @@ impl<B> BnaRequestExt for http::Request<B> {
             lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
             _ => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use lambda_http::{Request, RequestExt};
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_url_decode_path_parameter() {
+        let event = Request::default().with_path_parameters(HashMap::from([(
+            "country".to_string(),
+            "United%20States".to_string(),
+        )]));
+        let param = parse_path_parameter::<String>(&event, "country").unwrap();
+        assert_eq!(param.unwrap(), String::from("United States"));
     }
 }
