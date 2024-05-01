@@ -14,6 +14,22 @@ pub enum ApprovalStatus {
     Rejected,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "bna_region")]
+pub enum BnaRegion {
+    #[sea_orm(string_value = "Mid-Atlantic")]
+    MidAtlantic,
+    #[sea_orm(string_value = "Midwest")]
+    Midwest,
+    #[sea_orm(string_value = "Mountain")]
+    Mountain,
+    #[sea_orm(string_value = "New England")]
+    NewEngland,
+    #[sea_orm(string_value = "Pacific")]
+    Pacific,
+    #[sea_orm(string_value = "South")]
+    South,
+}
+#[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
 #[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "brokenspoke_state")]
 pub enum BrokenspokeState {
     #[sea_orm(string_value = "analysis")]

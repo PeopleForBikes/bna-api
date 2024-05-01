@@ -1,9 +1,12 @@
 use dotenv::dotenv;
-use effortless::api::parse_request_body;
-use entity::{prelude::*, wrappers::city::CityPost};
+use effortless::api::{invalid_body, parse_request_body};
+use entity::{
+    prelude::*,
+    wrappers::{self, city::CityPost},
+};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
-use sea_orm::{EntityTrait, IntoActiveModel};
+use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
 use serde_json::json;
 use tracing::info;
 
@@ -32,11 +35,33 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e.into()),
     };
 
+    // Check if the country is US and set the region accordingly.
+    let country = wrapper.country.clone();
+    let state_full = wrapper.state.clone();
+    let region: Option<String> = match country.to_lowercase().eq("United States") {
+        true => None,
+        false => Some(country),
+    };
+
     // Turn the model wrapper into an active model.
-    let active_city = wrapper.into_active_model();
+    let mut active_city = wrapper.into_active_model();
 
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Set the region if needed.
+    if region.is_none() {
+        let state_region_model = StateRegionCrosswalk::find_by_id(state_full)
+            .one(&db)
+            .await?;
+        match state_region_model {
+            Some(model) => {
+                let region: wrappers::BnaRegion = model.region.into();
+                active_city.region = ActiveValue::Set(Some(region.to_string()));
+            }
+            None => return Ok(invalid_body(&event, "invalid state: {state_full}").into()),
+        }
+    }
 
     // And insert a new entry.
     info!("inserting City into database: {:?}", active_city);

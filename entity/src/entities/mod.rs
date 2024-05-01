@@ -12,6 +12,7 @@ pub mod opportunity;
 pub mod recreation;
 pub mod sea_orm_active_enums;
 pub mod speed_limit;
+pub mod state_region_crosswalk;
 pub mod state_speed_limit;
 pub mod submission;
 pub mod summary;

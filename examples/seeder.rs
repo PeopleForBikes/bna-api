@@ -8,12 +8,13 @@ use csv::Reader;
 use dotenv::dotenv;
 use entity::{
     census, city, core_services, features, infrastructure, opportunity, prelude::*, recreation,
-    speed_limit, state_speed_limit, summary,
+    speed_limit, state_region_crosswalk, state_speed_limit, summary,
 };
-use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, Database, EntityTrait, TryIntoModel};
+use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
-use std::collections::HashMap;
+use std::{collections::HashMap, str::FromStr};
 
+const US_STATE_COUNT: usize = 52;
 #[derive(Debug, Deserialize)]
 pub struct StateSpeedLimitCSV {
     state: String,
@@ -25,6 +26,12 @@ pub struct StateSpeedLimitCSV {
 pub struct CitySpeedLimitCSV {
     fips_code_city: u32,
     speed: u32,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct StateRegionCrosswalkCSV {
+    state_full: String,
+    region: String,
 }
 
 #[tokio::main]
@@ -42,8 +49,12 @@ async fn main() -> Result<(), Report> {
     let mut bna_opportunity: Vec<opportunity::ActiveModel> = Vec::new();
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
     let mut versions: HashMap<Uuid, Calver> = HashMap::new();
-    let mut state_speed_limits: Vec<state_speed_limit::ActiveModel> = Vec::with_capacity(52);
+    let mut state_speed_limits: Vec<state_speed_limit::ActiveModel> =
+        Vec::with_capacity(US_STATE_COUNT);
+    let mut state_region_crosswalks: Vec<state_region_crosswalk::ActiveModel> =
+        Vec::with_capacity(US_STATE_COUNT);
     let mut city_fips2limit: HashMap<u32, u32> = HashMap::new();
+    let mut state_bnaregion: HashMap<String, String> = HashMap::new();
 
     // Load the state speed limit file.
     let mut state_speed_limit_csv_reader =
@@ -64,22 +75,38 @@ async fn main() -> Result<(), Report> {
     }
 
     // Load the city speed limit file.
-    let mut city_speed_limit_csv_reader = Reader::from_path("examples/seeder-city_fips_speed.csv")?;
+    let mut city_speed_limit_csv_reader =
+        Reader::from_path("examples/seeder-city_fips_speed-v24.03.csv")?;
     for record in city_speed_limit_csv_reader.deserialize() {
         // Read the record.
         let speed_limit: CitySpeedLimitCSV = record?;
         city_fips2limit.insert(speed_limit.fips_code_city, speed_limit.speed);
     }
 
-    // Load the CSV file.
+    // Load the state/region crosswalk CSV file.
+    let mut state_region_crosswalk_csv_reader =
+        Reader::from_path("examples/seeder-state_region_crosswalk-v24.05.csv")?;
+    for record in state_region_crosswalk_csv_reader.deserialize() {
+        // Read the record.
+        let state_region: StateRegionCrosswalkCSV = record?;
+        state_bnaregion.insert(state_region.state_full.clone(), state_region.region.clone());
+
+        // Populate the state region crosswalk model.
+        let r = entity::wrappers::BnaRegion::from_str(&state_region.region).unwrap();
+        let state_region_crosswalk_model = state_region_crosswalk::ActiveModel {
+            state: ActiveValue::Set(state_region.state_full),
+            region: ActiveValue::Set(r.into()),
+        };
+        state_region_crosswalks.push(state_region_crosswalk_model);
+    }
+
+    // Load the historical data CSV file.
     let mut csv_reader = Reader::from_path("../../PeopleForBikes/brokenspoke/assets/city-ratings/city-ratings-all-historical-results-v24.2.csv")?;
     for record in csv_reader.deserialize() {
         // Read the record.
         let scorecard: ScoreCard24 = record?;
 
         // Get the record's year.
-        // let year = scorecard.year - 2000;
-        // let version = Calver::try_from_ubuntu(format!("{year}.1").as_str()).unwrap();
         let calver = scorecard.version();
         let version = Calver::try_from_ubuntu(&calver).unwrap();
 
@@ -107,13 +134,18 @@ async fn main() -> Result<(), Report> {
                 Some(fips) => city_fips2limit.get(&fips).map(|x| *x as i32),
                 None => None,
             };
+            let bna_region = state_bnaregion
+                .get(&scorecard.state_full)
+                .map(|s| s.to_owned())
+                .unwrap_or(scorecard.country.clone());
+
             let city_model = city::ActiveModel {
                 city_id: ActiveValue::Set(city_uuid),
                 country: ActiveValue::Set(scorecard.country.clone()),
                 latitude: ActiveValue::Set(Some(scorecard.census_latitude)),
                 longitude: ActiveValue::Set(Some(scorecard.census_longitude)),
                 name: ActiveValue::Set(scorecard.city.clone()),
-                region: ActiveValue::Set(Some(scorecard.region)),
+                region: ActiveValue::Set(Some(bna_region)),
                 state: ActiveValue::Set(scorecard.state_full),
                 state_abbrev: ActiveValue::Set(scorecard.state),
                 speed_limit: ActiveValue::Set(city_speed_limit),
@@ -184,7 +216,7 @@ async fn main() -> Result<(), Report> {
         };
         bna_core_services.push(core_services_model);
 
-        // // Populate the recreation model.
+        // Populate the recreation model.
         let recreation_model = recreation::ActiveModel {
             bna_uuid: ActiveValue::Set(bna_uuid.clone()),
             community_centers: ActiveValue::Set(scorecard.bna_recreation_community_centers),
