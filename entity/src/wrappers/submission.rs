@@ -172,7 +172,6 @@ mod tests {
 
     #[test]
     fn test_submission_patch_into_model() {
-        let id = 42;
         let first_name = "John".to_string();
         let wrapper = SubmissionPatch {
             first_name: Some(first_name.clone()),
@@ -189,7 +188,7 @@ mod tests {
         };
         let active_model = wrapper.into_active_model();
         let expected = submission::ActiveModel {
-            id: ActiveValue::Unchanged(id),
+            id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(first_name),
             last_name: ActiveValue::NotSet,
             title: ActiveValue::NotSet,

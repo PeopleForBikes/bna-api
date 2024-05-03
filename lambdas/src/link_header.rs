@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 /// This module is a loose implementation of the RFC 8288 describing web linking
 /// (https://datatracker.ietf.org/doc/rfc8288/).
 ///
@@ -37,10 +39,10 @@ pub struct RelationType<'a>(&'a str);
 
 nomstr!(RelationType);
 
-impl<'a> ToString for RelationType<'a> {
-    fn to_string(&self) -> String {
+impl<'a> Display for RelationType<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let rel_type = self.0;
-        format!("rel=\"{rel_type}\"")
+        write!(f, "rel=\"{rel_type}\"")
     }
 }
 
@@ -92,9 +94,9 @@ impl<'a> TryFrom<&'a str> for LinkTarget {
     }
 }
 
-impl ToString for LinkTarget {
-    fn to_string(&self) -> String {
-        self.0.to_string()
+impl Display for LinkTarget {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
     }
 }
 
@@ -131,11 +133,11 @@ pub struct Link<'a> {
 
 nomstr!(Link);
 
-impl<'a> ToString for Link<'a> {
-    fn to_string(&self) -> String {
+impl<'a> Display for Link<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let lv: Vec<String> = self.links.iter().map(|l| l.to_string()).collect();
         let lv_str = lv.join(", ");
-        format!("Link: {lv_str}")
+        write!(f, "Link: {lv_str}")
     }
 }
 
@@ -198,8 +200,8 @@ pub struct LinkValues<'a> {
 
 nomstr!(LinkValues);
 
-impl<'a> ToString for LinkValues<'a> {
-    fn to_string(&self) -> String {
+impl<'a> Display for LinkValues<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let uri_str = self.uri.to_string();
         let rel = format!(r#"; rel="{}""#, self.rel.0);
         let anchor = match &self.anchor {
@@ -226,7 +228,10 @@ impl<'a> ToString for LinkValues<'a> {
             Some(s) => format!(r#"; type_="{}""#, s.0),
             None => String::from(""),
         };
-        format!("<{uri_str}>{rel}{anchor}{href_lang}{media}{title}{title_star}{type_}")
+        write!(
+            f,
+            "<{uri_str}>{rel}{anchor}{href_lang}{media}{title}{title_star}{type_}"
+        )
     }
 }
 

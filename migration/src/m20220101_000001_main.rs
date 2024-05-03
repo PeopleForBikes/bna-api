@@ -1,5 +1,9 @@
 #![allow(clippy::enum_variant_names)]
-use sea_orm_migration::prelude::*;
+use sea_orm_migration::{
+    prelude::*,
+    sea_orm::{EnumIter, Iterable},
+    sea_query::extension::postgres::Type,
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -7,6 +11,16 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        // Create the BNA Region type.
+        manager
+            .create_type(
+                Type::create()
+                    .as_enum(BNARegion::Table)
+                    .values(BNARegion::iter().skip(1))
+                    .to_owned(),
+            )
+            .await?;
+
         // Create the StateSpeedLimit table.
         manager
             .create_table(
@@ -31,6 +45,26 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(StateSpeedLimit::UpdatedAt).timestamp_with_time_zone())
                     .primary_key(Index::create().col(StateSpeedLimit::StateAbbrev))
+                    .to_owned(),
+            )
+            .await?;
+
+        // Create the StateRegionCrosswalk table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(StateRegionCrosswalk::Table)
+                    .col(
+                        ColumnDef::new(StateRegionCrosswalk::State)
+                            .string()
+                            .not_null()
+                            .primary_key(),
+                    )
+                    .col(
+                        ColumnDef::new(StateRegionCrosswalk::Region)
+                            .enumeration(BNARegion::Table, BNARegion::iter().skip(1))
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -74,14 +108,6 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
-        // manager
-        //     .create_index(
-        //         Index::create()
-        //             .table(City::Table)
-        //             .col(City::Name)
-        //             .to_owned(),
-        //     )
-        //     .await?;
 
         // Create CensusPopulation table.
         manager
@@ -509,4 +535,30 @@ enum StateSpeedLimit {
     CreatedAt,
     /// Update date.
     UpdatedAt,
+}
+
+#[derive(Iden, EnumIter)]
+pub enum BNARegion {
+    Table,
+    #[iden = "Mid-Atlantic"]
+    MidAtlantic,
+    #[iden = "Midwest"]
+    Midwest,
+    #[iden = "Mountain"]
+    Mountain,
+    #[iden = "New England"]
+    NewEngland,
+    #[iden = "Pacific"]
+    Pacific,
+    #[iden = "South"]
+    South,
+}
+
+#[derive(Iden)]
+enum StateRegionCrosswalk {
+    Table,
+    /// State name.
+    State,
+    /// BNA Region.
+    Region,
 }

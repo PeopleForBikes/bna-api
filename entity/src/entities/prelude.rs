@@ -9,6 +9,7 @@ pub use super::infrastructure::Entity as Infrastructure;
 pub use super::opportunity::Entity as Opportunity;
 pub use super::recreation::Entity as Recreation;
 pub use super::speed_limit::Entity as SpeedLimit;
+pub use super::state_region_crosswalk::Entity as StateRegionCrosswalk;
 pub use super::state_speed_limit::Entity as StateSpeedLimit;
 pub use super::submission::Entity as Submission;
 pub use super::summary::Entity as Summary;
