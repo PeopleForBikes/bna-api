@@ -10,15 +10,15 @@ pub struct Model {
     pub city_id: Uuid,
     #[sea_orm(primary_key, auto_increment = false)]
     pub country: String,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub state: String,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub name: String,
     #[sea_orm(column_type = "Double", nullable)]
     pub latitude: Option<f64>,
     #[sea_orm(column_type = "Double", nullable)]
     pub longitude: Option<f64>,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub name: String,
     pub region: Option<String>,
-    #[sea_orm(primary_key, auto_increment = false)]
-    pub state: String,
     pub state_abbrev: Option<String>,
     pub speed_limit: Option<i32>,
     pub created_at: TimeDateTimeWithTimeZone,
