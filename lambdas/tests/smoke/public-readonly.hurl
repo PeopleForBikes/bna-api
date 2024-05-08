@@ -15,7 +15,8 @@ GET {{host}}/cities
 HTTP 200
 
 # Query a specific city.
-GET {{host}}/cities/{{city_id}}
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}
+# GET {{host}}/cities/United%20States/Texas/Austin
 HTTP 200
 
 # Query all the BNAs of a specific city.

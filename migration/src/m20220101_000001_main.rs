@@ -77,11 +77,11 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(ColumnDef::new(City::CityId).uuid().unique_key().not_null())
                     .col(ColumnDef::new(City::Country).string().not_null())
+                    .col(ColumnDef::new(City::State).string().not_null())
+                    .col(ColumnDef::new(City::Name).string().not_null())
                     .col(ColumnDef::new(City::Latitude).double())
                     .col(ColumnDef::new(City::Longitude).double())
-                    .col(ColumnDef::new(City::Name).string().not_null())
                     .col(ColumnDef::new(City::Region).string())
-                    .col(ColumnDef::new(City::State).string().not_null())
                     .col(ColumnDef::new(City::StateAbbrev).string())
                     .col(ColumnDef::new(City::SpeedLimit).integer())
                     .col(

@@ -67,3 +67,28 @@ async fn main() -> Result<(), Error> {
         e
     })
 }
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+    // use lambda_http::{http, RequestExt};
+    // use std::collections::HashMap;
+
+    // #[tokio::test]
+    // async fn test_handler_opportunity() {
+    //     let event = http::Request::builder()
+    //         .header(http::header::CONTENT_TYPE, "application/json")
+    //         .body(Body::Empty)
+    //         .expect("failed to build request")
+    //         .with_path_parameters(HashMap::from([
+    //             ("country".to_string(), "United%20States".to_string()),
+    //             ("region".to_string(), "Texas".to_string()),
+    //             ("name".to_string(), "Austin".to_string()),
+    //         ]))
+    //         .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+    //             lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+    //         ));
+    //     let r = function_handler(event).await.unwrap();
+    //     dbg!(r);
+    // }
+}
