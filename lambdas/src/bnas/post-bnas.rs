@@ -30,19 +30,19 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Extract and serialize the data.
-    let mut wrapper = match parse_request_body::<BNAPost>(&event) {
+    info!("Parsing body into BNAPost...");
+    let wrapper = match parse_request_body::<BNAPost>(&event) {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
 
-    // Get the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
+    // Note(rgreinho): We are note supposed to do that. The Brokenspoke-analyzer
+    // already computes the scores for us.
     // Refresh the scores.
-    wrapper.core_services.refresh_score();
-    wrapper.opportunity.refresh_score();
-    wrapper.recreation.refresh_score();
-    wrapper.refresh_score();
+    // wrapper.core_services.refresh_score();
+    // wrapper.opportunity.refresh_score();
+    // wrapper.recreation.refresh_score();
+    // wrapper.refresh_score();
 
     // Turn the model wrapper into active models.
     let summary = summary::ActiveModel {
@@ -52,6 +52,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         score: ActiveValue::Set(wrapper.summary.score),
         version: ActiveValue::Set(wrapper.summary.version),
     };
+    info!("{:?}", summary);
     let core_services = core_services::ActiveModel {
         bna_uuid: ActiveValue::Set(wrapper.summary.bna_uuid),
         dentists: ActiveValue::Set(wrapper.core_services.dentists),
@@ -62,17 +63,20 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         score: ActiveValue::Set(wrapper.core_services.score),
         social_services: ActiveValue::Set(wrapper.core_services.social_services),
     };
+    info!("{:?}", core_services);
     let features = features::ActiveModel {
         bna_uuid: ActiveValue::Set(wrapper.summary.bna_uuid),
         people: ActiveValue::Set(wrapper.features.people),
         retail: ActiveValue::Set(wrapper.features.retail),
         transit: ActiveValue::Set(wrapper.features.transit),
     };
+    info!("{:?}", features);
     let infrastructure = infrastructure::ActiveModel {
         bna_uuid: ActiveValue::Set(wrapper.summary.bna_uuid),
         low_stress_miles: ActiveValue::Set(wrapper.infrastructure.low_stress_miles),
         high_stress_miles: ActiveValue::Set(wrapper.infrastructure.high_stress_miles),
     };
+    info!("{:?}", infrastructure);
     let opportunity = opportunity::ActiveModel {
         bna_uuid: ActiveValue::Set(wrapper.summary.bna_uuid),
         employment: ActiveValue::Set(wrapper.opportunity.employment),
@@ -83,6 +87,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             wrapper.opportunity.technical_vocational_college,
         ),
     };
+    info!("{:?}", opportunity);
     let recreation = recreation::ActiveModel {
         bna_uuid: ActiveValue::Set(wrapper.summary.bna_uuid),
         community_centers: ActiveValue::Set(wrapper.recreation.community_centers),
@@ -90,6 +95,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         recreation_trails: ActiveValue::Set(wrapper.recreation.recreation_trails),
         score: ActiveValue::Set(wrapper.recreation.score),
     };
+    info!("{:?}", recreation);
+
+    // Get the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // And insert a new entry for each model.
     let summary_res = Summary::insert(summary).exec(&db).await?;
@@ -98,16 +107,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let infrastructure_res = Infrastructure::insert(infrastructure).exec(&db).await?;
     let opportunity_res = Opportunity::insert(opportunity).exec(&db).await?;
     let recreation_res = Recreation::insert(recreation).exec(&db).await?;
-    Ok(json!(vec![
+    let res_vec = vec![
         summary_res.last_insert_id,
         core_services_res.last_insert_id,
         features_res.last_insert_id,
         infrastructure_res.last_insert_id,
         opportunity_res.last_insert_id,
         recreation_res.last_insert_id,
-    ])
-    .into_response()
-    .await)
+    ];
+    info!("{:?}", res_vec);
+    Ok(json!(res_vec).into_response().await)
 
     // Ok(Body::Empty.into_response().await)
 }
