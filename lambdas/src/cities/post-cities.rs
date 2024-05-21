@@ -9,6 +9,7 @@ use lambdas::database_connect;
 use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
 use serde_json::json;
 use tracing::info;
+use uuid::Uuid;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -46,6 +47,9 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Turn the model wrapper into an active model.
     let mut active_city = wrapper.into_active_model();
 
+    // Assign a city_id.
+    active_city.city_id = ActiveValue::Set(Uuid::new_v4());
+
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -67,4 +71,23 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     info!("inserting City into database: {:?}", active_city);
     let res = City::insert(active_city).exec(&db).await?;
     Ok(json!(res.last_insert_id).into_response().await)
+}
+
+#[cfg(test)]
+mod tests {
+    use lambda_http::{http, RequestExt};
+
+    use super::*;
+
+    // #[tokio::test]
+    // async fn test_handler() {
+    //     let event = http::Request::builder()
+    //   .header(http::header::CONTENT_TYPE, "application/json")
+    //   .body(Body::from(r#"{"name": "santa rosa","country": "united states","fips_code": "3570670","state": "new mexico", "state_abbrev": "NM"}"#))
+    //   .expect("failed to build request")
+    //   .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default()));
+
+    //     let r = function_handler(event).await.unwrap();
+    //     dbg!(r);
+    // }
 }
