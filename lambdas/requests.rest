@@ -113,7 +113,7 @@ Authorization: Bearer {{cognito_access}}
 
 {
   "city": "santa rosa",
-  "country": "usa",
+  "country": "United States",
   "fips_code": "3570670",
   "region": "new mexico"
 }
@@ -131,7 +131,7 @@ Authorization: Bearer {{cognito_access}}
 
 {
   "city": "santa rosa",
-  "country": "usa",
+  "country": "United States",
   "email": "jane.dpe@orgllc.com",
   "fips_code": "3570670",
   "first_name": "Jane",
