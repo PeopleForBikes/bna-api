@@ -48,6 +48,7 @@ jobs:
           post-bnas
           post-bnas-analysis
           post-bnas-enqueue
+          post-cities
           post-cities-submissions"
           echo $LAMBDAS \
           | xargs -n1 -t \

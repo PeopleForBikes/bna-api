@@ -120,3 +120,68 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Ok(Body::Empty.into_response().await)
 }
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+    // use entity::wrappers::bna::{
+    //     BNACoreServices, BNAFeatures, BNAInfrastructure, BNAOpportunity, BNARecreation, BNASummary,
+    // };
+    // use lambda_http::{http, RequestExt};
+    // use sea_orm::prelude::Uuid;
+
+    // #[tokio::test]
+    // async fn test_post() {
+    //     let bna_uuid = Uuid::new_v4();
+    //     dbg!(&bna_uuid);
+    //     let bna_post = BNAPost {
+    //         core_services: BNACoreServices {
+    //             dentists: Some(0.0),
+    //             doctors: Some(0.0),
+    //             grocery: Some(1.69),
+    //             hospitals: Some(5.18),
+    //             pharmacies: Some(0.0),
+    //             social_services: Some(0.0),
+    //             score: Some(0.0),
+    //         },
+    //         features: BNAFeatures {
+    //             people: Some(19.17),
+    //             retail: Some(0.0),
+    //             transit: Some(0.0),
+    //         },
+    //         infrastructure: BNAInfrastructure {
+    //             low_stress_miles: Some(9.3),
+    //             high_stress_miles: Some(64.5),
+    //         },
+    //         opportunity: BNAOpportunity {
+    //             employment: Some(8.26),
+    //             higher_education: Some(0.0),
+    //             k12_education: Some(8.31),
+    //             technical_vocational_college: Some(0.0),
+    //             score: Some(0.0),
+    //         },
+    //         recreation: BNARecreation {
+    //             community_centers: Some(0.0),
+    //             parks: Some(7.13),
+    //             recreation_trails: Some(0.0),
+    //             score: Some(0.0),
+    //         },
+    //         summary: BNASummary {
+    //             bna_uuid,
+    //             version: "24.05".to_string(),
+    //             city_id: Uuid::parse_str("02fa7cef-bfb9-494e-9ae9-cdbaeb15f11f").unwrap(),
+    //             score: 0.0,
+    //         },
+    //     };
+    //     let body = serde_json::to_string(&bna_post).unwrap();
+    //     let event = http::Request::builder()
+    //         .header(http::header::CONTENT_TYPE, "application/json")
+    //         .body(Body::from(body))
+    //         .expect("failed to build request")
+    //         .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+    //             lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+    //         ));
+    //     let r = function_handler(event).await.unwrap();
+    //     dbg!(r);
+    // }
+}
