@@ -6,6 +6,7 @@ use entity::{
 };
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
+use sea_orm::ActiveModelTrait;
 use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
 use serde_json::json;
 use tracing::info;
@@ -69,21 +70,20 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // And insert a new entry.
     info!("inserting City into database: {:?}", active_city);
-    let res = City::insert(active_city).exec(&db).await?;
-    Ok(json!(res.last_insert_id).into_response().await)
+    let city = active_city.insert(&db).await?;
+    Ok(json!(city).into_response().await)
 }
 
 #[cfg(test)]
 mod tests {
-    use lambda_http::{http, RequestExt};
-
-    use super::*;
+    // use super::*;
+    // use lambda_http::{http, RequestExt};
 
     // #[tokio::test]
     // async fn test_handler() {
     //     let event = http::Request::builder()
     //   .header(http::header::CONTENT_TYPE, "application/json")
-    //   .body(Body::from(r#"{"name": "santa rosa","country": "united states","fips_code": "3570670","state": "new mexico", "state_abbrev": "NM"}"#))
+    //   .body(Body::from(r#"{"name": "santa rosa 000","country": "united states","fips_code": "3570670","state": "new mexico", "state_abbrev": "NM"}"#))
     //   .expect("failed to build request")
     //   .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default()));
 
