@@ -4,6 +4,7 @@ pub use super::brokenspoke_pipeline::Entity as BrokenspokePipeline;
 pub use super::census::Entity as Census;
 pub use super::city::Entity as City;
 pub use super::core_services::Entity as CoreServices;
+pub use super::country::Entity as Country;
 pub use super::fargate_price::Entity as FargatePrice;
 pub use super::features::Entity as Features;
 pub use super::infrastructure::Entity as Infrastructure;

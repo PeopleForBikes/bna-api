@@ -69,6 +69,59 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // Create the country table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(Country::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(Country::CountryId)
+                            .integer()
+                            .primary_key()
+                            .auto_increment()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(Country::Name)
+                            .string()
+                            .unique_key()
+                            .not_null(),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+        let insert_countries = Query::insert()
+            .into_table(Country::Table)
+            .columns([Country::Name])
+            .values_panic(["Belgium".into()])
+            .values_panic(["Brazil".into()])
+            .values_panic(["Canada".into()])
+            .values_panic(["Chile".into()])
+            .values_panic(["Colombia".into()])
+            .values_panic(["Croatia".into()])
+            .values_panic(["Cuba".into()])
+            .values_panic(["France".into()])
+            .values_panic(["Germany".into()])
+            .values_panic(["Greece".into()])
+            .values_panic(["Guatemala".into()])
+            .values_panic(["Iran".into()])
+            .values_panic(["Iraq".into()])
+            .values_panic(["Ireland".into()])
+            .values_panic(["Italy".into()])
+            .values_panic(["Mexico".into()])
+            .values_panic(["Netherlands".into()])
+            .values_panic(["New Zealand".into()])
+            .values_panic(["Northern Ireland".into()])
+            .values_panic(["Portugal".into()])
+            .values_panic(["Scotland".into()])
+            .values_panic(["Spain".into()])
+            .values_panic(["United States".into()])
+            .values_panic(["Vietnam".into()])
+            .values_panic(["Wales".into()])
+            .to_owned();
+        manager.exec_stmt(insert_countries).await?;
+
         // Create the city table.
         manager
             .create_table(
@@ -561,4 +614,13 @@ enum StateRegionCrosswalk {
     State,
     /// BNA Region.
     Region,
+}
+
+#[derive(Iden)]
+enum Country {
+    Table,
+    /// Country ID.
+    CountryId,
+    /// Country name.
+    Name,
 }

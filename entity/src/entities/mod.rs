@@ -6,6 +6,7 @@ pub mod brokenspoke_pipeline;
 pub mod census;
 pub mod city;
 pub mod core_services;
+pub mod country;
 pub mod fargate_price;
 pub mod features;
 pub mod infrastructure;
