@@ -30,8 +30,8 @@ pub enum BnaRegion {
     South,
 }
 #[derive(Debug, Clone, PartialEq, Eq, EnumIter, DeriveActiveEnum, Serialize, Deserialize)]
-#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "brokenspoke_state")]
-pub enum BrokenspokeState {
+#[sea_orm(rs_type = "String", db_type = "Enum", enum_name = "brokenspoke_step")]
+pub enum BrokenspokeStep {
     #[sea_orm(string_value = "analysis")]
     Analysis,
     #[sea_orm(string_value = "cleanup")]

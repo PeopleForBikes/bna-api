@@ -43,6 +43,7 @@ jobs:
           get-cities-bnas
           get-cities-census
           get-cities-submissions
+          get-price-fargate
           patch-bnas-analysis
           patch-cities-submissions
           post-bnas

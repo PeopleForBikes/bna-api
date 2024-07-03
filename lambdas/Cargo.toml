@@ -69,6 +69,10 @@ name = "get-cities-submissions"
 path = "src/cities-submissions/get-cities-submissions.rs"
 
 [[bin]]
+name = "get-price-fargate"
+path = "src/price-fargate/get-price-fargate.rs"
+
+[[bin]]
 name = "patch-bnas-analysis"
 path = "src/bnas-analysis/patch-bnas-analysis.rs"
 
