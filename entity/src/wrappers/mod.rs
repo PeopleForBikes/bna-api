@@ -44,36 +44,36 @@ impl FromStr for ApprovalStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum BrokenspokeState {
+pub enum BrokenspokeStep {
     SqsMessage,
     Setup,
     Analysis,
     Cleanup,
 }
 
-impl From<sea_orm_active_enums::BrokenspokeState> for BrokenspokeState {
-    fn from(value: sea_orm_active_enums::BrokenspokeState) -> Self {
+impl From<sea_orm_active_enums::BrokenspokeStep> for BrokenspokeStep {
+    fn from(value: sea_orm_active_enums::BrokenspokeStep) -> Self {
         match value {
-            sea_orm_active_enums::BrokenspokeState::Analysis => Self::Analysis,
-            sea_orm_active_enums::BrokenspokeState::Cleanup => Self::Cleanup,
-            sea_orm_active_enums::BrokenspokeState::Setup => Self::Setup,
-            sea_orm_active_enums::BrokenspokeState::SqsMessage => Self::SqsMessage,
+            sea_orm_active_enums::BrokenspokeStep::Analysis => Self::Analysis,
+            sea_orm_active_enums::BrokenspokeStep::Cleanup => Self::Cleanup,
+            sea_orm_active_enums::BrokenspokeStep::Setup => Self::Setup,
+            sea_orm_active_enums::BrokenspokeStep::SqsMessage => Self::SqsMessage,
         }
     }
 }
 
-impl From<BrokenspokeState> for sea_orm_active_enums::BrokenspokeState {
-    fn from(val: BrokenspokeState) -> Self {
+impl From<BrokenspokeStep> for sea_orm_active_enums::BrokenspokeStep {
+    fn from(val: BrokenspokeStep) -> Self {
         match val {
-            BrokenspokeState::Analysis => sea_orm_active_enums::BrokenspokeState::Analysis,
-            BrokenspokeState::Cleanup => sea_orm_active_enums::BrokenspokeState::Cleanup,
-            BrokenspokeState::Setup => sea_orm_active_enums::BrokenspokeState::Setup,
-            BrokenspokeState::SqsMessage => sea_orm_active_enums::BrokenspokeState::SqsMessage,
+            BrokenspokeStep::Analysis => sea_orm_active_enums::BrokenspokeStep::Analysis,
+            BrokenspokeStep::Cleanup => sea_orm_active_enums::BrokenspokeStep::Cleanup,
+            BrokenspokeStep::Setup => sea_orm_active_enums::BrokenspokeStep::Setup,
+            BrokenspokeStep::SqsMessage => sea_orm_active_enums::BrokenspokeStep::SqsMessage,
         }
     }
 }
 
-impl FromStr for BrokenspokeState {
+impl FromStr for BrokenspokeStep {
     type Err = serde_plain::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
