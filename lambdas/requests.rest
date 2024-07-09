@@ -111,12 +111,14 @@ POST {{host}}/cities/enqueue
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
-{
+[
+  {
   "city": "santa rosa",
   "country": "United States",
   "fips_code": "3570670",
   "region": "new mexico"
-}
+  }
+]
 
 ###
 # Collect the list of analysis that completed.
