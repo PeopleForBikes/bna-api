@@ -22,12 +22,22 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/bna_summaries"
-        400:
-          $ref: "#/components/responses/BadRequest"
     post:
+      summary: Create new BNA
+      description: Create a new BNA
+      tags:
+        - bna
+      requestBody:
+        description: Create bna
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/bna_post"
       responses:
-        default:
-          description: "Default response for POST /bnas"
+        201:
+          $ref: "#/components/responses/bna"
+        403:
+          $ref: "#/components/responses/forbidden"
       security:
         - Authorizer: []
   /bnas/analysis:
@@ -39,15 +49,29 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/analyses"
+        403:
+          $ref: "#/components/responses/forbidden"
       security:
         - Authorizer: []
     post:
+      summary: Submit a new city to analyze
+      description: Submit a new city to analyze
+      tags:
+        - bna
+      requestBody:
+        description: Create a new analysis performed by the brokenspoke-analyzer
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/analysis_post"
       responses:
-        default:
-          description: "Default response for POST /bnas/analysis"
+        201:
+          $ref: "#/components/responses/analyses"
+        400:
+          $ref: "#/components/responses/bad_request"
       security:
         - Authorizer: []
-  /bnas/analysis/{id}:
+  /bnas/analysis/{analysis_id}:
     get:
       summary: Get the summary of a specific analysis
       description: Get the summary of a specific analysis .
@@ -56,6 +80,12 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/analysis"
+        400:
+          $ref: "#/components/responses/bad_request"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          $ref: "#/components/responses/not_found"
       security:
         - Authorizer: []
     patch:
@@ -65,13 +95,8 @@ paths:
       security:
         - Authorizer: []
     parameters:
-      - name: "id"
-        in: "path"
-        description: "Generated path parameter for id"
-        required: true
-        schema:
-          type: "string"
-  /bnas/{id}:
+      - $ref: "#/components/parameters/state_machine_id"
+  /bnas/{bna_id}:
     get:
       summary: Get a specific BNA summary
       description: Get a specific BNA summary.
@@ -81,14 +106,12 @@ paths:
         200:
           $ref: "#/components/responses/bna"
         400:
-          $ref: "#/components/responses/BadRequest"
-        403:
-          $ref: "#/components/responses/Forbidden"
+          $ref: "#/components/responses/bad_request"
         404:
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/not_found"
     parameters:
-      - $ref: "#/components/parameters/bna_uuid"
-  /bnas/{id}/city:
+      - $ref: "#/components/parameters/bna_id"
+  /bnas/{bna_id}/city:
     get:
       summary: Get a specific BNA summary and its associated city
       description: Get a specific BNA summary and its associated city.
@@ -97,8 +120,12 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/bna_summary_with_city"
+        400:
+          $ref: "#/components/responses/bad_request"
+        404:
+          $ref: "#/components/responses/not_found"
     parameters:
-      - $ref: "#/components/parameters/bna_uuid"
+      - $ref: "#/components/parameters/bna_id"
   /cities:
     get:
       summary: Get city details
@@ -109,9 +136,21 @@ paths:
         200:
           $ref: "#/components/responses/cities"
     post:
+      summary: Create a new city
+      description: Create a new city.
+      tags:
+        - city
+      requestBody:
+        description: Create a new city.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/city_post"
       responses:
-        default:
-          description: "Default response for POST /cities"
+        201:
+          $ref: "#/components/responses/city"
+        400:
+          $ref: "#/components/responses/bad_request"
       security:
         - Authorizer: []
   /cities/submissions:
@@ -124,10 +163,22 @@ paths:
         200:
           $ref: "#/components/responses/submissions"
     post:
+      summary: Submit a new city for analysis
+      description: Submit a new city for analysis.
+      tags:
+        - city
+      requestBody:
+        description: Create a new analysis to be performed by the brokenspoke-analyzer
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/submission_post"
       responses:
-        default:
-          description: "Default response for POST /cities/submissions"
-  /cities/submissions/{id}:
+        201:
+          $ref: "#/components/responses/submission"
+        400:
+          $ref: "#/components/responses/bad_request"
+  /cities/submissions/{submission_id}:
     get:
       summary: Get the details of a specific sumission
       description: Get the details of a specific sumission.
@@ -136,6 +187,10 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/submission"
+        400:
+          $ref: "#/components/responses/bad_request"
+        404:
+          $ref: "#/components/responses/not_found"
     patch:
       responses:
         default:
@@ -160,8 +215,10 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/city"
+        400:
+          $ref: "#/components/responses/bad_request"
         404:
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/not_found"
     parameters:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
@@ -179,8 +236,10 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/city_with_bnas"
+        400:
+          $ref: "#/components/responses/bad_request"
         404:
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/not_found"
     parameters:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
@@ -196,23 +255,39 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/city_with_census"
+        400:
+          $ref: "#/components/responses/bad_request"
         404:
-          $ref: "#/components/responses/NotFound"
+          $ref: "#/components/responses/not_found"
     parameters:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
       - $ref: "#/components/parameters/name"
   /bnas/enqueue:
     post:
+      summary: Enqueue a city to process
+      description: Enqueue a city to process.
+      tags:
+        - bna
+      requestBody:
+        description: Create a new city to enqueue.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/enqueue_post"
       responses:
-        default:
-          description: "Default response for POST /bnas/enqueue"
+        201:
+          $ref: "#/components/responses/enqueue"
+        400:
+          $ref: "#/components/responses/bad_request"
+        403:
+          $ref: "#/components/responses/forbidden"
       security:
         - Authorizer: []
 
 components:
   schemas:
-    bna_uuid:
+    bna_id:
       type: string
       description: "Analysis identifier"
       example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
@@ -246,8 +321,8 @@ components:
     bna_summary:
       type: object
       properties:
-        bna_uuid:
-          $ref: "#/components/schemas/bna_uuid"
+        bna_id:
+          $ref: "#/components/schemas/bna_id"
         city_id:
           $ref: "#/components/schemas/city_id"
         created_at:
@@ -352,6 +427,23 @@ components:
         updated_at:
           $ref: "#/components/schemas/updated_at"
           required: false
+    city_post:
+      type: object
+      properties:
+        country:
+          $ref: "#/components/schemas/country"
+        latitude:
+          $ref: "#/components/schemas/latitude"
+        longitude:
+          $ref: "#/components/schemas/longitude"
+        name:
+          $ref: "#/components/schemas/name"
+        state:
+          $ref: "#/components/schemas/state"
+        state_abbrev:
+          $ref: "#/components/schemas/state_abbrev"
+        speed_limit:
+          $ref: "#/components/schemas/speed_limit"
     bna_summary_with_city:
       type: array
       items:
@@ -364,7 +456,7 @@ components:
       type: string
       description: "detailed error message"
       example: "the entry was not found"
-    id:
+    api_gateway_id:
       type: string
       description: "API Gateway ID associated with the request "
       example: "blfwkg8nvHcEJnQ="
@@ -407,7 +499,7 @@ components:
         API Error object as described in <https://jsonapi.org/format/#error-objects>
       properties:
         id:
-          $ref: "#/components/schemas/id"
+          $ref: "#/components/schemas/api_gateway_id"
         details:
           $ref: "#/components/schemas/details"
         status:
@@ -518,166 +610,361 @@ components:
           $ref: "#/components/schemas/step"
         torn_down:
           $ref: "#/components/schemas/torn_down"
+    analysis_post:
+      type: object
+      properties:
+        cost:
+          $ref: "#/components/schemas/cost"
+        end_time:
+          $ref: "#/components/schemas/end_time"
+        fargate_task_arn:
+          $ref: "#/components/schemas/fargate_task_arn"
+        result_posted:
+          $ref: "#/components/schemas/results_posted"
+        s3_bucket:
+          $ref: "#/components/schemas/s3_bucket"
+        sqs_message:
+          $ref: "#/components/schemas/sqs_message"
+        step:
+          $ref: "#/components/schemas/step"
+        torn_down:
+          $ref: "#/components/schemas/torn_down"
+    community_centers:
+      type: number
+      description: "BNA category subscore for access to community centers"
+      example: 70.7
+    coreservices_score:
+      type: number
+      description: "BNA category score for access to core services"
+      example: 78.15
+    dentists:
+      type: number
+      description: "BNA category subscore for access to dentists"
+      example: 68.69
+    doctors:
+      type: number
+      description: "BNA category subscore for access to doctors"
+      example: 73.51
+    employment:
+      type: number
+      description: "BNA category subscore for access to job location areas"
+      example: 0.0
+    grocery:
+      type: number
+      description: "BNA category subscore for access to grocery stores"
+      example: 83.02
+    high_stress_miles:
+      type: number
+      description: "Total miles of high-stress streets in the measured area"
+      example: 437.8
+    higher_education:
+      type: number
+      description: "BNA category subscore for access to universities and colleges"
+      example: 84.76
+    hospitals:
+      type: number
+      description: "BNA category subscore for access to hospitals"
+      example: 82.43
+    k12_education:
+      type: number
+      description: "BNA category subscore for access to k12 schools"
+      example: 6.63
+    low_stress_miles:
+      type: number
+      description: "Total miles of low-stress streets and paths in the measured area"
+      example: 1862.2
+    opportunity_score:
+      type: number
+      description: BNA category score for access to education and jobs""
+      example: 79.91
+    parks:
+      type: number
+      description: "BNA category subscore for access to parks"
+      example: 78.49
+    people:
+      type: number
+      description: "BNA category score for access to residential areas"
+      example: 75.81
+    pharmacies:
+      type: number
+      description: "BNA category subscore for access to pharmacies"
+      example: 76.62
+    recreation_score:
+      type: number
+      description: "BNA category score for access to recreational facilities"
+      example: 82.13
+    recreation_trails:
+      type: number
+      description: "BNA category subscore for access to bikeable trails"
+      example: 94.45
+    retail:
+      type: number
+      description: "BNA category score for access to major retail centers"
+      example: 73.71
+    score:
+      type: number
+      description: "BNA total score"
+      example: 77.0
+    social_services:
+      type: number
+      description: "BNA category subscore for access to social services"
+      example: 77.82
+    technical_vocational_college:
+      type: number
+      description: "BNA category subscore for access to technical and vocational colleges"
+      example: 81.67
+    transit:
+      type: number
+      description: "BNA category score for access to major transit stops"
+      example: 71.59
     bna:
       type: object
       properties:
-        bna_uuid:
-          $ref: "#/components/schemas/bna_uuid"
+        bna_id:
+          $ref: "#/components/schemas/bna_id"
         city_id:
           $ref: "#/components/schemas/city_id"
         community_centers:
-          type: number
-          description: "BNA category subscore for access to community centers"
-          example: 70.7
+          $ref: "#/components/schemas/community_centers"
         coreservices_score:
-          type: number
-          description: "BNA category score for access to core services"
-          example: 78.15
+          $ref: "#/components/schemas/coreservices_score"
         dentists:
-          type: number
-          description: "BNA category subscore for access to dentists"
-          example: 68.69
+          $ref: "#/components/schemas/dentists"
         doctors:
-          type: number
-          description: "BNA category subscore for access to doctors"
-          example: 73.51
+          $ref: "#/components/schemas/doctors"
         employment:
-          type: number
-          description: "BNA category subscore for access to job location areas"
-          example: 0.0
+          $ref: "#/components/schemas/employment"
         grocery:
-          type: number
-          description: "BNA category subscore for access to grocery stores"
-          example: 83.02
+          $ref: "#/components/schemas/grocery"
         high_stress_miles:
-          type: number
-          description: "Total miles of high-stress streets in the measured area"
-          example: 437.8
+          $ref: "#/components/schemas/high_stress_miles"
         higher_education:
-          type: number
-          description: "BNA category subscore for access to universities and colleges"
-          example: 84.76
+          $ref: "#/components/schemas/higher_education"
         hospitals:
-          type: number
-          description: "BNA category subscore for access to hospitals"
-          example: 82.43
+          $ref: "#/components/schemas/hospitals"
         k12_education:
-          type: number
-          description: "BNA category subscore for access to k12 schools"
-          example: 6.63
+          $ref: "#/components/schemas/k12_education"
         low_stress_miles:
-          type: number
-          description: "Total miles of low-stress streets and paths in the measured area"
-          example: 1862.2
+          $ref: "#/components/schemas/low_stress_miles"
         opportunity_score:
-          type: number
-          description: BNA category score for access to education and jobs""
-          example: 79.91
+          $ref: "#/components/schemas/opportunity_score"
         parks:
-          type: number
-          description: "BNA category subscore for access to parks"
-          example: 78.49
+          $ref: "#/components/schemas/parks"
         people:
-          type: number
-          description: "BNA category score for access to residential areas"
-          example: 75.81
+          $ref: "#/components/schemas/people"
         pharmacies:
-          type: number
-          description: "BNA category subscore for access to pharmacies"
-          example: 76.62
+          $ref: "#/components/schemas/pharmacies"
         recreation_score:
-          type: number
-          description: "BNA category score for access to recreational facilities"
-          example: 82.13
+          $ref: "#/components/schemas/recreation_score"
         recreation_trails:
-          type: number
-          description: "BNA category subscore for access to bikeable trails"
-          example: 94.45
+          $ref: "#/components/schemas/recreation_trails"
         retail:
-          type: number
-          description: "BNA category score for access to major retail centers"
-          example: 73.71
+          $ref: "#/components/schemas/retail"
         score:
-          type: number
-          description: "BNA total score"
-          example: 77.0
+          $ref: "#/components/schemas/score"
         social_services:
-          type: number
-          description: "BNA category subscore for access to social services"
-          example: 77.82
+          $ref: "#/components/schemas/social_services"
         technical_vocational_college:
-          type: number
-          description: "BNA category subscore for access to technical and vocational colleges"
-          example: 81.67
+          $ref: "#/components/schemas/technical_vocational_college"
         transit:
-          type: number
-          description: "BNA category score for access to major transit stops"
-          example: 71.59
+          $ref: "#/components/schemas/transit"
         version:
           $ref: "#/components/schemas/version"
     submission_id:
       type: integer
       description: "Submission identifier"
       example: 1
+    first_name:
+      type: string
+      description: "First name"
+      example: "Jane"
+    last_name:
+      type: string
+      description: "Last name"
+      example: "Doe"
+    occupation:
+      type: string
+      description: "Job title or position"
+      example: "CTO"
+    organization:
+      type: string
+      description: "Name of the organization"
+      example: "Organization LLC"
+    email:
+      type: string
+      description: Email address
+      example: "jane.dpe@orgllc.com"
+    consent:
+      type: boolean
+      description: "Consent status"
+      example: true
+    submission_status:
+      type: string
+      description: "The current status of the submission"
+      example: "Pending"
     submission:
       type: object
       properties:
         city:
-          type: string
-          description: "City name"
-          example: "santa rosa"
+          $ref: "#/components/schemas/name"
         consent:
-          type: boolean
-          description: "Consent status"
-          example: true
+          $ref: "#/components/schemas/consent"
         country:
           $ref: "#/components/schemas/country"
         created_at:
           $ref: "#/components/schemas/created_at"
         email:
-          type: string
-          description: Email address
-          example: "jane.dpe@orgllc.com"
+          $ref: "#/components/schemas/email"
         fips_code:
           $ref: "#/components/schemas/fips_code"
         first_name:
-          type: string
-          description: "First name"
-          example: "Jane"
+          $ref: "#/components/schemas/first_name"
         id:
           $ref: "#/components/schemas/submission_id"
         last_name:
-          type: string
-          description: "Last name"
-          example: "Doe"
+          $ref: "#/components/schemas/last_name"
         organization:
-          type: string
-          description: "Name of the organization"
-          example: "Organization LLC"
+          $ref: "#/components/schemas/organization"
         region:
           $ref: "#/components/schemas/region"
-        status:
-          type: string
-          description: "The current status of the submission"
-          example: "Pending"
-        title:
-          type: string
-          description: "Job title or position"
-          example: "CTO"
+        submission_status:
+          $ref: "#/components/schemas/submission_status"
+        occupation:
+          $ref: "#/components/schemas/occupation"
     submissions:
       type: array
       description: "A collection of submissions"
       items:
         $ref: "#/components/schemas/submission"
+    submission_post:
+      type: object
+      properties:
+        first_name:
+          $ref: "#/components/schemas/first_name"
+        last_name:
+          $ref: "#/components/schemas/last_name"
+        occupation:
+          $ref: "#/components/schemas/occupation"
+        organization:
+          $ref: "#/components/schemas/organization"
+        email:
+          $ref: "#/components/schemas/email"
+        country:
+          $ref: "#/components/schemas/country"
+        city:
+          $ref: "#/components/schemas/name"
+        region:
+          $ref: "#/components/schemas/region"
+        fips_code:
+          $ref: "#/components/schemas/fips_code"
+        consent:
+          $ref: "#/components/schemas/consent"
+        submission_status:
+          $ref: "#/components/schemas/submission_status"
+    enqueue:
+      type: object
+      properties:
+        country:
+          $ref: "#/components/schemas/country"
+        city:
+          $ref: "#/components/schemas/name"
+        region:
+          $ref: "#/components/schemas/region"
+        fips_code:
+          $ref: "#/components/schemas/fips_code"
+    enqueue_post:
+      type: object
+      properties:
+        country:
+          $ref: "#/components/schemas/country"
+        city:
+          $ref: "#/components/schemas/name"
+        region:
+          $ref: "#/components/schemas/region"
+        fips_code:
+          $ref: "#/components/schemas/fips_code"
+
+    core_services:
+      type: object
+      properties:
+        dentists:
+          $ref: "#/components/schemas/dentists"
+        doctors:
+          $ref: "#/components/schemas/doctors"
+        grocery:
+          $ref: "#/components/schemas/grocery"
+        hospitals:
+          $ref: "#/components/schemas/hospitals"
+        pharmacies:
+          $ref: "#/components/schemas/pharmacies"
+        score:
+          $ref: "#/components/schemas/score"
+        social_services:
+          $ref: "#/components/schemas/social_services"
+    features:
+      type: object
+      properties:
+        people:
+          $ref: "#/components/schemas/people"
+        retail:
+          $ref: "#/components/schemas/retail"
+        transit:
+          $ref: "#/components/schemas/transit"
+    infrastructure:
+      type: object
+      properties:
+        low_stress_miles:
+          $ref: "#/components/schemas/low_stress_miles"
+        high_stress_miles:
+          $ref: "#/components/schemas/high_stress_miles"
+    opportunity:
+      type: object
+      properties:
+        employment:
+          $ref: "#/components/schemas/employment"
+        higher_education:
+          $ref: "#/components/schemas/higher_education"
+        k12_education:
+          $ref: "#/components/schemas/k12_education"
+        score:
+          $ref: "#/components/schemas/score"
+        technical_vocational_college:
+          $ref: "#/components/schemas/technical_vocational_college"
+    recreation:
+      type: object
+      properties:
+        community_centers:
+          $ref: "#/components/schemas/community_centers"
+        parks:
+          $ref: "#/components/schemas/parks"
+        recreation_trails:
+          $ref: "#/components/schemas/recreation_trails"
+        score:
+          $ref: "#/components/schemas/score"
+    bna_post:
+      type: object
+      properties:
+        core_services:
+          $ref: "#/components/schemas/core_services"
+        features:
+          $ref: "#/components/schemas/features"
+        infrastructure:
+          $ref: "#/components/schemas/infrastructure"
+        opportunity:
+          $ref: "#/components/schemas/opportunity"
+        recreation:
+          $ref: "#/components/schemas/recreation"
+        summary:
+          $ref: "#/components/schemas/bna_summary"
 
   parameters:
-    bna_uuid:
-      name: "id"
+    bna_id:
+      name: "bna_id"
       in: "path"
       description: "Analysis identifier"
       required: true
       schema:
-        $ref: "#/components/schemas/bna_uuid"
+        $ref: "#/components/schemas/bna_id"
     country:
       name: "country"
       in: "path"
@@ -703,12 +990,19 @@ components:
       schema:
         $ref: "#/components/schemas/name"
     submission_id:
-      name: "id"
+      name: "submission_id"
       in: "path"
       description: "Submission identifier"
       required: true
       schema:
         $ref: "#/components/schemas/submission_id"
+    state_machine_id:
+      name: state_machine_id
+      in: path
+      required: true
+      description: State Machine Identifier
+      schema:
+        $ref: "#/components/schemas/state_machine_id"
 
   responses:
     bna_summary:
@@ -724,7 +1018,7 @@ components:
           schema:
             type: array
             items:
-              allOf:
+              anyOf:
                 - $ref: "#/components/schemas/bna_summary_with_city"
                 - $ref: "#/components/schemas/city"
     bna_summaries:
@@ -772,7 +1066,7 @@ components:
           schema:
             type: array
             items:
-              allOf:
+              anyOf:
                 - $ref: "#/components/schemas/city"
                 - $ref: "#/components/schemas/census"
     city_with_bnas:
@@ -782,7 +1076,7 @@ components:
           schema:
             type: array
             items:
-              allOf:
+              anyOf:
                 - $ref: "#/components/schemas/city"
                 - $ref: "#/components/schemas/bna_summary"
     analysis:
@@ -815,17 +1109,24 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/submission"
-    BadRequest:
+    bad_request:
       description: >
         Your request was formatted incorrectly or missing required parameters.
-    Forbidden:
+    forbidden:
       description: >
         You weren't authorized to make your request; most likely this indicates an issue
         with your credentials or permissions.
-    NotFound:
+    not_found:
       description: >
         The particular resource you are requesting was not found. This occurs, for
         example, if you request a resource by an id that does not exist.
+    enqueue:
+      description: "An entry to enqueue a city to process "
+      content:
+        application/json:
+          schema:
+            type: object
+            $ref: "#/components/schemas/enqueue"
 
   securitySchemes:
     Authorizer:
