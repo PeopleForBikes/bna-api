@@ -89,9 +89,25 @@ paths:
       security:
         - Authorizer: []
     patch:
+      summary: Update an analysis
+      description: Update an analysis
+      tags:
+        - bna
+      requestBody:
+        description: Update a new analysis performed by the brokenspoke-analyzer
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/analysis_patch"
       responses:
-        default:
-          description: "Default response for PATCH /bnas/analysis/{id}"
+        200:
+          $ref: "#/components/responses/analysis"
+        400:
+          $ref: "#/components/responses/bad_request"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          $ref: "#/components/responses/not_found"
       security:
         - Authorizer: []
     parameters:
@@ -192,19 +208,30 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
     patch:
+      summary: Update the details of a specific sumission
+      description: Update the details of a specific sumission.
+      tags:
+        - city
+      requestBody:
+        description: Update the details of a specific sumission.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/submission_patch"
       responses:
-        default:
-          description: "Default response for PATCH /cities/submissions/{id}"
+        200:
+          $ref: "#/components/responses/submission"
+        400:
+          $ref: "#/components/responses/bad_request"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          $ref: "#/components/responses/not_found"
       security:
         - Authorizer: []
     parameters:
-      - name: "id"
-        in: "path"
-        description: "Submission identifier"
-        required: true
-        schema:
-          type: integer
-          example: 1
+      - $ref: "#/components/parameters/submission_id"
+
   /cities/{country}/{region}/{name}:
     get:
       summary: Get the details of specific city
@@ -629,6 +656,27 @@ components:
           $ref: "#/components/schemas/step"
         torn_down:
           $ref: "#/components/schemas/torn_down"
+    analysis_patch:
+      type: object
+      properties:
+        cost:
+          $ref: "#/components/schemas/cost"
+        end_time:
+          $ref: "#/components/schemas/end_time"
+        fargate_task_arn:
+          $ref: "#/components/schemas/fargate_task_arn"
+        results_posted:
+          $ref: "#/components/schemas/results_posted"
+        s3_bucket:
+          $ref: "#/components/schemas/s3_bucket"
+        sqs_message:
+          $ref: "#/components/schemas/sqs_message"
+        start_time:
+          $ref: "#/components/schemas/start_time"
+        step:
+          $ref: "#/components/schemas/step"
+        torn_down:
+          $ref: "#/components/schemas/torn_down"
     community_centers:
       type: number
       description: "BNA category subscore for access to community centers"
@@ -836,6 +884,31 @@ components:
       description: "A collection of submissions"
       items:
         $ref: "#/components/schemas/submission"
+    submission_patch:
+      type: object
+      properties:
+        first_name:
+          $ref: "#/components/schemas/first_name"
+        last_name:
+          $ref: "#/components/schemas/last_name"
+        occupation:
+          $ref: "#/components/schemas/occupation"
+        organization:
+          $ref: "#/components/schemas/organization"
+        email:
+          $ref: "#/components/schemas/email"
+        country:
+          $ref: "#/components/schemas/country"
+        city:
+          $ref: "#/components/schemas/name"
+        region:
+          $ref: "#/components/schemas/region"
+        fips_code:
+          $ref: "#/components/schemas/fips_code"
+        consent:
+          $ref: "#/components/schemas/consent"
+        submission_status:
+          $ref: "#/components/schemas/submission_status"
     submission_post:
       type: object
       properties:
