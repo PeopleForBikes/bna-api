@@ -66,3 +66,13 @@ dbml-sql:
 # Generate the SVG diagram from dbml.
 dbml-svg:
   npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i docs/database.dbml -o docs/database.svg
+
+# Spins up Docker Compose.
+compose-up:
+  docker compose up -d
+
+# Tears down Docker Compose.
+compose-down:
+  docker compose down
+  docker compose rm -sfv
+  docker volume rm -f bna-api_postgres

@@ -10,11 +10,13 @@ use entity::{
     census, city, core_services, features, infrastructure, opportunity, prelude::*, recreation,
     speed_limit, state_region_crosswalk, state_speed_limit, summary,
 };
-use sea_orm::{prelude::Uuid, ActiveModelTrait, ActiveValue, Database, EntityTrait};
+use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
 
-const US_STATE_COUNT: usize = 52;
+const US_STATE_COUNT: usize = 50;
+const CHUNK_SIZE: usize = 1000;
+
 #[derive(Debug, Deserialize)]
 pub struct StateSpeedLimitCSV {
     state: String,
@@ -101,7 +103,7 @@ async fn main() -> Result<(), Report> {
     }
 
     // Load the historical data CSV file.
-    let mut csv_reader = Reader::from_path("../../PeopleForBikes/brokenspoke/assets/city-ratings/city-ratings-all-historical-results-v24.2.csv")?;
+    let mut csv_reader = Reader::from_path("../../PeopleForBikes/brokenspoke/assets/city-ratings/city-ratings-all-historical-results-v24.07.csv")?;
     for record in csv_reader.deserialize() {
         // Read the record.
         let scorecard: ScoreCard24 = record?;
@@ -256,46 +258,26 @@ async fn main() -> Result<(), Report> {
     StateSpeedLimit::insert_many(state_speed_limits)
         .exec(&db)
         .await?;
-
-    // FIXME: Insert cities one by one to debug the cities not matching the uniqueness
-    // constraint on the triplet (country,state,name).
-    // Arlington, VA
-    let c = cities.clone();
-    for city in c.into_values() {
-        let r = city.clone().insert(&db).await;
-        if r.is_err() {
-            dbg!(&city);
-        }
-    }
-    // City::insert_many(cities.into_values()).exec(&db).await?;
+    City::insert_many(cities.into_values()).exec(&db).await?;
     Census::insert_many(census_populations).exec(&db).await?;
     SpeedLimit::insert_many(speed_limits).exec(&db).await?;
     Summary::insert_many(summaries).exec(&db).await?;
     Features::insert_many(bna_features).exec(&db).await?;
-    CoreServices::insert_many(
-        bna_core_services
-            .clone()
-            .into_iter()
-            .take(6000)
-            .collect::<Vec<core_services::ActiveModel>>(),
-    )
-    .exec(&db)
-    .await?;
-    CoreServices::insert_many(
-        bna_core_services
-            .clone()
-            .into_iter()
-            .skip(6000)
-            .collect::<Vec<core_services::ActiveModel>>(),
-    )
-    .exec(&db)
-    .await?;
+    for chunk in bna_core_services.chunks(CHUNK_SIZE) {
+        CoreServices::insert_many(chunk.to_vec()).exec(&db).await?;
+    }
     dbg!(bna_core_services.len());
-    Recreation::insert_many(bna_recreation).exec(&db).await?;
-    Opportunity::insert_many(bna_opportunity).exec(&db).await?;
-    Infrastructure::insert_many(bna_infrastructure)
-        .exec(&db)
-        .await?;
+    for chunk in bna_recreation.chunks(CHUNK_SIZE) {
+        Recreation::insert_many(chunk.to_vec()).exec(&db).await?;
+    }
+    for chunk in bna_opportunity.chunks(CHUNK_SIZE) {
+        Opportunity::insert_many(chunk.to_vec()).exec(&db).await?;
+    }
+    for chunk in bna_infrastructure.chunks(CHUNK_SIZE) {
+        Infrastructure::insert_many(chunk.to_vec())
+            .exec(&db)
+            .await?;
+    }
 
     Ok(())
 }
