@@ -1,228 +1,195 @@
-Project brokenspoke_analyzer {
-  database_type: 'PostgreSQL'
-  Note: 'Brokenspoke-analyzer schema'
+Enum "approval_status" {
+  "Pending"
+  "Approved"
+  "Rejected"
 }
 
-TableGroup analysis {
-  bna.summary
-  bna.features
-  bna.core_services
-  bna.opportunity
-  bna.recreation
-  bna.infrastructure
+Enum "bna_region" {
+  "Mid-Atlantic"
+  "Midwest"
+  "Mountain"
+  "New England"
+  "Pacific"
+  "South"
 }
 
-TableGroup city {
-  bna.city
-  bna.census
-  bna.speed_limit
-  bna.state_speed_limit
+Enum "brokenspoke_status" {
+  "pending"
+  "started"
+  "complete"
 }
 
-enum size {
-  small
-  medium
-  large
+Enum "brokenspoke_step" {
+  "sqs_message"
+  "setup"
+  "analysis"
+  "cleanup"
 }
 
-enum approval_status {
-  pending
-  approved
-  rejected
+Table "brokenspoke_pipeline" {
+  "state_machine_id" uuid [pk, not null]
+  "step" brokenspoke_step
+  "sqs_message" json
+  "fargate_task_arn" "character varying"
+  "s3_bucket" "character varying"
+  "start_time" timestamp [not null]
+  "end_time" timestamp
+  "torn_down" boolean
+  "results_posted" boolean
+  "cost" numeric
 }
 
-Table bna.summary [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  city_id uuid
-  created_at date [not null]
-  score float
-  version varchar(10)
+Table "census" {
+  "census_id" integer [pk, not null]
+  "city_id" uuid [not null]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "fips_code" "character varying" [not null]
+  "pop_size" integer [not null]
+  "population" integer [not null]
 
-  indexes {
-    bna_uuid
-    city_id
+  Indexes {
+    census_id [type: btree, name: "census_census_id_idx"]
+    city_id [type: btree, name: "census_city_id_idx"]
   }
 }
 
-Table bna.features [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  people float
-  retail float
-  transit float
+Table "city" {
+  "city_id" uuid [unique, not null]
+  "country" "character varying" [not null]
+  "state" "character varying" [not null]
+  "name" "character varying" [not null]
+  "latitude" doubleprecision
+  "longitude" doubleprecision
+  "region" "character varying"
+  "state_abbrev" "character varying"
+  "speed_limit" integer
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" timestamp
 
-  indexes {
-    bna_uuid
+  Indexes {
+    (country, state, name) [pk, name: "city_pkey"]
+    city_id [type: btree, name: "city_city_id_idx"]
   }
 }
 
-Table bna.core_services [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  dentists float
-  doctors float
-  grocery float
-  hospitals float
-  pharmacies float
-  score float
-  social_services float
+Table "core_services" {
+  "bna_uuid" uuid [pk, not null]
+  "dentists" doubleprecision
+  "doctors" doubleprecision
+  "grocery" doubleprecision
+  "hospitals" doubleprecision
+  "pharmacies" doubleprecision
+  "score" doubleprecision
+  "social_services" doubleprecision
+}
 
-  indexes {
-    bna_uuid
+Table "country" {
+  "country_id" integer [pk, not null]
+  "name" "character varying" [unique, not null]
+}
+
+Table "fargate_price" {
+  "id" integer [pk, not null]
+  "per_second" numeric [not null]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+}
+
+Table "features" {
+  "bna_uuid" uuid [pk, not null]
+  "people" doubleprecision
+  "retail" doubleprecision
+  "transit" doubleprecision
+}
+
+Table "infrastructure" {
+  "bna_uuid" uuid [pk, not null]
+  "low_stress_miles" doubleprecision
+  "high_stress_miles" doubleprecision
+}
+
+Table "opportunity" {
+  "bna_uuid" uuid [pk, not null]
+  "employment" doubleprecision
+  "higher_education" doubleprecision
+  "k12_education" doubleprecision
+  "score" doubleprecision
+  "technical_vocational_college" doubleprecision
+}
+
+Table "recreation" {
+  "bna_uuid" uuid [pk, not null]
+  "community_centers" doubleprecision
+  "parks" doubleprecision
+  "recreation_trails" doubleprecision
+  "score" doubleprecision
+}
+
+Table "seaql_migrations" {
+  "version" "character varying" [pk, not null]
+  "applied_at" bigint [not null]
+}
+
+Table "speed_limit" {
+  "speed_limit_id" integer [pk, not null]
+  "city_id" uuid [not null]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "residential" integer [not null]
+
+  Indexes {
+    city_id [type: btree, name: "speed_limit_city_id_idx"]
+    speed_limit_id [type: btree, name: "speed_limit_speed_limit_id_idx"]
   }
 }
 
-Table bna.opportunity [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  employment float
-  higher_education float
-  k12_education float
-  score float
-  technical_vocational_college float
-
-  indexes {
-    bna_uuid
-  }
+Table "state_region_crosswalk" {
+  "state" "character varying" [pk, not null]
+  "region" bna_region [not null]
 }
 
-Table bna.recreation [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  community_centers float
-  parks float
-  recreation_trails float
-  score float
-
-  indexes {
-    bna_uuid
-  }
+Table "state_speed_limit" {
+  "state_abbrev" "character (2)" [pk, not null]
+  "state_fips_code" "character (2)" [not null]
+  "speed" integer [not null]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" timestamp
 }
 
-Table bna.infrastructure [headercolor: #82F0D3] {
-  bna_uuid uuid [pk]
-  low_stress_miles float
-  high_stress_miles float
-
-  indexes {
-    bna_uuid
-  }
+Table "submission" {
+  "id" integer [pk, not null]
+  "first_name" "character varying" [not null]
+  "last_name" "character varying" [not null]
+  "title" "character varying"
+  "organization" "character varying"
+  "email" "character varying" [not null]
+  "country" "character varying" [not null]
+  "city" "character varying" [not null]
+  "region" "character varying"
+  "fips_code" "character varying" [not null, default: `'0'::charactervarying`]
+  "consent" boolean [not null]
+  "status" approval_status [not null, default: `'Pending'::public.approval_status`]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
 }
 
-Table bna.city [headercolor: #6B41A3] {
-  city_id uuid
-  country varchar(50) [not null][pk]
-  latitude float
-  longitude float
-  name varchar(50) [not null][pk]
-  region varchar(50)
-  state varchar(50) [not null][pk]
-  state_abbrev varchar(4)
-  size int [not null]
-  speed_limit int
-  created_at date [not null]
-  updated_at date
-
-  indexes {
-    city_id
-    name
-  }
+Table "summary" {
+  "bna_uuid" uuid [pk, not null]
+  "city_id" uuid [not null]
+  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "score" doubleprecision [not null]
+  "version" "character varying" [not null]
 }
 
-Table bna.census [headercolor: #6B41A3] {
-  census_id int [pk, increment]
-  city_id uuid
-  created_at date [not null]
-  fips_code char(7)
-  pop_size size
-  population int
+Ref "census_city_id_fkey":"city"."city_id" < "census"."city_id" [delete: cascade]
 
-  indexes {
-    census_id
-    city_id
-    fips_code
-  }
-}
+Ref "core_services_bna_uuid_fkey":"summary"."bna_uuid" < "core_services"."bna_uuid" [delete: cascade]
 
-Table bna.speed_limit [headercolor: #6B41A3] {
-  speed_limit_id int [pk, increment]
-  city_id uuid
-  created_at date [not null]
-  residential int
+Ref "features_bna_uuid_fkey":"summary"."bna_uuid" < "features"."bna_uuid" [delete: cascade]
 
-  indexes {
-    speed_limit_id
-    city_id
-  }
-}
+Ref "infrastructure_bna_uuid_fkey":"summary"."bna_uuid" < "infrastructure"."bna_uuid" [delete: cascade]
 
-Table bna.state_speed_limit [headercolor: #6B41A3] {
-  state_abbrev char(2) [pk]
-  fips_code_state char(2) [not null, unique]
-  speed int [not null]
-  created_at date [not null]
-  updated_at date
+Ref "opportunity_bna_uuid_fkey":"summary"."bna_uuid" < "opportunity"."bna_uuid" [delete: cascade]
 
-  indexes {
-    state_abbrev
-    fips_code_state
-  }
-}
+Ref "recreation_bna_uuid_fkey":"summary"."bna_uuid" < "recreation"."bna_uuid" [delete: cascade]
 
-Table bna.submission {
-  submission_id int [pk, increment]
-  firstname varchar(50)
-  lastname varchar(50)
-  title varchar(50)
-  organization varchar(50)
-  email varchar(50)
-  country varchar(50)
-  city varchar(50)
-  region varchar(50)
-  fipscode varchar(50)
-  consent varchar(50)
-  status approval_status
-  created_at date [not null]
+Ref "speed_limit_city_id_fkey":"city"."city_id" < "speed_limit"."city_id" [delete: cascade]
 
-  indexes {
-    submission_id
-  }
-}
-
-Ref: bna.city.city_id < bna.summary.city_id
-Ref: bna.city.city_id < bna.census.city_id
-Ref: bna.city.city_id < bna.speed_limit.city_id
-Ref: bna.summary.bna_uuid - bna.core_services.bna_uuid
-Ref: bna.summary.bna_uuid - bna.opportunity.bna_uuid
-Ref: bna.summary.bna_uuid - bna.recreation.bna_uuid
-Ref: bna.summary.bna_uuid - bna.infrastructure.bna_uuid
-Ref: bna.summary.bna_uuid - bna.features.bna_uuid
-
-enum brokenspoke_status {
-  pending
-  started
-  complete
-}
-
-enum brokenspoke_state {
-  pipeline
-  sqs_message
-  setup
-  analysis
-  export
-}
-
-Table bna.brokenspoke_pipeline {
-  state_machine_id uuid [pk]
-  scheduled_trigger_id uuid [unique]
-  state brokenspoke_state
-  sqs_message json
-  neon_branch_id varchar(50)
-  fargate_task_arn varchar(50) [unique]
-  s3_bucket varchar(50)
-  start_time date [not null]
-  end_time date
-  torndown bool
-
-  indexes {
-    state_machine_id
-  }
-}
-
-
+Ref "summary_city_id_fkey":"city"."city_id" < "summary"."city_id" [delete: cascade]
