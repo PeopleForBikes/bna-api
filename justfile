@@ -5,7 +5,9 @@ set dotenv-load := true
 
 # Define variables.
 
+dbml := "docs/database.dbml"
 entites := "entity/src/entities"
+sql_dump := "docs/database.sql"
 
 # Meta task running ALL the CI tasks at onces.
 ci: lint
@@ -31,6 +33,13 @@ lint-md:
 # Check spelling.
 lint-spellcheck:
     npx --yes cspell --no-progress --show-suggestions --show-context "**/*.md"
+
+# Dump database.
+db-dump:
+  pg_dump -d $DATABASE_URL --schema-only > {{ sql_dump }}
+
+# Dump database and convert it to dbml.
+db-to-dbml: db-dump dbml-from-sql dbml-svg
 
 # Generate models
 db-generate-models:
@@ -61,17 +70,23 @@ db-seed:
 
 # Generate PostgreSQL dump from dbml.
 dbml-sql:
-  npx -y --package=@dbml/cli dbml2sql --postgres docs/database.dbml -o docs/database.sql
+  npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} -o {{ sql_dump }}
+
+# Convert PostgreSQL dump to dbml.
+dbml-from-sql:
+  sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
 
 # Generate the SVG diagram from dbml.
 dbml-svg:
-  npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i docs/database.dbml -o docs/database.svg
+  npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i {{ dbml }} -o docs/database.svg
 
-# Spins up Docker Compose.
+
+
+# Spin up Docker Compose.
 compose-up:
   docker compose up -d
 
-# Tears down Docker Compose.
+# Tear down Docker Compose.
 compose-down:
   docker compose down
   docker compose rm -sfv
