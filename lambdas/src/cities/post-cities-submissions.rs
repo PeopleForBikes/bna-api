@@ -1,9 +1,12 @@
 use dotenv::dotenv;
 use effortless::api::parse_request_body;
-use entity::{prelude::*, wrappers::submission::SubmissionPost};
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use entity::wrappers::submission::SubmissionPost;
+use lambda_http::{
+    http::{header, StatusCode},
+    run, service_fn, Body, Error, Request, Response,
+};
 use lambdas::database_connect;
-use sea_orm::{EntityTrait, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, IntoActiveModel};
 use serde_json::json;
 use tracing::info;
 
@@ -27,8 +30,13 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         "inserting Submission into database: {:?}",
         active_submission
     );
-    let res = Submission::insert(active_submission).exec(&db).await?;
-    Ok(json!(res.last_insert_id).into_response().await)
+    let submission = active_submission.insert(&db).await?;
+    let response = Response::builder()
+        .status(StatusCode::CREATED)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::Text(json!(submission).to_string()))
+        .expect("unable to build http::Response");
+    Ok(response)
 }
 
 #[tokio::main]

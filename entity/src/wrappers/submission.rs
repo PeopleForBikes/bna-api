@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 pub struct SubmissionPost {
     pub first_name: String,
     pub last_name: String,
-    pub title: Option<String>,
+    pub occupation: Option<String>,
     pub organization: Option<String>,
     pub email: String,
     pub country: String,
@@ -23,7 +23,7 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
             id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(self.first_name),
             last_name: ActiveValue::Set(self.last_name),
-            title: ActiveValue::Set(self.title),
+            occupation: ActiveValue::Set(self.occupation),
             organization: ActiveValue::Set(self.organization),
             email: ActiveValue::Set(self.email),
             country: ActiveValue::Set(self.country),
@@ -41,7 +41,7 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
 pub struct SubmissionPatch {
     pub first_name: Option<String>,
     pub last_name: Option<String>,
-    pub title: Option<Option<String>>,
+    pub occupation: Option<Option<String>>,
     pub organization: Option<Option<String>>,
     pub email: Option<String>,
     pub country: Option<String>,
@@ -60,7 +60,9 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
                 .first_name
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
             last_name: self.last_name.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            title: self.title.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            occupation: self
+                .occupation
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
             organization: self
                 .organization
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
@@ -84,7 +86,7 @@ mod tests {
     fn test_submission_post_into_active_model_full() {
         let first_name = "John".to_string();
         let last_name = "Doe".to_string();
-        let title = Some("Director".to_owned());
+        let occupation = Some("Director".to_owned());
         let organization = Some("ACME".to_string());
         let email = "john.doe@acme.org".to_string();
         let country = "usa".to_string();
@@ -96,7 +98,7 @@ mod tests {
         let wrapper = SubmissionPost {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
-            title: title.clone(),
+            occupation: occupation.clone(),
             organization: organization.clone(),
             email: email.clone(),
             country: country.clone(),
@@ -111,7 +113,7 @@ mod tests {
             id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(first_name),
             last_name: ActiveValue::Set(last_name),
-            title: ActiveValue::Set(title),
+            occupation: ActiveValue::Set(occupation),
             organization: ActiveValue::Set(organization),
             email: ActiveValue::Set(email),
             country: ActiveValue::Set(country),
@@ -141,7 +143,7 @@ mod tests {
         let wrapper = SubmissionPost {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
-            title: title.clone(),
+            occupation: title.clone(),
             organization: organization.clone(),
             email: email.clone(),
             country: country.clone(),
@@ -156,7 +158,7 @@ mod tests {
             id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(first_name),
             last_name: ActiveValue::Set(last_name),
-            title: ActiveValue::Set(title),
+            occupation: ActiveValue::Set(title),
             organization: ActiveValue::Set(organization),
             email: ActiveValue::Set(email),
             country: ActiveValue::Set(country),
@@ -176,7 +178,7 @@ mod tests {
         let wrapper = SubmissionPatch {
             first_name: Some(first_name.clone()),
             last_name: None,
-            title: None,
+            occupation: None,
             organization: None,
             email: None,
             country: None,
@@ -191,7 +193,7 @@ mod tests {
             id: ActiveValue::NotSet,
             first_name: ActiveValue::Set(first_name),
             last_name: ActiveValue::NotSet,
-            title: ActiveValue::NotSet,
+            occupation: ActiveValue::NotSet,
             organization: ActiveValue::NotSet,
             email: ActiveValue::NotSet,
             country: ActiveValue::NotSet,

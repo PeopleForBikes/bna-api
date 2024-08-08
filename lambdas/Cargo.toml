@@ -66,7 +66,7 @@ path = "src/cities/get-cities-census.rs"
 
 [[bin]]
 name = "get-cities-submissions"
-path = "src/cities-submissions/get-cities-submissions.rs"
+path = "src/cities/get-cities-submissions.rs"
 
 [[bin]]
 name = "get-price-fargate"
@@ -78,11 +78,11 @@ path = "src/bnas-analysis/patch-bnas-analysis.rs"
 
 [[bin]]
 name = "patch-cities-submissions"
-path = "src/cities-submissions/patch-cities-submissions.rs"
+path = "src/cities/patch-cities-submissions.rs"
 
 [[bin]]
 name = "post-cities-submissions"
-path = "src/cities-submissions/post-cities-submissions.rs"
+path = "src/cities/post-cities-submissions.rs"
 
 [[bin]]
 name = "post-bnas-analysis"

@@ -142,7 +142,7 @@ async fn main() -> Result<(), Report> {
                 .unwrap_or(scorecard.country.clone());
 
             let city_model = city::ActiveModel {
-                city_id: ActiveValue::Set(city_uuid),
+                id: ActiveValue::Set(city_uuid),
                 country: ActiveValue::Set(scorecard.country.clone()),
                 latitude: ActiveValue::Set(Some(scorecard.census_latitude)),
                 longitude: ActiveValue::Set(Some(scorecard.census_longitude)),
@@ -159,7 +159,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the census population model.
         let census_model = census::ActiveModel {
-            census_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(city_uuid),
             created_at: ActiveValue::Set(created_at),
             fips_code: scorecard
@@ -176,7 +176,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the speed limit model.
         let speed_limit_model = speed_limit::ActiveModel {
-            speed_limit_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(city_uuid),
             created_at: ActiveValue::Set(created_at),
             residential: scorecard
@@ -188,7 +188,7 @@ async fn main() -> Result<(), Report> {
         // Populate the summary model.
         let bna_uuid = Uuid::parse_str(scorecard.bna_uuid.as_str()).unwrap();
         let summary_model = summary::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid),
+            bna_id: ActiveValue::Set(bna_uuid),
             city_id: ActiveValue::Set(city_uuid),
             created_at: ActiveValue::Set(created_at),
             score: ActiveValue::Set(scorecard.bna_rounded_score.into()),
@@ -198,7 +198,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the features model.
         let feature_model = features::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid),
+            bna_id: ActiveValue::Set(bna_uuid),
             people: ActiveValue::Set(scorecard.bna_people),
             transit: ActiveValue::Set(scorecard.bna_transit),
             retail: ActiveValue::Set(scorecard.bna_retail),
@@ -207,7 +207,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the Core Services model.
         let core_services_model = core_services::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid),
+            bna_id: ActiveValue::Set(bna_uuid),
             dentists: ActiveValue::Set(scorecard.bna_core_services_dentists),
             doctors: ActiveValue::Set(scorecard.bna_core_services_doctors),
             grocery: ActiveValue::Set(scorecard.bna_core_services_grocery),
@@ -220,7 +220,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the recreation model.
         let recreation_model = recreation::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid.clone()),
+            bna_id: ActiveValue::Set(bna_uuid.clone()),
             community_centers: ActiveValue::Set(scorecard.bna_recreation_community_centers),
             parks: ActiveValue::Set(scorecard.bna_recreation_parks),
             recreation_trails: ActiveValue::Set(scorecard.bna_recreation_trails),
@@ -230,7 +230,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the opportunity model.
         let opportunity_model = opportunity::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid),
+            bna_id: ActiveValue::Set(bna_uuid),
             employment: ActiveValue::Set(scorecard.bna_opportunity_employment),
             higher_education: ActiveValue::Set(scorecard.bna_opportunity_higher_education),
             k12_education: ActiveValue::Set(scorecard.bna_opportunity_k12_education),
@@ -243,7 +243,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the infrastructure model.
         let infratructure_model = infrastructure::ActiveModel {
-            bna_uuid: ActiveValue::Set(bna_uuid),
+            bna_id: ActiveValue::Set(bna_uuid),
             low_stress_miles: ActiveValue::Set(scorecard.bna_total_low_stress_miles),
             high_stress_miles: ActiveValue::Set(scorecard.bna_total_high_stress_miles),
         };

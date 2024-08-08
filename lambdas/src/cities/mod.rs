@@ -4,7 +4,7 @@ use effortless::{api::parse_path_parameter, error::APIErrors};
 use lambda_http::Request;
 
 /// Represent the path parameters for the /cities enpoint.
-pub struct PathParameters {
+pub struct CitiesPathParameters {
     /// Country name.
     pub country: String,
     /// Region name.
@@ -14,7 +14,7 @@ pub struct PathParameters {
 }
 
 /// Extract the path parameters for the /cities endpoint.
-pub fn extract_path_parameters(event: &Request) -> Result<PathParameters, APIErrors> {
+pub fn extract_path_parameters(event: &Request) -> Result<CitiesPathParameters, APIErrors> {
     let mut api_errors = APIErrors::empty();
 
     let country = match parse_path_parameter::<String>(event, "country") {
@@ -44,7 +44,7 @@ pub fn extract_path_parameters(event: &Request) -> Result<PathParameters, APIErr
         return Err(api_errors);
     }
 
-    Ok(PathParameters {
+    Ok(CitiesPathParameters {
         country: country.unwrap(),
         region: region.unwrap(),
         name: name.unwrap(),

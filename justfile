@@ -80,8 +80,6 @@ dbml-from-sql:
 dbml-svg:
   npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i {{ dbml }} -o docs/database.svg
 
-
-
 # Spin up Docker Compose.
 compose-up:
   docker compose up -d

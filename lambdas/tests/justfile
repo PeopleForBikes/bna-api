@@ -25,8 +25,11 @@ test-staging-schemathesis:
 
 # Run the integration tests against the staging environment.
 test-staging:
-  hurl --variables-file staging.vars --test pagination.hurl bnas.hurl cities.hurl
+  hurl --variables-file staging.vars --test \
+    scenario/pagination.hurl \
+    endpoints/bnas.hurl \
+    endpoints/cities.hurl
 
 # Run the smoke tests against the staging environment.
-test-smoke-readonly-staging:
+test-staging-smoke-readonly:
   hurl --variables-file staging.vars --test smoke/public-readonly.hurl

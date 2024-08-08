@@ -77,7 +77,7 @@ async fn main() -> Result<(), Report> {
         id: ActiveValue::NotSet,
         first_name: ActiveValue::Set("Floyd".to_string()),
         last_name: ActiveValue::Set("Martin".to_string()),
-        title: ActiveValue::Set(None),
+        occupation: ActiveValue::Set(None),
         organization: ActiveValue::Set(Some("organization".to_string())),
         email: ActiveValue::Set("floyd.martin@organization.com".to_string()),
         country: ActiveValue::Set("usa".to_string()),

@@ -3,10 +3,13 @@ use effortless::{
     api::{missing_parameter, parse_path_parameter, parse_request_body},
     error::APIErrors,
 };
-use entity::{prelude::*, submission::ActiveModel, wrappers::submission::SubmissionPatch};
+use entity::{
+    submission::{self, ActiveModel},
+    wrappers::submission::SubmissionPatch,
+};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
-use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
 use serde_json::json;
 use tracing::info;
 
@@ -18,7 +21,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(model) => model,
         Err(e) => return Ok(e.into()),
     };
-
     info!(
         "updating Submission {:?} into database: {:?}",
         active_model.id, active_model
@@ -28,8 +30,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Update the entry.
-    let res = Submission::update(active_model).exec(&db).await?;
-    Ok(json!(res.id).into_response().await)
+    let model: submission::Model = active_model.update(&db).await?;
+    Ok(json!(model).into_response().await)
 }
 
 #[tokio::main]
@@ -50,7 +52,7 @@ async fn main() -> Result<(), Error> {
 
 pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
     // Retrieve the ID of the Submission to update.
-    let parameter = "id";
+    let parameter = "submission_id";
     let submission_id = parse_path_parameter::<i32>(event, parameter)?
         .ok_or(missing_parameter(event, parameter))?;
 
@@ -76,7 +78,7 @@ mod tests {
             .header(http::header::CONTENT_TYPE, "application/json")
             .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
             .expect("failed to build request")
-            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]))
+            .with_path_parameters(HashMap::from([("submission_id".to_string(), "1".to_string())]))
             .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default()));
         let active_submission = prepare_active_model(&event).unwrap();
         assert_eq!(
