@@ -1,4 +1,3 @@
-#![allow(clippy::enum_variant_names)]
 use sea_orm_migration::{
     prelude::*,
     sea_orm::{EnumIter, Iterable},
@@ -76,7 +75,7 @@ impl MigrationTrait for Migration {
                     .table(Country::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Country::CountryId)
+                        ColumnDef::new(Country::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -128,7 +127,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(City::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(City::CityId).uuid().unique_key().not_null())
+                    .col(ColumnDef::new(City::Id).uuid().unique_key().not_null())
                     .col(ColumnDef::new(City::Country).string().not_null())
                     .col(ColumnDef::new(City::State).string().not_null())
                     .col(ColumnDef::new(City::Name).string().not_null())
@@ -154,12 +153,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
         manager
-            .create_index(
-                Index::create()
-                    .table(City::Table)
-                    .col(City::CityId)
-                    .to_owned(),
-            )
+            .create_index(Index::create().table(City::Table).col(City::Id).to_owned())
             .await?;
 
         // Create CensusPopulation table.
@@ -169,7 +163,7 @@ impl MigrationTrait for Migration {
                     .table(Census::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Census::CensusId)
+                        ColumnDef::new(Census::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
@@ -188,7 +182,7 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .from(Census::Table, Census::CityId)
-                            .to(City::Table, City::CityId)
+                            .to(City::Table, City::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -198,7 +192,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .table(Census::Table)
-                    .col(Census::CensusId)
+                    .col(Census::Id)
                     .to_owned(),
             )
             .await?;
@@ -217,7 +211,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(SpeedLimit::Table)
                     .col(
-                        ColumnDef::new(SpeedLimit::SpeedLimitId)
+                        ColumnDef::new(SpeedLimit::Id)
                             .integer()
                             .not_null()
                             .auto_increment()
@@ -234,7 +228,7 @@ impl MigrationTrait for Migration {
                     .foreign_key(
                         ForeignKey::create()
                             .from(SpeedLimit::Table, SpeedLimit::CityId)
-                            .to(City::Table, City::CityId)
+                            .to(City::Table, City::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -244,7 +238,7 @@ impl MigrationTrait for Migration {
             .create_index(
                 Index::create()
                     .table(SpeedLimit::Table)
-                    .col(SpeedLimit::SpeedLimitId)
+                    .col(SpeedLimit::Id)
                     .to_owned(),
             )
             .await?;
@@ -262,7 +256,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Summary::Table)
-                    .col(ColumnDef::new(Summary::BNAUuid).uuid().not_null())
+                    .col(ColumnDef::new(Summary::BNAId).uuid().not_null())
                     .col(ColumnDef::new(Summary::CityId).uuid().not_null())
                     .col(
                         ColumnDef::new(Summary::CreatedAt)
@@ -272,11 +266,11 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Summary::Score).double().not_null())
                     .col(ColumnDef::new(Summary::Version).string().not_null())
-                    .primary_key(Index::create().col(Summary::BNAUuid))
+                    .primary_key(Index::create().col(Summary::BNAId))
                     .foreign_key(
                         ForeignKey::create()
                             .from(Summary::Table, Summary::CityId)
-                            .to(City::Table, City::CityId)
+                            .to(City::Table, City::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -288,15 +282,15 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Features::Table)
-                    .col(ColumnDef::new(Features::BNAUuid).uuid().not_null())
+                    .col(ColumnDef::new(Features::BNAId).uuid().not_null())
                     .col(ColumnDef::new(Features::People).double())
                     .col(ColumnDef::new(Features::Retail).double())
                     .col(ColumnDef::new(Features::Transit).double())
-                    .primary_key(Index::create().col(Features::BNAUuid))
+                    .primary_key(Index::create().col(Features::BNAId))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(Features::Table, Features::BNAUuid)
-                            .to(Summary::Table, Summary::BNAUuid)
+                            .from(Features::Table, Features::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -308,7 +302,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CoreServices::Table)
-                    .col(ColumnDef::new(CoreServices::BNAUuid).uuid())
+                    .col(ColumnDef::new(CoreServices::BNAId).uuid())
                     .col(ColumnDef::new(CoreServices::Dentists).double())
                     .col(ColumnDef::new(CoreServices::Doctors).double())
                     .col(ColumnDef::new(CoreServices::Grocery).double())
@@ -316,11 +310,11 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(CoreServices::Pharmacies).double())
                     .col(ColumnDef::new(CoreServices::Score).double())
                     .col(ColumnDef::new(CoreServices::SocialServices).double())
-                    .primary_key(Index::create().col(CoreServices::BNAUuid))
+                    .primary_key(Index::create().col(CoreServices::BNAId))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(CoreServices::Table, CoreServices::BNAUuid)
-                            .to(Summary::Table, Summary::BNAUuid)
+                            .from(CoreServices::Table, CoreServices::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -332,17 +326,17 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Opportunity::Table)
-                    .col(ColumnDef::new(Opportunity::BNAUuid).uuid().not_null())
+                    .col(ColumnDef::new(Opportunity::BNAId).uuid().not_null())
                     .col(ColumnDef::new(Opportunity::Employment).double())
                     .col(ColumnDef::new(Opportunity::HigherEducation).double())
                     .col(ColumnDef::new(Opportunity::K12Education).double())
                     .col(ColumnDef::new(Opportunity::Score).double())
                     .col(ColumnDef::new(Opportunity::TechnicalVocationalCollege).double())
-                    .primary_key(Index::create().col(Opportunity::BNAUuid))
+                    .primary_key(Index::create().col(Opportunity::BNAId))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(Opportunity::Table, Opportunity::BNAUuid)
-                            .to(Summary::Table, Summary::BNAUuid)
+                            .from(Opportunity::Table, Opportunity::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -354,16 +348,16 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Recreation::Table)
-                    .col(ColumnDef::new(Recreation::BNAUuid).uuid().not_null())
+                    .col(ColumnDef::new(Recreation::BNAId).uuid().not_null())
                     .col(ColumnDef::new(Recreation::CommunityCenters).double())
                     .col(ColumnDef::new(Recreation::Parks).double())
                     .col(ColumnDef::new(Recreation::RecreationTrails).double())
                     .col(ColumnDef::new(Recreation::Score).double())
-                    .primary_key(Index::create().col(Recreation::BNAUuid))
+                    .primary_key(Index::create().col(Recreation::BNAId))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(Recreation::Table, Recreation::BNAUuid)
-                            .to(Summary::Table, Summary::BNAUuid)
+                            .from(Recreation::Table, Recreation::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -375,14 +369,14 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Infrastructure::Table)
-                    .col(ColumnDef::new(Infrastructure::BNAUuid).uuid().not_null())
+                    .col(ColumnDef::new(Infrastructure::BNAId).uuid().not_null())
                     .col(ColumnDef::new(Infrastructure::LowStressMiles).double())
                     .col(ColumnDef::new(Infrastructure::HighStressMiles).double())
-                    .primary_key(Index::create().col(Infrastructure::BNAUuid))
+                    .primary_key(Index::create().col(Infrastructure::BNAId))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(Infrastructure::Table, Infrastructure::BNAUuid)
-                            .to(Summary::Table, Summary::BNAUuid)
+                            .from(Infrastructure::Table, Infrastructure::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
                     .to_owned(),
@@ -432,7 +426,7 @@ impl MigrationTrait for Migration {
 enum City {
     Table,
     /// City identifier.
-    CityId,
+    Id,
     /// Country.
     Country,
     /// Creation date.
@@ -458,7 +452,7 @@ enum City {
 #[derive(Iden)]
 enum Census {
     Table,
-    CensusId,
+    Id,
     /// City identifier.
     CityId,
     /// Creation date.
@@ -474,7 +468,7 @@ enum Census {
 #[derive(Iden)]
 enum SpeedLimit {
     Table,
-    SpeedLimitId,
+    Id,
     /// City identifier.
     CityId,
     /// Creation date.
@@ -487,7 +481,7 @@ enum SpeedLimit {
 enum Summary {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// City identifier.
     CityId,
     /// Creation date.
@@ -502,7 +496,7 @@ enum Summary {
 enum Features {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// BNA category score for access to residential areas.
     People,
     /// BNA category score for access to major retail centers.
@@ -515,7 +509,7 @@ enum Features {
 enum CoreServices {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// BNA category subscore for access to dentists.
     Dentists,
     /// BNA category subscore for access to doctors.
@@ -536,7 +530,7 @@ enum CoreServices {
 enum Opportunity {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// BNA category subscore for access to job location areas.
     Employment,
     /// BNA category subscore for access to universities and colleges.
@@ -553,12 +547,13 @@ enum Opportunity {
 enum Recreation {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// BNA category subscore for access to community centers.
     CommunityCenters,
     /// BNA category subscore for access to parks.
     Parks,
     /// BNA category subscore for access to bikeable trails.
+    #[allow(clippy::enum_variant_names)]
     RecreationTrails,
     /// BNA category score for access to recreational facilities.
     Score,
@@ -568,7 +563,7 @@ enum Recreation {
 enum Infrastructure {
     Table,
     /// Analysis unique identifier.
-    BNAUuid,
+    BNAId,
     /// Total miles of low-stress streets and paths in the measured area.
     LowStressMiles,
     /// Total miles of high-stress streets in the measured area.
@@ -620,7 +615,7 @@ enum StateRegionCrosswalk {
 enum Country {
     Table,
     /// Country ID.
-    CountryId,
+    Id,
     /// Country name.
     Name,
 }

@@ -51,7 +51,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let mut active_city = wrapper.into_active_model();
 
     // Assign a city_id.
-    active_city.city_id = ActiveValue::Set(Uuid::new_v4());
+    active_city.id = ActiveValue::Set(Uuid::new_v4());
 
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;

@@ -17,7 +17,7 @@ pub struct CityPost {
 impl IntoActiveModel<city::ActiveModel> for CityPost {
     fn into_active_model(self) -> city::ActiveModel {
         city::ActiveModel {
-            city_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             country: ActiveValue::Set(self.country),
             latitude: ActiveValue::Set(self.latitude),
             longitude: ActiveValue::Set(self.longitude),
@@ -47,7 +47,7 @@ pub struct CityPatch {
 impl IntoActiveModel<city::ActiveModel> for CityPatch {
     fn into_active_model(self) -> city::ActiveModel {
         city::ActiveModel {
-            city_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             country: self.country.map_or(ActiveValue::NotSet, ActiveValue::Set),
             latitude: self.latitude.map_or(ActiveValue::NotSet, ActiveValue::Set),
             longitude: self.longitude.map_or(ActiveValue::NotSet, ActiveValue::Set),

@@ -4,7 +4,7 @@ use entity::{census, city};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::{
     build_paginated_response,
-    cities::{extract_path_parameters, PathParameters},
+    cities::{extract_path_parameters, CitiesPathParameters},
     database_connect, pagination_parameters,
 };
 use sea_orm::{EntityTrait, PaginatorTrait};
@@ -31,7 +31,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Extract the path parameters.
-    let params: PathParameters = match extract_path_parameters(&event) {
+    let params: CitiesPathParameters = match extract_path_parameters(&event) {
         Ok(p) => p,
         Err(e) => return Ok(e.into()),
     };

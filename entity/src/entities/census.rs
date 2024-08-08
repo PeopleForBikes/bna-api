@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "census")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    pub census_id: i32,
+    pub id: i32,
     pub city_id: Uuid,
     pub created_at: TimeDateTimeWithTimeZone,
     pub fips_code: String,
@@ -20,7 +20,7 @@ pub enum Relation {
     #[sea_orm(
         belongs_to = "super::city::Entity",
         from = "Column::CityId",
-        to = "super::city::Column::CityId",
+        to = "super::city::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]

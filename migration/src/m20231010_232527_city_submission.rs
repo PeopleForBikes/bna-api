@@ -32,7 +32,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Submission::FirstName).string().not_null())
                     .col(ColumnDef::new(Submission::LastName).string().not_null())
-                    .col(ColumnDef::new(Submission::Title).string())
+                    .col(ColumnDef::new(Submission::Occupation).string())
                     .col(ColumnDef::new(Submission::Organization).string())
                     .col(ColumnDef::new(Submission::Email).string().not_null())
                     .col(ColumnDef::new(Submission::Country).string().not_null())
@@ -71,13 +71,13 @@ impl MigrationTrait for Migration {
     }
 }
 
-#[derive(DeriveIden)]
+#[derive(Iden)]
 enum Submission {
     Table,
     Id,
     FirstName,
     LastName,
-    Title,
+    Occupation,
     Organization,
     Email,
     Country,

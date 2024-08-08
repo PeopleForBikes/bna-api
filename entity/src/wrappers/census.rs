@@ -11,7 +11,7 @@ pub struct CensusPost {
 impl IntoActiveModel<census::ActiveModel> for CensusPost {
     fn into_active_model(self) -> census::ActiveModel {
         census::ActiveModel {
-            census_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(self.city_id),
             created_at: ActiveValue::NotSet,
             fips_code: ActiveValue::Set(self.fips_code),
@@ -31,7 +31,7 @@ pub struct CensusPatch {
 impl IntoActiveModel<census::ActiveModel> for CensusPatch {
     fn into_active_model(self) -> census::ActiveModel {
         census::ActiveModel {
-            census_id: ActiveValue::NotSet,
+            id: ActiveValue::NotSet,
             city_id: self.city_id.map_or(ActiveValue::NotSet, ActiveValue::Set),
             created_at: ActiveValue::NotSet,
             fips_code: self.fips_code.map_or(ActiveValue::NotSet, ActiveValue::Set),
