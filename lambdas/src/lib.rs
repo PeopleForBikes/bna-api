@@ -1,3 +1,4 @@
+pub mod cities;
 pub mod link_header;
 
 use bnacore::aws::get_aws_secrets_value;
@@ -90,6 +91,18 @@ pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
     };
 
     Ok((page_size, page))
+}
+
+/// Represent the query parameters related to the pagination.
+pub struct PaginationParameters {
+    /// The number of items per page.
+    pub page_size: u64,
+    /// The result page being returned.
+    pub page: u64,
+}
+
+pub fn pagination_parameters_2(event: &Request) -> Result<PaginationParameters, Response<Body>> {
+    pagination_parameters(event).map(|(page_size, page)| PaginationParameters { page_size, page })
 }
 
 /// Builds a paginated Response.

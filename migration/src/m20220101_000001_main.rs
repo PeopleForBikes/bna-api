@@ -435,6 +435,8 @@ enum City {
     CityId,
     /// Country.
     Country,
+    /// Creation date.
+    CreatedAt,
     /// City latitude as defined in the U.S. census.
     Latitude,
     /// City longitude as defined in the U.S. census.
@@ -443,14 +445,12 @@ enum City {
     Name,
     /// Assigned region.
     Region,
+    /// City speed limit (if different from the state speed limit).
+    SpeedLimit,
     /// State name.
     State,
     /// Two-letter state abbreviation.
     StateAbbrev,
-    /// City speed limit (if different from the state speed limit).
-    SpeedLimit,
-    /// Creation date.
-    CreatedAt,
     /// Update date.
     UpdatedAt,
 }

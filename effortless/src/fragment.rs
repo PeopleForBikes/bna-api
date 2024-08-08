@@ -150,6 +150,9 @@ pub trait BnaRequestExt {
     /// If there is no request ID or the event is not coming from an ApiGatewayV2, the
     /// function returns None.
     fn apigw_request_id(&self) -> Option<String>;
+
+    /// Returns true if there are path parameters available.
+    fn has_path_parameters(&self) -> bool;
 }
 
 impl<B> BnaRequestExt for http::Request<B> {
@@ -182,6 +185,10 @@ impl<B> BnaRequestExt for http::Request<B> {
             lambda_http::request::RequestContext::ApiGatewayV2(payload) => payload.request_id,
             _ => None,
         }
+    }
+
+    fn has_path_parameters(&self) -> bool {
+        !self.path_parameters().is_empty()
     }
 }
 

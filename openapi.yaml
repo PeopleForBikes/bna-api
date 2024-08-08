@@ -836,7 +836,9 @@ components:
           description: "State name"
           example: "Antwerp"
         state_abbrev:
-          $ref: "#/components/schemas/state_abbrev"
+          type: number
+          description: "A short version of the state name, usually 2 or 3 character long."
+          example: "VAN"
         updated_at:
           type: array
           description: "Date and time"
@@ -881,7 +883,9 @@ components:
           description: "State name"
           example: "Antwerp"
         state_abbrev:
-          $ref: "#/components/schemas/state_abbrev"
+          type: number
+          description: "A short version of the state name, usually 2 or 3 character long."
+          example: "VAN"
         speed_limit:
           type: number
           description: "Speed limit in kilometer per hour (km/h)."
@@ -1006,7 +1010,10 @@ components:
           description: "detailed error message"
           example: "the entry was not found"
         status:
-          $ref: "#/components/schemas/status"
+          type: integer
+          description: "HTTP status associated with the error"
+          minimum: 400
+          example: 404
         title:
           type: string
           description: "Error title"
@@ -1111,19 +1118,10 @@ components:
         - $ref: "#/components/schemas/header"
       example:
         source: Parameter "/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221?"
-    state_abbrev:
-      type: number
-      description: "A short version of the state name, usually 2 or 3 character long."
-      example: "VAN"
     state_machine_id:
       type: string
       description: "ID of the AWS state machine that was used to run the pipeline"
       example: "38f4f54e-98d6-4048-8c0f-99cde05a7e76"
-    status:
-      type: integer
-      description: "HTTP status associated with the error"
-      minimum: 400
-      example: 404
     step:
       type: string
       enum:

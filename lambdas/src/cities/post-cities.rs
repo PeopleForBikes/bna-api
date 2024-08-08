@@ -1,13 +1,18 @@
 use dotenv::dotenv;
 use effortless::api::{invalid_body, parse_request_body};
 use entity::{
+    country,
     prelude::*,
     wrappers::{self, city::CityPost},
 };
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambda_http::{
+    http::{header, StatusCode},
+    run, service_fn, Body, Error, Request, Response,
+};
 use lambdas::database_connect;
-use sea_orm::ActiveModelTrait;
-use sea_orm::{ActiveValue, EntityTrait, IntoActiveModel};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, IntoActiveModel, QueryFilter,
+};
 use serde_json::json;
 use tracing::info;
 use uuid::Uuid;
@@ -37,13 +42,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e.into()),
     };
 
-    // Check if the country is US and set the region accordingly.
+    // Extract some country information.
     let country = wrapper.country.clone();
     let state_full = wrapper.state.clone();
-    let region: Option<String> = match country.to_lowercase().eq("United States") {
-        true => None,
-        false => Some(country),
-    };
+    let region = wrapper.region.clone();
 
     // Turn the model wrapper into an active model.
     let mut active_city = wrapper.into_active_model();
@@ -54,12 +56,26 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
-    // Set the region if needed.
-    if region.is_none() {
-        let state_region_model = StateRegionCrosswalk::find_by_id(state_full)
+    // Ensure the country is a valid one.
+    if Country::find()
+        .filter(country::Column::Name.eq(&country))
+        .one(&db)
+        .await?
+        .is_none()
+    {
+        return Ok(invalid_body(
+            &event,
+            "the country `{country}` is not in the list of countries supported by the BNA",
+        )
+        .into());
+    }
+
+    // If the country is the United States, set the region to the standardized state abbreviation.
+    if country.to_lowercase().eq("united states") {
+        match StateRegionCrosswalk::find_by_id(state_full)
             .one(&db)
-            .await?;
-        match state_region_model {
+            .await?
+        {
             Some(model) => {
                 let region: wrappers::BnaRegion = model.region.into();
                 active_city.region = ActiveValue::Set(Some(region.to_string()));
@@ -68,10 +84,20 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         }
     }
 
+    // If the region is not set, ensure it is equal to the country.
+    if region.is_none() {
+        active_city.region = ActiveValue::Set(Some(country));
+    }
+
     // And insert a new entry.
     info!("inserting City into database: {:?}", active_city);
     let city = active_city.insert(&db).await?;
-    Ok(json!(city).into_response().await)
+    let response = Response::builder()
+        .status(StatusCode::CREATED)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::Text(json!(city).to_string()))
+        .expect("unable to build http::Response");
+    Ok(response)
 }
 
 #[cfg(test)]

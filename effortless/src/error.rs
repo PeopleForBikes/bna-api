@@ -1,4 +1,4 @@
-use lambda_http::{http::StatusCode, Body, Response};
+use lambda_http::{http::header, http::StatusCode, Body, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use serde_with::skip_serializing_none;
@@ -133,6 +133,26 @@ impl APIErrors {
             errors: errors.to_vec(),
         }
     }
+
+    /// Creates an empty `APIErrors`.
+    pub fn empty() -> Self {
+        Self { errors: vec![] }
+    }
+
+    /// Adds an `APIError`.
+    pub fn add(mut self, value: APIError) {
+        self.errors.push(value);
+    }
+
+    /// Extends with an existing `APIErrors`.
+    pub fn extend(&mut self, value: APIErrors) {
+        self.errors.extend(value.errors);
+    }
+
+    /// Returns True if there is no error.
+    pub fn is_empty(&self) -> bool {
+        self.errors.is_empty()
+    }
 }
 
 impl From<APIError> for APIErrors {
@@ -156,6 +176,7 @@ impl From<APIErrors> for Response<Body> {
         };
         Response::builder()
             .status(status)
+            .header(header::CONTENT_TYPE, "application/json")
             .body(json!(value).to_string().into())
             .unwrap()
     }
