@@ -44,7 +44,10 @@ db-to-dbml: db-dump dbml-from-sql dbml-svg
 # Generate models
 db-generate-models:
     rm -fr  {{ entites }}
-    sea-orm-cli generate entity -o {{ entites }} --with-serde both --date-time-crate time
+    sea-orm-cli generate entity \
+      -o {{ entites }} \
+      --with-serde both \
+      --date-time-crate time
 
 
 # Apply migrations and seed the database.

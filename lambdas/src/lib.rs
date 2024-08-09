@@ -1,10 +1,11 @@
+pub mod bnas;
 pub mod cities;
 pub mod link_header;
 
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
     error::{APIError, APIErrors},
-    fragment::get_apigw_request_id,
+    fragment::{get_apigw_request_id, BnaRequestExt},
 };
 use lambda_http::{Body, Error, Request, RequestExt, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
@@ -292,7 +293,7 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
     match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
         Ok(db) => Ok(db),
         Err(e) => {
-            let apigw_request_id = get_apigw_request_id(event);
+            let apigw_request_id = event.apigw_request_id();
             let error_msg = "cannot connect to the database".to_string();
             error!(
                 "{error_msg}: {e}. API GW Request ID: {:?}",
