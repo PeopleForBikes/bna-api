@@ -1,5 +1,8 @@
 use dotenv::dotenv;
-use effortless::{api::entry_not_found, fragment::BnaRequestExt};
+use effortless::{
+    api::{entry_not_found, extract_pagination_parameters},
+    fragment::BnaRequestExt,
+};
 use entity::{core_services, features, infrastructure, opportunity, prelude::*, recreation};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
@@ -8,7 +11,7 @@ use lambdas::{
         extract_path_parameters, extract_query_parameters, BNAComponent, BNAPathParameters,
         BNAQueryParameters,
     },
-    build_paginated_response, pagination_parameters,
+    build_paginated_response,
 };
 use sea_orm::{
     prelude::Uuid, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
@@ -21,7 +24,7 @@ use tracing::{debug, info};
 #[derive(FromQueryResult, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNA {
     // BNA Summary
-    pub bna_uuid: Uuid,
+    pub bna_id: Uuid,
     pub city_id: Uuid,
     pub score: f64,
     pub version: String,
@@ -213,8 +216,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     }
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = match pagination_parameters(&event) {
-        Ok((page_size, page)) => (page_size, page),
+    let pagination = match extract_pagination_parameters(&event) {
+        Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
@@ -222,11 +225,17 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let select = Summary::find();
     let body = select
         .clone()
-        .paginate(&db, page_size)
-        .fetch_page(page - 1)
+        .paginate(&db, pagination.page_size)
+        .fetch_page(pagination.page - 1)
         .await?;
     let total_items = select.count(&db).await?;
-    build_paginated_response(json!(body), total_items, page, page_size, &event)
+    build_paginated_response(
+        json!(body),
+        total_items,
+        pagination.page,
+        pagination.page_size,
+        &event,
+    )
 }
 
 #[tokio::main]
@@ -245,49 +254,49 @@ async fn main() -> Result<(), Error> {
     })
 }
 
-// #[cfg(test)]
-// mod tests {
+#[cfg(test)]
+mod tests {
 
-//     use super::*;
-//     use aws_lambda_events::http;
-//     use lambda_http::RequestExt;
-//     use std::collections::HashMap;
+    use super::*;
+    use aws_lambda_events::http;
+    use lambda_http::RequestExt;
+    use std::collections::HashMap;
 
-//     #[tokio::test]
-//     async fn test_handler_all() {
-//         let event = http::Request::builder()
-//             .header(http::header::CONTENT_TYPE, "application/json")
-//             .body(Body::Empty)
-//             .expect("failed to build request")
-//             .with_path_parameters(HashMap::from([(
-//                 "id".to_string(),
-//                 "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
-//             )]))
-//             .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-//                 lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-//             ));
-//         let r = function_handler(event).await.unwrap();
-//         dbg!(r);
-//     }
+    #[tokio::test]
+    async fn test_handler_all() {
+        let event = http::Request::builder()
+            .header(http::header::CONTENT_TYPE, "application/json")
+            .body(Body::Empty)
+            .expect("failed to build request")
+            .with_path_parameters(HashMap::from([(
+                "bna_id".to_string(),
+                "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
+            )]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+            ));
+        let r = function_handler(event).await.unwrap();
+        dbg!(r);
+    }
 
-//     #[tokio::test]
-//     async fn test_handler_opportunity() {
-//         let event = http::Request::builder()
-//             .header(http::header::CONTENT_TYPE, "application/json")
-//             .body(Body::Empty)
-//             .expect("failed to build request")
-//             .with_path_parameters(HashMap::from([(
-//                 "id".to_string(),
-//                 "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
-//             )]))
-//             .with_query_string_parameters(HashMap::from([(
-//                 "component".to_string(),
-//                 "Opportunity".to_string(),
-//             )]))
-//             .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-//                 lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-//             ));
-//         let r = function_handler(event).await.unwrap();
-//         dbg!(r);
-//     }
-// }
+    //     #[tokio::test]
+    //     async fn test_handler_opportunity() {
+    //         let event = http::Request::builder()
+    //             .header(http::header::CONTENT_TYPE, "application/json")
+    //             .body(Body::Empty)
+    //             .expect("failed to build request")
+    //             .with_path_parameters(HashMap::from([(
+    //                 "id".to_string(),
+    //                 "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
+    //             )]))
+    //             .with_query_string_parameters(HashMap::from([(
+    //                 "component".to_string(),
+    //                 "Opportunity".to_string(),
+    //             )]))
+    //             .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+    //                 lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+    //             ));
+    //         let r = function_handler(event).await.unwrap();
+    //         dbg!(r);
+    //     }
+}

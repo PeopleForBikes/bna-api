@@ -1,12 +1,15 @@
 use dotenv::dotenv;
 use effortless::{
-    api::{entry_not_found, parse_path_parameter, parse_query_string_parameter},
+    api::{
+        entry_not_found, extract_pagination_parameters, parse_path_parameter,
+        parse_query_string_parameter,
+    },
     error::{APIError, APIErrors},
     fragment::get_apigw_request_id,
 };
-use entity::{prelude::*, wrappers};
+use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
+use lambdas::{api_database_connect, build_paginated_response};
 use sea_orm::{ColumnTrait, Condition, EntityTrait, PaginatorTrait, QueryFilter};
 use serde_json::json;
 use tracing::{debug, info};
@@ -21,8 +24,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = match pagination_parameters(&event) {
-        Ok((page_size, page)) => (page_size, page),
+    let pagination = match extract_pagination_parameters(&event) {
+        Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
@@ -31,11 +34,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Retrieve the status parameter if available.
     let query_param_key = "status";
-    match parse_query_string_parameter::<wrappers::ApprovalStatus>(&event, query_param_key) {
+    match parse_query_string_parameter::<String>(&event, query_param_key) {
         Ok(status) => {
             if let Some(status) = status {
-                let s: entity::sea_orm_active_enums::ApprovalStatus = status.into();
-                conditions = conditions.add(entity::submission::Column::Status.eq(s))
+                conditions = conditions.add(entity::submission::Column::Status.eq(status))
             }
         }
         Err(e) => return Ok(e.into()),
@@ -65,13 +67,19 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             let select = Submission::find().filter(conditions);
             let query = select
                 .clone()
-                .paginate(&db, page_size)
-                .fetch_page(page - 1)
+                .paginate(&db, pagination.page_size)
+                .fetch_page(pagination.page)
                 .await;
             let res: Response<Body> = match query {
                 Ok(models) => {
                     let total_items = select.count(&db).await?;
-                    build_paginated_response(json!(models), total_items, page, page_size, &event)?
+                    build_paginated_response(
+                        json!(models),
+                        total_items,
+                        pagination.page,
+                        pagination.page_size,
+                        &event,
+                    )?
                 }
                 Err(e) => {
                     let api_error = APIError::with_pointer(

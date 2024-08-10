@@ -1,5 +1,4 @@
-use sea_orm::{EnumIter, Iterable};
-use sea_orm_migration::{prelude::*, sea_query::extension::postgres::Type};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -7,22 +6,34 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Create the approval status type.
+        // Create the Brokenspoke Status lookup table.
         manager
-            .create_type(
-                Type::create()
-                    .as_enum(BrokenspokeStatus::Table)
-                    .values(BrokenspokeStatus::iter().skip(1))
+            .create_table(
+                Table::create()
+                    .table(BrokenspokeStatus::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(BrokenspokeStatus::Status)
+                            .string()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .to_owned(),
             )
             .await?;
 
-        // Create the approval status type.
+        // Create the Brokenspoke Step lookup table.
         manager
-            .create_type(
-                Type::create()
-                    .as_enum(BrokenspokeStep::Table)
-                    .values(BrokenspokeStep::iter().skip(1))
+            .create_table(
+                Table::create()
+                    .table(BrokenspokeStep::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(BrokenspokeStep::Step)
+                            .string()
+                            .not_null()
+                            .primary_key(),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -39,10 +50,7 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(
-                        ColumnDef::new(BrokenspokePipeline::Step)
-                            .enumeration(BrokenspokeStep::Table, BrokenspokeStep::iter().skip(1)),
-                    )
+                    .col(ColumnDef::new(BrokenspokePipeline::Step).string())
                     .col(ColumnDef::new(BrokenspokePipeline::SqsMessage).json())
                     .col(ColumnDef::new(BrokenspokePipeline::FargateTaskARN).string())
                     .col(ColumnDef::new(BrokenspokePipeline::S3Bucket).string())
@@ -112,22 +120,29 @@ enum BrokenspokePipeline {
     TornDown,
 }
 
-#[derive(Iden, EnumIter)]
+/// Lookup table for the brokenspoke statuses.
+//
+//     Pending,
+//     Started,
+//     Complete,
+#[derive(Iden)]
 pub enum BrokenspokeStatus {
     Table,
-    Pending,
-    Started,
-    Complete,
+    Status,
 }
 
-#[derive(Iden, EnumIter)]
+/// Lookup table for the brokenspoke steps.
+//
+// SqsMessage,
+// Setup,
+// Analysis,
+// Cleanup,
+#[derive(Iden)]
 pub enum BrokenspokeStep {
     Table,
-    SqsMessage,
-    Setup,
-    Analysis,
-    Cleanup,
+    Step,
 }
+
 // Pricing is coming from the CloudTempo calculator with the following paramaters:
 // - Architecture: x86
 // - Region: US West (Oregon)

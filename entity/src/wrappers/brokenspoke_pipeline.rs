@@ -1,4 +1,4 @@
-use crate::entities::{brokenspoke_pipeline, sea_orm_active_enums};
+use crate::entities::brokenspoke_pipeline;
 use sea_orm::{
     prelude::{Decimal, Json, TimeDateTimeWithTimeZone, Uuid},
     ActiveValue, IntoActiveModel,
@@ -15,7 +15,7 @@ pub struct BrokenspokePipelinePost {
     pub sqs_message: Option<Json>,
     pub start_time: TimeDateTimeWithTimeZone,
     pub state_machine_id: Uuid,
-    pub step: Option<sea_orm_active_enums::BrokenspokeStep>,
+    pub step: Option<String>,
     pub torn_down: Option<bool>,
 }
 
@@ -47,7 +47,7 @@ pub struct BrokenspokePipelinePatch {
     pub scheduled_trigger_id: Option<Option<Uuid>>,
     pub sqs_message: Option<Option<Json>>,
     pub start_time: Option<Option<TimeDateTimeWithTimeZone>>,
-    pub state: Option<Option<sea_orm_active_enums::BrokenspokeStep>>,
+    pub state: Option<Option<String>>,
     pub torn_down: Option<Option<bool>>,
 }
 

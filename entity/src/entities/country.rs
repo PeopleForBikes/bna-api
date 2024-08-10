@@ -6,13 +6,28 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
 #[sea_orm(table_name = "country")]
 pub struct Model {
-    #[sea_orm(primary_key)]
-    pub id: i32,
-    #[sea_orm(unique)]
+    #[sea_orm(primary_key, auto_increment = false)]
     pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(has_many = "super::city::Entity")]
+    City,
+    #[sea_orm(has_many = "super::submission::Entity")]
+    Submission,
+}
+
+impl Related<super::city::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::City.def()
+    }
+}
+
+impl Related<super::submission::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Submission.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

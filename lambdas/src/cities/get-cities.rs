@@ -1,11 +1,14 @@
 use dotenv::dotenv;
-use effortless::{api::entry_not_found, fragment::BnaRequestExt};
+use effortless::{
+    api::{entry_not_found, extract_pagination_parameters},
+    fragment::BnaRequestExt,
+};
 use entity::city;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
     build_paginated_response,
     cities::{extract_path_parameters, CitiesPathParameters},
-    database_connect, pagination_parameters_2,
+    database_connect,
 };
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
@@ -35,7 +38,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     }
 
     // Retrieve pagination parameters if any.
-    let pagination = match pagination_parameters_2(&event) {
+    let pagination = match extract_pagination_parameters(&event) {
         Ok(p) => p,
         Err(e) => return Ok(e),
     };
@@ -45,7 +48,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let body = select
         .clone()
         .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page - 1)
+        .fetch_page(pagination.page)
         .await?;
     let total_items = select.count(&db).await?;
     build_paginated_response(

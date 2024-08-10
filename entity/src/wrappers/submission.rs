@@ -1,4 +1,4 @@
-use crate::entities::{sea_orm_active_enums, submission};
+use crate::entities::submission;
 use sea_orm::{ActiveValue, IntoActiveModel};
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,7 @@ pub struct SubmissionPost {
     pub region: Option<String>,
     pub fips_code: String,
     pub consent: bool,
-    pub status: Option<sea_orm_active_enums::ApprovalStatus>,
+    pub status: Option<String>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
@@ -49,7 +49,7 @@ pub struct SubmissionPatch {
     pub region: Option<Option<String>>,
     pub fips_code: Option<String>,
     pub consent: Option<bool>,
-    pub status: Option<sea_orm_active_enums::ApprovalStatus>,
+    pub status: Option<String>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
@@ -139,7 +139,7 @@ mod tests {
         let region = None;
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = Some(sea_orm_active_enums::ApprovalStatus::Approved);
+        let status = Some("Approved".to_string());
         let wrapper = SubmissionPost {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -166,7 +166,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::Set(sea_orm_active_enums::ApprovalStatus::Approved),
+            status: ActiveValue::Set("Approved".to_string()),
             created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);

@@ -1,8 +1,4 @@
-use sea_orm_migration::{
-    prelude::*,
-    sea_orm::{EnumIter, Iterable},
-    sea_query::extension::postgres::Type,
-};
+use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -10,63 +6,32 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Create the BNA Region type.
-        manager
-            .create_type(
-                Type::create()
-                    .as_enum(BNARegion::Table)
-                    .values(BNARegion::iter().skip(1))
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create the StateSpeedLimit table.
+        // Create the BNA Region table.
         manager
             .create_table(
                 Table::create()
-                    .table(StateSpeedLimit::Table)
+                    .table(BNARegion::Table)
+                    .if_not_exists()
                     .col(
-                        ColumnDef::new(StateSpeedLimit::StateAbbrev)
-                            .char_len(2)
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(StateSpeedLimit::StateFIPSCode)
-                            .char_len(2)
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(StateSpeedLimit::Speed).integer().not_null())
-                    .col(
-                        ColumnDef::new(StateSpeedLimit::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(StateSpeedLimit::UpdatedAt).timestamp_with_time_zone())
-                    .primary_key(Index::create().col(StateSpeedLimit::StateAbbrev))
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create the StateRegionCrosswalk table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(StateRegionCrosswalk::Table)
-                    .col(
-                        ColumnDef::new(StateRegionCrosswalk::State)
+                        ColumnDef::new(BNARegion::Name)
                             .string()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .col(
-                        ColumnDef::new(StateRegionCrosswalk::Region)
-                            .enumeration(BNARegion::Table, BNARegion::iter().skip(1))
+                            .primary_key()
                             .not_null(),
                     )
                     .to_owned(),
             )
             .await?;
+        let insert_bna_regions = Query::insert()
+            .into_table(BNARegion::Table)
+            .columns([BNARegion::Name])
+            .values_panic(["Mid-Atlantic".into()])
+            .values_panic(["Midwest".into()])
+            .values_panic(["Mountain".into()])
+            .values_panic(["New England".into()])
+            .values_panic(["Pacific".into()])
+            .values_panic(["South".into()])
+            .to_owned();
+        manager.exec_stmt(insert_bna_regions).await?;
 
         // Create the country table.
         manager
@@ -75,16 +40,9 @@ impl MigrationTrait for Migration {
                     .table(Country::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(Country::Id)
-                            .integer()
-                            .primary_key()
-                            .auto_increment()
-                            .not_null(),
-                    )
-                    .col(
                         ColumnDef::new(Country::Name)
                             .string()
-                            .unique_key()
+                            .primary_key()
                             .not_null(),
                     )
                     .to_owned(),
@@ -93,6 +51,7 @@ impl MigrationTrait for Migration {
         let insert_countries = Query::insert()
             .into_table(Country::Table)
             .columns([Country::Name])
+            .values_panic(["Australia".into()])
             .values_panic(["Belgium".into()])
             .values_panic(["Brazil".into()])
             .values_panic(["Canada".into()])
@@ -100,6 +59,7 @@ impl MigrationTrait for Migration {
             .values_panic(["Colombia".into()])
             .values_panic(["Croatia".into()])
             .values_panic(["Cuba".into()])
+            .values_panic(["England".into()])
             .values_panic(["France".into()])
             .values_panic(["Germany".into()])
             .values_panic(["Greece".into()])
@@ -120,6 +80,225 @@ impl MigrationTrait for Migration {
             .values_panic(["Wales".into()])
             .to_owned();
         manager.exec_stmt(insert_countries).await?;
+
+        // Create the US state table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(USState::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(USState::Name)
+                            .string()
+                            .primary_key()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(USState::Abbrev)
+                            .string()
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(
+                        ColumnDef::new(USState::FIPSCode)
+                            .char_len(2)
+                            .not_null()
+                            .unique_key(),
+                    )
+                    .col(ColumnDef::new(USState::SpeedLimit).integer().not_null())
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(USState::Table)
+                    .col(USState::Abbrev)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(USState::Table)
+                    .col(USState::FIPSCode)
+                    .to_owned(),
+            )
+            .await?;
+        let insert_us_states = Query::insert()
+            .into_table(USState::Table)
+            .columns([
+                USState::Name,
+                USState::Abbrev,
+                USState::FIPSCode,
+                USState::SpeedLimit,
+            ])
+            .values_panic(["Alabama".into(), "AL".into(), "01".into(), 25.into()])
+            .values_panic(["Alaska".into(), "AK".into(), "02".into(), 25.into()])
+            .values_panic(["Arizona".into(), "AZ".into(), "04".into(), 25.into()])
+            .values_panic(["Arkansas".into(), "AR".into(), "05".into(), 30.into()])
+            .values_panic(["California".into(), "CA".into(), "06".into(), 25.into()])
+            .values_panic(["Colorado".into(), "CO".into(), "08".into(), 30.into()])
+            .values_panic(["Connecticut".into(), "CT".into(), "09".into(), 25.into()])
+            .values_panic(["Delaware".into(), "DE".into(), "10".into(), 25.into()])
+            .values_panic([
+                "District of Columbia".into(),
+                "DC".into(),
+                "11".into(),
+                20.into(),
+            ])
+            .values_panic(["Florida".into(), "FL".into(), "12".into(), 30.into()])
+            .values_panic(["Georgia".into(), "GA".into(), "13".into(), 30.into()])
+            .values_panic(["Hawaii".into(), "HI".into(), "15".into(), 25.into()])
+            .values_panic(["Idaho".into(), "ID".into(), "16".into(), 35.into()])
+            .values_panic(["Illinois".into(), "IL".into(), "17".into(), 30.into()])
+            .values_panic(["Indiana".into(), "IN".into(), "18".into(), 30.into()])
+            .values_panic(["Iowa".into(), "IA".into(), "19".into(), 25.into()])
+            .values_panic(["Kansas".into(), "KS".into(), "20".into(), 30.into()])
+            .values_panic(["Kentucky".into(), "KY".into(), "21".into(), 35.into()])
+            .values_panic(["Louisiana".into(), "LA".into(), "22".into(), 25.into()])
+            .values_panic(["Maine".into(), "ME".into(), "23".into(), 25.into()])
+            .values_panic(["Maryland".into(), "MD".into(), "24".into(), 30.into()])
+            .values_panic(["Massachusetts".into(), "MA".into(), "25".into(), 25.into()])
+            .values_panic(["Michigan".into(), "MI".into(), "26".into(), 25.into()])
+            .values_panic(["Minnesota".into(), "MN".into(), "27".into(), 30.into()])
+            .values_panic(["Mississippi".into(), "MS".into(), "28".into(), 25.into()])
+            .values_panic(["Missouri".into(), "MO".into(), "29".into(), 25.into()])
+            .values_panic(["Montana".into(), "MT".into(), "30".into(), 25.into()])
+            .values_panic(["Nebraska".into(), "NE".into(), "31".into(), 25.into()])
+            .values_panic(["Nevada".into(), "NV".into(), "32".into(), 25.into()])
+            .values_panic(["New Hampshire".into(), "NH".into(), "33".into(), 30.into()])
+            .values_panic(["New Jersey".into(), "NJ".into(), "34".into(), 25.into()])
+            .values_panic(["New Mexico".into(), "NM".into(), "35".into(), 30.into()])
+            .values_panic(["New York".into(), "NY".into(), "36".into(), 20.into()])
+            .values_panic(["North Carolina".into(), "NC".into(), "37".into(), 35.into()])
+            .values_panic(["North Dakota".into(), "ND".into(), "38".into(), 25.into()])
+            .values_panic(["Ohio".into(), "OH".into(), "39".into(), 25.into()])
+            .values_panic(["Oklahoma".into(), "OK".into(), "40".into(), 25.into()])
+            .values_panic(["Oregon".into(), "OR".into(), "41".into(), 25.into()])
+            .values_panic(["Pennsylvania".into(), "PA".into(), "42".into(), 25.into()])
+            .values_panic(["Rhode Island".into(), "RI".into(), "44".into(), 25.into()])
+            .values_panic(["South Carolina".into(), "SC".into(), "45".into(), 30.into()])
+            .values_panic(["South Dakota".into(), "SD".into(), "46".into(), 25.into()])
+            .values_panic(["Tennessee".into(), "TN".into(), "47".into(), 25.into()])
+            .values_panic(["Texas".into(), "TX".into(), "48".into(), 30.into()])
+            .values_panic(["Utah".into(), "UT".into(), "49".into(), 25.into()])
+            .values_panic(["Vermont".into(), "VT".into(), "50".into(), 25.into()])
+            .values_panic(["Virginia".into(), "VA".into(), "51".into(), 25.into()])
+            .values_panic(["Washington".into(), "WA".into(), "53".into(), 25.into()])
+            .values_panic(["West Virginia".into(), "WV".into(), "54".into(), 25.into()])
+            .values_panic(["Wisconsin".into(), "WI".into(), "55".into(), 25.into()])
+            .values_panic(["Wyoming".into(), "WY".into(), "56".into(), 30.into()])
+            .values_panic(["Puerto Rico".into(), "PR".into(), "77".into(), 25.into()])
+            .to_owned();
+        manager.exec_stmt(insert_us_states).await?;
+
+        // Create the StateRegionCrosswalk table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(StateRegionCrosswalk::Table)
+                    .col(
+                        ColumnDef::new(StateRegionCrosswalk::State)
+                            .string()
+                            .not_null(),
+                    )
+                    .col(
+                        ColumnDef::new(StateRegionCrosswalk::Region)
+                            .string()
+                            .not_null(),
+                    )
+                    .primary_key(
+                        Index::create()
+                            .col(StateRegionCrosswalk::State)
+                            .col(StateRegionCrosswalk::Region),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(StateRegionCrosswalk::Table, StateRegionCrosswalk::State)
+                            .to(USState::Table, USState::Name),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(StateRegionCrosswalk::Table, StateRegionCrosswalk::Region)
+                            .to(BNARegion::Table, BNARegion::Name),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(StateRegionCrosswalk::Table)
+                    .col(StateRegionCrosswalk::State)
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(StateRegionCrosswalk::Table)
+                    .col(StateRegionCrosswalk::Region)
+                    .to_owned(),
+            )
+            .await?;
+        let insert_state_region = Query::insert()
+            .into_table(StateRegionCrosswalk::Table)
+            .columns([StateRegionCrosswalk::State, StateRegionCrosswalk::Region])
+            .values_panic(["Alabama".into(), "South".into()])
+            .values_panic(["Alaska".into(), "Pacific".into()])
+            .values_panic(["Arizona".into(), "Mountain".into()])
+            .values_panic(["Arkansas".into(), "South".into()])
+            .values_panic(["California".into(), "Pacific".into()])
+            .values_panic(["Colorado".into(), "Mountain".into()])
+            .values_panic(["Connecticut".into(), "New England".into()])
+            .values_panic(["Delaware".into(), "Mid-Atlantic".into()])
+            .values_panic(["District of Columbia".into(), "Mid-Atlantic".into()])
+            .values_panic(["Florida".into(), "South".into()])
+            .values_panic(["Georgia".into(), "South".into()])
+            .values_panic(["Hawaii".into(), "Pacific".into()])
+            .values_panic(["Idaho".into(), "Mountain".into()])
+            .values_panic(["Illinois".into(), "Midwest".into()])
+            .values_panic(["Indiana".into(), "Midwest".into()])
+            .values_panic(["Iowa".into(), "Midwest".into()])
+            .values_panic(["Kansas".into(), "Midwest".into()])
+            .values_panic(["Kentucky".into(), "South".into()])
+            .values_panic(["Louisiana".into(), "South".into()])
+            .values_panic(["Maine".into(), "New England".into()])
+            .values_panic(["Maryland".into(), "Mid-Atlantic".into()])
+            .values_panic(["Massachusetts".into(), "New England".into()])
+            .values_panic(["Michigan".into(), "Midwest".into()])
+            .values_panic(["Minnesota".into(), "Midwest".into()])
+            .values_panic(["Mississippi".into(), "South".into()])
+            .values_panic(["Missouri".into(), "Midwest".into()])
+            .values_panic(["Montana".into(), "Mountain".into()])
+            .values_panic(["Nebraska".into(), "Midwest".into()])
+            .values_panic(["Nevada".into(), "Mountain".into()])
+            .values_panic(["New Hampshire".into(), "New England".into()])
+            .values_panic(["New Jersey".into(), "Mid-Atlantic".into()])
+            .values_panic(["New Mexico".into(), "Mountain".into()])
+            .values_panic(["New York".into(), "Mid-Atlantic".into()])
+            .values_panic(["North Carolina".into(), "South".into()])
+            .values_panic(["North Dakota".into(), "Midwest".into()])
+            .values_panic(["Ohio".into(), "Midwest".into()])
+            .values_panic(["Oklahoma".into(), "South".into()])
+            .values_panic(["Oregon".into(), "Pacific".into()])
+            .values_panic(["Pennsylvania".into(), "Mid-Atlantic".into()])
+            .values_panic(["Rhode Island".into(), "New England".into()])
+            .values_panic(["South Carolina".into(), "South".into()])
+            .values_panic(["South Dakota".into(), "Midwest".into()])
+            .values_panic(["Tennessee".into(), "South".into()])
+            .values_panic(["Texas".into(), "South".into()])
+            .values_panic(["Utah".into(), "Mountain".into()])
+            .values_panic(["Vermont".into(), "New England".into()])
+            .values_panic(["Virginia".into(), "South".into()])
+            .values_panic(["Washington".into(), "Pacific".into()])
+            .values_panic(["West Virginia".into(), "South".into()])
+            .values_panic(["Wisconsin".into(), "Midwest".into()])
+            .values_panic(["Wyoming".into(), "Mountain".into()])
+            .values_panic(["Puerto Rico".into(), "South".into()])
+            .to_owned();
+        manager.exec_stmt(insert_state_region).await?;
 
         // Create the city table.
         manager
@@ -148,6 +327,11 @@ impl MigrationTrait for Migration {
                             .col(City::Country)
                             .col(City::State)
                             .col(City::Name),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(City::Table, City::Country)
+                            .to(Country::Table, Country::Name),
                     )
                     .to_owned(),
             )
@@ -415,7 +599,16 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(Infrastructure::Table).to_owned())
             .await?;
         manager
-            .drop_table(Table::drop().table(StateSpeedLimit::Table).to_owned())
+            .drop_table(Table::drop().table(USState::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(Country::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(StateRegionCrosswalk::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(BNARegion::Table).to_owned())
             .await?;
 
         Ok(())
@@ -570,40 +763,17 @@ enum Infrastructure {
     HighStressMiles,
 }
 
+// Lookup table for the BNA regions.
 #[derive(Iden)]
-enum StateSpeedLimit {
-    Table,
-    /// Two-letter state abbreviation.
-    StateAbbrev,
-    /// State FIPS code.
-    StateFIPSCode,
-    /// State speed limit.
-    Speed,
-    /// Creation date.
-    CreatedAt,
-    /// Update date.
-    UpdatedAt,
-}
-
-#[derive(Iden, EnumIter)]
 pub enum BNARegion {
     Table,
-    #[iden = "Mid-Atlantic"]
-    MidAtlantic,
-    #[iden = "Midwest"]
-    Midwest,
-    #[iden = "Mountain"]
-    Mountain,
-    #[iden = "New England"]
-    NewEngland,
-    #[iden = "Pacific"]
-    Pacific,
-    #[iden = "South"]
-    South,
+    /// Name of the BNA region.
+    Name,
 }
 
+/// Lookup table for the state region crosswalks.
 #[derive(Iden)]
-enum StateRegionCrosswalk {
+pub enum StateRegionCrosswalk {
     Table,
     /// State name.
     State,
@@ -611,11 +781,24 @@ enum StateRegionCrosswalk {
     Region,
 }
 
+/// Lookup table for the countries.
 #[derive(Iden)]
-enum Country {
+pub enum Country {
     Table,
-    /// Country ID.
-    Id,
     /// Country name.
     Name,
+}
+
+/// Lookup table for the US states.
+#[derive(Iden)]
+pub enum USState {
+    Table,
+    /// State name.
+    Name,
+    /// Two-letter state abbreviation..
+    Abbrev,
+    /// State FIPS code.
+    FIPSCode,
+    /// State speed limit in mph.
+    SpeedLimit,
 }

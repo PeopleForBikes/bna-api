@@ -1,13 +1,10 @@
 use dotenv::dotenv;
-use effortless::api::parse_request_body;
+use effortless::{api::parse_request_body, response::make_json_created_response};
 use entity::{
     core_services, features, infrastructure, opportunity, recreation, summary,
     wrappers::bna::BNAPost,
 };
-use lambda_http::{
-    http::{header, StatusCode},
-    run, service_fn, Body, Error, Request, Response,
-};
+use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::database_connect;
 use sea_orm::{ActiveModelTrait, ActiveValue};
 use serde_json::json;
@@ -119,11 +116,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         recreation_res,
     );
     info!("{:?}", res);
-    let response = Response::builder()
-        .status(StatusCode::CREATED)
-        .header(header::CONTENT_TYPE, "application/json")
-        .body(Body::Text(json!(res).to_string()))
-        .expect("unable to build http::Response");
+    let response =
+        make_json_created_response(json!(res).to_string()).expect("unable to build http::Response");
     Ok(response)
 
     // Ok(Body::Empty.into_response().await)
