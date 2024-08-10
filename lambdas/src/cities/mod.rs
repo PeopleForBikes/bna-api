@@ -3,7 +3,8 @@
 use effortless::{api::parse_path_parameter, error::APIErrors};
 use lambda_http::Request;
 
-/// Represent the path parameters for the /cities enpoint.
+/// Path parameters for the /cities enpoint.
+#[derive(Debug)]
 pub struct CitiesPathParameters {
     /// Country name.
     pub country: String,

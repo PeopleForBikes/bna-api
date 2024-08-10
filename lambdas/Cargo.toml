@@ -50,7 +50,7 @@ path = "src/bnas/get-bnas-cities.rs"
 
 [[bin]]
 name = "get-bnas-analysis"
-path = "src/bnas-analysis/get-bnas-analysis.rs"
+path = "src/bnas/get-bnas-analysis.rs"
 
 [[bin]]
 name = "get-cities"
@@ -74,7 +74,7 @@ path = "src/price-fargate/get-price-fargate.rs"
 
 [[bin]]
 name = "patch-bnas-analysis"
-path = "src/bnas-analysis/patch-bnas-analysis.rs"
+path = "src/bnas/patch-bnas-analysis.rs"
 
 [[bin]]
 name = "patch-cities-submissions"
@@ -86,15 +86,15 @@ path = "src/cities/post-cities-submissions.rs"
 
 [[bin]]
 name = "post-bnas-analysis"
-path = "src/bnas-analysis/post-bnas-analysis.rs"
+path = "src/bnas/post-bnas-analysis.rs"
 
 [[bin]]
 name = "post-bnas-enqueue"
-path = "src/bnas-enqueue/post-bnas-enqueue.rs"
+path = "src/bnas/post-bnas-enqueue.rs"
 
 [[bin]]
 name = "get-bnas-results"
-path = "src/bnas-results/get-bnas-results.rs"
+path = "src/bnas/get-bnas-results.rs"
 
 [[bin]]
 name = "post-cities"

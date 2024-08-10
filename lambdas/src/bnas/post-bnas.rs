@@ -1,12 +1,15 @@
 use dotenv::dotenv;
 use effortless::api::parse_request_body;
 use entity::{
-    core_services, features, infrastructure, opportunity, prelude::*, recreation, summary,
+    core_services, features, infrastructure, opportunity, recreation, summary,
     wrappers::bna::BNAPost,
 };
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambda_http::{
+    http::{header, StatusCode},
+    run, service_fn, Body, Error, Request, Response,
+};
 use lambdas::database_connect;
-use sea_orm::{ActiveValue, EntityTrait};
+use sea_orm::{ActiveModelTrait, ActiveValue};
 use serde_json::json;
 use tracing::info;
 
@@ -101,22 +104,27 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // And insert a new entry for each model.
-    let summary_res = Summary::insert(summary).exec(&db).await?;
-    let core_services_res = CoreServices::insert(core_services).exec(&db).await?;
-    let features_res = Features::insert(features).exec(&db).await?;
-    let infrastructure_res = Infrastructure::insert(infrastructure).exec(&db).await?;
-    let opportunity_res = Opportunity::insert(opportunity).exec(&db).await?;
-    let recreation_res = Recreation::insert(recreation).exec(&db).await?;
-    let res_vec = vec![
-        summary_res.last_insert_id,
-        core_services_res.last_insert_id,
-        features_res.last_insert_id,
-        infrastructure_res.last_insert_id,
-        opportunity_res.last_insert_id,
-        recreation_res.last_insert_id,
-    ];
-    info!("{:?}", res_vec);
-    Ok(json!(res_vec).into_response().await)
+    let summary_res = summary.insert(&db).await?;
+    let core_services_res = core_services.insert(&db).await?;
+    let features_res = features.insert(&db).await?;
+    let infrastructure_res = infrastructure.insert(&db).await?;
+    let opportunity_res = opportunity.insert(&db).await?;
+    let recreation_res = recreation.insert(&db).await?;
+    let res = (
+        summary_res,
+        core_services_res,
+        features_res,
+        infrastructure_res,
+        opportunity_res,
+        recreation_res,
+    );
+    info!("{:?}", res);
+    let response = Response::builder()
+        .status(StatusCode::CREATED)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(Body::Text(json!(res).to_string()))
+        .expect("unable to build http::Response");
+    Ok(response)
 
     // Ok(Body::Empty.into_response().await)
 }

@@ -1,35 +1,22 @@
 use dotenv::dotenv;
-use effortless::api::{entry_not_found, parse_path_parameter, parse_query_string_parameter};
+use effortless::{api::entry_not_found, fragment::BnaRequestExt};
 use entity::{core_services, features, infrastructure, opportunity, prelude::*, recreation};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
+use lambdas::{
+    api_database_connect,
+    bnas::{
+        extract_path_parameters, extract_query_parameters, BNAComponent, BNAPathParameters,
+        BNAQueryParameters,
+    },
+    build_paginated_response, pagination_parameters,
+};
 use sea_orm::{
     prelude::Uuid, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
     RelationTrait,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::str::FromStr;
 use tracing::{debug, info};
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum BNAComponent {
-    All,
-    Summary,
-    Infratructure,
-    Recreation,
-    Opportunity,
-    CoreServices,
-    Features,
-}
-
-impl FromStr for BNAComponent {
-    type Err = serde_plain::Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        serde_plain::from_str::<Self>(s)
-    }
-}
 
 #[derive(FromQueryResult, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNA {
@@ -74,179 +61,172 @@ pub struct BNA {
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Retrieve the ID of the entry to get if any.
-    let id = match parse_path_parameter::<Uuid>(&event, "id") {
-        Ok(value) => value,
-        Err(e) => return Ok(e.into()),
-    };
-
     // Get the database connection.
     let db = match api_database_connect(&event).await {
         Ok(db) => db,
         Err(e) => return Ok(e),
     };
 
-    // Retrieve the component param if any.
-    let component = match parse_query_string_parameter::<BNAComponent>(&event, "component") {
-        Ok(component) => match component {
-            Some(component) => component,
-            None => BNAComponent::All,
-        },
-        Err(e) => return Ok(e.into()),
-    };
-
     // Retrieve all bnas or a specific one.
     debug!("Processing the requests...");
 
-    match id {
-        Some(id) => {
-            let select = Summary::find_by_id(id);
-            let res = match component {
-                BNAComponent::All => {
-                    let model = select
-                        .clone()
-                        .columns([
-                            entity::core_services::Column::Dentists,
-                            entity::core_services::Column::Doctors,
-                            entity::core_services::Column::Grocery,
-                            entity::core_services::Column::Hospitals,
-                            entity::core_services::Column::Pharmacies,
-                            entity::core_services::Column::SocialServices,
-                        ])
-                        .column_as(entity::core_services::Column::Score, "coreservices_score")
-                        .columns([
-                            entity::infrastructure::Column::HighStressMiles,
-                            entity::infrastructure::Column::LowStressMiles,
-                        ])
-                        .columns([
-                            entity::recreation::Column::CommunityCenters,
-                            entity::recreation::Column::Parks,
-                            entity::recreation::Column::RecreationTrails,
-                        ])
-                        .column_as(entity::recreation::Column::Score, "recreation_score")
-                        .columns([
-                            entity::opportunity::Column::Employment,
-                            entity::opportunity::Column::HigherEducation,
-                            entity::opportunity::Column::K12Education,
-                            entity::opportunity::Column::TechnicalVocationalCollege,
-                        ])
-                        .column_as(entity::opportunity::Column::Score, "opportunity_score")
-                        .columns([
-                            entity::features::Column::People,
-                            entity::features::Column::Retail,
-                            entity::features::Column::Transit,
-                        ])
-                        .join(
-                            JoinType::InnerJoin,
-                            entity::summary::Relation::CoreServices.def(),
-                        )
-                        .join(
-                            JoinType::InnerJoin,
-                            entity::summary::Relation::Infrastructure.def(),
-                        )
-                        .join(
-                            JoinType::InnerJoin,
-                            entity::summary::Relation::Recreation.def(),
-                        )
-                        .join(
-                            JoinType::InnerJoin,
-                            entity::summary::Relation::Opportunity.def(),
-                        )
-                        .join(
-                            sea_orm::JoinType::InnerJoin,
-                            entity::summary::Relation::Features.def(),
-                        )
-                        .into_model::<BNA>()
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::Summary => {
-                    let model = select.clone().one(&db).await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::Infratructure => {
-                    let model = select
-                        .clone()
-                        .find_also_related(infrastructure::Entity)
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::Recreation => {
-                    let model = select
-                        .clone()
-                        .find_also_related(recreation::Entity)
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::Opportunity => {
-                    let model = select
-                        .clone()
-                        .find_also_related(opportunity::Entity)
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::CoreServices => {
-                    let model = select
-                        .clone()
-                        .find_also_related(core_services::Entity)
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-                BNAComponent::Features => {
-                    let model = select
-                        .clone()
-                        .find_also_related(features::Entity)
-                        .one(&db)
-                        .await?;
-                    match model {
-                        Some(model) => json!(model).into_response().await,
-                        None => entry_not_found(&event).into(),
-                    }
-                }
-            };
-            Ok(res)
-        }
-        None => {
-            // Retrieve pagination parameters if any.
-            let (page_size, page) = match pagination_parameters(&event) {
-                Ok((page_size, page)) => (page_size, page),
-                Err(e) => return Ok(e),
-            };
+    // With params.
+    if event.has_path_parameters() {
+        let params: BNAPathParameters = match extract_path_parameters(&event) {
+            Ok(p) => p,
+            Err(e) => return Ok(e.into()),
+        };
 
-            // Retrieve entries.
-            let select = Summary::find();
-            let body = select
-                .clone()
-                .paginate(&db, page_size)
-                .fetch_page(page - 1)
-                .await?;
-            let total_items = select.count(&db).await?;
-            build_paginated_response(json!(body), total_items, page, page_size, &event)
-        }
+        let queries: BNAQueryParameters = match extract_query_parameters(&event) {
+            Ok(a) => a,
+            Err(e) => return Ok(e.into()),
+        };
+
+        let select = Summary::find_by_id(params.bna_id);
+        let res = match queries.component {
+            BNAComponent::All => {
+                let model = select
+                    .clone()
+                    .columns([
+                        entity::core_services::Column::Dentists,
+                        entity::core_services::Column::Doctors,
+                        entity::core_services::Column::Grocery,
+                        entity::core_services::Column::Hospitals,
+                        entity::core_services::Column::Pharmacies,
+                        entity::core_services::Column::SocialServices,
+                    ])
+                    .column_as(entity::core_services::Column::Score, "coreservices_score")
+                    .columns([
+                        entity::infrastructure::Column::HighStressMiles,
+                        entity::infrastructure::Column::LowStressMiles,
+                    ])
+                    .columns([
+                        entity::recreation::Column::CommunityCenters,
+                        entity::recreation::Column::Parks,
+                        entity::recreation::Column::RecreationTrails,
+                    ])
+                    .column_as(entity::recreation::Column::Score, "recreation_score")
+                    .columns([
+                        entity::opportunity::Column::Employment,
+                        entity::opportunity::Column::HigherEducation,
+                        entity::opportunity::Column::K12Education,
+                        entity::opportunity::Column::TechnicalVocationalCollege,
+                    ])
+                    .column_as(entity::opportunity::Column::Score, "opportunity_score")
+                    .columns([
+                        entity::features::Column::People,
+                        entity::features::Column::Retail,
+                        entity::features::Column::Transit,
+                    ])
+                    .join(
+                        JoinType::InnerJoin,
+                        entity::summary::Relation::CoreServices.def(),
+                    )
+                    .join(
+                        JoinType::InnerJoin,
+                        entity::summary::Relation::Infrastructure.def(),
+                    )
+                    .join(
+                        JoinType::InnerJoin,
+                        entity::summary::Relation::Recreation.def(),
+                    )
+                    .join(
+                        JoinType::InnerJoin,
+                        entity::summary::Relation::Opportunity.def(),
+                    )
+                    .join(
+                        sea_orm::JoinType::InnerJoin,
+                        entity::summary::Relation::Features.def(),
+                    )
+                    .into_model::<BNA>()
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Summary => {
+                let model = select.clone().one(&db).await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Infratructure => {
+                let model = select
+                    .clone()
+                    .find_also_related(infrastructure::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Recreation => {
+                let model = select
+                    .clone()
+                    .find_also_related(recreation::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Opportunity => {
+                let model = select
+                    .clone()
+                    .find_also_related(opportunity::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::CoreServices => {
+                let model = select
+                    .clone()
+                    .find_also_related(core_services::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Features => {
+                let model = select
+                    .clone()
+                    .find_also_related(features::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+        };
+        return Ok(res);
     }
+
+    // Retrieve pagination parameters if any.
+    let (page_size, page) = match pagination_parameters(&event) {
+        Ok((page_size, page)) => (page_size, page),
+        Err(e) => return Ok(e),
+    };
+
+    // Retrieve entries.
+    let select = Summary::find();
+    let body = select
+        .clone()
+        .paginate(&db, page_size)
+        .fetch_page(page - 1)
+        .await?;
+    let total_items = select.count(&db).await?;
+    build_paginated_response(json!(body), total_items, page, page_size, &event)
 }
 
 #[tokio::main]
