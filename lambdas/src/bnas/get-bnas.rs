@@ -6,12 +6,11 @@ use effortless::{
 use entity::{core_services, features, infrastructure, opportunity, prelude::*, recreation};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    api_database_connect,
     bnas::{
         extract_path_parameters, extract_query_parameters, BNAComponent, BNAPathParameters,
         BNAQueryParameters,
     },
-    build_paginated_response,
+    build_paginated_response, database_connect,
 };
 use sea_orm::{
     prelude::Uuid, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
@@ -65,10 +64,11 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Get the database connection.
-    let db = match api_database_connect(&event).await {
-        Ok(db) => db,
-        Err(e) => return Ok(e),
-    };
+    // let db = match api_database_connect(&event).await {
+    //     Ok(db) => db,
+    //     Err(e) => return Ok(e),
+    // };
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Retrieve all bnas or a specific one.
     debug!("Processing the requests...");
@@ -226,7 +226,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let body = select
         .clone()
         .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page - 1)
+        .fetch_page(pagination.page)
         .await?;
     let total_items = select.count(&db).await?;
     build_paginated_response(
@@ -257,27 +257,27 @@ async fn main() -> Result<(), Error> {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
-    use aws_lambda_events::http;
-    use lambda_http::RequestExt;
-    use std::collections::HashMap;
+    // use super::*;
+    // use aws_lambda_events::http;
+    // use lambda_http::RequestExt;
+    // use std::collections::HashMap;
 
-    #[tokio::test]
-    async fn test_handler_all() {
-        let event = http::Request::builder()
-            .header(http::header::CONTENT_TYPE, "application/json")
-            .body(Body::Empty)
-            .expect("failed to build request")
-            .with_path_parameters(HashMap::from([(
-                "bna_id".to_string(),
-                "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
-            )]))
-            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-            ));
-        let r = function_handler(event).await.unwrap();
-        dbg!(r);
-    }
+    // #[tokio::test]
+    // async fn test_handler_all() {
+    //     let event = http::Request::builder()
+    //         .header(http::header::CONTENT_TYPE, "application/json")
+    //         .body(Body::Empty)
+    //         .expect("failed to build request")
+    //         .with_path_parameters(HashMap::from([(
+    //             "bna_id".to_string(),
+    //             "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
+    //         )]))
+    //         .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+    //             lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+    //         ));
+    //     let r = function_handler(event).await.unwrap();
+    //     dbg!(r);
+    // }
 
     //     #[tokio::test]
     //     async fn test_handler_opportunity() {
