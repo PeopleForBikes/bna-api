@@ -1,34 +1,14 @@
-Enum "approval_status" {
-  "Pending"
-  "Approved"
-  "Rejected"
+Table "approval_status" {
+  "status" "character varying" [pk, not null]
 }
 
-Enum "bna_region" {
-  "Mid-Atlantic"
-  "Midwest"
-  "Mountain"
-  "New England"
-  "Pacific"
-  "South"
-}
-
-Enum "brokenspoke_status" {
-  "pending"
-  "started"
-  "complete"
-}
-
-Enum "brokenspoke_step" {
-  "sqs_message"
-  "setup"
-  "analysis"
-  "cleanup"
+Table "bna_region" {
+  "name" "character varying" [pk, not null]
 }
 
 Table "brokenspoke_pipeline" {
   "state_machine_id" uuid [pk, not null]
-  "step" brokenspoke_step
+  "step" "character varying"
   "sqs_message" json
   "fargate_task_arn" "character varying"
   "s3_bucket" "character varying"
@@ -39,8 +19,16 @@ Table "brokenspoke_pipeline" {
   "cost" numeric
 }
 
+Table "brokenspoke_status" {
+  "status" "character varying" [pk, not null]
+}
+
+Table "brokenspoke_step" {
+  "step" "character varying" [pk, not null]
+}
+
 Table "census" {
-  "census_id" integer [pk, not null]
+  "id" integer [pk, not null]
   "city_id" uuid [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "fips_code" "character varying" [not null]
@@ -48,13 +36,13 @@ Table "census" {
   "population" integer [not null]
 
   Indexes {
-    census_id [type: btree, name: "census_census_id_idx"]
     city_id [type: btree, name: "census_city_id_idx"]
+    id [type: btree, name: "census_id_idx"]
   }
 }
 
 Table "city" {
-  "city_id" uuid [unique, not null]
+  "id" uuid [unique, not null]
   "country" "character varying" [not null]
   "state" "character varying" [not null]
   "name" "character varying" [not null]
@@ -68,12 +56,12 @@ Table "city" {
 
   Indexes {
     (country, state, name) [pk, name: "city_pkey"]
-    city_id [type: btree, name: "city_city_id_idx"]
+    id [type: btree, name: "city_id_idx"]
   }
 }
 
 Table "core_services" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "dentists" doubleprecision
   "doctors" doubleprecision
   "grocery" doubleprecision
@@ -84,8 +72,7 @@ Table "core_services" {
 }
 
 Table "country" {
-  "country_id" integer [pk, not null]
-  "name" "character varying" [unique, not null]
+  "name" "character varying" [pk, not null]
 }
 
 Table "fargate_price" {
@@ -95,20 +82,20 @@ Table "fargate_price" {
 }
 
 Table "features" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "people" doubleprecision
   "retail" doubleprecision
   "transit" doubleprecision
 }
 
 Table "infrastructure" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "low_stress_miles" doubleprecision
   "high_stress_miles" doubleprecision
 }
 
 Table "opportunity" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "employment" doubleprecision
   "higher_education" doubleprecision
   "k12_education" doubleprecision
@@ -117,7 +104,7 @@ Table "opportunity" {
 }
 
 Table "recreation" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "community_centers" doubleprecision
   "parks" doubleprecision
   "recreation_trails" doubleprecision
@@ -130,35 +117,33 @@ Table "seaql_migrations" {
 }
 
 Table "speed_limit" {
-  "speed_limit_id" integer [pk, not null]
+  "id" integer [pk, not null]
   "city_id" uuid [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "residential" integer [not null]
 
   Indexes {
     city_id [type: btree, name: "speed_limit_city_id_idx"]
-    speed_limit_id [type: btree, name: "speed_limit_speed_limit_id_idx"]
+    id [type: btree, name: "speed_limit_id_idx"]
   }
 }
 
 Table "state_region_crosswalk" {
-  "state" "character varying" [pk, not null]
-  "region" bna_region [not null]
-}
+  "state" "character varying" [not null]
+  "region" "character varying" [not null]
 
-Table "state_speed_limit" {
-  "state_abbrev" "character (2)" [pk, not null]
-  "state_fips_code" "character (2)" [not null]
-  "speed" integer [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
-  "updated_at" timestamp
+  Indexes {
+    (state, region) [pk, name: "state_region_crosswalk_pkey"]
+    region [type: btree, name: "state_region_crosswalk_region_idx"]
+    state [type: btree, name: "state_region_crosswalk_state_idx"]
+  }
 }
 
 Table "submission" {
   "id" integer [pk, not null]
   "first_name" "character varying" [not null]
   "last_name" "character varying" [not null]
-  "title" "character varying"
+  "occupation" "character varying"
   "organization" "character varying"
   "email" "character varying" [not null]
   "country" "character varying" [not null]
@@ -166,30 +151,52 @@ Table "submission" {
   "region" "character varying"
   "fips_code" "character varying" [not null, default: `'0'::charactervarying`]
   "consent" boolean [not null]
-  "status" approval_status [not null, default: `'Pending'::public.approval_status`]
+  "status" "character varying" [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
 }
 
 Table "summary" {
-  "bna_uuid" uuid [pk, not null]
+  "bna_id" uuid [pk, not null]
   "city_id" uuid [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "score" doubleprecision [not null]
   "version" "character varying" [not null]
 }
 
-Ref "census_city_id_fkey":"city"."city_id" < "census"."city_id" [delete: cascade]
+Table "us_state" {
+  "name" "character varying" [pk, not null]
+  "abbrev" "character varying" [unique, not null]
+  "fips_code" "character (2)" [unique, not null]
+  "speed_limit" integer [not null]
 
-Ref "core_services_bna_uuid_fkey":"summary"."bna_uuid" < "core_services"."bna_uuid" [delete: cascade]
+  Indexes {
+    abbrev [type: btree, name: "us_state_abbrev_idx"]
+    fips_code [type: btree, name: "us_state_fips_code_idx"]
+  }
+}
 
-Ref "features_bna_uuid_fkey":"summary"."bna_uuid" < "features"."bna_uuid" [delete: cascade]
+Ref "census_city_id_fkey":"city"."id" < "census"."city_id" [delete: cascade]
 
-Ref "infrastructure_bna_uuid_fkey":"summary"."bna_uuid" < "infrastructure"."bna_uuid" [delete: cascade]
+Ref "city_country_fkey":"country"."name" < "city"."country"
 
-Ref "opportunity_bna_uuid_fkey":"summary"."bna_uuid" < "opportunity"."bna_uuid" [delete: cascade]
+Ref "core_services_bna_id_fkey":"summary"."bna_id" < "core_services"."bna_id" [delete: cascade]
 
-Ref "recreation_bna_uuid_fkey":"summary"."bna_uuid" < "recreation"."bna_uuid" [delete: cascade]
+Ref "features_bna_id_fkey":"summary"."bna_id" < "features"."bna_id" [delete: cascade]
 
-Ref "speed_limit_city_id_fkey":"city"."city_id" < "speed_limit"."city_id" [delete: cascade]
+Ref "infrastructure_bna_id_fkey":"summary"."bna_id" < "infrastructure"."bna_id" [delete: cascade]
 
-Ref "summary_city_id_fkey":"city"."city_id" < "summary"."city_id" [delete: cascade]
+Ref "opportunity_bna_id_fkey":"summary"."bna_id" < "opportunity"."bna_id" [delete: cascade]
+
+Ref "recreation_bna_id_fkey":"summary"."bna_id" < "recreation"."bna_id" [delete: cascade]
+
+Ref "speed_limit_city_id_fkey":"city"."id" < "speed_limit"."city_id" [delete: cascade]
+
+Ref "state_region_crosswalk_region_fkey":"bna_region"."name" < "state_region_crosswalk"."region"
+
+Ref "state_region_crosswalk_state_fkey":"us_state"."name" < "state_region_crosswalk"."state"
+
+Ref "submission_country_fkey":"country"."name" < "submission"."country"
+
+Ref "submission_status_fkey":"approval_status"."status" < "submission"."status"
+
+Ref "summary_city_id_fkey":"city"."id" < "summary"."city_id" [delete: cascade]

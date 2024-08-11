@@ -8,32 +8,20 @@ use csv::Reader;
 use dotenv::dotenv;
 use entity::{
     census, city, core_services, features, infrastructure, opportunity, prelude::*, recreation,
-    speed_limit, state_region_crosswalk, state_speed_limit, summary,
+    speed_limit, summary,
 };
 use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
-use std::{collections::HashMap, str::FromStr};
+use std::collections::{HashMap, HashSet};
 
-const US_STATE_COUNT: usize = 50;
+const US_STATE_COUNT: usize = 51; // w/ Puerto Rico
 const CHUNK_SIZE: usize = 1000;
-
-#[derive(Debug, Deserialize)]
-pub struct StateSpeedLimitCSV {
-    state: String,
-    fips_code_state: String,
-    speed: u32,
-}
+const BNA_COUNTRY_COUNT: usize = 15;
 
 #[derive(Debug, Deserialize)]
 pub struct CitySpeedLimitCSV {
     fips_code_city: u32,
     speed: u32,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct StateRegionCrosswalkCSV {
-    state_full: String,
-    region: String,
 }
 
 #[tokio::main]
@@ -51,29 +39,24 @@ async fn main() -> Result<(), Report> {
     let mut bna_opportunity: Vec<opportunity::ActiveModel> = Vec::new();
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
     let mut versions: HashMap<Uuid, Calver> = HashMap::new();
-    let mut state_speed_limits: Vec<state_speed_limit::ActiveModel> =
-        Vec::with_capacity(US_STATE_COUNT);
-    let mut state_region_crosswalks: Vec<state_region_crosswalk::ActiveModel> =
-        Vec::with_capacity(US_STATE_COUNT);
     let mut city_fips2limit: HashMap<u32, u32> = HashMap::new();
-    let mut state_bnaregion: HashMap<String, String> = HashMap::new();
 
-    // Load the state speed limit file.
-    let mut state_speed_limit_csv_reader =
-        Reader::from_path("examples/seeder-state_fips_speed.csv")?;
-    for record in state_speed_limit_csv_reader.deserialize() {
-        // Read the record.
-        let speed_limit: StateSpeedLimitCSV = record?;
+    // Set the database connection.
+    let database_url = dotenv::var("DATABASE_URL")?;
+    let db = Database::connect(database_url).await?;
 
-        // Populate the model.
-        let state_speed_limit_model = state_speed_limit::ActiveModel {
-            state_abbrev: ActiveValue::Set(speed_limit.state),
-            state_fips_code: ActiveValue::Set(speed_limit.fips_code_state),
-            speed: ActiveValue::Set(speed_limit.speed.try_into()?),
-            created_at: ActiveValue::NotSet,
-            updated_at: ActiveValue::NotSet,
-        };
-        state_speed_limits.push(state_speed_limit_model);
+    // Load the US States Region Crosswalk.
+    let state_region_models = StateRegionCrosswalk::find().all(&db).await?;
+    let mut state_regions: HashMap<String, String> = HashMap::with_capacity(US_STATE_COUNT);
+    for state_region in state_region_models {
+        state_regions.insert(state_region.state, state_region.region);
+    }
+
+    // Load the available countries.
+    let country_models = Country::find().all(&db).await?;
+    let mut countries: HashSet<String> = HashSet::with_capacity(BNA_COUNTRY_COUNT);
+    for country in country_models {
+        countries.insert(country.name);
     }
 
     // Load the city speed limit file.
@@ -83,23 +66,6 @@ async fn main() -> Result<(), Report> {
         // Read the record.
         let speed_limit: CitySpeedLimitCSV = record?;
         city_fips2limit.insert(speed_limit.fips_code_city, speed_limit.speed);
-    }
-
-    // Load the state/region crosswalk CSV file.
-    let mut state_region_crosswalk_csv_reader =
-        Reader::from_path("examples/seeder-state_region_crosswalk-v24.05.csv")?;
-    for record in state_region_crosswalk_csv_reader.deserialize() {
-        // Read the record.
-        let state_region: StateRegionCrosswalkCSV = record?;
-        state_bnaregion.insert(state_region.state_full.clone(), state_region.region.clone());
-
-        // Populate the state region crosswalk model.
-        let r = entity::wrappers::BnaRegion::from_str(&state_region.region).unwrap();
-        let state_region_crosswalk_model = state_region_crosswalk::ActiveModel {
-            state: ActiveValue::Set(state_region.state_full),
-            region: ActiveValue::Set(r.into()),
-        };
-        state_region_crosswalks.push(state_region_crosswalk_model);
     }
 
     // Load the historical data CSV file.
@@ -136,14 +102,19 @@ async fn main() -> Result<(), Report> {
                 Some(fips) => city_fips2limit.get(&fips).map(|x| *x as i32),
                 None => None,
             };
-            let bna_region = state_bnaregion
+            let bna_region = state_regions
                 .get(&scorecard.state_full)
                 .map(|s| s.to_owned())
                 .unwrap_or(scorecard.country.clone());
+            let err_msg = format!("cannot find country {}", scorecard.country.clone());
+            let country = countries
+                .get(&scorecard.country.clone())
+                .expect(err_msg.as_str())
+                .to_string();
 
             let city_model = city::ActiveModel {
                 id: ActiveValue::Set(city_uuid),
-                country: ActiveValue::Set(scorecard.country.clone()),
+                country: ActiveValue::Set(country),
                 latitude: ActiveValue::Set(Some(scorecard.census_latitude)),
                 longitude: ActiveValue::Set(Some(scorecard.census_longitude)),
                 name: ActiveValue::Set(scorecard.city.clone()),
@@ -250,14 +221,7 @@ async fn main() -> Result<(), Report> {
         bna_infrastructure.push(infratructure_model);
     }
 
-    // Set the database connection.
-    let database_url = dotenv::var("DATABASE_URL")?;
-    let db = Database::connect(database_url).await?;
-
     // Insert the entries.
-    StateSpeedLimit::insert_many(state_speed_limits)
-        .exec(&db)
-        .await?;
     City::insert_many(cities.into_values()).exec(&db).await?;
     Census::insert_many(census_populations).exec(&db).await?;
     SpeedLimit::insert_many(speed_limits).exec(&db).await?;

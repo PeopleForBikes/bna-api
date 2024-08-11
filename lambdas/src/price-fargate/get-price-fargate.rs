@@ -1,12 +1,15 @@
 use dotenv::dotenv;
 use effortless::{
-    api::{entry_not_found, invalid_path_parameter, parse_query_string_parameter},
+    api::{
+        entry_not_found, extract_pagination_parameters, invalid_path_parameter,
+        parse_query_string_parameter,
+    },
     error::APIError,
     fragment::{get_apigw_request_id, BnaRequestExt},
 };
 use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, build_paginated_response, pagination_parameters};
+use lambdas::{api_database_connect, build_paginated_response};
 use sea_orm::{EntityTrait, PaginatorTrait, QueryOrder, QuerySelect};
 use serde_json::json;
 use tracing::{debug, info};
@@ -15,8 +18,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = match pagination_parameters(&event) {
-        Ok((page_size, page)) => (page_size, page),
+    let pagination = match extract_pagination_parameters(&event) {
+        Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
@@ -69,13 +72,19 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             // Select the results.
             let query = select
                 .clone()
-                .paginate(&db, page_size)
-                .fetch_page(page - 1)
+                .paginate(&db, pagination.page_size)
+                .fetch_page(pagination.page)
                 .await;
             let res: Response<Body> = match query {
                 Ok(models) => {
                     let total_items = select.count(&db).await?;
-                    build_paginated_response(json!(models), total_items, page, page_size, &event)?
+                    build_paginated_response(
+                        json!(models),
+                        total_items,
+                        pagination.page,
+                        pagination.page_size,
+                        &event,
+                    )?
                 }
                 Err(e) => APIError::with_pointer(
                     get_apigw_request_id(&event),

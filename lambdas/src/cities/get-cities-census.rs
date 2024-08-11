@@ -1,11 +1,11 @@
 use dotenv::dotenv;
-use effortless::api::entry_not_found;
+use effortless::api::{entry_not_found, extract_pagination_parameters};
 use entity::{census, city};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::{
     build_paginated_response,
     cities::{extract_path_parameters, CitiesPathParameters},
-    database_connect, pagination_parameters,
+    database_connect,
 };
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
@@ -37,8 +37,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Retrieve pagination parameters if any.
-    let (page_size, page) = match pagination_parameters(&event) {
-        Ok((page_size, page)) => (page_size, page),
+    let pagination = match extract_pagination_parameters(&event) {
+        Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
@@ -50,14 +50,20 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         .find_also_related(census::Entity);
     let model = select
         .clone()
-        .paginate(&db, page_size)
-        .fetch_page(page - 1)
+        .paginate(&db, pagination.page_size)
+        .fetch_page(pagination.page - 1)
         .await?;
     if model.is_empty() {
         return Ok(entry_not_found(&event).into());
     }
     let total_items = select.count(&db).await?;
-    build_paginated_response(json!(model), total_items, page, page_size, &event)
+    build_paginated_response(
+        json!(model),
+        total_items,
+        pagination.page,
+        pagination.page_size,
+        &event,
+    )
 }
 
 // #[cfg(test)]

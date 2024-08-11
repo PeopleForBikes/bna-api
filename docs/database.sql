@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 15.7 (Homebrew)
+-- Dumped by pg_dump version 15.8 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -16,65 +16,31 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: approval_status; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE public.approval_status AS ENUM (
-    'Pending',
-    'Approved',
-    'Rejected'
-);
-
-
-ALTER TYPE public.approval_status OWNER TO postgres;
-
---
--- Name: bna_region; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE public.bna_region AS ENUM (
-    'Mid-Atlantic',
-    'Midwest',
-    'Mountain',
-    'New England',
-    'Pacific',
-    'South'
-);
-
-
-ALTER TYPE public.bna_region OWNER TO postgres;
-
---
--- Name: brokenspoke_status; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE public.brokenspoke_status AS ENUM (
-    'pending',
-    'started',
-    'complete'
-);
-
-
-ALTER TYPE public.brokenspoke_status OWNER TO postgres;
-
---
--- Name: brokenspoke_step; Type: TYPE; Schema: public; Owner: postgres
---
-
-CREATE TYPE public.brokenspoke_step AS ENUM (
-    'sqs_message',
-    'setup',
-    'analysis',
-    'cleanup'
-);
-
-
-ALTER TYPE public.brokenspoke_step OWNER TO postgres;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: approval_status; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.approval_status (
+    status character varying NOT NULL
+);
+
+
+ALTER TABLE public.approval_status OWNER TO postgres;
+
+--
+-- Name: bna_region; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bna_region (
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.bna_region OWNER TO postgres;
 
 --
 -- Name: brokenspoke_pipeline; Type: TABLE; Schema: public; Owner: postgres
@@ -82,7 +48,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.brokenspoke_pipeline (
     state_machine_id uuid NOT NULL,
-    step public.brokenspoke_step,
+    step character varying,
     sqs_message json,
     fargate_task_arn character varying,
     s3_bucket character varying,
@@ -97,11 +63,33 @@ CREATE TABLE public.brokenspoke_pipeline (
 ALTER TABLE public.brokenspoke_pipeline OWNER TO postgres;
 
 --
+-- Name: brokenspoke_status; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.brokenspoke_status (
+    status character varying NOT NULL
+);
+
+
+ALTER TABLE public.brokenspoke_status OWNER TO postgres;
+
+--
+-- Name: brokenspoke_step; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.brokenspoke_step (
+    step character varying NOT NULL
+);
+
+
+ALTER TABLE public.brokenspoke_step OWNER TO postgres;
+
+--
 -- Name: census; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.census (
-    census_id integer NOT NULL,
+    id integer NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     fips_code character varying NOT NULL,
@@ -113,10 +101,10 @@ CREATE TABLE public.census (
 ALTER TABLE public.census OWNER TO postgres;
 
 --
--- Name: census_census_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: census_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.census_census_id_seq
+CREATE SEQUENCE public.census_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -125,13 +113,13 @@ CREATE SEQUENCE public.census_census_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.census_census_id_seq OWNER TO postgres;
+ALTER TABLE public.census_id_seq OWNER TO postgres;
 
 --
--- Name: census_census_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: census_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.census_census_id_seq OWNED BY public.census.census_id;
+ALTER SEQUENCE public.census_id_seq OWNED BY public.census.id;
 
 
 --
@@ -139,7 +127,7 @@ ALTER SEQUENCE public.census_census_id_seq OWNED BY public.census.census_id;
 --
 
 CREATE TABLE public.city (
-    city_id uuid NOT NULL,
+    id uuid NOT NULL,
     country character varying NOT NULL,
     state character varying NOT NULL,
     name character varying NOT NULL,
@@ -160,7 +148,7 @@ ALTER TABLE public.city OWNER TO postgres;
 --
 
 CREATE TABLE public.core_services (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     dentists double precision,
     doctors double precision,
     grocery double precision,
@@ -178,34 +166,11 @@ ALTER TABLE public.core_services OWNER TO postgres;
 --
 
 CREATE TABLE public.country (
-    country_id integer NOT NULL,
     name character varying NOT NULL
 );
 
 
 ALTER TABLE public.country OWNER TO postgres;
-
---
--- Name: country_country_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.country_country_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.country_country_id_seq OWNER TO postgres;
-
---
--- Name: country_country_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.country_country_id_seq OWNED BY public.country.country_id;
-
 
 --
 -- Name: fargate_price; Type: TABLE; Schema: public; Owner: postgres
@@ -247,7 +212,7 @@ ALTER SEQUENCE public.fargate_price_id_seq OWNED BY public.fargate_price.id;
 --
 
 CREATE TABLE public.features (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     people double precision,
     retail double precision,
     transit double precision
@@ -261,7 +226,7 @@ ALTER TABLE public.features OWNER TO postgres;
 --
 
 CREATE TABLE public.infrastructure (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     low_stress_miles double precision,
     high_stress_miles double precision
 );
@@ -274,7 +239,7 @@ ALTER TABLE public.infrastructure OWNER TO postgres;
 --
 
 CREATE TABLE public.opportunity (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     employment double precision,
     higher_education double precision,
     k12_education double precision,
@@ -290,7 +255,7 @@ ALTER TABLE public.opportunity OWNER TO postgres;
 --
 
 CREATE TABLE public.recreation (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     community_centers double precision,
     parks double precision,
     recreation_trails double precision,
@@ -317,7 +282,7 @@ ALTER TABLE public.seaql_migrations OWNER TO postgres;
 --
 
 CREATE TABLE public.speed_limit (
-    speed_limit_id integer NOT NULL,
+    id integer NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     residential integer NOT NULL
@@ -327,10 +292,10 @@ CREATE TABLE public.speed_limit (
 ALTER TABLE public.speed_limit OWNER TO postgres;
 
 --
--- Name: speed_limit_speed_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+-- Name: speed_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
-CREATE SEQUENCE public.speed_limit_speed_limit_id_seq
+CREATE SEQUENCE public.speed_limit_id_seq
     AS integer
     START WITH 1
     INCREMENT BY 1
@@ -339,13 +304,13 @@ CREATE SEQUENCE public.speed_limit_speed_limit_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.speed_limit_speed_limit_id_seq OWNER TO postgres;
+ALTER TABLE public.speed_limit_id_seq OWNER TO postgres;
 
 --
--- Name: speed_limit_speed_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+-- Name: speed_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
-ALTER SEQUENCE public.speed_limit_speed_limit_id_seq OWNED BY public.speed_limit.speed_limit_id;
+ALTER SEQUENCE public.speed_limit_id_seq OWNED BY public.speed_limit.id;
 
 
 --
@@ -354,26 +319,11 @@ ALTER SEQUENCE public.speed_limit_speed_limit_id_seq OWNED BY public.speed_limit
 
 CREATE TABLE public.state_region_crosswalk (
     state character varying NOT NULL,
-    region public.bna_region NOT NULL
+    region character varying NOT NULL
 );
 
 
 ALTER TABLE public.state_region_crosswalk OWNER TO postgres;
-
---
--- Name: state_speed_limit; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.state_speed_limit (
-    state_abbrev character(2) NOT NULL,
-    state_fips_code character(2) NOT NULL,
-    speed integer NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp with time zone
-);
-
-
-ALTER TABLE public.state_speed_limit OWNER TO postgres;
 
 --
 -- Name: submission; Type: TABLE; Schema: public; Owner: postgres
@@ -383,7 +333,7 @@ CREATE TABLE public.submission (
     id integer NOT NULL,
     first_name character varying NOT NULL,
     last_name character varying NOT NULL,
-    title character varying,
+    occupation character varying,
     organization character varying,
     email character varying NOT NULL,
     country character varying NOT NULL,
@@ -391,7 +341,7 @@ CREATE TABLE public.submission (
     region character varying,
     fips_code character varying DEFAULT '0'::character varying NOT NULL,
     consent boolean NOT NULL,
-    status public.approval_status DEFAULT 'Pending'::public.approval_status NOT NULL,
+    status character varying NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -425,7 +375,7 @@ ALTER SEQUENCE public.submission_id_seq OWNED BY public.submission.id;
 --
 
 CREATE TABLE public.summary (
-    bna_uuid uuid NOT NULL,
+    bna_id uuid NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     score double precision NOT NULL,
@@ -436,17 +386,24 @@ CREATE TABLE public.summary (
 ALTER TABLE public.summary OWNER TO postgres;
 
 --
--- Name: census census_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: us_state; Type: TABLE; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.census ALTER COLUMN census_id SET DEFAULT nextval('public.census_census_id_seq'::regclass);
+CREATE TABLE public.us_state (
+    name character varying NOT NULL,
+    abbrev character varying NOT NULL,
+    fips_code character(2) NOT NULL,
+    speed_limit integer NOT NULL
+);
 
+
+ALTER TABLE public.us_state OWNER TO postgres;
 
 --
--- Name: country country_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: census id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.country ALTER COLUMN country_id SET DEFAULT nextval('public.country_country_id_seq'::regclass);
+ALTER TABLE ONLY public.census ALTER COLUMN id SET DEFAULT nextval('public.census_id_seq'::regclass);
 
 
 --
@@ -457,10 +414,10 @@ ALTER TABLE ONLY public.fargate_price ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
--- Name: speed_limit speed_limit_id; Type: DEFAULT; Schema: public; Owner: postgres
+-- Name: speed_limit id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.speed_limit ALTER COLUMN speed_limit_id SET DEFAULT nextval('public.speed_limit_speed_limit_id_seq'::regclass);
+ALTER TABLE ONLY public.speed_limit ALTER COLUMN id SET DEFAULT nextval('public.speed_limit_id_seq'::regclass);
 
 
 --
@@ -468,6 +425,22 @@ ALTER TABLE ONLY public.speed_limit ALTER COLUMN speed_limit_id SET DEFAULT next
 --
 
 ALTER TABLE ONLY public.submission ALTER COLUMN id SET DEFAULT nextval('public.submission_id_seq'::regclass);
+
+
+--
+-- Name: approval_status approval_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.approval_status
+    ADD CONSTRAINT approval_status_pkey PRIMARY KEY (status);
+
+
+--
+-- Name: bna_region bna_region_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_region
+    ADD CONSTRAINT bna_region_pkey PRIMARY KEY (name);
 
 
 --
@@ -479,19 +452,35 @@ ALTER TABLE ONLY public.brokenspoke_pipeline
 
 
 --
+-- Name: brokenspoke_status brokenspoke_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.brokenspoke_status
+    ADD CONSTRAINT brokenspoke_status_pkey PRIMARY KEY (status);
+
+
+--
+-- Name: brokenspoke_step brokenspoke_step_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.brokenspoke_step
+    ADD CONSTRAINT brokenspoke_step_pkey PRIMARY KEY (step);
+
+
+--
 -- Name: census census_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_pkey PRIMARY KEY (census_id);
+    ADD CONSTRAINT census_pkey PRIMARY KEY (id);
 
 
 --
--- Name: city city_city_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: city city_id_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.city
-    ADD CONSTRAINT city_city_id_key UNIQUE (city_id);
+    ADD CONSTRAINT city_id_key UNIQUE (id);
 
 
 --
@@ -507,15 +496,7 @@ ALTER TABLE ONLY public.city
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_pkey PRIMARY KEY (bna_uuid);
-
-
---
--- Name: country country_name_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.country
-    ADD CONSTRAINT country_name_key UNIQUE (name);
+    ADD CONSTRAINT core_services_pkey PRIMARY KEY (bna_id);
 
 
 --
@@ -523,7 +504,7 @@ ALTER TABLE ONLY public.country
 --
 
 ALTER TABLE ONLY public.country
-    ADD CONSTRAINT country_pkey PRIMARY KEY (country_id);
+    ADD CONSTRAINT country_pkey PRIMARY KEY (name);
 
 
 --
@@ -539,7 +520,7 @@ ALTER TABLE ONLY public.fargate_price
 --
 
 ALTER TABLE ONLY public.features
-    ADD CONSTRAINT features_pkey PRIMARY KEY (bna_uuid);
+    ADD CONSTRAINT features_pkey PRIMARY KEY (bna_id);
 
 
 --
@@ -547,7 +528,7 @@ ALTER TABLE ONLY public.features
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (bna_uuid);
+    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (bna_id);
 
 
 --
@@ -555,7 +536,7 @@ ALTER TABLE ONLY public.infrastructure
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (bna_uuid);
+    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (bna_id);
 
 
 --
@@ -563,7 +544,7 @@ ALTER TABLE ONLY public.opportunity
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_pkey PRIMARY KEY (bna_uuid);
+    ADD CONSTRAINT recreation_pkey PRIMARY KEY (bna_id);
 
 
 --
@@ -579,7 +560,7 @@ ALTER TABLE ONLY public.seaql_migrations
 --
 
 ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_pkey PRIMARY KEY (speed_limit_id);
+    ADD CONSTRAINT speed_limit_pkey PRIMARY KEY (id);
 
 
 --
@@ -587,15 +568,7 @@ ALTER TABLE ONLY public.speed_limit
 --
 
 ALTER TABLE ONLY public.state_region_crosswalk
-    ADD CONSTRAINT state_region_crosswalk_pkey PRIMARY KEY (state);
-
-
---
--- Name: state_speed_limit state_speed_limit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.state_speed_limit
-    ADD CONSTRAINT state_speed_limit_pkey PRIMARY KEY (state_abbrev);
+    ADD CONSTRAINT state_region_crosswalk_pkey PRIMARY KEY (state, region);
 
 
 --
@@ -611,14 +584,31 @@ ALTER TABLE ONLY public.submission
 --
 
 ALTER TABLE ONLY public.summary
-    ADD CONSTRAINT summary_pkey PRIMARY KEY (bna_uuid);
+    ADD CONSTRAINT summary_pkey PRIMARY KEY (bna_id);
 
 
 --
--- Name: census_census_id_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: us_state us_state_abbrev_key; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-CREATE INDEX census_census_id_idx ON public.census USING btree (census_id);
+ALTER TABLE ONLY public.us_state
+    ADD CONSTRAINT us_state_abbrev_key UNIQUE (abbrev);
+
+
+--
+-- Name: us_state us_state_fips_code_key; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.us_state
+    ADD CONSTRAINT us_state_fips_code_key UNIQUE (fips_code);
+
+
+--
+-- Name: us_state us_state_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.us_state
+    ADD CONSTRAINT us_state_pkey PRIMARY KEY (name);
 
 
 --
@@ -629,10 +619,17 @@ CREATE INDEX census_city_id_idx ON public.census USING btree (city_id);
 
 
 --
--- Name: city_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: census_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX city_city_id_idx ON public.city USING btree (city_id);
+CREATE INDEX census_id_idx ON public.census USING btree (id);
+
+
+--
+-- Name: city_id_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX city_id_idx ON public.city USING btree (id);
 
 
 --
@@ -643,10 +640,38 @@ CREATE INDEX speed_limit_city_id_idx ON public.speed_limit USING btree (city_id)
 
 
 --
--- Name: speed_limit_speed_limit_id_idx; Type: INDEX; Schema: public; Owner: postgres
+-- Name: speed_limit_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
-CREATE INDEX speed_limit_speed_limit_id_idx ON public.speed_limit USING btree (speed_limit_id);
+CREATE INDEX speed_limit_id_idx ON public.speed_limit USING btree (id);
+
+
+--
+-- Name: state_region_crosswalk_region_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX state_region_crosswalk_region_idx ON public.state_region_crosswalk USING btree (region);
+
+
+--
+-- Name: state_region_crosswalk_state_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX state_region_crosswalk_state_idx ON public.state_region_crosswalk USING btree (state);
+
+
+--
+-- Name: us_state_abbrev_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX us_state_abbrev_idx ON public.us_state USING btree (abbrev);
+
+
+--
+-- Name: us_state_fips_code_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX us_state_fips_code_idx ON public.us_state USING btree (fips_code);
 
 
 --
@@ -654,47 +679,55 @@ CREATE INDEX speed_limit_speed_limit_id_idx ON public.speed_limit USING btree (s
 --
 
 ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(city_id) ON DELETE CASCADE;
+    ADD CONSTRAINT census_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
 
 
 --
--- Name: core_services core_services_bna_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: city city_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.city
+    ADD CONSTRAINT city_country_fkey FOREIGN KEY (country) REFERENCES public.country(name);
+
+
+--
+-- Name: core_services core_services_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_bna_uuid_fkey FOREIGN KEY (bna_uuid) REFERENCES public.summary(bna_uuid) ON DELETE CASCADE;
+    ADD CONSTRAINT core_services_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
 
 
 --
--- Name: features features_bna_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: features features_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.features
-    ADD CONSTRAINT features_bna_uuid_fkey FOREIGN KEY (bna_uuid) REFERENCES public.summary(bna_uuid) ON DELETE CASCADE;
+    ADD CONSTRAINT features_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
 
 
 --
--- Name: infrastructure infrastructure_bna_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: infrastructure infrastructure_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_bna_uuid_fkey FOREIGN KEY (bna_uuid) REFERENCES public.summary(bna_uuid) ON DELETE CASCADE;
+    ADD CONSTRAINT infrastructure_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
 
 
 --
--- Name: opportunity opportunity_bna_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: opportunity opportunity_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_bna_uuid_fkey FOREIGN KEY (bna_uuid) REFERENCES public.summary(bna_uuid) ON DELETE CASCADE;
+    ADD CONSTRAINT opportunity_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
 
 
 --
--- Name: recreation recreation_bna_uuid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: recreation recreation_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_bna_uuid_fkey FOREIGN KEY (bna_uuid) REFERENCES public.summary(bna_uuid) ON DELETE CASCADE;
+    ADD CONSTRAINT recreation_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
 
 
 --
@@ -702,7 +735,39 @@ ALTER TABLE ONLY public.recreation
 --
 
 ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(city_id) ON DELETE CASCADE;
+    ADD CONSTRAINT speed_limit_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
+
+
+--
+-- Name: state_region_crosswalk state_region_crosswalk_region_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.state_region_crosswalk
+    ADD CONSTRAINT state_region_crosswalk_region_fkey FOREIGN KEY (region) REFERENCES public.bna_region(name);
+
+
+--
+-- Name: state_region_crosswalk state_region_crosswalk_state_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.state_region_crosswalk
+    ADD CONSTRAINT state_region_crosswalk_state_fkey FOREIGN KEY (state) REFERENCES public.us_state(name);
+
+
+--
+-- Name: submission submission_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.submission
+    ADD CONSTRAINT submission_country_fkey FOREIGN KEY (country) REFERENCES public.country(name);
+
+
+--
+-- Name: submission submission_status_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.submission
+    ADD CONSTRAINT submission_status_fkey FOREIGN KEY (status) REFERENCES public.approval_status(status);
 
 
 --
@@ -710,7 +775,7 @@ ALTER TABLE ONLY public.speed_limit
 --
 
 ALTER TABLE ONLY public.summary
-    ADD CONSTRAINT summary_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(city_id) ON DELETE CASCADE;
+    ADD CONSTRAINT summary_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
 
 
 --

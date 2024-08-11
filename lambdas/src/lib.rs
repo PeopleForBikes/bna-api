@@ -4,10 +4,11 @@ pub mod link_header;
 
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
+    api::DEFAULT_PAGE_SIZE,
     error::{APIError, APIErrors},
-    fragment::{get_apigw_request_id, BnaRequestExt},
+    fragment::BnaRequestExt,
 };
-use lambda_http::{Body, Error, Request, RequestExt, Response};
+use lambda_http::{Body, Error, Request, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde_json::Value;
 use std::env;
@@ -16,10 +17,10 @@ use tracing::{debug, error};
 /// The result type to return to the caller of the Lambda API handler.
 pub type APIResult<T> = std::result::Result<T, Response<Body>>;
 
-/// Maximum number of items allowed to be returned by a query at once.
-pub const MAX_PAGE_SIZE: u64 = 100;
-/// Number of items to return per page if no argument was provided.
-pub const DEFAULT_PAGE_SIZE: u64 = 50;
+// /// Maximum number of items allowed to be returned by a query at once.
+// pub const MAX_PAGE_SIZE: u64 = 100;
+// /// Number of items to return per page if no argument was provided.
+// pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
 /// Returns the database connection.
 ///
@@ -42,69 +43,69 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
     Database::connect(database_url).await
 }
 
-/// Retrieves the pagination parameters.
-///
-/// If nothing is provided, the first page is returned and will contain up to
-/// [`DEFAULT_PAGE_SIZE`] items.
-///
-/// If `page` does not exist, the lambda functions will return an empty array.
-pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
-    debug!("Retrieving pagination...");
-    let apigw_request_id = get_apigw_request_id(event);
-    let page_size = match event
-        .query_string_parameters()
-        .first("page_size")
-        .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
-        .parse::<u64>()
-    {
-        Ok(page_size) => match page_size {
-            0 => 1,
-            1..=MAX_PAGE_SIZE => page_size,
-            _ => MAX_PAGE_SIZE,
-        },
-        Err(e) => {
-            let api_error = APIError::with_parameter(
-                apigw_request_id,
-                "page_size",
-                format!("Failed to process the page_size parameter: {e}").as_str(),
-            );
-            return Err(APIErrors::new(&[api_error]).into());
-        }
-    };
-    let page = match event
-        .query_string_parameters()
-        .first("page")
-        .unwrap_or("1")
-        .parse::<u64>()
-    {
-        Ok(page) => match page {
-            0 => 1,
-            _ => page,
-        },
-        Err(e) => {
-            let api_error = APIError::with_parameter(
-                apigw_request_id,
-                "page",
-                format!("Failed to process the page parameter: {e}").as_str(),
-            );
-            return Err(APIErrors::new(&[api_error]).into());
-        }
-    };
+// /// Retrieves the pagination parameters.
+// ///
+// /// If nothing is provided, the first page is returned and will contain up to
+// /// [`DEFAULT_PAGE_SIZE`] items.
+// ///
+// /// If `page` does not exist, the lambda functions will return an empty array.
+// pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
+//     debug!("Retrieving pagination...");
+//     let apigw_request_id = get_apigw_request_id(event);
+//     let page_size = match event
+//         .query_string_parameters()
+//         .first("page_size")
+//         .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
+//         .parse::<u64>()
+//     {
+//         Ok(page_size) => match page_size {
+//             0 => 1,
+//             1..=MAX_PAGE_SIZE => page_size,
+//             _ => MAX_PAGE_SIZE,
+//         },
+//         Err(e) => {
+//             let api_error = APIError::with_parameter(
+//                 apigw_request_id,
+//                 "page_size",
+//                 format!("Failed to process the page_size parameter: {e}").as_str(),
+//             );
+//             return Err(APIErrors::new(&[api_error]).into());
+//         }
+//     };
+//     let page = match event
+//         .query_string_parameters()
+//         .first("page")
+//         .unwrap_or("1")
+//         .parse::<u64>()
+//     {
+//         Ok(page) => match page {
+//             0 => 1,
+//             _ => page,
+//         },
+//         Err(e) => {
+//             let api_error = APIError::with_parameter(
+//                 apigw_request_id,
+//                 "page",
+//                 format!("Failed to process the page parameter: {e}").as_str(),
+//             );
+//             return Err(APIErrors::new(&[api_error]).into());
+//         }
+//     };
 
-    Ok((page_size, page))
-}
+//     Ok((page_size, page))
+// }
 
 /// Represent the query parameters related to the pagination.
-pub struct PaginationParameters {
-    /// The number of items per page.
-    pub page_size: u64,
-    /// The result page being returned.
-    pub page: u64,
-}
+// pub struct PaginationParameters {
+//     /// The number of items per page.
+//     pub page_size: u64,
+//     /// The result page being returned.
+//     pub page: u64,
+// }
 
-pub fn pagination_parameters_2(event: &Request) -> Result<PaginationParameters, Response<Body>> {
-    pagination_parameters(event).map(|(page_size, page)| PaginationParameters { page_size, page })
-}
+// pub fn pagination_parameters_2(event: &Request) -> Result<PaginationParameters, Response<Body>> {
+//     pagination_parameters(event).map(|(page_size, page)| PaginationParameters { page_size, page })
+// }
 
 /// Builds a paginated Response.
 ///
@@ -311,7 +312,7 @@ mod tests {
     use aws_lambda_events::http;
     use effortless::api::{parse_path_parameter, parse_request_body};
     use entity::wrappers::submission::SubmissionPost;
-    use lambda_http::{http::StatusCode, request::from_str, RequestExt};
+    use lambda_http::RequestExt;
     use std::collections::HashMap;
 
     #[test]
@@ -331,84 +332,6 @@ mod tests {
         assert_eq!(nav.prev(), 1);
         assert_eq!(nav.next(), 2);
         assert_eq!(nav.last(), 2);
-    }
-
-    #[test]
-    fn test_pagination_parameters_without_params() {
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let req = from_str(input).unwrap();
-
-        let actual = pagination_parameters(&req).unwrap();
-        assert_eq!(actual.0, DEFAULT_PAGE_SIZE);
-        assert_eq!(actual.1, 1);
-    }
-
-    #[test]
-    fn test_pagination_parameters_with_valid_params() {
-        const PAGE_SIZE: u64 = 25;
-        const PAGE: u64 = 8;
-
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
-        data.insert("page".into(), vec![PAGE.to_string()]);
-
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
-
-        let actual = pagination_parameters(&req).unwrap();
-        assert_eq!(actual.0, PAGE_SIZE);
-        assert_eq!(actual.1, PAGE);
-    }
-
-    #[test]
-    fn test_pagination_parameters_with_invalid_page_size() {
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec!["-1".to_string()]);
-        data.insert("page".into(), vec!["50".to_string()]);
-
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
-
-        let actual = pagination_parameters(&req).unwrap_err();
-
-        // Ensure the error had the BAD_REQUEST status.
-        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
-
-        // Ensure the error message is correct.
-        let b = actual.body();
-        let message = match b {
-            Body::Text(message) => message,
-            _ => panic!("The body does not match the Text invariant."),
-        };
-        let api_error: APIErrors = serde_json::from_str(message).unwrap();
-        assert_eq!(api_error.errors.len(), 1)
-    }
-
-    #[test]
-    fn test_pagination_parameters_with_invalid_page() {
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec!["1".to_string()]);
-        data.insert("page".into(), vec!["abc".to_string()]);
-
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
-
-        let actual = pagination_parameters(&req).unwrap_err();
-
-        // Ensure the error had the BAD_REQUEST status.
-        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
-
-        // Ensure the error message is correct.
-        let b = actual.body();
-        let message = match b {
-            Body::Text(message) => message,
-            _ => panic!("The body does not match the Text invariant."),
-        };
-        let api_error: APIErrors = serde_json::from_str(message).unwrap();
-        assert_eq!(api_error.errors.len(), 1)
     }
 
     #[test]

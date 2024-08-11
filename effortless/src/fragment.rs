@@ -12,6 +12,7 @@ pub enum ParseParameterError {
     URLEncodingError(#[from] FromUtf8Error),
 }
 
+/// Parse a parameter found in a QueryMap.
 fn parse_parameter<T>(qm: &QueryMap, parameter: &str) -> Option<Result<T, ParseParameterError>>
 where
     T: FromStr,
@@ -153,6 +154,9 @@ pub trait BnaRequestExt {
 
     /// Returns true if there are path parameters available.
     fn has_path_parameters(&self) -> bool;
+
+    /// Returns true if there are query parameters available.
+    fn has_query_parameters(&self) -> bool;
 }
 
 impl<B> BnaRequestExt for http::Request<B> {
@@ -189,6 +193,10 @@ impl<B> BnaRequestExt for http::Request<B> {
 
     fn has_path_parameters(&self) -> bool {
         !self.path_parameters().is_empty()
+    }
+
+    fn has_query_parameters(&self) -> bool {
+        !self.query_string_parameters().is_empty()
     }
 }
 

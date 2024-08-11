@@ -944,6 +944,7 @@ components:
     country:
       type: string
       enum:
+        - Australia
         - Belgium
         - Brazil
         - Canada
@@ -951,6 +952,7 @@ components:
         - Colombia
         - Croatia
         - Cuba
+        - England
         - France
         - Germany
         - Greece
@@ -1425,7 +1427,7 @@ components:
       name: page
       in: query
       required: false
-      description: "Page index (starting at 1)"
+      description: "Page index (starting at 0)"
       schema:
         type: integer
         default: 1

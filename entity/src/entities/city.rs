@@ -29,6 +29,14 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::census::Entity")]
     Census,
+    #[sea_orm(
+        belongs_to = "super::country::Entity",
+        from = "Column::Country",
+        to = "super::country::Column::Name",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    Country,
     #[sea_orm(has_many = "super::speed_limit::Entity")]
     SpeedLimit,
     #[sea_orm(has_many = "super::summary::Entity")]
@@ -38,6 +46,12 @@ pub enum Relation {
 impl Related<super::census::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Census.def()
+    }
+}
+
+impl Related<super::country::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Country.def()
     }
 }
 

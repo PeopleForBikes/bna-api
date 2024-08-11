@@ -1,5 +1,6 @@
-use sea_orm::{EnumIter, Iterable};
-use sea_orm_migration::{prelude::*, sea_query::extension::postgres::Type};
+use sea_orm_migration::prelude::*;
+
+use crate::m20220101_000001_main::Country;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -7,15 +8,29 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        // Create the approval status type.
+        // Create the approval status table.
         manager
-            .create_type(
-                Type::create()
-                    .as_enum(ApprovalStatus::Table)
-                    .values(ApprovalStatus::iter().skip(1))
+            .create_table(
+                Table::create()
+                    .table(ApprovalStatus::Table)
+                    .if_not_exists()
+                    .col(
+                        ColumnDef::new(ApprovalStatus::Status)
+                            .string()
+                            .primary_key()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await?;
+        let insert_approval_statuses = Query::insert()
+            .into_table(ApprovalStatus::Table)
+            .columns([ApprovalStatus::Status])
+            .values_panic(["Pending".into()])
+            .values_panic(["Approved".into()])
+            .values_panic(["Rejected".into()])
+            .to_owned();
+        manager.exec_stmt(insert_approval_statuses).await?;
 
         // Create the Submission table.
         manager
@@ -45,17 +60,22 @@ impl MigrationTrait for Migration {
                             .default("0"),
                     )
                     .col(ColumnDef::new(Submission::Consent).boolean().not_null())
-                    .col(
-                        ColumnDef::new(Submission::Status)
-                            .enumeration(ApprovalStatus::Table, ApprovalStatus::iter().skip(1))
-                            .not_null()
-                            .default(ApprovalStatus::Pending.to_string()),
-                    )
+                    .col(ColumnDef::new(Submission::Status).string().not_null())
                     .col(
                         ColumnDef::new(Submission::CreatedAt)
                             .timestamp_with_time_zone()
                             .default(Expr::current_timestamp())
                             .not_null(),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Submission::Table, Submission::Status)
+                            .to(ApprovalStatus::Table, ApprovalStatus::Status),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Submission::Table, Submission::Country)
+                            .to(Country::Table, Country::Name),
                     )
                     .to_owned(),
             )
@@ -89,13 +109,9 @@ enum Submission {
     CreatedAt,
 }
 
-#[derive(Iden, EnumIter)]
+/// Lookup table for the approval statuses.
+#[derive(Iden)]
 pub enum ApprovalStatus {
     Table,
-    #[iden = "Pending"]
-    Pending,
-    #[iden = "Approved"]
-    Approved,
-    #[iden = "Rejected"]
-    Rejected,
+    Status,
 }
