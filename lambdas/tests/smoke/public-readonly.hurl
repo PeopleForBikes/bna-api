@@ -28,14 +28,14 @@ content-type: application/json
 
 {
   "city": "santa rosa",
-  "country": "usa",
+  "country": "United States",
   "email": "jane.dpe@orgllc.com",
   "fips_code": "3570670",
   "first_name": "Jane",
   "last_name": "Doe",
   "organization": "Organization LLC",
   "region": "new mexico",
-  "title": "CTO",
+  "occupation": "CTO",
   "consent": true
 }
 HTTP 200

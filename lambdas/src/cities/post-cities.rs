@@ -3,12 +3,11 @@ use effortless::{
     api::{invalid_body, parse_request_body},
     response::make_json_created_response,
 };
-use entity::{country, prelude::*, state_region_crosswalk, wrappers::city::CityPost};
+use entity::{prelude::*, state_region_crosswalk, wrappers::city::CityPost};
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
-use lambdas::database_connect;
+use lambdas::{database_connect, db::find_country};
 use sea_orm::{
-    ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, DbErr, EntityTrait,
-    IntoActiveModel, QueryFilter,
+    ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, IntoActiveModel, QueryFilter,
 };
 use serde_json::json;
 use tracing::info;
@@ -87,14 +86,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let response = make_json_created_response(json!(city).to_string())
         .expect("unable to build http::Response");
     Ok(response)
-}
-
-async fn find_country(db: &DatabaseConnection, country: &str) -> Result<bool, DbErr> {
-    Ok(Country::find()
-        .filter(country::Column::Name.eq(country))
-        .one(db)
-        .await?
-        .is_none())
 }
 
 // async fn find_us_state_abrev(
