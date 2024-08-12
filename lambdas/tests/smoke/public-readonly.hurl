@@ -38,7 +38,9 @@ content-type: application/json
   "occupation": "CTO",
   "consent": true
 }
-HTTP 200
+HTTP 201
+[Captures]
+submission_id: jsonpath "$.id"
 
 # Query all the submissions.
 GET {{host}}/cities/submissions
@@ -49,5 +51,5 @@ GET {{host}}/cities/submissions?status=Pending
 HTTP 200
 
 # Query a specific submission.
-GET {{host}}/cities/submissions/1
+GET {{host}}/cities/submissions/{{submission_id}}
 HTTP 200
