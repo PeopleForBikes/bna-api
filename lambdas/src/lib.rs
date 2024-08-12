@@ -1,5 +1,6 @@
 pub mod bnas;
 pub mod cities;
+pub mod db;
 pub mod link_header;
 
 use bnacore::aws::get_aws_secrets_value;
