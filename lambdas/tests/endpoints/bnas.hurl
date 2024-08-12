@@ -5,7 +5,7 @@ HTTP 200
 [Asserts]
 jsonpath "$" count > 0
 [Captures]
-bna_id: jsonpath "$.[0].bna_uuid"
+bna_id: jsonpath "$.[0].bna_id"
 
 
 # Queries a specific bna run.
@@ -19,15 +19,15 @@ GET {{host}}/bnas/1
 HTTP 400
 [Asserts]
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].source.Pointer" == "id"
+jsonpath "$.errors[0].source.Pointer" == "bna_id"
 
 # Queries a non-existing bna run
-GET {{host}}/bnas/eac1dbfb-2137-44c5-be59-71fc613f2963
+GET {{host}}/bnas/{{fake_bna_id}}
 
 HTTP 404
 [Asserts]
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].source.Parameter" == "/bnas/eac1dbfb-2137-44c5-be59-71fc613f2963"
+jsonpath "$.errors[0].source.Parameter" == "/bnas/{{fake_bna_id}}?"
 
 # Queries a specific bna run and its associated city.
 GET {{host}}/bnas/{{bna_id}}/city
@@ -37,9 +37,9 @@ HTTP 200
 jsonpath "$" count > 0
 
 # Queries a non-existing bna run and its associated city.
-GET {{host}}/bnas/374386aa-c34a-4cd6-b296-ae420017847e/city
+GET {{host}}/bnas/{{fake_bna_id}}/city
 
 HTTP 404
 [Asserts]
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].source.Parameter" == "/bnas/374386aa-c34a-4cd6-b296-ae420017847e/city"
+jsonpath "$.errors[0].source.Parameter" == "/bnas/{{fake_bna_id}}/city?"

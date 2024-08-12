@@ -267,7 +267,12 @@ pub fn extract_pagination_parameters(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use lambda_http::{http::StatusCode, request::from_str, RequestExt};
+    use crate::error::APIErrorSource::Parameter;
+    use lambda_http::{
+        http::{self, header, StatusCode},
+        request::from_str,
+        RequestExt,
+    };
     use std::collections::HashMap;
 
     #[test]
@@ -346,5 +351,32 @@ mod tests {
         };
         let api_error: APIErrors = serde_json::from_str(message).unwrap();
         assert_eq!(api_error.errors.len(), 1)
+    }
+
+    #[test]
+    fn test_entry_not_found() {
+        let event = http::Request::builder()
+            .header(header::CONTENT_TYPE, "application/json")
+            .uri("/bnas/eac1dbfb-2137-44c5-be59-71fc613f2963")
+            .body(Body::Empty)
+            .expect("failed to build request")
+            .with_path_parameters(HashMap::from([(
+                "bna_id".to_string(),
+                "eac1dbfb-2137-44c5-be59-71fc613f2963".to_string(),
+            )]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+            ));
+        let actual = entry_not_found(&event);
+        let expected = APIError::new(
+            None,
+            StatusCode::NOT_FOUND,
+            "Item Not Found",
+            "the entry was not found",
+            Some(Parameter(
+                "/bnas/eac1dbfb-2137-44c5-be59-71fc613f2963".to_string(),
+            )),
+        );
+        assert_eq!(actual, expected);
     }
 }

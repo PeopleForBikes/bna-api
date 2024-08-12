@@ -15,7 +15,7 @@ use serde_with::skip_serializing_none;
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub enum APIErrorSource {
     Pointer(String),
     Parameter(String),
@@ -24,7 +24,7 @@ pub enum APIErrorSource {
 
 /// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Clone, Debug)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
 pub struct APIError {
     /// A unique identifier for this particular occurrence of the problem.
     id: Option<String>,
