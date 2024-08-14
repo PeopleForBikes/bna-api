@@ -9,7 +9,7 @@ use effortless::{
     error::{APIError, APIErrors},
     fragment::BnaRequestExt,
 };
-use lambda_http::{Body, Error, Request, Response};
+use lambda_http::{http::header, Body, Error, Request, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde_json::Value;
 use std::env;
@@ -142,6 +142,7 @@ pub fn build_paginated_response(
         .header("x-prev-page", nav.prev())
         .header("x-total", total_items)
         .header("x-total-pages", nav.last())
+        .header(header::CONTENT_TYPE, "application/json")
         .body(body.to_string().into())
         .map_err(Box::new)?)
 }
