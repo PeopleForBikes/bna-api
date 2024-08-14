@@ -51,7 +51,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let model = select
         .clone()
         .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page - 1)
+        .fetch_page(pagination.page)
         .await?;
     if model.is_empty() {
         return Ok(entry_not_found(&event).into());
