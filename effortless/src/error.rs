@@ -16,6 +16,7 @@ use serde_with::skip_serializing_none;
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
 #[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum APIErrorSource {
     Pointer(String),
     Parameter(String),
