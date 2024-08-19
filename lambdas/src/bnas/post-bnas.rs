@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use effortless::{api::parse_request_body, response::make_json_created_response};
 use entity::{
-    core_services, features, infrastructure, opportunity, recreation, summary,
+    core_services, infrastructure, opportunity, people, recreation, retail, summary, transit,
     wrappers::bna::BNAPost,
 };
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
@@ -64,13 +64,21 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         social_services: ActiveValue::Set(wrapper.core_services.social_services),
     };
     info!("{:?}", core_services);
-    let features = features::ActiveModel {
+    let people = people::ActiveModel {
         bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
         people: ActiveValue::Set(wrapper.features.people),
+    };
+    info!("{:?}", people);
+    let retail = retail::ActiveModel {
+        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
         retail: ActiveValue::Set(wrapper.features.retail),
+    };
+    info!("{:?}", people);
+    let transit = transit::ActiveModel {
+        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
         transit: ActiveValue::Set(wrapper.features.transit),
     };
-    info!("{:?}", features);
+    info!("{:?}", people);
     let infrastructure = infrastructure::ActiveModel {
         bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
         low_stress_miles: ActiveValue::Set(wrapper.infrastructure.low_stress_miles),
@@ -103,14 +111,18 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // And insert a new entry for each model.
     let summary_res = summary.insert(&db).await?;
     let core_services_res = core_services.insert(&db).await?;
-    let features_res = features.insert(&db).await?;
+    let people_res = people.insert(&db).await?;
+    let retail_res = retail.insert(&db).await?;
+    let transit_res = transit.insert(&db).await?;
     let infrastructure_res = infrastructure.insert(&db).await?;
     let opportunity_res = opportunity.insert(&db).await?;
     let recreation_res = recreation.insert(&db).await?;
     let res = (
         summary_res,
         core_services_res,
-        features_res,
+        people_res,
+        retail_res,
+        transit_res,
         infrastructure_res,
         opportunity_res,
         recreation_res,
