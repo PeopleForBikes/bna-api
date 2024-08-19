@@ -390,7 +390,7 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        // Create the summary table.
+        // Create the Summary table.
         manager
             .create_table(
                 Table::create()
@@ -414,19 +414,50 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
-        // Create the features table.
+        // Create the People table.
         manager
             .create_table(
                 Table::create()
-                    .table(Features::Table)
-                    .col(uuid(Features::BNAId))
-                    .col(double_null(Features::People))
-                    .col(double_null(Features::Retail))
-                    .col(double_null(Features::Transit))
-                    .primary_key(Index::create().col(Features::BNAId))
+                    .table(People::Table)
+                    .col(uuid(People::BNAId).primary_key())
+                    .col(double_null(People::People))
                     .foreign_key(
                         ForeignKey::create()
-                            .from(Features::Table, Features::BNAId)
+                            .from(People::Table, People::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // Create the Retail table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(Retail::Table)
+                    .col(uuid(Retail::BNAId).primary_key())
+                    .col(double_null(Retail::Retail))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Retail::Table, Retail::BNAId)
+                            .to(Summary::Table, Summary::BNAId)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
+        // Create the Transit table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(Transit::Table)
+                    .col(uuid(Transit::BNAId).primary_key())
+                    .col(double_null(Transit::Transit))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Transit::Table, Transit::BNAId)
                             .to(Summary::Table, Summary::BNAId)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
@@ -537,7 +568,13 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(Summary::Table).to_owned())
             .await?;
         manager
-            .drop_table(Table::drop().table(Features::Table).to_owned())
+            .drop_table(Table::drop().table(People::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(Retail::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(Transit::Table).to_owned())
             .await?;
         manager
             .drop_table(Table::drop().table(CoreServices::Table).to_owned())
@@ -639,14 +676,28 @@ enum Summary {
 }
 
 #[derive(Iden)]
-enum Features {
+enum People {
     Table,
     /// Analysis unique identifier.
     BNAId,
     /// BNA category score for access to residential areas.
     People,
+}
+
+#[derive(Iden)]
+enum Retail {
+    Table,
+    /// Analysis unique identifier.
+    BNAId,
     /// BNA category score for access to major retail centers.
     Retail,
+}
+
+#[derive(Iden)]
+enum Transit {
+    Table,
+    /// Analysis unique identifier.
+    BNAId,
     /// BNA category score for access to major transit stops.
     Transit,
 }
