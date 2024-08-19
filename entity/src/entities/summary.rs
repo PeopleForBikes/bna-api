@@ -27,14 +27,18 @@ pub enum Relation {
     City,
     #[sea_orm(has_one = "super::core_services::Entity")]
     CoreServices,
-    #[sea_orm(has_one = "super::features::Entity")]
-    Features,
     #[sea_orm(has_one = "super::infrastructure::Entity")]
     Infrastructure,
     #[sea_orm(has_one = "super::opportunity::Entity")]
     Opportunity,
+    #[sea_orm(has_one = "super::people::Entity")]
+    People,
     #[sea_orm(has_one = "super::recreation::Entity")]
     Recreation,
+    #[sea_orm(has_one = "super::retail::Entity")]
+    Retail,
+    #[sea_orm(has_one = "super::transit::Entity")]
+    Transit,
 }
 
 impl Related<super::city::Entity> for Entity {
@@ -46,12 +50,6 @@ impl Related<super::city::Entity> for Entity {
 impl Related<super::core_services::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::CoreServices.def()
-    }
-}
-
-impl Related<super::features::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Features.def()
     }
 }
 
@@ -67,9 +65,27 @@ impl Related<super::opportunity::Entity> for Entity {
     }
 }
 
+impl Related<super::people::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::People.def()
+    }
+}
+
 impl Related<super::recreation::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Recreation.def()
+    }
+}
+
+impl Related<super::retail::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Retail.def()
+    }
+}
+
+impl Related<super::transit::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Transit.def()
     }
 }
 
