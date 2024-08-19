@@ -4,7 +4,7 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "brokenspoke_pipeline")]
+#[sea_orm(table_name = "bna_pipeline")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub state_machine_id: Uuid,
@@ -24,21 +24,21 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
-        belongs_to = "super::brokenspoke_status::Entity",
+        belongs_to = "super::bna_pipeline_status::Entity",
         from = "Column::Status",
-        to = "super::brokenspoke_status::Column::Status",
+        to = "super::bna_pipeline_status::Column::Status",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
-    BrokenspokeStatus,
+    BnaPipelineStatus,
     #[sea_orm(
-        belongs_to = "super::brokenspoke_step::Entity",
+        belongs_to = "super::bna_pipeline_step::Entity",
         from = "Column::Step",
-        to = "super::brokenspoke_step::Column::Step",
+        to = "super::bna_pipeline_step::Column::Step",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
-    BrokenspokeStep,
+    BnaPipelineStep,
     #[sea_orm(
         belongs_to = "super::fargate_price::Entity",
         from = "Column::FargatePrice",
@@ -49,15 +49,15 @@ pub enum Relation {
     FargatePrice,
 }
 
-impl Related<super::brokenspoke_status::Entity> for Entity {
+impl Related<super::bna_pipeline_status::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::BrokenspokeStatus.def()
+        Relation::BnaPipelineStatus.def()
     }
 }
 
-impl Related<super::brokenspoke_step::Entity> for Entity {
+impl Related<super::bna_pipeline_step::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::BrokenspokeStep.def()
+        Relation::BnaPipelineStep.def()
     }
 }
 

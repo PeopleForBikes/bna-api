@@ -2,11 +2,7 @@ Table "approval_status" {
   "status" "character varying" [pk, not null]
 }
 
-Table "bna_region" {
-  "name" "character varying" [pk, not null]
-}
-
-Table "brokenspoke_pipeline" {
+Table "bna_pipeline" {
   "state_machine_id" uuid [pk, not null]
   "step" "character varying"
   "sqs_message" json
@@ -21,12 +17,16 @@ Table "brokenspoke_pipeline" {
   "cost" numeric
 }
 
-Table "brokenspoke_status" {
+Table "bna_pipeline_status" {
   "status" "character varying" [pk, not null]
 }
 
-Table "brokenspoke_step" {
+Table "bna_pipeline_step" {
   "step" "character varying" [pk, not null]
+}
+
+Table "bna_region" {
+  "name" "character varying" [pk, not null]
 }
 
 Table "census" {
@@ -185,11 +185,11 @@ Table "us_state" {
   }
 }
 
-Ref "brokenspoke_pipeline_fargate_price_fkey":"fargate_price"."id" < "brokenspoke_pipeline"."fargate_price"
+Ref "bna_pipeline_fargate_price_fkey":"fargate_price"."id" < "bna_pipeline"."fargate_price"
 
-Ref "brokenspoke_pipeline_status_fkey":"brokenspoke_status"."status" < "brokenspoke_pipeline"."status"
+Ref "bna_pipeline_status_fkey":"bna_pipeline_status"."status" < "bna_pipeline"."status"
 
-Ref "brokenspoke_pipeline_step_fkey":"brokenspoke_step"."step" < "brokenspoke_pipeline"."step"
+Ref "bna_pipeline_step_fkey":"bna_pipeline_step"."step" < "bna_pipeline"."step"
 
 Ref "census_city_id_fkey":"city"."id" < "census"."city_id" [delete: cascade]
 

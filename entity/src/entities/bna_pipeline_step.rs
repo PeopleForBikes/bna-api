@@ -4,21 +4,21 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "brokenspoke_status")]
+#[sea_orm(table_name = "bna_pipeline_step")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub status: String,
+    pub step: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::brokenspoke_pipeline::Entity")]
-    BrokenspokePipeline,
+    #[sea_orm(has_many = "super::bna_pipeline::Entity")]
+    BnaPipeline,
 }
 
-impl Related<super::brokenspoke_pipeline::Entity> for Entity {
+impl Related<super::bna_pipeline::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::BrokenspokePipeline.def()
+        Relation::BnaPipeline.def()
     }
 }
 

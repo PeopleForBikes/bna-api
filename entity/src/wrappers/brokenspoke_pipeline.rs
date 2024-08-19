@@ -1,4 +1,4 @@
-use crate::entities::brokenspoke_pipeline;
+use crate::entities::bna_pipeline;
 use sea_orm::{
     prelude::{Decimal, Json, TimeDateTimeWithTimeZone, Uuid},
     ActiveValue, IntoActiveModel,
@@ -6,7 +6,7 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BrokenspokePipelinePost {
+pub struct BNAPipelinePost {
     pub cost: Option<Decimal>,
     pub end_time: Option<TimeDateTimeWithTimeZone>,
     pub fargate_price: Option<i32>,
@@ -21,9 +21,9 @@ pub struct BrokenspokePipelinePost {
     pub torn_down: Option<bool>,
 }
 
-impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
-    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
-        brokenspoke_pipeline::ActiveModel {
+impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
+    fn into_active_model(self) -> bna_pipeline::ActiveModel {
+        bna_pipeline::ActiveModel {
             cost: ActiveValue::Set(self.cost),
             end_time: ActiveValue::Set(self.end_time),
             fargate_task_arn: ActiveValue::Set(self.fargate_task_arn),
@@ -57,9 +57,9 @@ pub struct BrokenspokePipelinePatch {
     pub torn_down: Option<Option<bool>>,
 }
 
-impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
-    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
-        brokenspoke_pipeline::ActiveModel {
+impl IntoActiveModel<bna_pipeline::ActiveModel> for BrokenspokePipelinePatch {
+    fn into_active_model(self) -> bna_pipeline::ActiveModel {
+        bna_pipeline::ActiveModel {
             state_machine_id: ActiveValue::NotSet,
             cost: self.cost.map_or(ActiveValue::NotSet, ActiveValue::Set),
             step: self.step.map_or(ActiveValue::NotSet, ActiveValue::Set),

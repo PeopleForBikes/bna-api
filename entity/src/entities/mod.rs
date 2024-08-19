@@ -3,10 +3,10 @@
 pub mod prelude;
 
 pub mod approval_status;
+pub mod bna_pipeline;
+pub mod bna_pipeline_status;
+pub mod bna_pipeline_step;
 pub mod bna_region;
-pub mod brokenspoke_pipeline;
-pub mod brokenspoke_status;
-pub mod brokenspoke_step;
 pub mod census;
 pub mod city;
 pub mod core_services;

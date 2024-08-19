@@ -32,21 +32,10 @@ CREATE TABLE public.approval_status (
 ALTER TABLE public.approval_status OWNER TO postgres;
 
 --
--- Name: bna_region; Type: TABLE; Schema: public; Owner: postgres
+-- Name: bna_pipeline; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.bna_region (
-    name character varying NOT NULL
-);
-
-
-ALTER TABLE public.bna_region OWNER TO postgres;
-
---
--- Name: brokenspoke_pipeline; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.brokenspoke_pipeline (
+CREATE TABLE public.bna_pipeline (
     state_machine_id uuid NOT NULL,
     step character varying,
     sqs_message json,
@@ -62,29 +51,40 @@ CREATE TABLE public.brokenspoke_pipeline (
 );
 
 
-ALTER TABLE public.brokenspoke_pipeline OWNER TO postgres;
+ALTER TABLE public.bna_pipeline OWNER TO postgres;
 
 --
--- Name: brokenspoke_status; Type: TABLE; Schema: public; Owner: postgres
+-- Name: bna_pipeline_status; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.brokenspoke_status (
+CREATE TABLE public.bna_pipeline_status (
     status character varying NOT NULL
 );
 
 
-ALTER TABLE public.brokenspoke_status OWNER TO postgres;
+ALTER TABLE public.bna_pipeline_status OWNER TO postgres;
 
 --
--- Name: brokenspoke_step; Type: TABLE; Schema: public; Owner: postgres
+-- Name: bna_pipeline_step; Type: TABLE; Schema: public; Owner: postgres
 --
 
-CREATE TABLE public.brokenspoke_step (
+CREATE TABLE public.bna_pipeline_step (
     step character varying NOT NULL
 );
 
 
-ALTER TABLE public.brokenspoke_step OWNER TO postgres;
+ALTER TABLE public.bna_pipeline_step OWNER TO postgres;
+
+--
+-- Name: bna_region; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bna_region (
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.bna_region OWNER TO postgres;
 
 --
 -- Name: census; Type: TABLE; Schema: public; Owner: postgres
@@ -460,35 +460,35 @@ ALTER TABLE ONLY public.approval_status
 
 
 --
+-- Name: bna_pipeline bna_pipeline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_pkey PRIMARY KEY (state_machine_id);
+
+
+--
+-- Name: bna_pipeline_status bna_pipeline_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline_status
+    ADD CONSTRAINT bna_pipeline_status_pkey PRIMARY KEY (status);
+
+
+--
+-- Name: bna_pipeline_step bna_pipeline_step_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline_step
+    ADD CONSTRAINT bna_pipeline_step_pkey PRIMARY KEY (step);
+
+
+--
 -- Name: bna_region bna_region_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.bna_region
     ADD CONSTRAINT bna_region_pkey PRIMARY KEY (name);
-
-
---
--- Name: brokenspoke_pipeline brokenspoke_pipeline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_pipeline
-    ADD CONSTRAINT brokenspoke_pipeline_pkey PRIMARY KEY (state_machine_id);
-
-
---
--- Name: brokenspoke_status brokenspoke_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_status
-    ADD CONSTRAINT brokenspoke_status_pkey PRIMARY KEY (status);
-
-
---
--- Name: brokenspoke_step brokenspoke_step_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_step
-    ADD CONSTRAINT brokenspoke_step_pkey PRIMARY KEY (step);
 
 
 --
@@ -715,27 +715,27 @@ CREATE INDEX us_state_fips_code_idx ON public.us_state USING btree (fips_code);
 
 
 --
--- Name: brokenspoke_pipeline brokenspoke_pipeline_fargate_price_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: bna_pipeline bna_pipeline_fargate_price_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.brokenspoke_pipeline
-    ADD CONSTRAINT brokenspoke_pipeline_fargate_price_fkey FOREIGN KEY (fargate_price) REFERENCES public.fargate_price(id);
-
-
---
--- Name: brokenspoke_pipeline brokenspoke_pipeline_status_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_pipeline
-    ADD CONSTRAINT brokenspoke_pipeline_status_fkey FOREIGN KEY (status) REFERENCES public.brokenspoke_status(status);
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_fargate_price_fkey FOREIGN KEY (fargate_price) REFERENCES public.fargate_price(id);
 
 
 --
--- Name: brokenspoke_pipeline brokenspoke_pipeline_step_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: bna_pipeline bna_pipeline_status_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.brokenspoke_pipeline
-    ADD CONSTRAINT brokenspoke_pipeline_step_fkey FOREIGN KEY (step) REFERENCES public.brokenspoke_step(step);
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_status_fkey FOREIGN KEY (status) REFERENCES public.bna_pipeline_status(status);
+
+
+--
+-- Name: bna_pipeline bna_pipeline_step_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_step_fkey FOREIGN KEY (step) REFERENCES public.bna_pipeline_step(step);
 
 
 --
