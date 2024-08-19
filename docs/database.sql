@@ -50,8 +50,10 @@ CREATE TABLE public.brokenspoke_pipeline (
     state_machine_id uuid NOT NULL,
     step character varying,
     sqs_message json,
+    fargate_price integer,
     fargate_task_arn character varying,
     s3_bucket character varying,
+    status character varying DEFAULT 'Pending'::character varying NOT NULL,
     start_time timestamp with time zone NOT NULL,
     end_time timestamp with time zone,
     torn_down boolean,
@@ -710,6 +712,30 @@ CREATE INDEX us_state_abbrev_idx ON public.us_state USING btree (abbrev);
 --
 
 CREATE INDEX us_state_fips_code_idx ON public.us_state USING btree (fips_code);
+
+
+--
+-- Name: brokenspoke_pipeline brokenspoke_pipeline_fargate_price_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.brokenspoke_pipeline
+    ADD CONSTRAINT brokenspoke_pipeline_fargate_price_fkey FOREIGN KEY (fargate_price) REFERENCES public.fargate_price(id);
+
+
+--
+-- Name: brokenspoke_pipeline brokenspoke_pipeline_status_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.brokenspoke_pipeline
+    ADD CONSTRAINT brokenspoke_pipeline_status_fkey FOREIGN KEY (status) REFERENCES public.brokenspoke_status(status);
+
+
+--
+-- Name: brokenspoke_pipeline brokenspoke_pipeline_step_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.brokenspoke_pipeline
+    ADD CONSTRAINT brokenspoke_pipeline_step_fkey FOREIGN KEY (step) REFERENCES public.brokenspoke_step(step);
 
 
 --

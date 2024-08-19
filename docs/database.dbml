@@ -10,8 +10,10 @@ Table "brokenspoke_pipeline" {
   "state_machine_id" uuid [pk, not null]
   "step" "character varying"
   "sqs_message" json
+  "fargate_price" integer
   "fargate_task_arn" "character varying"
   "s3_bucket" "character varying"
+  "status" "character varying" [not null, default: `'Pending'::charactervarying`]
   "start_time" timestamp [not null]
   "end_time" timestamp
   "torn_down" boolean
@@ -182,6 +184,12 @@ Table "us_state" {
     fips_code [type: btree, name: "us_state_fips_code_idx"]
   }
 }
+
+Ref "brokenspoke_pipeline_fargate_price_fkey":"fargate_price"."id" < "brokenspoke_pipeline"."fargate_price"
+
+Ref "brokenspoke_pipeline_status_fkey":"brokenspoke_status"."status" < "brokenspoke_pipeline"."status"
+
+Ref "brokenspoke_pipeline_step_fkey":"brokenspoke_step"."step" < "brokenspoke_pipeline"."step"
 
 Ref "census_city_id_fkey":"city"."id" < "census"."city_id" [delete: cascade]
 
