@@ -668,22 +668,22 @@
 <!-- people -->
 <g id="people" class="node">
 <title>people</title>
-<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-2005.67" rx="269.32" ry="130.22"/>
-<polygon fill="#1d71b8" stroke="transparent" points="2544.78,-2035.67 2544.78,-2095.67 2921.78,-2095.67 2921.78,-2035.67 2544.78,-2035.67"/>
-<polygon fill="none" stroke="#29235c" points="2544.78,-2035.67 2544.78,-2095.67 2921.78,-2095.67 2921.78,-2035.67 2544.78,-2035.67"/>
+<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-2005.67" rx="256.86" ry="130.22"/>
+<polygon fill="#1d71b8" stroke="transparent" points="2553.78,-2035.67 2553.78,-2095.67 2912.78,-2095.67 2912.78,-2035.67 2553.78,-2035.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-2035.67 2553.78,-2095.67 2912.78,-2095.67 2912.78,-2035.67 2553.78,-2035.67"/>
 <text text-anchor="start" x="2623.01" y="-2056.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#ffffff"> &#160;&#160;&#160;&#160;&#160;&#160;people &#160;&#160;&#160;&#160;&#160;&#160;</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2544.78,-1975.67 2544.78,-2035.67 2921.78,-2035.67 2921.78,-1975.67 2544.78,-1975.67"/>
-<polygon fill="none" stroke="#29235c" points="2544.78,-1975.67 2544.78,-2035.67 2921.78,-2035.67 2921.78,-1975.67 2544.78,-1975.67"/>
-<text text-anchor="start" x="2555.78" y="-1996.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
-<text text-anchor="start" x="2651.83" y="-1996.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2811.22" y="-1996.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
-<text text-anchor="start" x="2871.69" y="-1996.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
-<text text-anchor="start" x="2880.58" y="-1996.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2544.78,-1915.67 2544.78,-1975.67 2921.78,-1975.67 2921.78,-1915.67 2544.78,-1915.67"/>
-<polygon fill="none" stroke="#29235c" points="2544.78,-1915.67 2544.78,-1975.67 2921.78,-1975.67 2921.78,-1915.67 2544.78,-1915.67"/>
-<text text-anchor="start" x="2555.47" y="-1935.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">people &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2686.75" y="-1936.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
-<polygon fill="none" stroke="#29235c" stroke-width="2" points="2543.28,-1914.67 2543.28,-2096.67 2922.28,-2096.67 2922.28,-1914.67 2543.28,-1914.67"/>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-1975.67 2553.78,-2035.67 2912.78,-2035.67 2912.78,-1975.67 2553.78,-1975.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-1975.67 2553.78,-2035.67 2912.78,-2035.67 2912.78,-1975.67 2553.78,-1975.67"/>
+<text text-anchor="start" x="2564.78" y="-1996.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
+<text text-anchor="start" x="2660.83" y="-1996.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2802.22" y="-1996.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
+<text text-anchor="start" x="2862.69" y="-1996.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
+<text text-anchor="start" x="2871.58" y="-1996.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-1915.67 2553.78,-1975.67 2912.78,-1975.67 2912.78,-1915.67 2553.78,-1915.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-1915.67 2553.78,-1975.67 2912.78,-1975.67 2912.78,-1915.67 2553.78,-1915.67"/>
+<text text-anchor="start" x="2564.38" y="-1935.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">score &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2677.75" y="-1936.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
+<polygon fill="none" stroke="#29235c" stroke-width="2" points="2552.28,-1914.67 2552.28,-2096.67 2913.28,-2096.67 2913.28,-1914.67 2552.28,-1914.67"/>
 </g>
 <!-- recreation -->
 <g id="recreation" class="node">
@@ -720,22 +720,22 @@
 <!-- retail -->
 <g id="retail" class="node">
 <title>retail</title>
-<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-1195.67" rx="250.13" ry="130.22"/>
-<polygon fill="#1d71b8" stroke="transparent" points="2557.78,-1225.67 2557.78,-1285.67 2907.78,-1285.67 2907.78,-1225.67 2557.78,-1225.67"/>
-<polygon fill="none" stroke="#29235c" points="2557.78,-1225.67 2557.78,-1285.67 2907.78,-1285.67 2907.78,-1225.67 2557.78,-1225.67"/>
-<text text-anchor="start" x="2635.87" y="-1246.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#ffffff"> &#160;&#160;&#160;&#160;&#160;&#160;retail &#160;&#160;&#160;&#160;&#160;&#160;</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2557.78,-1165.67 2557.78,-1225.67 2907.78,-1225.67 2907.78,-1165.67 2557.78,-1165.67"/>
-<polygon fill="none" stroke="#29235c" points="2557.78,-1165.67 2557.78,-1225.67 2907.78,-1225.67 2907.78,-1165.67 2557.78,-1165.67"/>
-<text text-anchor="start" x="2568.78" y="-1186.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
-<text text-anchor="start" x="2664.83" y="-1186.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2797.22" y="-1186.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
-<text text-anchor="start" x="2857.69" y="-1186.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
-<text text-anchor="start" x="2866.58" y="-1186.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2557.78,-1105.67 2557.78,-1165.67 2907.78,-1165.67 2907.78,-1105.67 2557.78,-1105.67"/>
-<polygon fill="none" stroke="#29235c" points="2557.78,-1105.67 2557.78,-1165.67 2907.78,-1165.67 2907.78,-1105.67 2557.78,-1105.67"/>
-<text text-anchor="start" x="2568.33" y="-1125.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">retail &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2672.75" y="-1126.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
-<polygon fill="none" stroke="#29235c" stroke-width="2" points="2556.78,-1104.67 2556.78,-1286.67 2908.78,-1286.67 2908.78,-1104.67 2556.78,-1104.67"/>
+<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-1195.67" rx="256.86" ry="130.22"/>
+<polygon fill="#1d71b8" stroke="transparent" points="2553.78,-1225.67 2553.78,-1285.67 2912.78,-1285.67 2912.78,-1225.67 2553.78,-1225.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-1225.67 2553.78,-1285.67 2912.78,-1285.67 2912.78,-1225.67 2553.78,-1225.67"/>
+<text text-anchor="start" x="2636.37" y="-1246.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#ffffff"> &#160;&#160;&#160;&#160;&#160;&#160;retail &#160;&#160;&#160;&#160;&#160;&#160;</text>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-1165.67 2553.78,-1225.67 2912.78,-1225.67 2912.78,-1165.67 2553.78,-1165.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-1165.67 2553.78,-1225.67 2912.78,-1225.67 2912.78,-1165.67 2553.78,-1165.67"/>
+<text text-anchor="start" x="2564.78" y="-1186.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
+<text text-anchor="start" x="2660.83" y="-1186.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2802.22" y="-1186.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
+<text text-anchor="start" x="2862.69" y="-1186.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
+<text text-anchor="start" x="2871.58" y="-1186.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-1105.67 2553.78,-1165.67 2912.78,-1165.67 2912.78,-1105.67 2553.78,-1105.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-1105.67 2553.78,-1165.67 2912.78,-1165.67 2912.78,-1105.67 2553.78,-1105.67"/>
+<text text-anchor="start" x="2564.38" y="-1125.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">score &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2677.75" y="-1126.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
+<polygon fill="none" stroke="#29235c" stroke-width="2" points="2552.28,-1104.67 2552.28,-1286.67 2913.28,-1286.67 2913.28,-1104.67 2552.28,-1104.67"/>
 </g>
 <!-- seaql_migrations -->
 <g id="seaql_migrations" class="node">
@@ -790,9 +790,9 @@
 <!-- summary&#45;&gt;people -->
 <g id="edge18" class="edge">
 <title>summary:e&#45;&gt;people:w</title>
-<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2193.53,-1690.67 2160.32,-1804.37 2243.46,-1866.67 2358.41,-1952.79 2394.99,-2003.26 2533.62,-2005.58"/>
-<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2533.75,-2009.08 2543.78,-2005.67 2533.81,-2002.08 2533.75,-2009.08"/>
-<text text-anchor="middle" x="2537.56" y="-1976.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
+<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2193.53,-1690.67 2159.98,-1804.84 2243.46,-1866.67 2361.74,-1954.26 2400.26,-2003.33 2542.37,-2005.58"/>
+<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2542.75,-2009.09 2552.78,-2005.67 2542.81,-2002.09 2542.75,-2009.09"/>
+<text text-anchor="middle" x="2546.56" y="-1976.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
 <text text-anchor="middle" x="2098.53" y="-1700.27" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">1</text>
 </g>
 <!-- summary&#45;&gt;recreation -->
@@ -808,38 +808,38 @@
 <!-- summary&#45;&gt;retail -->
 <g id="edge22" class="edge">
 <title>summary:e&#45;&gt;retail:w</title>
-<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2262,-1690.67 2122.18,-1457.13 2243.46,-1334.67 2348.25,-1228.86 2402,-1197.09 2546.66,-1195.71"/>
-<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2546.8,-1199.21 2556.78,-1195.67 2546.76,-1192.21 2546.8,-1199.21"/>
-<text text-anchor="middle" x="2550.56" y="-1166.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
+<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2262,-1690.67 2122.47,-1457.42 2243.46,-1334.67 2346.89,-1229.74 2399.66,-1197.13 2542.77,-1195.71"/>
+<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2542.8,-1199.21 2552.78,-1195.67 2542.76,-1192.21 2542.8,-1199.21"/>
+<text text-anchor="middle" x="2546.56" y="-1166.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
 <text text-anchor="middle" x="2098.53" y="-1661.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">1</text>
 </g>
 <!-- transit -->
 <g id="transit" class="node">
 <title>transit</title>
-<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-917.67" rx="263.09" ry="130.22"/>
-<polygon fill="#1d71b8" stroke="transparent" points="2548.78,-947.67 2548.78,-1007.67 2916.78,-1007.67 2916.78,-947.67 2548.78,-947.67"/>
-<polygon fill="none" stroke="#29235c" points="2548.78,-947.67 2548.78,-1007.67 2916.78,-1007.67 2916.78,-947.67 2548.78,-947.67"/>
-<text text-anchor="start" x="2626.97" y="-968.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#ffffff"> &#160;&#160;&#160;&#160;&#160;&#160;transit &#160;&#160;&#160;&#160;&#160;&#160;</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2548.78,-887.67 2548.78,-947.67 2916.78,-947.67 2916.78,-887.67 2548.78,-887.67"/>
-<polygon fill="none" stroke="#29235c" points="2548.78,-887.67 2548.78,-947.67 2916.78,-947.67 2916.78,-887.67 2548.78,-887.67"/>
-<text text-anchor="start" x="2559.78" y="-908.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
-<text text-anchor="start" x="2655.83" y="-908.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2806.22" y="-908.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
-<text text-anchor="start" x="2866.69" y="-908.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
-<text text-anchor="start" x="2875.58" y="-908.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
-<polygon fill="#e7e2dd" stroke="transparent" points="2548.78,-827.67 2548.78,-887.67 2916.78,-887.67 2916.78,-827.67 2548.78,-827.67"/>
-<polygon fill="none" stroke="#29235c" points="2548.78,-827.67 2548.78,-887.67 2916.78,-887.67 2916.78,-827.67 2548.78,-827.67"/>
-<text text-anchor="start" x="2559.44" y="-847.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">transit &#160;&#160;&#160;</text>
-<text text-anchor="start" x="2681.75" y="-848.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
-<polygon fill="none" stroke="#29235c" stroke-width="2" points="2547.78,-826.67 2547.78,-1008.67 2917.78,-1008.67 2917.78,-826.67 2547.78,-826.67"/>
+<ellipse fill="none" stroke="black" stroke-width="0" cx="2732.78" cy="-917.67" rx="256.86" ry="130.22"/>
+<polygon fill="#1d71b8" stroke="transparent" points="2553.78,-947.67 2553.78,-1007.67 2912.78,-1007.67 2912.78,-947.67 2553.78,-947.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-947.67 2553.78,-1007.67 2912.78,-1007.67 2912.78,-947.67 2553.78,-947.67"/>
+<text text-anchor="start" x="2627.47" y="-968.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#ffffff"> &#160;&#160;&#160;&#160;&#160;&#160;transit &#160;&#160;&#160;&#160;&#160;&#160;</text>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-887.67 2553.78,-947.67 2912.78,-947.67 2912.78,-887.67 2553.78,-887.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-887.67 2553.78,-947.67 2912.78,-947.67 2912.78,-887.67 2553.78,-887.67"/>
+<text text-anchor="start" x="2564.78" y="-908.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">bna_id</text>
+<text text-anchor="start" x="2660.83" y="-908.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2802.22" y="-908.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">uuid</text>
+<text text-anchor="start" x="2862.69" y="-908.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c"> </text>
+<text text-anchor="start" x="2871.58" y="-908.87" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="32.00" fill="#29235c">(!)</text>
+<polygon fill="#e7e2dd" stroke="transparent" points="2553.78,-827.67 2553.78,-887.67 2912.78,-887.67 2912.78,-827.67 2553.78,-827.67"/>
+<polygon fill="none" stroke="#29235c" points="2553.78,-827.67 2553.78,-887.67 2912.78,-887.67 2912.78,-827.67 2553.78,-827.67"/>
+<text text-anchor="start" x="2564.38" y="-847.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">score &#160;&#160;&#160;</text>
+<text text-anchor="start" x="2677.75" y="-848.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">doubleprecision</text>
+<polygon fill="none" stroke="#29235c" stroke-width="2" points="2552.28,-826.67 2552.28,-1008.67 2913.28,-1008.67 2913.28,-826.67 2552.28,-826.67"/>
 </g>
 <!-- summary&#45;&gt;transit -->
 <!-- summary&#45;&gt;transit -->
 <g id="edge36" class="edge">
 <title>summary:e&#45;&gt;transit:w</title>
-<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2379.59,-1690.67 2058.86,-1280.26 2243.46,-1056.67 2335.91,-944.69 2396.21,-918.86 2537.47,-917.71"/>
-<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2537.79,-921.21 2547.78,-917.67 2537.77,-914.21 2537.79,-921.21"/>
-<text text-anchor="middle" x="2541.56" y="-888.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
+<path fill="none" stroke="#29235c" stroke-width="3" d="M2089.64,-1690.67C2379.59,-1690.67 2058.17,-1279.69 2243.46,-1056.67 2337.61,-943.34 2399.25,-918.75 2542.76,-917.7"/>
+<polygon fill="#29235c" stroke="#29235c" stroke-width="3" points="2542.79,-921.2 2552.78,-917.67 2542.77,-914.2 2542.79,-921.2"/>
+<text text-anchor="middle" x="2546.56" y="-888.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">*</text>
 <text text-anchor="middle" x="2080.74" y="-1700.27" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">1</text>
 </g>
 <!-- us_state -->

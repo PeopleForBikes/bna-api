@@ -100,7 +100,7 @@ Table "opportunity" {
 
 Table "people" {
   "bna_id" uuid [pk, not null]
-  "people" doubleprecision
+  "score" doubleprecision
 }
 
 Table "recreation" {
@@ -113,7 +113,7 @@ Table "recreation" {
 
 Table "retail" {
   "bna_id" uuid [pk, not null]
-  "retail" doubleprecision
+  "score" doubleprecision
 }
 
 Table "seaql_migrations" {
@@ -170,7 +170,7 @@ Table "summary" {
 
 Table "transit" {
   "bna_id" uuid [pk, not null]
-  "transit" doubleprecision
+  "score" doubleprecision
 }
 
 Table "us_state" {

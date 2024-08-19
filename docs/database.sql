@@ -244,7 +244,7 @@ ALTER TABLE public.opportunity OWNER TO postgres;
 
 CREATE TABLE public.people (
     bna_id uuid NOT NULL,
-    people double precision
+    score double precision
 );
 
 
@@ -271,7 +271,7 @@ ALTER TABLE public.recreation OWNER TO postgres;
 
 CREATE TABLE public.retail (
     bna_id uuid NOT NULL,
-    retail double precision
+    score double precision
 );
 
 
@@ -403,7 +403,7 @@ ALTER TABLE public.summary OWNER TO postgres;
 
 CREATE TABLE public.transit (
     bna_id uuid NOT NULL,
-    transit double precision
+    score double precision
 );
 
 

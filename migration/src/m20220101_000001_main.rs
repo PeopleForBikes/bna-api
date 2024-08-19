@@ -420,7 +420,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(People::Table)
                     .col(uuid(People::BNAId).primary_key())
-                    .col(double_null(People::People))
+                    .col(double_null(People::Score))
                     .foreign_key(
                         ForeignKey::create()
                             .from(People::Table, People::BNAId)
@@ -437,7 +437,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Retail::Table)
                     .col(uuid(Retail::BNAId).primary_key())
-                    .col(double_null(Retail::Retail))
+                    .col(double_null(Retail::Score))
                     .foreign_key(
                         ForeignKey::create()
                             .from(Retail::Table, Retail::BNAId)
@@ -454,7 +454,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Transit::Table)
                     .col(uuid(Transit::BNAId).primary_key())
-                    .col(double_null(Transit::Transit))
+                    .col(double_null(Transit::Score))
                     .foreign_key(
                         ForeignKey::create()
                             .from(Transit::Table, Transit::BNAId)
@@ -681,7 +681,7 @@ enum People {
     /// Analysis unique identifier.
     BNAId,
     /// BNA category score for access to residential areas.
-    People,
+    Score,
 }
 
 #[derive(Iden)]
@@ -690,7 +690,7 @@ enum Retail {
     /// Analysis unique identifier.
     BNAId,
     /// BNA category score for access to major retail centers.
-    Retail,
+    Score,
 }
 
 #[derive(Iden)]
@@ -699,7 +699,7 @@ enum Transit {
     /// Analysis unique identifier.
     BNAId,
     /// BNA category score for access to major transit stops.
-    Transit,
+    Score,
 }
 
 #[derive(Iden)]

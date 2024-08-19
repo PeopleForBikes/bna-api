@@ -172,21 +172,21 @@ async fn main() -> Result<(), Report> {
         // Populate the People model.
         let feature_model = people::ActiveModel {
             bna_id: ActiveValue::Set(bna_uuid),
-            people: ActiveValue::Set(scorecard.bna_people),
+            score: ActiveValue::Set(scorecard.bna_people),
         };
         bna_people.push(feature_model);
 
         // Populate the Retail model.
         let retail_model = retail::ActiveModel {
             bna_id: ActiveValue::Set(bna_uuid),
-            retail: ActiveValue::Set(scorecard.bna_retail),
+            score: ActiveValue::Set(scorecard.bna_retail),
         };
         bna_retail.push(retail_model);
 
         // Populate the Transit model.
         let transit_model = transit::ActiveModel {
             bna_id: ActiveValue::Set(bna_uuid),
-            transit: ActiveValue::Set(scorecard.bna_transit),
+            score: ActiveValue::Set(scorecard.bna_transit),
         };
         bna_transit.push(transit_model);
 

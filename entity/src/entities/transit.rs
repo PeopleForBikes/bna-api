@@ -9,7 +9,7 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub bna_id: Uuid,
     #[sea_orm(column_type = "Double", nullable)]
-    pub transit: Option<f64>,
+    pub score: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
