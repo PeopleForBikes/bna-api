@@ -43,13 +43,33 @@ impl MigrationTrait for Migration {
                     .col(uuid(BrokenspokePipeline::StateMachineId).primary_key())
                     .col(string_null(BrokenspokePipeline::Step).string())
                     .col(json_null(BrokenspokePipeline::SqsMessage).json())
+                    .col(decimal_null(BrokenspokePipeline::FargatePrice).string())
                     .col(string_null(BrokenspokePipeline::FargateTaskARN).string())
                     .col(string_null(BrokenspokePipeline::S3Bucket).string())
+                    .col(string(BrokenspokePipeline::Status).string())
                     .col(timestamp_with_time_zone(BrokenspokePipeline::StartTime))
                     .col(timestamp_with_time_zone_null(BrokenspokePipeline::EndTime))
                     .col(boolean_null(BrokenspokePipeline::TornDown))
                     .col(boolean_null(BrokenspokePipeline::ResultsPosted).boolean())
                     .col(decimal_null(BrokenspokePipeline::Cost).decimal())
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(BrokenspokePipeline::Table, BrokenspokePipeline::Step)
+                            .to(BrokenspokeStep::Table, BrokenspokeStep::Step),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(BrokenspokePipeline::Table, BrokenspokePipeline::Status)
+                            .to(BrokenspokeStatus::Table, BrokenspokeStatus::Status),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(
+                                BrokenspokePipeline::Table,
+                                BrokenspokePipeline::FargatePrice,
+                            )
+                            .to(FargatePrice::Table, FargatePrice::Id),
+                    )
                     .to_owned(),
             )
             .await?;
@@ -95,12 +115,14 @@ enum BrokenspokePipeline {
     Table,
     Cost,
     EndTime,
+    FargatePrice,
     FargateTaskARN,
     ResultsPosted,
     S3Bucket,
     SqsMessage,
     StartTime,
     StateMachineId,
+    Status,
     Step,
     TornDown,
 }
