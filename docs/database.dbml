@@ -81,13 +81,6 @@ Table "fargate_price" {
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
 }
 
-Table "features" {
-  "bna_id" uuid [pk, not null]
-  "people" doubleprecision
-  "retail" doubleprecision
-  "transit" doubleprecision
-}
-
 Table "infrastructure" {
   "bna_id" uuid [pk, not null]
   "low_stress_miles" doubleprecision
@@ -103,12 +96,22 @@ Table "opportunity" {
   "technical_vocational_college" doubleprecision
 }
 
+Table "people" {
+  "bna_id" uuid [pk, not null]
+  "people" doubleprecision
+}
+
 Table "recreation" {
   "bna_id" uuid [pk, not null]
   "community_centers" doubleprecision
   "parks" doubleprecision
   "recreation_trails" doubleprecision
   "score" doubleprecision
+}
+
+Table "retail" {
+  "bna_id" uuid [pk, not null]
+  "retail" doubleprecision
 }
 
 Table "seaql_migrations" {
@@ -163,10 +166,15 @@ Table "summary" {
   "version" "character varying" [not null]
 }
 
+Table "transit" {
+  "bna_id" uuid [pk, not null]
+  "transit" doubleprecision
+}
+
 Table "us_state" {
   "name" "character varying" [pk, not null]
   "abbrev" "character varying" [unique, not null]
-  "fips_code" "character (2)" [unique, not null]
+  "fips_code" "character varying" [unique, not null]
   "speed_limit" integer [not null]
 
   Indexes {
@@ -181,13 +189,15 @@ Ref "city_country_fkey":"country"."name" < "city"."country"
 
 Ref "core_services_bna_id_fkey":"summary"."bna_id" < "core_services"."bna_id" [delete: cascade]
 
-Ref "features_bna_id_fkey":"summary"."bna_id" < "features"."bna_id" [delete: cascade]
-
 Ref "infrastructure_bna_id_fkey":"summary"."bna_id" < "infrastructure"."bna_id" [delete: cascade]
 
 Ref "opportunity_bna_id_fkey":"summary"."bna_id" < "opportunity"."bna_id" [delete: cascade]
 
+Ref "people_bna_id_fkey":"summary"."bna_id" < "people"."bna_id" [delete: cascade]
+
 Ref "recreation_bna_id_fkey":"summary"."bna_id" < "recreation"."bna_id" [delete: cascade]
+
+Ref "retail_bna_id_fkey":"summary"."bna_id" < "retail"."bna_id" [delete: cascade]
 
 Ref "speed_limit_city_id_fkey":"city"."id" < "speed_limit"."city_id" [delete: cascade]
 
@@ -200,3 +210,5 @@ Ref "submission_country_fkey":"country"."name" < "submission"."country"
 Ref "submission_status_fkey":"approval_status"."status" < "submission"."status"
 
 Ref "summary_city_id_fkey":"city"."id" < "summary"."city_id" [delete: cascade]
+
+Ref "transit_bna_id_fkey":"summary"."bna_id" < "transit"."bna_id" [delete: cascade]
