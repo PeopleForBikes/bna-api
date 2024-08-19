@@ -122,9 +122,9 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         entity::opportunity::Column::TechnicalVocationalCollege,
                     ])
                     .column_as(entity::opportunity::Column::Score, "opportunity_score")
-                    .columns([entity::people::Column::People])
-                    .columns([entity::retail::Column::Retail])
-                    .columns([entity::transit::Column::Transit])
+                    .column_as(entity::people::Column::Score, "people_score")
+                    .column_as(entity::retail::Column::Score, "retail_score")
+                    .column_as(entity::transit::Column::Score, "transit_score")
                     .join(
                         JoinType::InnerJoin,
                         entity::summary::Relation::CoreServices.def(),

@@ -1,5 +1,5 @@
 pub mod bna;
-pub mod brokenspoke_pipeline;
+pub mod bna_pipeline;
 pub mod census;
 pub mod city;
 pub mod submission;

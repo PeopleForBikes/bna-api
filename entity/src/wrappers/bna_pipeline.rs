@@ -41,7 +41,7 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BrokenspokePipelinePatch {
+pub struct BNAPipelinePatch {
     pub cost: Option<Option<Decimal>>,
     pub end_time: Option<Option<TimeDateTimeWithTimeZone>>,
     pub fargate_price: Option<Option<i32>>,
@@ -57,7 +57,7 @@ pub struct BrokenspokePipelinePatch {
     pub torn_down: Option<Option<bool>>,
 }
 
-impl IntoActiveModel<bna_pipeline::ActiveModel> for BrokenspokePipelinePatch {
+impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
     fn into_active_model(self) -> bna_pipeline::ActiveModel {
         bna_pipeline::ActiveModel {
             state_machine_id: ActiveValue::NotSet,

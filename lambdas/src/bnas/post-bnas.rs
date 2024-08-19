@@ -66,17 +66,17 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     info!("{:?}", core_services);
     let people = people::ActiveModel {
         bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
-        people: ActiveValue::Set(wrapper.features.people),
+        score: ActiveValue::Set(wrapper.people.score),
     };
     info!("{:?}", people);
     let retail = retail::ActiveModel {
         bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
-        retail: ActiveValue::Set(wrapper.features.retail),
+        score: ActiveValue::Set(wrapper.retail.score),
     };
     info!("{:?}", people);
     let transit = transit::ActiveModel {
         bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
-        transit: ActiveValue::Set(wrapper.features.transit),
+        score: ActiveValue::Set(wrapper.transit.score),
     };
     info!("{:?}", people);
     let infrastructure = infrastructure::ActiveModel {

@@ -1,6 +1,6 @@
 use dotenv::dotenv;
 use effortless::api::parse_request_body;
-use entity::{prelude::*, wrappers::brokenspoke_pipeline::BNAPipelinePost};
+use entity::{prelude::*, wrappers::bna_pipeline::BNAPipelinePost};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::database_connect;
 use sea_orm::{EntityTrait, IntoActiveModel};
@@ -27,7 +27,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         "inserting Brokenspoke pipeline into database: {:?}",
         active_model
     );
-    let res = BrokenspokePipeline::insert(active_model).exec(&db).await?;
+    let res = BnaPipeline::insert(active_model).exec(&db).await?;
     Ok(json!(res.last_insert_id).into_response().await)
 }
 

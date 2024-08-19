@@ -26,9 +26,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
         // Retrieve a specific entry.
         debug!("Processing the requests...");
-        let model = BrokenspokePipeline::find_by_id(params.bna_id)
-            .one(&db)
-            .await?;
+        let model = BnaPipeline::find_by_id(params.bna_id).one(&db).await?;
         let res: Response<Body> = match model {
             Some(model) => json!(model).into_response().await,
             None => entry_not_found(&event).into(),
@@ -43,7 +41,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     //
-    let select = BrokenspokePipeline::find();
+    let select = BnaPipeline::find();
     let query = select
         .clone()
         .paginate(&db, pagination.page_size)

@@ -78,16 +78,24 @@ impl BNACoreServices {
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct BNAFeatures {
-    pub people: Option<f64>,
-    pub retail: Option<f64>,
-    pub transit: Option<f64>,
+pub struct BNAPeople {
+    pub score: Option<f64>,
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BNARetail {
+    pub score: Option<f64>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct BNATransit {
+    pub score: Option<f64>,
+}
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNAPost {
     pub core_services: BNACoreServices,
-    pub features: BNAFeatures,
+    pub people: BNAPeople,
+    pub retail: BNARetail,
+    pub transit: BNATransit,
     pub infrastructure: BNAInfrastructure,
     pub opportunity: BNAOpportunity,
     pub recreation: BNARecreation,
@@ -108,7 +116,9 @@ impl BNAPost {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNAPatch {
     pub core_services: BNACoreServices,
-    pub features: BNAFeatures,
+    pub people: BNAPeople,
+    pub retail: BNARetail,
+    pub transit: BNATransit,
     pub infrastructure: BNAInfrastructure,
     pub opportunity: BNAOpportunity,
     pub recreation: BNARecreation,
