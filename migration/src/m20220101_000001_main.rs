@@ -1,4 +1,10 @@
-use sea_orm_migration::prelude::*;
+use sea_orm_migration::{
+    prelude::*,
+    schema::{
+        double, double_null, integer, integer_null, pk_auto, string, string_null, string_uniq,
+        timestamp_with_time_zone, timestamp_with_time_zone_null, uuid, uuid_uniq,
+    },
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -12,12 +18,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(BNARegion::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(BNARegion::Name)
-                            .string()
-                            .primary_key()
-                            .not_null(),
-                    )
+                    .col(string(BNARegion::Name).primary_key())
                     .to_owned(),
             )
             .await?;
@@ -39,12 +40,7 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Country::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(Country::Name)
-                            .string()
-                            .primary_key()
-                            .not_null(),
-                    )
+                    .col(string(Country::Name).primary_key())
                     .to_owned(),
             )
             .await?;
@@ -87,25 +83,10 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(USState::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(USState::Name)
-                            .string()
-                            .primary_key()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(USState::Abbrev)
-                            .string()
-                            .not_null()
-                            .unique_key(),
-                    )
-                    .col(
-                        ColumnDef::new(USState::FIPSCode)
-                            .char_len(2)
-                            .not_null()
-                            .unique_key(),
-                    )
-                    .col(ColumnDef::new(USState::SpeedLimit).integer().not_null())
+                    .col(string(USState::Name).primary_key())
+                    .col(string_uniq(USState::Abbrev))
+                    .col(string_uniq(USState::FIPSCode))
+                    .col(integer(USState::SpeedLimit))
                     .to_owned(),
             )
             .await?;
@@ -198,16 +179,8 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(StateRegionCrosswalk::Table)
-                    .col(
-                        ColumnDef::new(StateRegionCrosswalk::State)
-                            .string()
-                            .not_null(),
-                    )
-                    .col(
-                        ColumnDef::new(StateRegionCrosswalk::Region)
-                            .string()
-                            .not_null(),
-                    )
+                    .col(string(StateRegionCrosswalk::State))
+                    .col(string(StateRegionCrosswalk::Region))
                     .primary_key(
                         Index::create()
                             .col(StateRegionCrosswalk::State)
@@ -306,22 +279,20 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(City::Table)
                     .if_not_exists()
-                    .col(ColumnDef::new(City::Id).uuid().unique_key().not_null())
-                    .col(ColumnDef::new(City::Country).string().not_null())
-                    .col(ColumnDef::new(City::State).string().not_null())
-                    .col(ColumnDef::new(City::Name).string().not_null())
-                    .col(ColumnDef::new(City::Latitude).double())
-                    .col(ColumnDef::new(City::Longitude).double())
-                    .col(ColumnDef::new(City::Region).string())
-                    .col(ColumnDef::new(City::StateAbbrev).string())
-                    .col(ColumnDef::new(City::SpeedLimit).integer())
+                    .col(uuid_uniq(City::Id))
+                    .col(string(City::Country))
+                    .col(string(City::State))
+                    .col(string(City::Name))
+                    .col(double_null(City::Latitude))
+                    .col(double_null(City::Longitude))
+                    .col(string_null(City::Region))
+                    .col(string_null(City::StateAbbrev))
+                    .col(integer_null(City::SpeedLimit))
                     .col(
-                        ColumnDef::new(City::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
+                        timestamp_with_time_zone(City::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(City::UpdatedAt).timestamp_with_time_zone())
+                    .col(timestamp_with_time_zone_null(City::UpdatedAt))
                     .primary_key(
                         Index::create()
                             .col(City::Country)
@@ -346,23 +317,15 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Census::Table)
                     .if_not_exists()
+                    .col(pk_auto(Census::Id))
+                    .col(uuid(Census::CityId))
                     .col(
-                        ColumnDef::new(Census::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
+                        timestamp_with_time_zone(Census::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(Census::CityId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(Census::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(Census::FIPSCode).string().not_null())
-                    .col(ColumnDef::new(Census::PopSize).integer().not_null())
-                    .col(ColumnDef::new(Census::Population).integer().not_null())
+                    .col(string(Census::FIPSCode))
+                    .col(integer(Census::PopSize))
+                    .col(integer(Census::Population))
                     .foreign_key(
                         ForeignKey::create()
                             .from(Census::Table, Census::CityId)
@@ -394,21 +357,13 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(SpeedLimit::Table)
+                    .col(pk_auto(SpeedLimit::Id))
+                    .col(uuid(SpeedLimit::CityId))
                     .col(
-                        ColumnDef::new(SpeedLimit::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
+                        timestamp_with_time_zone(SpeedLimit::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(SpeedLimit::CityId).uuid().not_null())
-                    .col(
-                        ColumnDef::new(SpeedLimit::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(SpeedLimit::Residential).integer().not_null())
+                    .col(integer(SpeedLimit::Residential))
                     .foreign_key(
                         ForeignKey::create()
                             .from(SpeedLimit::Table, SpeedLimit::CityId)
@@ -440,16 +395,14 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Summary::Table)
-                    .col(ColumnDef::new(Summary::BNAId).uuid().not_null())
-                    .col(ColumnDef::new(Summary::CityId).uuid().not_null())
+                    .col(uuid(Summary::BNAId))
+                    .col(uuid(Summary::CityId))
                     .col(
-                        ColumnDef::new(Summary::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
+                        timestamp_with_time_zone(Summary::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(Summary::Score).double().not_null())
-                    .col(ColumnDef::new(Summary::Version).string().not_null())
+                    .col(double(Summary::Score))
+                    .col(string(Summary::Version))
                     .primary_key(Index::create().col(Summary::BNAId))
                     .foreign_key(
                         ForeignKey::create()
@@ -466,10 +419,10 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Features::Table)
-                    .col(ColumnDef::new(Features::BNAId).uuid().not_null())
-                    .col(ColumnDef::new(Features::People).double())
-                    .col(ColumnDef::new(Features::Retail).double())
-                    .col(ColumnDef::new(Features::Transit).double())
+                    .col(uuid(Features::BNAId))
+                    .col(double_null(Features::People))
+                    .col(double_null(Features::Retail))
+                    .col(double_null(Features::Transit))
                     .primary_key(Index::create().col(Features::BNAId))
                     .foreign_key(
                         ForeignKey::create()
@@ -486,14 +439,14 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(CoreServices::Table)
-                    .col(ColumnDef::new(CoreServices::BNAId).uuid())
-                    .col(ColumnDef::new(CoreServices::Dentists).double())
-                    .col(ColumnDef::new(CoreServices::Doctors).double())
-                    .col(ColumnDef::new(CoreServices::Grocery).double())
-                    .col(ColumnDef::new(CoreServices::Hospitals).double())
-                    .col(ColumnDef::new(CoreServices::Pharmacies).double())
-                    .col(ColumnDef::new(CoreServices::Score).double())
-                    .col(ColumnDef::new(CoreServices::SocialServices).double())
+                    .col(uuid(CoreServices::BNAId))
+                    .col(double_null(CoreServices::Dentists))
+                    .col(double_null(CoreServices::Doctors))
+                    .col(double_null(CoreServices::Grocery))
+                    .col(double_null(CoreServices::Hospitals))
+                    .col(double_null(CoreServices::Pharmacies))
+                    .col(double_null(CoreServices::Score))
+                    .col(double_null(CoreServices::SocialServices))
                     .primary_key(Index::create().col(CoreServices::BNAId))
                     .foreign_key(
                         ForeignKey::create()
@@ -510,12 +463,12 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Opportunity::Table)
-                    .col(ColumnDef::new(Opportunity::BNAId).uuid().not_null())
-                    .col(ColumnDef::new(Opportunity::Employment).double())
-                    .col(ColumnDef::new(Opportunity::HigherEducation).double())
-                    .col(ColumnDef::new(Opportunity::K12Education).double())
-                    .col(ColumnDef::new(Opportunity::Score).double())
-                    .col(ColumnDef::new(Opportunity::TechnicalVocationalCollege).double())
+                    .col(uuid(Opportunity::BNAId))
+                    .col(double_null(Opportunity::Employment))
+                    .col(double_null(Opportunity::HigherEducation))
+                    .col(double_null(Opportunity::K12Education))
+                    .col(double_null(Opportunity::Score))
+                    .col(double_null(Opportunity::TechnicalVocationalCollege))
                     .primary_key(Index::create().col(Opportunity::BNAId))
                     .foreign_key(
                         ForeignKey::create()
@@ -532,11 +485,11 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Recreation::Table)
-                    .col(ColumnDef::new(Recreation::BNAId).uuid().not_null())
-                    .col(ColumnDef::new(Recreation::CommunityCenters).double())
-                    .col(ColumnDef::new(Recreation::Parks).double())
-                    .col(ColumnDef::new(Recreation::RecreationTrails).double())
-                    .col(ColumnDef::new(Recreation::Score).double())
+                    .col(uuid(Recreation::BNAId))
+                    .col(double_null(Recreation::CommunityCenters))
+                    .col(double_null(Recreation::Parks))
+                    .col(double_null(Recreation::RecreationTrails))
+                    .col(double_null(Recreation::Score))
                     .primary_key(Index::create().col(Recreation::BNAId))
                     .foreign_key(
                         ForeignKey::create()
@@ -553,9 +506,9 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(Infrastructure::Table)
-                    .col(ColumnDef::new(Infrastructure::BNAId).uuid().not_null())
-                    .col(ColumnDef::new(Infrastructure::LowStressMiles).double())
-                    .col(ColumnDef::new(Infrastructure::HighStressMiles).double())
+                    .col(uuid(Infrastructure::BNAId))
+                    .col(double_null(Infrastructure::LowStressMiles))
+                    .col(double_null(Infrastructure::HighStressMiles))
                     .primary_key(Index::create().col(Infrastructure::BNAId))
                     .foreign_key(
                         ForeignKey::create()
