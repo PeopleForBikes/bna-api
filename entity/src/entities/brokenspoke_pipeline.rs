@@ -10,8 +10,10 @@ pub struct Model {
     pub state_machine_id: Uuid,
     pub step: Option<String>,
     pub sqs_message: Option<Json>,
+    pub fargate_price: Option<i32>,
     pub fargate_task_arn: Option<String>,
     pub s3_bucket: Option<String>,
+    pub status: String,
     pub start_time: TimeDateTimeWithTimeZone,
     pub end_time: Option<TimeDateTimeWithTimeZone>,
     pub torn_down: Option<bool>,
@@ -20,6 +22,49 @@ pub struct Model {
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
-pub enum Relation {}
+pub enum Relation {
+    #[sea_orm(
+        belongs_to = "super::brokenspoke_status::Entity",
+        from = "Column::Status",
+        to = "super::brokenspoke_status::Column::Status",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    BrokenspokeStatus,
+    #[sea_orm(
+        belongs_to = "super::brokenspoke_step::Entity",
+        from = "Column::Step",
+        to = "super::brokenspoke_step::Column::Step",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    BrokenspokeStep,
+    #[sea_orm(
+        belongs_to = "super::fargate_price::Entity",
+        from = "Column::FargatePrice",
+        to = "super::fargate_price::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    FargatePrice,
+}
+
+impl Related<super::brokenspoke_status::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::BrokenspokeStatus.def()
+    }
+}
+
+impl Related<super::brokenspoke_step::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::BrokenspokeStep.def()
+    }
+}
+
+impl Related<super::fargate_price::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::FargatePrice.def()
+    }
+}
 
 impl ActiveModelBehavior for ActiveModel {}

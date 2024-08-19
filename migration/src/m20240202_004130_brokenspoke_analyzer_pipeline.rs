@@ -1,7 +1,7 @@
 use sea_orm_migration::{
     prelude::*,
     schema::{
-        boolean_null, decimal, decimal_null, json_null, pk_auto, string, string_null,
+        boolean_null, decimal, decimal_null, integer_null, json_null, pk_auto, string, string_null,
         timestamp_with_time_zone, timestamp_with_time_zone_null, uuid,
     },
 };
@@ -34,6 +34,22 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // Create the Fargate Price table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(FargatePrice::Table)
+                    .if_not_exists()
+                    .col(pk_auto(FargatePrice::Id))
+                    .col(decimal(FargatePrice::PerSecond))
+                    .col(
+                        timestamp_with_time_zone(FargatePrice::CreatedAt)
+                            .default(Expr::current_timestamp()),
+                    )
+                    .to_owned(),
+            )
+            .await?;
+
         // Create the Brokenspoke Pipeline table.
         manager
             .create_table(
@@ -41,17 +57,17 @@ impl MigrationTrait for Migration {
                     .table(BrokenspokePipeline::Table)
                     .if_not_exists()
                     .col(uuid(BrokenspokePipeline::StateMachineId).primary_key())
-                    .col(string_null(BrokenspokePipeline::Step).string())
-                    .col(json_null(BrokenspokePipeline::SqsMessage).json())
-                    .col(decimal_null(BrokenspokePipeline::FargatePrice).string())
-                    .col(string_null(BrokenspokePipeline::FargateTaskARN).string())
-                    .col(string_null(BrokenspokePipeline::S3Bucket).string())
-                    .col(string(BrokenspokePipeline::Status).string())
+                    .col(string_null(BrokenspokePipeline::Step))
+                    .col(json_null(BrokenspokePipeline::SqsMessage))
+                    .col(integer_null(BrokenspokePipeline::FargatePrice))
+                    .col(string_null(BrokenspokePipeline::FargateTaskARN))
+                    .col(string_null(BrokenspokePipeline::S3Bucket))
+                    .col(string(BrokenspokePipeline::Status).default("Pending".to_string()))
                     .col(timestamp_with_time_zone(BrokenspokePipeline::StartTime))
                     .col(timestamp_with_time_zone_null(BrokenspokePipeline::EndTime))
                     .col(boolean_null(BrokenspokePipeline::TornDown))
-                    .col(boolean_null(BrokenspokePipeline::ResultsPosted).boolean())
-                    .col(decimal_null(BrokenspokePipeline::Cost).decimal())
+                    .col(boolean_null(BrokenspokePipeline::ResultsPosted))
+                    .col(decimal_null(BrokenspokePipeline::Cost))
                     .foreign_key(
                         ForeignKey::create()
                             .from(BrokenspokePipeline::Table, BrokenspokePipeline::Step)
@@ -69,22 +85,6 @@ impl MigrationTrait for Migration {
                                 BrokenspokePipeline::FargatePrice,
                             )
                             .to(FargatePrice::Table, FargatePrice::Id),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create the Fargate Price table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(FargatePrice::Table)
-                    .if_not_exists()
-                    .col(pk_auto(FargatePrice::Id))
-                    .col(decimal(FargatePrice::PerSecond))
-                    .col(
-                        timestamp_with_time_zone(FargatePrice::CreatedAt)
-                            .default(Expr::current_timestamp()),
                     )
                     .to_owned(),
             )
