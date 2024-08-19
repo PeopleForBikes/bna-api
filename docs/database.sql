@@ -150,7 +150,7 @@ ALTER TABLE public.city OWNER TO postgres;
 --
 
 CREATE TABLE public.core_services (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     dentists double precision,
     doctors double precision,
     grocery double precision,
@@ -214,7 +214,7 @@ ALTER SEQUENCE public.fargate_price_id_seq OWNED BY public.fargate_price.id;
 --
 
 CREATE TABLE public.infrastructure (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     low_stress_miles double precision,
     high_stress_miles double precision
 );
@@ -227,7 +227,7 @@ ALTER TABLE public.infrastructure OWNER TO postgres;
 --
 
 CREATE TABLE public.opportunity (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     employment double precision,
     higher_education double precision,
     k12_education double precision,
@@ -243,7 +243,7 @@ ALTER TABLE public.opportunity OWNER TO postgres;
 --
 
 CREATE TABLE public.people (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     score double precision
 );
 
@@ -255,7 +255,7 @@ ALTER TABLE public.people OWNER TO postgres;
 --
 
 CREATE TABLE public.recreation (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     community_centers double precision,
     parks double precision,
     recreation_trails double precision,
@@ -270,7 +270,7 @@ ALTER TABLE public.recreation OWNER TO postgres;
 --
 
 CREATE TABLE public.retail (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     score double precision
 );
 
@@ -387,7 +387,7 @@ ALTER SEQUENCE public.submission_id_seq OWNED BY public.submission.id;
 --
 
 CREATE TABLE public.summary (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     score double precision NOT NULL,
@@ -402,7 +402,7 @@ ALTER TABLE public.summary OWNER TO postgres;
 --
 
 CREATE TABLE public.transit (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     score double precision
 );
 
@@ -520,7 +520,7 @@ ALTER TABLE ONLY public.city
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT core_services_pkey PRIMARY KEY (id);
 
 
 --
@@ -544,7 +544,7 @@ ALTER TABLE ONLY public.fargate_price
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (id);
 
 
 --
@@ -552,7 +552,7 @@ ALTER TABLE ONLY public.infrastructure
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (id);
 
 
 --
@@ -560,7 +560,7 @@ ALTER TABLE ONLY public.opportunity
 --
 
 ALTER TABLE ONLY public.people
-    ADD CONSTRAINT people_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT people_pkey PRIMARY KEY (id);
 
 
 --
@@ -568,7 +568,7 @@ ALTER TABLE ONLY public.people
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT recreation_pkey PRIMARY KEY (id);
 
 
 --
@@ -576,7 +576,7 @@ ALTER TABLE ONLY public.recreation
 --
 
 ALTER TABLE ONLY public.retail
-    ADD CONSTRAINT retail_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT retail_pkey PRIMARY KEY (id);
 
 
 --
@@ -616,7 +616,7 @@ ALTER TABLE ONLY public.submission
 --
 
 ALTER TABLE ONLY public.summary
-    ADD CONSTRAINT summary_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT summary_pkey PRIMARY KEY (id);
 
 
 --
@@ -624,7 +624,7 @@ ALTER TABLE ONLY public.summary
 --
 
 ALTER TABLE ONLY public.transit
-    ADD CONSTRAINT transit_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT transit_pkey PRIMARY KEY (id);
 
 
 --
@@ -755,51 +755,51 @@ ALTER TABLE ONLY public.city
 
 
 --
--- Name: core_services core_services_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: core_services core_services_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT core_services_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: infrastructure infrastructure_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: infrastructure infrastructure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT infrastructure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: opportunity opportunity_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: opportunity opportunity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT opportunity_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: people people_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: people people_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.people
-    ADD CONSTRAINT people_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT people_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: recreation recreation_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: recreation recreation_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT recreation_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: retail retail_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: retail retail_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.retail
-    ADD CONSTRAINT retail_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT retail_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
@@ -851,11 +851,11 @@ ALTER TABLE ONLY public.summary
 
 
 --
--- Name: transit transit_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: transit transit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.transit
-    ADD CONSTRAINT transit_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT transit_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --

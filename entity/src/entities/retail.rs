@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[sea_orm(table_name = "retail")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub bna_id: Uuid,
+    pub id: Uuid,
     #[sea_orm(column_type = "Double", nullable)]
     pub score: Option<f64>,
 }
@@ -16,8 +16,8 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::summary::Entity",
-        from = "Column::BnaId",
-        to = "super::summary::Column::BnaId",
+        from = "Column::Id",
+        to = "super::summary::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]

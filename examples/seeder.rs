@@ -161,7 +161,7 @@ async fn main() -> Result<(), Report> {
         // Populate the summary model.
         let bna_uuid = Uuid::parse_str(scorecard.bna_uuid.as_str()).unwrap();
         let summary_model = summary::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             city_id: ActiveValue::Set(city_uuid),
             created_at: ActiveValue::Set(created_at),
             score: ActiveValue::Set(scorecard.bna_rounded_score.into()),
@@ -171,28 +171,28 @@ async fn main() -> Result<(), Report> {
 
         // Populate the People model.
         let feature_model = people::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             score: ActiveValue::Set(scorecard.bna_people),
         };
         bna_people.push(feature_model);
 
         // Populate the Retail model.
         let retail_model = retail::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             score: ActiveValue::Set(scorecard.bna_retail),
         };
         bna_retail.push(retail_model);
 
         // Populate the Transit model.
         let transit_model = transit::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             score: ActiveValue::Set(scorecard.bna_transit),
         };
         bna_transit.push(transit_model);
 
         // Populate the Core Services model.
         let core_services_model = core_services::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             dentists: ActiveValue::Set(scorecard.bna_core_services_dentists),
             doctors: ActiveValue::Set(scorecard.bna_core_services_doctors),
             grocery: ActiveValue::Set(scorecard.bna_core_services_grocery),
@@ -205,7 +205,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the recreation model.
         let recreation_model = recreation::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid.clone()),
+            id: ActiveValue::Set(bna_uuid.clone()),
             community_centers: ActiveValue::Set(scorecard.bna_recreation_community_centers),
             parks: ActiveValue::Set(scorecard.bna_recreation_parks),
             recreation_trails: ActiveValue::Set(scorecard.bna_recreation_trails),
@@ -215,7 +215,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the opportunity model.
         let opportunity_model = opportunity::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             employment: ActiveValue::Set(scorecard.bna_opportunity_employment),
             higher_education: ActiveValue::Set(scorecard.bna_opportunity_higher_education),
             k12_education: ActiveValue::Set(scorecard.bna_opportunity_k12_education),
@@ -228,7 +228,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the infrastructure model.
         let infratructure_model = infrastructure::ActiveModel {
-            bna_id: ActiveValue::Set(bna_uuid),
+            id: ActiveValue::Set(bna_uuid),
             low_stress_miles: ActiveValue::Set(scorecard.bna_total_low_stress_miles),
             high_stress_miles: ActiveValue::Set(scorecard.bna_total_high_stress_miles),
         };
