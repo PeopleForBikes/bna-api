@@ -1,4 +1,10 @@
-use sea_orm_migration::prelude::*;
+use sea_orm_migration::{
+    prelude::*,
+    schema::{
+        boolean_null, decimal, decimal_null, integer_null, json_null, pk_auto, string, string_null,
+        timestamp_with_time_zone, timestamp_with_time_zone_null, uuid,
+    },
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -10,14 +16,9 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(BrokenspokeStatus::Table)
+                    .table(BNAPipelineStatus::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(BrokenspokeStatus::Status)
-                            .string()
-                            .not_null()
-                            .primary_key(),
-                    )
+                    .col(string(BNAPipelineStatus::Status).primary_key())
                     .to_owned(),
             )
             .await?;
@@ -26,43 +27,9 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(BrokenspokeStep::Table)
+                    .table(BNAPipelineStep::Table)
                     .if_not_exists()
-                    .col(
-                        ColumnDef::new(BrokenspokeStep::Step)
-                            .string()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create the Brokenspoke Pipeline table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(BrokenspokePipeline::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(BrokenspokePipeline::StateMachineId)
-                            .uuid()
-                            .not_null()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(BrokenspokePipeline::Step).string())
-                    .col(ColumnDef::new(BrokenspokePipeline::SqsMessage).json())
-                    .col(ColumnDef::new(BrokenspokePipeline::FargateTaskARN).string())
-                    .col(ColumnDef::new(BrokenspokePipeline::S3Bucket).string())
-                    .col(
-                        ColumnDef::new(BrokenspokePipeline::StartTime)
-                            .timestamp_with_time_zone()
-                            .not_null(),
-                    )
-                    .col(ColumnDef::new(BrokenspokePipeline::EndTime).timestamp_with_time_zone())
-                    .col(ColumnDef::new(BrokenspokePipeline::TornDown).boolean())
-                    .col(ColumnDef::new(BrokenspokePipeline::ResultsPosted).boolean())
-                    .col(ColumnDef::new(BrokenspokePipeline::Cost).decimal())
+                    .col(string(BNAPipelineStep::Step).primary_key())
                     .to_owned(),
             )
             .await?;
@@ -73,19 +40,48 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(FargatePrice::Table)
                     .if_not_exists()
+                    .col(pk_auto(FargatePrice::Id))
+                    .col(decimal(FargatePrice::PerSecond))
                     .col(
-                        ColumnDef::new(FargatePrice::Id)
-                            .integer()
-                            .auto_increment()
-                            .not_null()
-                            .primary_key(),
+                        timestamp_with_time_zone(FargatePrice::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
-                    .col(ColumnDef::new(FargatePrice::PerSecond).not_null().decimal())
-                    .col(
-                        ColumnDef::new(FargatePrice::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
+                    .to_owned(),
+            )
+            .await?;
+
+        // Create the Brokenspoke Pipeline table.
+        manager
+            .create_table(
+                Table::create()
+                    .table(BNAPipeline::Table)
+                    .if_not_exists()
+                    .col(uuid(BNAPipeline::StateMachineId).primary_key())
+                    .col(string_null(BNAPipeline::Step))
+                    .col(json_null(BNAPipeline::SqsMessage))
+                    .col(integer_null(BNAPipeline::FargatePrice))
+                    .col(string_null(BNAPipeline::FargateTaskARN))
+                    .col(string_null(BNAPipeline::S3Bucket))
+                    .col(string(BNAPipeline::Status).default("Pending".to_string()))
+                    .col(timestamp_with_time_zone(BNAPipeline::StartTime))
+                    .col(timestamp_with_time_zone_null(BNAPipeline::EndTime))
+                    .col(boolean_null(BNAPipeline::TornDown))
+                    .col(boolean_null(BNAPipeline::ResultsPosted))
+                    .col(decimal_null(BNAPipeline::Cost))
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(BNAPipeline::Table, BNAPipeline::Step)
+                            .to(BNAPipelineStep::Table, BNAPipelineStep::Step),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(BNAPipeline::Table, BNAPipeline::Status)
+                            .to(BNAPipelineStatus::Table, BNAPipelineStatus::Status),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(BNAPipeline::Table, BNAPipeline::FargatePrice)
+                            .to(FargatePrice::Table, FargatePrice::Id),
                     )
                     .to_owned(),
             )
@@ -96,7 +92,13 @@ impl MigrationTrait for Migration {
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(Table::drop().table(BrokenspokePipeline::Table).to_owned())
+            .drop_table(Table::drop().table(BNAPipeline::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(BNAPipelineStatus::Table).to_owned())
+            .await?;
+        manager
+            .drop_table(Table::drop().table(BNAPipelineStep::Table).to_owned())
             .await?;
         manager
             .drop_table(Table::drop().table(FargatePrice::Table).to_owned())
@@ -106,16 +108,18 @@ impl MigrationTrait for Migration {
 }
 
 #[derive(DeriveIden)]
-enum BrokenspokePipeline {
+enum BNAPipeline {
     Table,
     Cost,
     EndTime,
+    FargatePrice,
     FargateTaskARN,
     ResultsPosted,
     S3Bucket,
     SqsMessage,
     StartTime,
     StateMachineId,
+    Status,
     Step,
     TornDown,
 }
@@ -126,7 +130,7 @@ enum BrokenspokePipeline {
 //     Started,
 //     Complete,
 #[derive(Iden)]
-pub enum BrokenspokeStatus {
+pub enum BNAPipelineStatus {
     Table,
     Status,
 }
@@ -138,7 +142,7 @@ pub enum BrokenspokeStatus {
 // Analysis,
 // Cleanup,
 #[derive(Iden)]
-pub enum BrokenspokeStep {
+pub enum BNAPipelineStep {
     Table,
     Step,
 }

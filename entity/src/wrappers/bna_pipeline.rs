@@ -1,4 +1,4 @@
-use crate::entities::brokenspoke_pipeline;
+use crate::entities::bna_pipeline;
 use sea_orm::{
     prelude::{Decimal, Json, TimeDateTimeWithTimeZone, Uuid},
     ActiveValue, IntoActiveModel,
@@ -6,22 +6,24 @@ use sea_orm::{
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BrokenspokePipelinePost {
+pub struct BNAPipelinePost {
     pub cost: Option<Decimal>,
     pub end_time: Option<TimeDateTimeWithTimeZone>,
+    pub fargate_price: Option<i32>,
     pub fargate_task_arn: Option<String>,
     pub result_posted: Option<bool>,
     pub s3_bucket: Option<String>,
     pub sqs_message: Option<Json>,
     pub start_time: TimeDateTimeWithTimeZone,
     pub state_machine_id: Uuid,
+    pub status: String,
     pub step: Option<String>,
     pub torn_down: Option<bool>,
 }
 
-impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePost {
-    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
-        brokenspoke_pipeline::ActiveModel {
+impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
+    fn into_active_model(self) -> bna_pipeline::ActiveModel {
+        bna_pipeline::ActiveModel {
             cost: ActiveValue::Set(self.cost),
             end_time: ActiveValue::Set(self.end_time),
             fargate_task_arn: ActiveValue::Set(self.fargate_task_arn),
@@ -32,14 +34,17 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             state_machine_id: ActiveValue::Set(self.state_machine_id),
             step: ActiveValue::Set(self.step),
             torn_down: ActiveValue::Set(self.torn_down),
+            fargate_price: ActiveValue::Set(self.fargate_price),
+            status: ActiveValue::Set(self.status),
         }
     }
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
-pub struct BrokenspokePipelinePatch {
+pub struct BNAPipelinePatch {
     pub cost: Option<Option<Decimal>>,
     pub end_time: Option<Option<TimeDateTimeWithTimeZone>>,
+    pub fargate_price: Option<Option<i32>>,
     pub fargate_task_arn: Option<Option<String>>,
     pub neon_branch_id: Option<Option<String>>,
     pub result_posted: Option<Option<bool>>,
@@ -47,16 +52,17 @@ pub struct BrokenspokePipelinePatch {
     pub scheduled_trigger_id: Option<Option<Uuid>>,
     pub sqs_message: Option<Option<Json>>,
     pub start_time: Option<Option<TimeDateTimeWithTimeZone>>,
-    pub state: Option<Option<String>>,
+    pub status: Option<String>,
+    pub step: Option<Option<String>>,
     pub torn_down: Option<Option<bool>>,
 }
 
-impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelinePatch {
-    fn into_active_model(self) -> brokenspoke_pipeline::ActiveModel {
-        brokenspoke_pipeline::ActiveModel {
+impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
+    fn into_active_model(self) -> bna_pipeline::ActiveModel {
+        bna_pipeline::ActiveModel {
             state_machine_id: ActiveValue::NotSet,
             cost: self.cost.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            step: self.state.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            step: self.step.map_or(ActiveValue::NotSet, ActiveValue::Set),
             sqs_message: self
                 .sqs_message
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
@@ -71,6 +77,10 @@ impl IntoActiveModel<brokenspoke_pipeline::ActiveModel> for BrokenspokePipelineP
             results_posted: self
                 .result_posted
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            fargate_price: self
+                .fargate_price
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
         }
     }
 }

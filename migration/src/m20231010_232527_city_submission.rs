@@ -1,4 +1,7 @@
-use sea_orm_migration::prelude::*;
+use sea_orm_migration::{
+    prelude::*,
+    schema::{boolean, pk_auto, string, string_null, timestamp_with_time_zone},
+};
 
 use crate::m20220101_000001_main::Country;
 
@@ -38,34 +41,21 @@ impl MigrationTrait for Migration {
                 Table::create()
                     .table(Submission::Table)
                     .if_not_exists()
+                    .col(pk_auto(Submission::Id))
+                    .col(string(Submission::FirstName))
+                    .col(string(Submission::LastName))
+                    .col(string_null(Submission::Occupation))
+                    .col(string_null(Submission::Organization))
+                    .col(string(Submission::Email))
+                    .col(string(Submission::Country))
+                    .col(string(Submission::City))
+                    .col(string_null(Submission::Region))
+                    .col(string(Submission::FIPSCode).default("0"))
+                    .col(boolean(Submission::Consent).boolean())
+                    .col(string(Submission::Status).string())
                     .col(
-                        ColumnDef::new(Submission::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Submission::FirstName).string().not_null())
-                    .col(ColumnDef::new(Submission::LastName).string().not_null())
-                    .col(ColumnDef::new(Submission::Occupation).string())
-                    .col(ColumnDef::new(Submission::Organization).string())
-                    .col(ColumnDef::new(Submission::Email).string().not_null())
-                    .col(ColumnDef::new(Submission::Country).string().not_null())
-                    .col(ColumnDef::new(Submission::City).string().not_null())
-                    .col(ColumnDef::new(Submission::Region).string())
-                    .col(
-                        ColumnDef::new(Submission::FIPSCode)
-                            .string()
-                            .not_null()
-                            .default("0"),
-                    )
-                    .col(ColumnDef::new(Submission::Consent).boolean().not_null())
-                    .col(ColumnDef::new(Submission::Status).string().not_null())
-                    .col(
-                        ColumnDef::new(Submission::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .default(Expr::current_timestamp())
-                            .not_null(),
+                        timestamp_with_time_zone(Submission::CreatedAt)
+                            .default(Expr::current_timestamp()),
                     )
                     .foreign_key(
                         ForeignKey::create()

@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use effortless::{api::parse_request_body, response::make_json_created_response};
 use entity::{
-    core_services, features, infrastructure, opportunity, recreation, summary,
+    core_services, infrastructure, opportunity, people, recreation, retail, summary, transit,
     wrappers::bna::BNAPost,
 };
 use lambda_http::{run, service_fn, Body, Error, Request, Response};
@@ -46,7 +46,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
     // Turn the model wrapper into active models.
     let summary = summary::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
         city_id: ActiveValue::Set(wrapper.summary.city_id),
         created_at: ActiveValue::NotSet,
         score: ActiveValue::Set(wrapper.summary.score),
@@ -54,7 +54,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
     info!("{:?}", summary);
     let core_services = core_services::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
         dentists: ActiveValue::Set(wrapper.core_services.dentists),
         doctors: ActiveValue::Set(wrapper.core_services.doctors),
         grocery: ActiveValue::Set(wrapper.core_services.grocery),
@@ -64,21 +64,29 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         social_services: ActiveValue::Set(wrapper.core_services.social_services),
     };
     info!("{:?}", core_services);
-    let features = features::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
-        people: ActiveValue::Set(wrapper.features.people),
-        retail: ActiveValue::Set(wrapper.features.retail),
-        transit: ActiveValue::Set(wrapper.features.transit),
+    let people = people::ActiveModel {
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        score: ActiveValue::Set(wrapper.people.score),
     };
-    info!("{:?}", features);
+    info!("{:?}", people);
+    let retail = retail::ActiveModel {
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        score: ActiveValue::Set(wrapper.retail.score),
+    };
+    info!("{:?}", people);
+    let transit = transit::ActiveModel {
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        score: ActiveValue::Set(wrapper.transit.score),
+    };
+    info!("{:?}", people);
     let infrastructure = infrastructure::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
         low_stress_miles: ActiveValue::Set(wrapper.infrastructure.low_stress_miles),
         high_stress_miles: ActiveValue::Set(wrapper.infrastructure.high_stress_miles),
     };
     info!("{:?}", infrastructure);
     let opportunity = opportunity::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
         employment: ActiveValue::Set(wrapper.opportunity.employment),
         higher_education: ActiveValue::Set(wrapper.opportunity.higher_education),
         k12_education: ActiveValue::Set(wrapper.opportunity.k12_education),
@@ -89,7 +97,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
     info!("{:?}", opportunity);
     let recreation = recreation::ActiveModel {
-        bna_id: ActiveValue::Set(wrapper.summary.bna_uuid),
+        id: ActiveValue::Set(wrapper.summary.bna_uuid),
         community_centers: ActiveValue::Set(wrapper.recreation.community_centers),
         parks: ActiveValue::Set(wrapper.recreation.parks),
         recreation_trails: ActiveValue::Set(wrapper.recreation.recreation_trails),
@@ -103,14 +111,18 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // And insert a new entry for each model.
     let summary_res = summary.insert(&db).await?;
     let core_services_res = core_services.insert(&db).await?;
-    let features_res = features.insert(&db).await?;
+    let people_res = people.insert(&db).await?;
+    let retail_res = retail.insert(&db).await?;
+    let transit_res = transit.insert(&db).await?;
     let infrastructure_res = infrastructure.insert(&db).await?;
     let opportunity_res = opportunity.insert(&db).await?;
     let recreation_res = recreation.insert(&db).await?;
     let res = (
         summary_res,
         core_services_res,
-        features_res,
+        people_res,
+        retail_res,
+        transit_res,
         infrastructure_res,
         opportunity_res,
         recreation_res,

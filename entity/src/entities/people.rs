@@ -4,24 +4,20 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "features")]
+#[sea_orm(table_name = "people")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub bna_id: Uuid,
+    pub id: Uuid,
     #[sea_orm(column_type = "Double", nullable)]
-    pub people: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub retail: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub transit: Option<f64>,
+    pub score: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
     #[sea_orm(
         belongs_to = "super::summary::Entity",
-        from = "Column::BnaId",
-        to = "super::summary::Column::BnaId",
+        from = "Column::Id",
+        to = "super::summary::Column::Id",
         on_update = "NoAction",
         on_delete = "Cascade"
     )]

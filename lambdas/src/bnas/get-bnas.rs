@@ -3,7 +3,9 @@ use effortless::{
     api::{entry_not_found, extract_pagination_parameters},
     fragment::BnaRequestExt,
 };
-use entity::{core_services, features, infrastructure, opportunity, prelude::*, recreation};
+use entity::{
+    core_services, infrastructure, opportunity, people, prelude::*, recreation, retail, transit,
+};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
     bnas::{
@@ -54,9 +56,13 @@ pub struct BNA {
     pub coreservices_score: Option<f64>,
     pub social_services: Option<f64>,
 
-    // BNA Features
+    // BNA People
     pub people: Option<f64>,
+
+    // BNA Retail
     pub retail: Option<f64>,
+
+    // BNA Transit
     pub transit: Option<f64>,
 }
 
@@ -116,11 +122,9 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         entity::opportunity::Column::TechnicalVocationalCollege,
                     ])
                     .column_as(entity::opportunity::Column::Score, "opportunity_score")
-                    .columns([
-                        entity::features::Column::People,
-                        entity::features::Column::Retail,
-                        entity::features::Column::Transit,
-                    ])
+                    .column_as(entity::people::Column::Score, "people_score")
+                    .column_as(entity::retail::Column::Score, "retail_score")
+                    .column_as(entity::transit::Column::Score, "transit_score")
                     .join(
                         JoinType::InnerJoin,
                         entity::summary::Relation::CoreServices.def(),
@@ -139,7 +143,15 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                     )
                     .join(
                         sea_orm::JoinType::InnerJoin,
-                        entity::summary::Relation::Features.def(),
+                        entity::summary::Relation::People.def(),
+                    )
+                    .join(
+                        sea_orm::JoinType::InnerJoin,
+                        entity::summary::Relation::Retail.def(),
+                    )
+                    .join(
+                        sea_orm::JoinType::InnerJoin,
+                        entity::summary::Relation::Transit.def(),
                     )
                     .into_model::<BNA>()
                     .one(&db)
@@ -200,10 +212,32 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                     None => entry_not_found(&event).into(),
                 }
             }
-            BNAComponent::Features => {
+            BNAComponent::People => {
                 let model = select
                     .clone()
-                    .find_also_related(features::Entity)
+                    .find_also_related(people::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Retail => {
+                let model = select
+                    .clone()
+                    .find_also_related(retail::Entity)
+                    .one(&db)
+                    .await?;
+                match model {
+                    Some(model) => json!(model).into_response().await,
+                    None => entry_not_found(&event).into(),
+                }
+            }
+            BNAComponent::Transit => {
+                let model = select
+                    .clone()
+                    .find_also_related(transit::Entity)
                     .one(&db)
                     .await?;
                 match model {

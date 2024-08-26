@@ -3,21 +3,23 @@
 pub mod prelude;
 
 pub mod approval_status;
+pub mod bna_pipeline;
+pub mod bna_pipeline_status;
+pub mod bna_pipeline_step;
 pub mod bna_region;
-pub mod brokenspoke_pipeline;
-pub mod brokenspoke_status;
-pub mod brokenspoke_step;
 pub mod census;
 pub mod city;
 pub mod core_services;
 pub mod country;
 pub mod fargate_price;
-pub mod features;
 pub mod infrastructure;
 pub mod opportunity;
+pub mod people;
 pub mod recreation;
+pub mod retail;
 pub mod speed_limit;
 pub mod state_region_crosswalk;
 pub mod submission;
 pub mod summary;
+pub mod transit;
 pub mod us_state;

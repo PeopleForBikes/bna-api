@@ -32,6 +32,50 @@ CREATE TABLE public.approval_status (
 ALTER TABLE public.approval_status OWNER TO postgres;
 
 --
+-- Name: bna_pipeline; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bna_pipeline (
+    state_machine_id uuid NOT NULL,
+    step character varying,
+    sqs_message json,
+    fargate_price integer,
+    fargate_task_arn character varying,
+    s3_bucket character varying,
+    status character varying DEFAULT 'Pending'::character varying NOT NULL,
+    start_time timestamp with time zone NOT NULL,
+    end_time timestamp with time zone,
+    torn_down boolean,
+    results_posted boolean,
+    cost numeric
+);
+
+
+ALTER TABLE public.bna_pipeline OWNER TO postgres;
+
+--
+-- Name: bna_pipeline_status; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bna_pipeline_status (
+    status character varying NOT NULL
+);
+
+
+ALTER TABLE public.bna_pipeline_status OWNER TO postgres;
+
+--
+-- Name: bna_pipeline_step; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bna_pipeline_step (
+    step character varying NOT NULL
+);
+
+
+ALTER TABLE public.bna_pipeline_step OWNER TO postgres;
+
+--
 -- Name: bna_region; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -41,48 +85,6 @@ CREATE TABLE public.bna_region (
 
 
 ALTER TABLE public.bna_region OWNER TO postgres;
-
---
--- Name: brokenspoke_pipeline; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.brokenspoke_pipeline (
-    state_machine_id uuid NOT NULL,
-    step character varying,
-    sqs_message json,
-    fargate_task_arn character varying,
-    s3_bucket character varying,
-    start_time timestamp with time zone NOT NULL,
-    end_time timestamp with time zone,
-    torn_down boolean,
-    results_posted boolean,
-    cost numeric
-);
-
-
-ALTER TABLE public.brokenspoke_pipeline OWNER TO postgres;
-
---
--- Name: brokenspoke_status; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.brokenspoke_status (
-    status character varying NOT NULL
-);
-
-
-ALTER TABLE public.brokenspoke_status OWNER TO postgres;
-
---
--- Name: brokenspoke_step; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.brokenspoke_step (
-    step character varying NOT NULL
-);
-
-
-ALTER TABLE public.brokenspoke_step OWNER TO postgres;
 
 --
 -- Name: census; Type: TABLE; Schema: public; Owner: postgres
@@ -148,7 +150,7 @@ ALTER TABLE public.city OWNER TO postgres;
 --
 
 CREATE TABLE public.core_services (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     dentists double precision,
     doctors double precision,
     grocery double precision,
@@ -208,25 +210,11 @@ ALTER SEQUENCE public.fargate_price_id_seq OWNED BY public.fargate_price.id;
 
 
 --
--- Name: features; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.features (
-    bna_id uuid NOT NULL,
-    people double precision,
-    retail double precision,
-    transit double precision
-);
-
-
-ALTER TABLE public.features OWNER TO postgres;
-
---
 -- Name: infrastructure; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.infrastructure (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     low_stress_miles double precision,
     high_stress_miles double precision
 );
@@ -239,7 +227,7 @@ ALTER TABLE public.infrastructure OWNER TO postgres;
 --
 
 CREATE TABLE public.opportunity (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     employment double precision,
     higher_education double precision,
     k12_education double precision,
@@ -251,11 +239,23 @@ CREATE TABLE public.opportunity (
 ALTER TABLE public.opportunity OWNER TO postgres;
 
 --
+-- Name: people; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.people (
+    id uuid NOT NULL,
+    score double precision
+);
+
+
+ALTER TABLE public.people OWNER TO postgres;
+
+--
 -- Name: recreation; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.recreation (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     community_centers double precision,
     parks double precision,
     recreation_trails double precision,
@@ -264,6 +264,18 @@ CREATE TABLE public.recreation (
 
 
 ALTER TABLE public.recreation OWNER TO postgres;
+
+--
+-- Name: retail; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.retail (
+    id uuid NOT NULL,
+    score double precision
+);
+
+
+ALTER TABLE public.retail OWNER TO postgres;
 
 --
 -- Name: seaql_migrations; Type: TABLE; Schema: public; Owner: postgres
@@ -375,7 +387,7 @@ ALTER SEQUENCE public.submission_id_seq OWNED BY public.submission.id;
 --
 
 CREATE TABLE public.summary (
-    bna_id uuid NOT NULL,
+    id uuid NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     score double precision NOT NULL,
@@ -386,13 +398,25 @@ CREATE TABLE public.summary (
 ALTER TABLE public.summary OWNER TO postgres;
 
 --
+-- Name: transit; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.transit (
+    id uuid NOT NULL,
+    score double precision
+);
+
+
+ALTER TABLE public.transit OWNER TO postgres;
+
+--
 -- Name: us_state; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.us_state (
     name character varying NOT NULL,
     abbrev character varying NOT NULL,
-    fips_code character(2) NOT NULL,
+    fips_code character varying NOT NULL,
     speed_limit integer NOT NULL
 );
 
@@ -436,35 +460,35 @@ ALTER TABLE ONLY public.approval_status
 
 
 --
+-- Name: bna_pipeline bna_pipeline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_pkey PRIMARY KEY (state_machine_id);
+
+
+--
+-- Name: bna_pipeline_status bna_pipeline_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline_status
+    ADD CONSTRAINT bna_pipeline_status_pkey PRIMARY KEY (status);
+
+
+--
+-- Name: bna_pipeline_step bna_pipeline_step_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline_step
+    ADD CONSTRAINT bna_pipeline_step_pkey PRIMARY KEY (step);
+
+
+--
 -- Name: bna_region bna_region_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.bna_region
     ADD CONSTRAINT bna_region_pkey PRIMARY KEY (name);
-
-
---
--- Name: brokenspoke_pipeline brokenspoke_pipeline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_pipeline
-    ADD CONSTRAINT brokenspoke_pipeline_pkey PRIMARY KEY (state_machine_id);
-
-
---
--- Name: brokenspoke_status brokenspoke_status_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_status
-    ADD CONSTRAINT brokenspoke_status_pkey PRIMARY KEY (status);
-
-
---
--- Name: brokenspoke_step brokenspoke_step_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.brokenspoke_step
-    ADD CONSTRAINT brokenspoke_step_pkey PRIMARY KEY (step);
 
 
 --
@@ -496,7 +520,7 @@ ALTER TABLE ONLY public.city
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT core_services_pkey PRIMARY KEY (id);
 
 
 --
@@ -516,19 +540,11 @@ ALTER TABLE ONLY public.fargate_price
 
 
 --
--- Name: features features_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.features
-    ADD CONSTRAINT features_pkey PRIMARY KEY (bna_id);
-
-
---
 -- Name: infrastructure infrastructure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (id);
 
 
 --
@@ -536,7 +552,15 @@ ALTER TABLE ONLY public.infrastructure
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT opportunity_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: people people_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT people_pkey PRIMARY KEY (id);
 
 
 --
@@ -544,7 +568,15 @@ ALTER TABLE ONLY public.opportunity
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT recreation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: retail retail_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.retail
+    ADD CONSTRAINT retail_pkey PRIMARY KEY (id);
 
 
 --
@@ -584,7 +616,15 @@ ALTER TABLE ONLY public.submission
 --
 
 ALTER TABLE ONLY public.summary
-    ADD CONSTRAINT summary_pkey PRIMARY KEY (bna_id);
+    ADD CONSTRAINT summary_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: transit transit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transit
+    ADD CONSTRAINT transit_pkey PRIMARY KEY (id);
 
 
 --
@@ -675,6 +715,30 @@ CREATE INDEX us_state_fips_code_idx ON public.us_state USING btree (fips_code);
 
 
 --
+-- Name: bna_pipeline bna_pipeline_fargate_price_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_fargate_price_fkey FOREIGN KEY (fargate_price) REFERENCES public.fargate_price(id);
+
+
+--
+-- Name: bna_pipeline bna_pipeline_status_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_status_fkey FOREIGN KEY (status) REFERENCES public.bna_pipeline_status(status);
+
+
+--
+-- Name: bna_pipeline bna_pipeline_step_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bna_pipeline
+    ADD CONSTRAINT bna_pipeline_step_fkey FOREIGN KEY (step) REFERENCES public.bna_pipeline_step(step);
+
+
+--
 -- Name: census census_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -691,43 +755,51 @@ ALTER TABLE ONLY public.city
 
 
 --
--- Name: core_services core_services_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: core_services core_services_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.core_services
-    ADD CONSTRAINT core_services_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT core_services_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: features features_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.features
-    ADD CONSTRAINT features_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
-
-
---
--- Name: infrastructure infrastructure_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: infrastructure infrastructure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.infrastructure
-    ADD CONSTRAINT infrastructure_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT infrastructure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: opportunity opportunity_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: opportunity opportunity_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.opportunity
-    ADD CONSTRAINT opportunity_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT opportunity_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
--- Name: recreation recreation_bna_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: people people_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.people
+    ADD CONSTRAINT people_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
+
+
+--
+-- Name: recreation recreation_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.recreation
-    ADD CONSTRAINT recreation_bna_id_fkey FOREIGN KEY (bna_id) REFERENCES public.summary(bna_id) ON DELETE CASCADE;
+    ADD CONSTRAINT recreation_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
+
+
+--
+-- Name: retail retail_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.retail
+    ADD CONSTRAINT retail_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
@@ -776,6 +848,14 @@ ALTER TABLE ONLY public.submission
 
 ALTER TABLE ONLY public.summary
     ADD CONSTRAINT summary_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
+
+
+--
+-- Name: transit transit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.transit
+    ADD CONSTRAINT transit_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --

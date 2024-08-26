@@ -4,24 +4,12 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
-#[sea_orm(table_name = "core_services")]
+#[sea_orm(table_name = "transit")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub id: Uuid,
     #[sea_orm(column_type = "Double", nullable)]
-    pub dentists: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub doctors: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub grocery: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub hospitals: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub pharmacies: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
     pub score: Option<f64>,
-    #[sea_orm(column_type = "Double", nullable)]
-    pub social_services: Option<f64>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

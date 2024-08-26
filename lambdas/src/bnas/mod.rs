@@ -15,7 +15,9 @@ pub enum BNAComponent {
     Recreation,
     Opportunity,
     CoreServices,
-    Features,
+    People,
+    Retail,
+    Transit,
 }
 
 impl FromStr for BNAComponent {

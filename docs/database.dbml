@@ -2,16 +2,14 @@ Table "approval_status" {
   "status" "character varying" [pk, not null]
 }
 
-Table "bna_region" {
-  "name" "character varying" [pk, not null]
-}
-
-Table "brokenspoke_pipeline" {
+Table "bna_pipeline" {
   "state_machine_id" uuid [pk, not null]
   "step" "character varying"
   "sqs_message" json
+  "fargate_price" integer
   "fargate_task_arn" "character varying"
   "s3_bucket" "character varying"
+  "status" "character varying" [not null, default: `'Pending'::charactervarying`]
   "start_time" timestamp [not null]
   "end_time" timestamp
   "torn_down" boolean
@@ -19,12 +17,16 @@ Table "brokenspoke_pipeline" {
   "cost" numeric
 }
 
-Table "brokenspoke_status" {
+Table "bna_pipeline_status" {
   "status" "character varying" [pk, not null]
 }
 
-Table "brokenspoke_step" {
+Table "bna_pipeline_step" {
   "step" "character varying" [pk, not null]
+}
+
+Table "bna_region" {
+  "name" "character varying" [pk, not null]
 }
 
 Table "census" {
@@ -61,7 +63,7 @@ Table "city" {
 }
 
 Table "core_services" {
-  "bna_id" uuid [pk, not null]
+  "id" uuid [pk, not null]
   "dentists" doubleprecision
   "doctors" doubleprecision
   "grocery" doubleprecision
@@ -81,21 +83,14 @@ Table "fargate_price" {
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
 }
 
-Table "features" {
-  "bna_id" uuid [pk, not null]
-  "people" doubleprecision
-  "retail" doubleprecision
-  "transit" doubleprecision
-}
-
 Table "infrastructure" {
-  "bna_id" uuid [pk, not null]
+  "id" uuid [pk, not null]
   "low_stress_miles" doubleprecision
   "high_stress_miles" doubleprecision
 }
 
 Table "opportunity" {
-  "bna_id" uuid [pk, not null]
+  "id" uuid [pk, not null]
   "employment" doubleprecision
   "higher_education" doubleprecision
   "k12_education" doubleprecision
@@ -103,11 +98,21 @@ Table "opportunity" {
   "technical_vocational_college" doubleprecision
 }
 
+Table "people" {
+  "id" uuid [pk, not null]
+  "score" doubleprecision
+}
+
 Table "recreation" {
-  "bna_id" uuid [pk, not null]
+  "id" uuid [pk, not null]
   "community_centers" doubleprecision
   "parks" doubleprecision
   "recreation_trails" doubleprecision
+  "score" doubleprecision
+}
+
+Table "retail" {
+  "id" uuid [pk, not null]
   "score" doubleprecision
 }
 
@@ -156,17 +161,22 @@ Table "submission" {
 }
 
 Table "summary" {
-  "bna_id" uuid [pk, not null]
+  "id" uuid [pk, not null]
   "city_id" uuid [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "score" doubleprecision [not null]
   "version" "character varying" [not null]
 }
 
+Table "transit" {
+  "id" uuid [pk, not null]
+  "score" doubleprecision
+}
+
 Table "us_state" {
   "name" "character varying" [pk, not null]
   "abbrev" "character varying" [unique, not null]
-  "fips_code" "character (2)" [unique, not null]
+  "fips_code" "character varying" [unique, not null]
   "speed_limit" integer [not null]
 
   Indexes {
@@ -175,19 +185,27 @@ Table "us_state" {
   }
 }
 
+Ref "bna_pipeline_fargate_price_fkey":"fargate_price"."id" < "bna_pipeline"."fargate_price"
+
+Ref "bna_pipeline_status_fkey":"bna_pipeline_status"."status" < "bna_pipeline"."status"
+
+Ref "bna_pipeline_step_fkey":"bna_pipeline_step"."step" < "bna_pipeline"."step"
+
 Ref "census_city_id_fkey":"city"."id" < "census"."city_id" [delete: cascade]
 
 Ref "city_country_fkey":"country"."name" < "city"."country"
 
-Ref "core_services_bna_id_fkey":"summary"."bna_id" < "core_services"."bna_id" [delete: cascade]
+Ref "core_services_id_fkey":"summary"."id" < "core_services"."id" [delete: cascade]
 
-Ref "features_bna_id_fkey":"summary"."bna_id" < "features"."bna_id" [delete: cascade]
+Ref "infrastructure_id_fkey":"summary"."id" < "infrastructure"."id" [delete: cascade]
 
-Ref "infrastructure_bna_id_fkey":"summary"."bna_id" < "infrastructure"."bna_id" [delete: cascade]
+Ref "opportunity_id_fkey":"summary"."id" < "opportunity"."id" [delete: cascade]
 
-Ref "opportunity_bna_id_fkey":"summary"."bna_id" < "opportunity"."bna_id" [delete: cascade]
+Ref "people_id_fkey":"summary"."id" < "people"."id" [delete: cascade]
 
-Ref "recreation_bna_id_fkey":"summary"."bna_id" < "recreation"."bna_id" [delete: cascade]
+Ref "recreation_id_fkey":"summary"."id" < "recreation"."id" [delete: cascade]
+
+Ref "retail_id_fkey":"summary"."id" < "retail"."id" [delete: cascade]
 
 Ref "speed_limit_city_id_fkey":"city"."id" < "speed_limit"."city_id" [delete: cascade]
 
@@ -200,3 +218,5 @@ Ref "submission_country_fkey":"country"."name" < "submission"."country"
 Ref "submission_status_fkey":"approval_status"."status" < "submission"."status"
 
 Ref "summary_city_id_fkey":"city"."id" < "summary"."city_id" [delete: cascade]
+
+Ref "transit_id_fkey":"summary"."id" < "transit"."id" [delete: cascade]
