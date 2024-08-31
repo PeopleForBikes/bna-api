@@ -5,7 +5,7 @@ use effortless::{
 };
 use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, bnas::extract_path_parameters, build_paginated_response};
+use lambdas::{api_database_connect, build_paginated_response, ratings::extract_path_parameters};
 use sea_orm::{EntityTrait, PaginatorTrait};
 use serde_json::json;
 use tracing::{debug, info};

@@ -35,20 +35,20 @@ jobs:
         run: cd lambdas && cargo lambda build --release
       - name: Deploy lambdas
         run: |
-          LAMBDAS="get-bnas
-          get-bnas-analysis
-          get-bnas-cities
-          get-bnas-results
+          LAMBDAS="get-ratings
+          get-ratings-analysis
+          get-ratings-cities
+          get-ratings-results
           get-cities
-          get-cities-bnas
+          get-cities-ratings
           get-cities-census
           get-cities-submissions
           get-price-fargate
-          patch-bnas-analysis
+          patch-ratings-analysis
           patch-cities-submissions
-          post-bnas
-          post-bnas-analysis
-          post-bnas-enqueue
+          post-ratings
+          post-ratings-analysis
+          post-ratings-enqueue
           post-cities
           post-cities-submissions"
           echo $LAMBDAS \

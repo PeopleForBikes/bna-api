@@ -2,7 +2,7 @@ use dotenv::dotenv;
 use effortless::api::entry_not_found;
 use entity::{city, summary};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{bnas::extract_path_parameters, database_connect};
+use lambdas::{database_connect, ratings::extract_path_parameters};
 use sea_orm::EntityTrait;
 use serde_json::json;
 use tracing::info;

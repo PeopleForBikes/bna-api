@@ -1,7 +1,7 @@
-pub mod bnas;
 pub mod cities;
 pub mod db;
 pub mod link_header;
+pub mod ratings;
 
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{

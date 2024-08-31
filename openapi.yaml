@@ -10,28 +10,28 @@ servers:
   - url: "https://api.peopleforbikes.xyz"
     description: Staging API
 tags:
-  - name: bna
+  - name: rating
   - name: city
 paths:
-  /bnas:
+  /ratings:
     get:
-      operationId: getBnas
-      summary: Get BNA summaries
-      description: Get BNA summaries.
+      operationId: getRatings
+      summary: Get city rating summaries
+      description: Get city rating summaries.
       tags:
-        - bna
+        - rating
       responses:
         200:
-          $ref: "#/components/responses/bna_summaries"
+          $ref: "#/components/responses/rating_summaries"
       parameters:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/page_size"
     post:
-      operationId: postBnas
-      summary: Create new BNA
-      description: Create a new BNA
+      operationId: postRatings
+      summary: Create new city rating
+      description: Create a new city rating
       tags:
-        - bna
+        - rating
       requestBody:
         description: Create bna
         content:
@@ -40,18 +40,18 @@ paths:
               $ref: "#/components/schemas/bna_post"
       responses:
         201:
-          $ref: "#/components/responses/bna"
+          $ref: "#/components/responses/rating"
         403:
           $ref: "#/components/responses/forbidden"
       security:
         - Authorizer: []
-  /bnas/analyses:
+  /ratings/analyses:
     get:
-      operationId: getBnasAnalyses
-      summary: "Get the BNA analyses"
-      description: "Get the BNA analyses"
+      operationId: getRatingsAnalyses
+      summary: "Get the city rating analys details"
+      description: "Get the city rating analys details"
       tags:
-        - bna
+        - rating
       responses:
         200:
           $ref: "#/components/responses/analyses"
@@ -63,11 +63,11 @@ paths:
       security:
         - Authorizer: []
     post:
-      operationId: postBnasAnalyses
+      operationId: postRatingsAnalyses
       summary: Submit a new city to analyze
       description: Submit a new city to analyze
       tags:
-        - bna
+        - rating
       requestBody:
         description: Create a new analysis performed by the brokenspoke-analyzer
         content:
@@ -81,13 +81,13 @@ paths:
           $ref: "#/components/responses/bad_request"
       security:
         - Authorizer: []
-  /bnas/analyses/{analysis_id}:
+  /ratings/analyses/{analysis_id}:
     get:
       operationId: getAnalysis
       summary: Get the summary of a specific analysis
       description: Get the summary of a specific analysis .
       tags:
-        - bna
+        - rating
       parameters:
         - $ref: "#/components/parameters/analysis_id"
       responses:
@@ -106,7 +106,7 @@ paths:
       summary: Update an analysis
       description: Update an analysis
       tags:
-        - bna
+        - rating
       requestBody:
         description: Update a new analysis performed by the brokenspoke-analyzer
         content:
@@ -126,16 +126,16 @@ paths:
         - Authorizer: []
     parameters:
       - $ref: "#/components/parameters/analysis_id"
-  /bnas/{bna_id}:
+  /ratings/{bna_id}:
     get:
-      operationId: getBna
-      summary: Get a specific BNA summary
-      description: Get a specific BNA summary.
+      operationId: getRating
+      summary: Get a specific city rating summary
+      description: Get a specific city rating summary.
       tags:
-        - bna
+        - rating
       responses:
         200:
-          $ref: "#/components/responses/bna"
+          $ref: "#/components/responses/rating"
         400:
           $ref: "#/components/responses/bad_request"
         404:
@@ -143,16 +143,16 @@ paths:
     parameters:
       - $ref: "#/components/parameters/bna_id"
       - $ref: "#/components/parameters/component"
-  /bnas/{bna_id}/city:
+  /ratings/{bna_id}/city:
     get:
-      operationId: getBnaCity
-      summary: Get a specific BNA summary and its associated city
-      description: Get a specific BNA summary and its associated city.
+      operationId: getRatingCity
+      summary: Get a specific city rating summary and its associated city details
+      description: Get a specific city rating summary and its associated city details.
       tags:
-        - bna
+        - rating
       responses:
         200:
-          $ref: "#/components/responses/bna_summary_with_city"
+          $ref: "#/components/responses/rating_summary_with_city"
         400:
           $ref: "#/components/responses/bad_request"
         404:
@@ -283,9 +283,9 @@ paths:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
       - $ref: "#/components/parameters/name"
-  /cities/{country}/{region}/{name}/bnas:
+  /cities/{country}/{region}/{name}/ratings:
     get:
-      operationId: getCityBnas
+      operationId: getCityRatings
       summary: >
         Get the details of a specific city with all the analysis that were performed
         against it
@@ -298,7 +298,7 @@ paths:
         - city
       responses:
         200:
-          $ref: "#/components/responses/city_with_bnas"
+          $ref: "#/components/responses/city_with_ratings"
         400:
           $ref: "#/components/responses/bad_request"
         404:
@@ -329,13 +329,13 @@ paths:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
       - $ref: "#/components/parameters/name"
-  /bnas/enqueue:
+  /ratings/enqueue:
     post:
-      operationId: postBnaEnqueue
+      operationId: postRatingEnqueue
       summary: Enqueue a city to process
       description: Enqueue a city to process.
       tags:
-        - bna
+        - rating
       requestBody:
         description: Create a new city to enqueue.
         content:
@@ -680,7 +680,7 @@ components:
 
           example: "23.02"
       required:
-        - bna_id
+        - rating_id
         - city_id
         - score
         - version
@@ -1460,28 +1460,28 @@ components:
       description: >
         Your request was formatted incorrectly or missing required parameters.
 
-    bna:
-      description: "A BNA"
+    rating:
+      description: "A city rating"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/bna"
-    bna_summaries:
-      description: "A collection of BNA summaries"
+    rating_summaries:
+      description: "A collection of city rating summaries"
       content:
         application/json:
           schema:
             type: array
             items:
               $ref: "#/components/schemas/bna_summary"
-    bna_summary:
-      description: "BNA Summary object"
+    rating_summary:
+      description: "A city rating Summary object"
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/bna_summary"
-    bna_summary_with_city:
-      description: "BNA Summary object and its associated city"
+    rating_summary_with_city:
+      description: "A city rating summary object and its associated city"
       content:
         application/json:
           schema:
@@ -1490,8 +1490,8 @@ components:
               anyOf:
                 - $ref: "#/components/schemas/bna_summary_with_city"
                 - $ref: "#/components/schemas/city"
-    bnas:
-      description: "A collection of BNA analysis"
+    ratings:
+      description: "A collection of city ratings"
       content:
         application/json:
           schema:
@@ -1512,7 +1512,7 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/city"
-    city_with_bnas:
+    city_with_ratings:
       description: "A city with its associated BNA analyses"
       content:
         application/json:
