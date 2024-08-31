@@ -33,32 +33,32 @@ url = { workspace = true }
 uuid = { workspace = true, features = ["v4", "serde"] }
 
 [[bin]]
-name = "get-bnas"
-path = "src/bnas/get-bnas.rs"
+name = "get-ratings"
+path = "src/ratings/get-ratings.rs"
 
 [[bin]]
-name = "post-bnas"
-path = "src/bnas/post-bnas.rs"
+name = "post-ratings"
+path = "src/ratings/post-ratings.rs"
 
 # [[bin]]
 # name = "patch-bnas"
 # path = "src/bnas/patch-bnas.rs"
 
 [[bin]]
-name = "get-bnas-cities"
-path = "src/bnas/get-bnas-cities.rs"
+name = "get-ratings-cities"
+path = "src/ratings/get-ratings-cities.rs"
 
 [[bin]]
-name = "get-bnas-analysis"
-path = "src/bnas/get-bnas-analysis.rs"
+name = "get-ratings-analysis"
+path = "src/ratings/get-ratings-analysis.rs"
 
 [[bin]]
 name = "get-cities"
 path = "src/cities/get-cities.rs"
 
 [[bin]]
-name = "get-cities-bnas"
-path = "src/cities/get-cities-bnas.rs"
+name = "get-cities-ratings"
+path = "src/cities/get-cities-ratings.rs"
 
 [[bin]]
 name = "get-cities-census"
@@ -73,8 +73,8 @@ name = "get-price-fargate"
 path = "src/price-fargate/get-price-fargate.rs"
 
 [[bin]]
-name = "patch-bnas-analysis"
-path = "src/bnas/patch-bnas-analysis.rs"
+name = "patch-ratings-analysis"
+path = "src/ratings/patch-ratings-analysis.rs"
 
 [[bin]]
 name = "patch-cities-submissions"
@@ -85,16 +85,16 @@ name = "post-cities-submissions"
 path = "src/cities/post-cities-submissions.rs"
 
 [[bin]]
-name = "post-bnas-analysis"
-path = "src/bnas/post-bnas-analysis.rs"
+name = "post-ratings-analysis"
+path = "src/ratings/post-ratings-analysis.rs"
 
 [[bin]]
-name = "post-bnas-enqueue"
-path = "src/bnas/post-bnas-enqueue.rs"
+name = "post-ratings-enqueue"
+path = "src/ratings/post-ratings-enqueue.rs"
 
 [[bin]]
-name = "get-bnas-results"
-path = "src/bnas/get-bnas-results.rs"
+name = "get-ratings-results"
+path = "src/ratings/get-ratings-results.rs"
 
 [[bin]]
 name = "post-cities"

@@ -8,11 +8,11 @@ use entity::{
 };
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    bnas::{
+    build_paginated_response, database_connect,
+    ratings::{
         extract_path_parameters, extract_query_parameters, BNAComponent, BNAPathParameters,
         BNAQueryParameters,
     },
-    build_paginated_response, database_connect,
 };
 use sea_orm::{
     prelude::Uuid, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
