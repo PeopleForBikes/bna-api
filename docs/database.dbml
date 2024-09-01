@@ -6,7 +6,7 @@ Table "bna_pipeline" {
   "state_machine_id" uuid [pk, not null]
   "step" "character varying"
   "sqs_message" json
-  "fargate_price" integer
+  "fargate_price_id" integer
   "fargate_task_arn" "character varying"
   "s3_bucket" "character varying"
   "status" "character varying" [not null, default: `'Pending'::charactervarying`]
@@ -185,7 +185,7 @@ Table "us_state" {
   }
 }
 
-Ref "bna_pipeline_fargate_price_fkey":"fargate_price"."id" < "bna_pipeline"."fargate_price"
+Ref "bna_pipeline_fargate_price_id_fkey":"fargate_price"."id" < "bna_pipeline"."fargate_price_id"
 
 Ref "bna_pipeline_status_fkey":"bna_pipeline_status"."status" < "bna_pipeline"."status"
 

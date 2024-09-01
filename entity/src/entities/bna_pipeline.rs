@@ -10,7 +10,7 @@ pub struct Model {
     pub state_machine_id: Uuid,
     pub step: Option<String>,
     pub sqs_message: Option<Json>,
-    pub fargate_price: Option<i32>,
+    pub fargate_price_id: Option<i32>,
     pub fargate_task_arn: Option<String>,
     pub s3_bucket: Option<String>,
     pub status: String,
@@ -41,7 +41,7 @@ pub enum Relation {
     BnaPipelineStep,
     #[sea_orm(
         belongs_to = "super::fargate_price::Entity",
-        from = "Column::FargatePrice",
+        from = "Column::FargatePriceId",
         to = "super::fargate_price::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"

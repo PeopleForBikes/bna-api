@@ -59,7 +59,7 @@ impl MigrationTrait for Migration {
                     .col(uuid(BNAPipeline::StateMachineId).primary_key())
                     .col(string_null(BNAPipeline::Step))
                     .col(json_null(BNAPipeline::SqsMessage))
-                    .col(integer_null(BNAPipeline::FargatePrice))
+                    .col(integer_null(BNAPipeline::FargatePriceId))
                     .col(string_null(BNAPipeline::FargateTaskARN))
                     .col(string_null(BNAPipeline::S3Bucket))
                     .col(string(BNAPipeline::Status).default("Pending".to_string()))
@@ -80,7 +80,7 @@ impl MigrationTrait for Migration {
                     )
                     .foreign_key(
                         ForeignKey::create()
-                            .from(BNAPipeline::Table, BNAPipeline::FargatePrice)
+                            .from(BNAPipeline::Table, BNAPipeline::FargatePriceId)
                             .to(FargatePrice::Table, FargatePrice::Id),
                     )
                     .to_owned(),
@@ -112,7 +112,7 @@ enum BNAPipeline {
     Table,
     Cost,
     EndTime,
-    FargatePrice,
+    FargatePriceId,
     FargateTaskARN,
     ResultsPosted,
     S3Bucket,
