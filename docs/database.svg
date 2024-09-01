@@ -139,7 +139,7 @@
 <text text-anchor="start" x="1305.05" y="-4347.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">json</text>
 <polygon fill="#e7e2dd" stroke="transparent" points="832.73,-4266.67 832.73,-4326.67 1374.73,-4326.67 1374.73,-4266.67 832.73,-4266.67"/>
 <polygon fill="none" stroke="#29235c" points="832.73,-4266.67 832.73,-4326.67 1374.73,-4326.67 1374.73,-4266.67 832.73,-4266.67"/>
-<text text-anchor="start" x="843.73" y="-4286.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">fargate_price &#160;&#160;&#160;</text>
+<text text-anchor="start" x="843.73" y="-4286.87" font-family="Helvetica,sans-Serif" font-size="32.00" fill="#29235c">fargate_price_id &#160;&#160;&#160;</text>
 <text text-anchor="start" x="1265.93" y="-4287.87" font-family="Helvetica,sans-Serif" font-style="italic" font-size="32.00" fill="#29235c">integer</text>
 <polygon fill="#e7e2dd" stroke="transparent" points="832.73,-4206.67 832.73,-4266.67 1374.73,-4266.67 1374.73,-4206.67 832.73,-4206.67"/>
 <polygon fill="none" stroke="#29235c" points="832.73,-4206.67 832.73,-4266.67 1374.73,-4266.67 1374.73,-4206.67 832.73,-4206.67"/>

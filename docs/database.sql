@@ -39,7 +39,7 @@ CREATE TABLE public.bna_pipeline (
     state_machine_id uuid NOT NULL,
     step character varying,
     sqs_message json,
-    fargate_price integer,
+    fargate_price_id integer,
     fargate_task_arn character varying,
     s3_bucket character varying,
     status character varying DEFAULT 'Pending'::character varying NOT NULL,
@@ -715,11 +715,11 @@ CREATE INDEX us_state_fips_code_idx ON public.us_state USING btree (fips_code);
 
 
 --
--- Name: bna_pipeline bna_pipeline_fargate_price_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: bna_pipeline bna_pipeline_fargate_price_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.bna_pipeline
-    ADD CONSTRAINT bna_pipeline_fargate_price_fkey FOREIGN KEY (fargate_price) REFERENCES public.fargate_price(id);
+    ADD CONSTRAINT bna_pipeline_fargate_price_id_fkey FOREIGN KEY (fargate_price_id) REFERENCES public.fargate_price(id);
 
 
 --
