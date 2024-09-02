@@ -22,6 +22,14 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+        let insert_statuses = Query::insert()
+            .into_table(BNAPipelineStatus::Table)
+            .columns([BNAPipelineStatus::Status])
+            .values_panic(["Completed".into()])
+            .values_panic(["Pending".into()])
+            .values_panic(["Processing".into()])
+            .to_owned();
+        manager.exec_stmt(insert_statuses).await?;
 
         // Create the Brokenspoke Step lookup table.
         manager
@@ -33,6 +41,15 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+        let insert_statuses = Query::insert()
+            .into_table(BNAPipelineStep::Table)
+            .columns([BNAPipelineStep::Step])
+            .values_panic(["Analysis".into()])
+            .values_panic(["Cleanup".into()])
+            .values_panic(["Save".into()])
+            .values_panic(["Setup ".into()])
+            .to_owned();
+        manager.exec_stmt(insert_statuses).await?;
 
         // Create the Fargate Price table.
         manager

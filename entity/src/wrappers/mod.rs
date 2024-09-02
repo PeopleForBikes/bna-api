@@ -23,14 +23,29 @@ impl FromStr for ApprovalStatus {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum BrokenspokeStep {
-    SqsMessage,
-    Setup,
-    Analysis,
-    Cleanup,
+pub enum BNAPipelineStatus {
+    Pending,
+    Processing,
+    Completed,
 }
 
-impl FromStr for BrokenspokeStep {
+impl FromStr for BNAPipelineStatus {
+    type Err = serde_plain::Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        serde_plain::from_str::<Self>(s)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BNAPipelineStep {
+    Analysis,
+    Cleanup,
+    Setup,
+    Save,
+}
+
+impl FromStr for BNAPipelineStep {
     type Err = serde_plain::Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
