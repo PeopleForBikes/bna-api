@@ -35,7 +35,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
 pub fn prepare_active_model(event: &Request) -> Result<ActiveModel, APIErrors> {
     // Retrieve the ID of the entry to update.
-    let parameter = "id";
+    let parameter = "analysis_id";
     let id = event
         .path_parameter::<Uuid>(parameter)
         .ok_or(missing_parameter(event, parameter))?
@@ -64,4 +64,56 @@ async fn main() -> Result<(), Error> {
         info!("{e}");
         e
     })
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+    use aws_lambda_events::http;
+    use lambda_http::RequestExt;
+    use std::collections::HashMap;
+
+    #[test]
+    fn test_prepare_active_model() {
+        let event = http::Request::builder()
+            .header(http::header::CONTENT_TYPE, "application/json")
+            .body(Body::Text(
+                r#"{
+                  "cost": null,
+                  "end_time": null,
+                  "fargate_price_id": null,
+                  "fargate_task_arn": null,
+                  "result_posted": null,
+                  "s3_bucket": null,
+                  "sqs_message": null,
+                  "start_time": [
+                    2024,
+                    247,
+                    13,
+                    7,
+                    29,
+                    922293000,
+                    0,
+                    0,
+                    0
+                  ],
+                  "state_machine_id": "fc009967-c4d0-416b-baee-93708ac80cbc",
+                  "status": null,
+                  "step": "Analysis",
+                  "torn_down": null
+                }"#
+                .to_string(),
+            ))
+            .expect("failed to build request")
+            .with_path_parameters(HashMap::from([(
+                "analysis_id".to_string(),
+                "fc009967-c4d0-416b-baee-93708ac80cbc".to_string(), // Santa Monica, CA
+            )]))
+            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
+                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
+            ));
+        let r = prepare_active_model(&event);
+        assert!(r.is_ok());
+    }
 }
