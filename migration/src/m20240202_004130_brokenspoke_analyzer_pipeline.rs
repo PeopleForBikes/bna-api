@@ -47,7 +47,7 @@ impl MigrationTrait for Migration {
             .values_panic(["Analysis".into()])
             .values_panic(["Cleanup".into()])
             .values_panic(["Save".into()])
-            .values_panic(["Setup ".into()])
+            .values_panic(["Setup".into()])
             .to_owned();
         manager.exec_stmt(insert_statuses).await?;
 
