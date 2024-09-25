@@ -10,7 +10,7 @@ use lambdas::{
     cities::{extract_path_parameters, CitiesPathParameters},
     database_connect,
 };
-use sea_orm::{EntityTrait, PaginatorTrait};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, ModelTrait, PaginatorTrait};
 use serde_json::json;
 use tracing::info;
 
@@ -58,6 +58,32 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         pagination.page_size,
         &event,
     )
+}
+
+async fn fetch_city(
+    db: &DatabaseConnection,
+    country: &str,
+    region: &str,
+    name: &str,
+) -> Result<city::Model> {
+    city::Entity::find_by_id((country, region, name))
+        .one(&db)
+        .await?
+}
+
+async fn fetch_cities(
+    db: &DatabaseConnection,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<city::Model>)> {
+    let count = city::Entity::find()
+        .select_only()
+        .column_as(cake::Column::Id.count(), "count")
+        .count();
+    city::Entity::find()
+        .paginate(&db, page_size)
+        .fetch_page(page)
+        .await?
 }
 
 #[tokio::main]

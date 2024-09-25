@@ -8,6 +8,7 @@ aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
 aws-sdk-sqs = { workspace = true }
 aws_lambda_events = { workspace = true }
+axum = { workspace = true }
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "f1d9115" }
 dotenv = { workspace = true }
 effortless = { path = "../effortless" }
