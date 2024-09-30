@@ -5,12 +5,12 @@
 //    Purpose: This spell enhances memory, allowing the caster to recall even the most obscure details.
 //    Incantation: "Axumensia Memor!"
 
+use crate::database_connect;
 use axum::{extract::Path, http::StatusCode, response::Json, routing::get, Router};
 use dotenv::dotenv;
 use effortless::error::APIError;
 use entity::city;
 use lambda_http::tracing;
-use lambdas::database_connect;
 use sea_orm::EntityTrait;
 use std::env::set_var;
 
@@ -36,13 +36,13 @@ async fn main() {
         .without_time()
         .init();
 
-    let app = Router::new().route("/cities/:country/:region/:name", get(get_city));
+    // let app = Router::new().route("/cities/:country/:region/:name", get(get_city));
 
     // run(app).await
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    // axum::serve(listener, app).await.unwrap();
 }
 
 async fn get_city(
