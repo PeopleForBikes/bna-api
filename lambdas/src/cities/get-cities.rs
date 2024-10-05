@@ -10,47 +10,59 @@ use lambdas::{
     cities::{extract_path_parameters, CitiesPathParameters},
     database_connect,
 };
-use sea_orm::{EntityTrait, PaginatorTrait};
+use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect};
 use serde_json::json;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // With params.
+    // Retrieve a single city.
     if event.has_path_parameters() {
         let params: CitiesPathParameters = match extract_path_parameters(&event) {
             Ok(p) => p,
             Err(e) => return Ok(e.into()),
         };
         info!("{:#?}", params);
-
-        let select = city::Entity::find_by_id((params.country, params.region, params.name));
-        let model = select.one(&db).await?;
-        let res: Response<Body> = match model {
-            Some(model) => json!(model).into_response().await,
-            None => entry_not_found(&event).into(),
-        };
-        return Ok(res);
+        return get_city_handler(&params.country, &params.region, &params.name, event).await;
     }
 
-    // Retrieve pagination parameters if any.
+    // Retrieve all cities.
+    get_cities_handler(event).await
+}
+
+async fn get_city_handler(
+    country: &str,
+    region: &str,
+    name: &str,
+    event: Request,
+) -> Result<Response<Body>, Error> {
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Fetch the city model.
+    let model = fetch_city(&db, country, region, name).await?;
+    let res: Response<Body> = match model {
+        Some(model) => json!(model).into_response().await,
+        None => entry_not_found(&event).into(),
+    };
+    return Ok(res);
+}
+
+async fn get_cities_handler(event: Request) -> Result<Response<Body>, Error> {
+    // Extract pagination parameters if any.
     let pagination = match extract_pagination_parameters(&event) {
         Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
-    // Without params.
-    let select = city::Entity::find();
-    let body = select
-        .clone()
-        .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page)
-        .await?;
-    let total_items = select.count(&db).await?;
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Fetch a page of cities.
+    let (total_items, body) = fetch_cities(&db, pagination.page, pagination.page_size).await?;
+
+    // Return the paginated response.
     build_paginated_response(
         json!(body),
         total_items,
@@ -58,6 +70,33 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         pagination.page_size,
         &event,
     )
+}
+
+async fn fetch_city(
+    db: &DatabaseConnection,
+    country: &str,
+    region: &str,
+    name: &str,
+) -> Result<Option<city::Model>, sea_orm::DbErr> {
+    city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
+        .one(db)
+        .await
+}
+
+async fn fetch_cities(
+    db: &DatabaseConnection,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<city::Model>), sea_orm::DbErr> {
+    let select = city::Entity::find();
+    let count = select
+        .clone()
+        .select_only()
+        .column_as(city::Column::Id.count(), "count")
+        .count(db)
+        .await?;
+    let models = select.paginate(db, page_size).fetch_page(page).await?;
+    Ok((count, models))
 }
 
 #[tokio::main]
