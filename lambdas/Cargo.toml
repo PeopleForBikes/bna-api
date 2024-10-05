@@ -4,11 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = { workspace = true, features = ["macros", "original-uri", "query"] }
+axum-extra = { workspace = true, features = ["query"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
 aws-sdk-sqs = { workspace = true }
 aws_lambda_events = { workspace = true }
-bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke.git", rev = "f1d9115" }
+bnacore = { workspace = true }
 dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
@@ -17,6 +19,7 @@ lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
 nom = { workspace = true }
 once_cell = { workspace = true }
+query_map = { workspace = true, features = ["url-query"] }
 reqwest = { workspace = true, features = ["json", "native-tls-vendored"] }
 sea-orm = { workspace = true, features = [
   "sqlx-postgres",
@@ -26,19 +29,31 @@ sea-orm = { workspace = true, features = [
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_plain = { workspace = true }
-tokio = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["macros"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
 url = { workspace = true }
 uuid = { workspace = true, features = ["v4", "serde"] }
 
+[lints.clippy]
+result_large_err = "allow"
+
+[lib]
+name = "lambdas"
+path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
 [[bin]]
 name = "get-ratings"
-path = "src/ratings/get-ratings.rs"
+path = "src/bin/ratings/get-ratings.rs"
 
 [[bin]]
 name = "post-ratings"
-path = "src/ratings/post-ratings.rs"
+path = "src/bin/ratings/post-ratings.rs"
 
 # [[bin]]
 # name = "patch-bnas"
@@ -46,59 +61,59 @@ path = "src/ratings/post-ratings.rs"
 
 [[bin]]
 name = "get-ratings-cities"
-path = "src/ratings/get-ratings-cities.rs"
+path = "src/bin/ratings/get-ratings-cities.rs"
 
 [[bin]]
 name = "get-ratings-analysis"
-path = "src/ratings/get-ratings-analysis.rs"
+path = "src/bin/ratings/get-ratings-analysis.rs"
 
 [[bin]]
 name = "get-cities"
-path = "src/cities/get-cities.rs"
+path = "src/bin/cities/get-cities.rs"
 
 [[bin]]
 name = "get-cities-ratings"
-path = "src/cities/get-cities-ratings.rs"
+path = "src/bin/cities/get-cities-ratings.rs"
 
 [[bin]]
 name = "get-cities-census"
-path = "src/cities/get-cities-census.rs"
+path = "src/bin/cities/get-cities-census.rs"
 
 [[bin]]
 name = "get-cities-submissions"
-path = "src/cities/get-cities-submissions.rs"
+path = "src/bin/cities/get-cities-submissions.rs"
 
 [[bin]]
 name = "get-price-fargate"
-path = "src/price-fargate/get-price-fargate.rs"
+path = "src/bin/price-fargate/get-price-fargate.rs"
 
 [[bin]]
 name = "patch-ratings-analysis"
-path = "src/ratings/patch-ratings-analysis.rs"
+path = "src/bin/ratings/patch-ratings-analysis.rs"
 
 [[bin]]
 name = "patch-cities-submissions"
-path = "src/cities/patch-cities-submissions.rs"
+path = "src/bin/cities/patch-cities-submissions.rs"
 
 [[bin]]
 name = "post-cities-submissions"
-path = "src/cities/post-cities-submissions.rs"
+path = "src/bin/cities/post-cities-submissions.rs"
 
 [[bin]]
 name = "post-ratings-analysis"
-path = "src/ratings/post-ratings-analysis.rs"
+path = "src/bin/ratings/post-ratings-analysis.rs"
 
 [[bin]]
 name = "post-ratings-enqueue"
-path = "src/ratings/post-ratings-enqueue.rs"
+path = "src/bin/ratings/post-ratings-enqueue.rs"
 
 [[bin]]
 name = "get-ratings-results"
-path = "src/ratings/get-ratings-results.rs"
+path = "src/bin/ratings/get-ratings-results.rs"
 
 [[bin]]
 name = "post-cities"
-path = "src/cities/post-cities.rs"
+path = "src/bin/cities/post-cities.rs"
 
 [dev-dependencies]
 color-eyre = { workspace = true }

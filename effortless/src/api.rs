@@ -3,7 +3,7 @@ use crate::{
     fragment::{self, get_apigw_request_id, BnaRequestExt},
 };
 use lambda_http::{http::StatusCode, Body, Request, RequestExt, RequestPayloadExt, Response};
-use serde::de::DeserializeOwned;
+use serde::{de::DeserializeOwned, Deserialize};
 use std::{fmt::Display, str::FromStr};
 
 /// Parse the first path parameter found in the API Gateway request, into the provided type.
@@ -192,10 +192,10 @@ pub const MAX_PAGE_SIZE: u64 = 100;
 pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
 /// The pagination details.
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct PaginationParameters {
     /// The number of items per page.
-    pub page_size: u64,
+    pub page_size: Option<u64>,
     /// The result page being returned.
     pub page: u64,
 }
@@ -203,9 +203,15 @@ pub struct PaginationParameters {
 impl Default for PaginationParameters {
     fn default() -> Self {
         Self {
-            page_size: DEFAULT_PAGE_SIZE,
+            page_size: Some(DEFAULT_PAGE_SIZE),
             page: 0,
         }
+    }
+}
+
+impl PaginationParameters {
+    pub fn page_size(&self) -> u64 {
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
     }
 }
 
@@ -231,8 +237,8 @@ pub fn extract_pagination_parameters(
         match page_size.parse::<u64>() {
             Ok(page_size) => {
                 pagination.page_size = match page_size {
-                    0..=MAX_PAGE_SIZE => page_size,
-                    _ => MAX_PAGE_SIZE,
+                    0..=MAX_PAGE_SIZE => Some(page_size),
+                    _ => Some(MAX_PAGE_SIZE),
                 }
             }
             Err(e) => {
@@ -281,7 +287,7 @@ mod tests {
         let req = from_str(input).unwrap();
 
         let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size, DEFAULT_PAGE_SIZE);
+        assert_eq!(actual.page_size, Some(DEFAULT_PAGE_SIZE));
         assert_eq!(actual.page, 0);
     }
 
@@ -299,7 +305,7 @@ mod tests {
         let req = result.with_query_string_parameters(data);
 
         let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size, PAGE_SIZE);
+        assert_eq!(actual.page_size, Some(PAGE_SIZE));
         assert_eq!(actual.page, PAGE);
     }
 

@@ -66,6 +66,12 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+        let insert_prices = Query::insert()
+            .into_table(FargatePrice::Table)
+            .columns([FargatePrice::PerSecond])
+            .values_panic([0.0023.into()])
+            .to_owned();
+        manager.exec_stmt(insert_prices).await?;
 
         // Create the Brokenspoke Pipeline table.
         manager

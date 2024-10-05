@@ -1,17 +1,23 @@
-pub mod cities;
-pub mod db;
-pub mod link_header;
-pub mod ratings;
+pub mod core;
 
+use axum::{
+    async_trait,
+    extract::{FromRequest, OriginalUri},
+    response::IntoResponse,
+};
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
     api::DEFAULT_PAGE_SIZE,
     error::{APIError, APIErrors},
     fragment::BnaRequestExt,
 };
-use lambda_http::{http::header, Body, Error, Request, Response};
+use lambda_http::{
+    http::{header, StatusCode},
+    Body, Error, Request, Response,
+};
 use sea_orm::{Database, DatabaseConnection, DbErr};
-use serde_json::Value;
+use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 use std::env;
 use tracing::{debug, error};
 
@@ -130,7 +136,12 @@ pub fn build_paginated_response(
     page_size: u64,
     event: &Request,
 ) -> Result<Response<Body>, Error> {
-    let paginatron = Paginatron::new(event.uri().host(), total_items, page, page_size);
+    let paginatron = Paginatron::new(
+        event.uri().host().map(|h| h.to_string()),
+        total_items,
+        page,
+        page_size,
+    );
     let nav = paginatron.navigation();
 
     // Build the response.
@@ -188,16 +199,17 @@ impl NavigationPages {
 }
 
 /// Generates the pagination information.
-pub struct Paginatron<'a> {
-    url: Option<&'a str>,
+#[derive(Serialize)]
+pub struct Paginatron {
+    url: Option<String>,
     total_items: u64,
     page: u64,
     page_size: u64,
 }
 
-impl<'a> Paginatron<'a> {
+impl Paginatron {
     /// Creates a new Paginatron.
-    pub fn new(url: Option<&'a str>, total_items: u64, page: u64, page_size: u64) -> Self {
+    pub fn new(url: Option<String>, total_items: u64, page: u64, page_size: u64) -> Self {
         Self {
             url,
             total_items,
@@ -238,7 +250,7 @@ impl<'a> Paginatron<'a> {
     /// ```
     /// use lambdas::Paginatron;
     ///
-    /// let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 12875, 3, 25);
+    /// let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas".to_string()), 12875, 3, 25);
     /// assert_eq!(
     ///   paginatron.link_header(Some(25)),
     ///   r#"<https://api.peopleforbikes.xyz/bnas?page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page=515>; rel="last""#
@@ -246,7 +258,7 @@ impl<'a> Paginatron<'a> {
     /// ```
     ///
     pub fn link_header(&self, defaul_page_size: Option<u64>) -> String {
-        match self.url {
+        match &self.url {
             None => String::new(),
             Some(url) => {
                 let nav = self.navigation();
@@ -264,6 +276,63 @@ impl<'a> Paginatron<'a> {
                 format!("{first}, {prev}, {next}, {last}")
             }
         }
+    }
+}
+
+#[derive(Serialize)]
+pub struct PageFlow {
+    paginatron: Paginatron,
+    payload: Value,
+}
+
+impl PageFlow {
+    pub fn new(paginatron: Paginatron, payload: Value) -> Self {
+        Self {
+            paginatron,
+            payload,
+        }
+    }
+
+    pub fn payload(&self) -> Value {
+        self.payload.clone()
+    }
+}
+
+impl From<PageFlow> for Response<Body> {
+    fn from(value: PageFlow) -> Self {
+        let nav = value.paginatron.navigation();
+        Response::builder()
+            .header(
+                "link",
+                value.paginatron.link_header(Some(DEFAULT_PAGE_SIZE)),
+            )
+            .header("x-next-page", nav.next())
+            .header("x-page", value.paginatron.page)
+            .header("x-per-page", value.paginatron.page_size)
+            .header("x-prev-page", nav.prev())
+            .header("x-total", value.paginatron.total_items)
+            .header("x-total-pages", nav.last())
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(value.payload.to_string()))
+            .expect("failed to build response")
+    }
+}
+
+impl IntoResponse for PageFlow {
+    fn into_response(self) -> axum::response::Response {
+        let nav = self.paginatron.navigation();
+        let r: Response<axum::body::Body> = axum::response::Response::builder()
+            .header("link", self.paginatron.link_header(Some(DEFAULT_PAGE_SIZE)))
+            .header("x-next-page", nav.next())
+            .header("x-page", self.paginatron.page)
+            .header("x-per-page", self.paginatron.page_size)
+            .header("x-prev-page", nav.prev())
+            .header("x-total", self.paginatron.total_items)
+            .header("x-total-pages", nav.last())
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(axum::body::Body::from(self.payload.to_string()))
+            .expect("failed to build response");
+        r
     }
 }
 
@@ -308,6 +377,123 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+pub enum ExecutionError {
+    ///  An error from unsuccessful database operations.
+    #[error("database error")]
+    DatabaseError(#[from] sea_orm::DbErr),
+
+    /// Unexpected error.
+    #[error("unexpected error: {0} {1}")]
+    Unexpected(String, String),
+
+    /// Entry not found.
+    #[error("entry not found at {1}: {2}")]
+    NotFound(Option<String>, String, String),
+
+    /// Uncovered country.
+    #[error("the country is not covered by the analyzer: {0}")]
+    UncoveredCountry(String),
+
+    /// Invalid US State.
+    #[error("the state is not a valid US state: {0}")]
+    InvalidUSState(String),
+}
+
+impl From<ExecutionError> for APIError {
+    fn from(value: ExecutionError) -> Self {
+        match value {
+            ExecutionError::DatabaseError(_) => APIError::db_error(None, "Unknown source", ""),
+            ExecutionError::NotFound(id, source, message) => {
+                APIError::not_found(id, &source, &message)
+            }
+            _ => APIError::internal_error(
+                None,
+                "Internal Error",
+                "Unknown details",
+                "Unknown source",
+            ),
+        }
+    }
+}
+
+impl From<ExecutionError> for APIErrors {
+    fn from(value: ExecutionError) -> Self {
+        APIError::from(value).into()
+    }
+}
+
+impl IntoResponse for ExecutionError {
+    fn into_response(self) -> axum::response::Response {
+        let api_error = APIError::from(self);
+        let api_errors = APIErrors::from(api_error);
+        let status = if api_errors.errors.len() == 1 {
+            api_errors.errors().first().unwrap().status()
+        } else {
+            StatusCode::BAD_REQUEST
+        };
+        Response::builder()
+            .status(status)
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(json!(api_errors).to_string().into())
+            .unwrap()
+    }
+}
+
+pub struct Context {
+    // request_id: APIGatewayV2RequestID,
+    request_id: Option<String>,
+    source: String,
+}
+
+#[async_trait]
+impl<S> FromRequest<S> for Context
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request(req: axum::extract::Request, _: &S) -> Result<Self, Self::Rejection> {
+        let request_context = req
+            .extensions()
+            .get::<lambda_http::request::RequestContext>();
+        let request_id = match request_context {
+            Some(lambda_http::request::RequestContext::ApiGatewayV2(ref ctx)) => {
+                ctx.request_id.clone()
+            }
+            _ => None,
+        };
+        let uri = req.extensions().get::<OriginalUri>();
+        let source = match uri {
+            Some(path) => path.0.path().to_owned(),
+            None => req.uri().path().to_owned(),
+        };
+
+        Ok(Self { request_id, source })
+    }
+}
+
+impl Context {
+    pub fn new(request_id: Option<String>, source: String) -> Self {
+        Self { request_id, source }
+    }
+
+    pub fn request_id(&self) -> Option<String> {
+        self.request_id.clone()
+    }
+
+    pub fn source(&self) -> String {
+        self.source.to_owned()
+    }
+}
+
+#[derive(Default, Deserialize)]
+pub enum Sort {
+    Asc,
+    #[default]
+    Desc,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -319,7 +505,12 @@ mod tests {
 
     #[test]
     fn test_paginatron_with_different_page_size() {
-        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 200, 3, 25);
+        let paginatron = Paginatron::new(
+            Some("https://api.peopleforbikes.xyz/bnas".to_string()),
+            200,
+            3,
+            25,
+        );
         assert_eq!(
             paginatron.link_header(Some(50)),
             r#"<https://api.peopleforbikes.xyz/bnas?page_size=25&page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=8>; rel="last""#
@@ -328,7 +519,12 @@ mod tests {
 
     #[test]
     fn test_paginatron_invalid_page() {
-        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 42, 3, 25);
+        let paginatron = Paginatron::new(
+            Some("https://api.peopleforbikes.xyz/bnas".to_string()),
+            42,
+            3,
+            25,
+        );
         let nav = paginatron.navigation();
         assert_eq!(nav.first(), 1);
         assert_eq!(nav.prev(), 1);

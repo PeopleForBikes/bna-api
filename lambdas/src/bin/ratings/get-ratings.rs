@@ -1,6 +1,7 @@
 use dotenv::dotenv;
 use effortless::{
     api::{entry_not_found, extract_pagination_parameters},
+    error::APIErrors,
     fragment::BnaRequestExt,
 };
 use entity::{
@@ -8,16 +9,13 @@ use entity::{
 };
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    build_paginated_response, database_connect,
-    ratings::{
-        extract_path_parameters, extract_query_parameters, BNAComponent, BNAPathParameters,
-        BNAQueryParameters,
+    core::resource::ratings::{
+        adaptor::get_ratings_summaries_adaptor, extract_path_parameters, extract_query_parameters,
+        BNAComponent, BNAPathParameters, BNAQueryParameters,
     },
+    database_connect,
 };
-use sea_orm::{
-    prelude::Uuid, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
-    RelationTrait,
-};
+use sea_orm::{prelude::Uuid, EntityTrait, FromQueryResult, JoinType, QuerySelect, RelationTrait};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tracing::{debug, info};
@@ -256,20 +254,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Retrieve entries.
-    let select = Summary::find();
-    let body = select
-        .clone()
-        .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page)
-        .await?;
-    let total_items = select.count(&db).await?;
-    build_paginated_response(
-        json!(body),
-        total_items,
-        pagination.page,
-        pagination.page_size,
-        &event,
-    )
+    match get_ratings_summaries_adaptor(pagination.page, pagination.page_size()).await {
+        Ok(v) => Ok(v.payload().into_response().await),
+        Err(e) => Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]

@@ -1,10 +1,13 @@
 //! Module for the /cities enpoint.
+pub mod adaptor;
+mod db;
+pub mod endpoint;
 
 use effortless::{api::parse_path_parameter, error::APIErrors};
-use lambda_http::Request;
+use serde::Deserialize;
 
 /// Path parameters for the /cities enpoint.
-#[derive(Debug)]
+#[derive(Debug, Deserialize)]
 pub struct CitiesPathParameters {
     /// Country name.
     pub country: String,
@@ -15,7 +18,9 @@ pub struct CitiesPathParameters {
 }
 
 /// Extract the path parameters for the /cities endpoint.
-pub fn extract_path_parameters(event: &Request) -> Result<CitiesPathParameters, APIErrors> {
+pub fn extract_path_parameters(
+    event: &lambda_http::Request,
+) -> Result<CitiesPathParameters, APIErrors> {
     let mut api_errors = APIErrors::empty();
 
     let country = match parse_path_parameter::<String>(event, "country") {

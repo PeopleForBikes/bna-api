@@ -7,8 +7,8 @@ use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
 use entity::{
-    census, city, core_services, infrastructure, opportunity, people, prelude::*, recreation,
-    retail, speed_limit, summary, transit,
+    census, city, core_services, fargate_price, infrastructure, opportunity, people, prelude::*,
+    recreation, retail, speed_limit, summary, transit,
 };
 use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
@@ -42,6 +42,7 @@ async fn main() -> Result<(), Report> {
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
     let mut versions: HashMap<Uuid, Calver> = HashMap::new();
     let mut city_fips2limit: HashMap<u32, u32> = HashMap::new();
+    let mut fargate_price: Vec<fargate_price::ActiveModel> = Vec::new();
 
     // Set the database connection.
     let database_url = dotenv::var("DATABASE_URL")?;
@@ -138,7 +139,7 @@ async fn main() -> Result<(), Report> {
             fips_code: scorecard
                 .census_fips_code
                 .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(v.to_string())),
-            pop_size: match scorecard.pop_size {
+            pop_size: match scorecard.pop_size.unwrap() {
                 bnacore::scorecard::Size::Small => ActiveValue::Set(0),
                 bnacore::scorecard::Size::Medium => ActiveValue::Set(1),
                 bnacore::scorecard::Size::Large => ActiveValue::Set(2),
