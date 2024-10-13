@@ -1,4 +1,4 @@
-use entity::{census, city};
+use entity::{census, city, summary};
 use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect};
 
 pub async fn fetch_city(
@@ -28,7 +28,7 @@ pub async fn fetch_cities(
     Ok((count, models))
 }
 
-pub async fn fetch_city_censuses(
+pub async fn fetch_cities_censuses(
     db: &DatabaseConnection,
     country: &str,
     region: &str,
@@ -39,6 +39,26 @@ pub async fn fetch_city_censuses(
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
             .find_also_related(census::Entity);
+    let models = select
+        .clone()
+        .paginate(db, page_size)
+        .fetch_page(page)
+        .await?;
+    let count = select.count(db).await?;
+    Ok((count, models))
+}
+
+pub async fn fetch_cities_ratings(
+    db: &DatabaseConnection,
+    country: &str,
+    region: &str,
+    name: &str,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), sea_orm::DbErr> {
+    let select =
+        city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
+            .find_also_related(summary::Entity);
     let models = select
         .clone()
         .paginate(db, page_size)

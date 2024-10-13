@@ -1,14 +1,7 @@
 use dotenv::dotenv;
-use effortless::api::{entry_not_found, extract_pagination_parameters};
-use entity::{city, summary};
-use lambda_http::{run, service_fn, Body, Error, Request, Response};
-use lambdas::{
-    build_paginated_response,
-    cities::{extract_path_parameters, CitiesPathParameters},
-    database_connect,
-};
-use sea_orm::{EntityTrait, PaginatorTrait};
-use serde_json::json;
+use effortless::{api::extract_pagination_parameters, error::APIErrors};
+use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambdas::cities::{extract_path_parameters, mapper::map_cities_ratings, CitiesPathParameters};
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -26,28 +19,41 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Retrieve the city and associated BNA summary(ies).
-    let select = city::Entity::find_by_id((params.country, params.region, params.name))
-        .find_also_related(summary::Entity);
-    let model = select
-        .clone()
-        .paginate(&db, pagination.page_size())
-        .fetch_page(pagination.page)
-        .await?;
-    if model.is_empty() {
-        return Ok(entry_not_found(&event).into());
-    }
-    let total_items = select.count(&db).await?;
-    build_paginated_response(
-        json!(model),
-        total_items,
+    match map_cities_ratings(
+        &params.country,
+        &params.region,
+        &params.name,
         pagination.page,
         pagination.page_size(),
-        &event,
     )
+    .await
+    {
+        Ok(v) => return Ok(v.payload().into_response().await),
+        Err(e) => return Ok(APIErrors::from(e).into()),
+    }
+
+    // // Set the database connection.
+    // let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // // Retrieve the city and associated BNA summary(ies).
+    // let select = city::Entity::find_by_id((params.country, params.region, params.name))
+    //     .find_also_related(summary::Entity);
+    // let model: Vec<(city::Model, Option<summary::Model>)> = select
+    //     .clone()
+    //     .paginate(&db, pagination.page_size())
+    //     .fetch_page(pagination.page)
+    //     .await?;
+    // if model.is_empty() {
+    //     return Ok(entry_not_found(&event).into());
+    // }
+    // let total_items = select.count(&db).await?;
+    // build_paginated_response(
+    //     json!(model),
+    //     total_items,
+    //     pagination.page,
+    //     pagination.page_size(),
+    //     &event,
+    // )
 }
 
 #[tokio::main]

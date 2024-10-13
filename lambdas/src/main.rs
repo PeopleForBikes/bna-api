@@ -1,5 +1,4 @@
 use axum::{
-    debug_handler,
     extract::{Path, Query},
     routing::get,
     Json, Router,
@@ -7,7 +6,7 @@ use axum::{
 use effortless::api::PaginationParameters;
 use lambda_http::tracing;
 use lambdas::cities::{
-    mapper::{map_cities, map_city, map_city_censuses},
+    mapper::{map_cities, map_cities_censuses, map_city},
     CitiesPathParameters, ExecutionError,
 };
 use serde_json::{json, Value};
@@ -39,6 +38,10 @@ async fn main() {
         .route(
             "/cities/:country/:region/:name/census",
             get(get_city_censuses),
+        )
+        .route(
+            "/cities/:country/:region/:name/ratings",
+            get(get_city_censuses),
         );
 
     // run(app).await
@@ -53,10 +56,11 @@ async fn root() -> Json<Value> {
     Json(json!({ "msg": "I am GET /" }))
 }
 
-async fn get_city(
-    Path((country, region, city)): Path<(String, String, String)>,
-) -> Result<Json<Value>, ExecutionError> {
-    map_city(&country, &region, &city).await.map(|v| Json(v))
+async fn get_city(params: Path<CitiesPathParameters>) -> Result<Json<Value>, ExecutionError> {
+    let Path(params) = params;
+    map_city(&params.country, &params.region, &params.name)
+        .await
+        .map(|v| Json(v))
 }
 
 async fn get_cities(
@@ -74,7 +78,7 @@ async fn get_city_censuses(
 ) -> Result<Json<Value>, ExecutionError> {
     let Path(params) = params;
     let Query(pagination) = pagination.unwrap_or_default();
-    map_city_censuses(
+    map_cities_censuses(
         &params.country,
         &params.region,
         &params.name,

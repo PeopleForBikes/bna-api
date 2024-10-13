@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 use effortless::{api::extract_pagination_parameters, error::APIErrors};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::{extract_path_parameters, mapper::map_city_censuses, CitiesPathParameters};
+use lambdas::cities::{extract_path_parameters, mapper::map_cities_censuses, CitiesPathParameters};
 use tracing::info;
 
 #[tokio::main]
@@ -35,7 +35,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    match map_city_censuses(
+    match map_cities_censuses(
         &params.country,
         &params.region,
         &params.name,

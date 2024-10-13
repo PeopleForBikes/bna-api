@@ -1,6 +1,6 @@
-use super::ExecutionError;
+use super::{db::fetch_cities_ratings, ExecutionError};
 use crate::{
-    cities::db::{fetch_cities, fetch_city, fetch_city_censuses},
+    cities::db::{fetch_cities, fetch_cities_censuses, fetch_city},
     database_connect, PageFlow, Paginatron,
 };
 use serde_json::{json, Value};
@@ -34,7 +34,7 @@ pub async fn map_cities(page: u64, page_size: u64) -> Result<PageFlow, Execution
     ))
 }
 
-pub async fn map_city_censuses(
+pub async fn map_cities_censuses(
     country: &str,
     region: &str,
     name: &str,
@@ -46,7 +46,28 @@ pub async fn map_city_censuses(
 
     // Fetch a page of city censuses.
     let (total_items, body) =
-        fetch_city_censuses(&db, country, region, name, page, page_size).await?;
+        fetch_cities_censuses(&db, country, region, name, page, page_size).await?;
+
+    // Return the paginated response.
+    Ok(PageFlow::new(
+        Paginatron::new(None, total_items, page, page_size),
+        json!(body),
+    ))
+}
+
+pub async fn map_cities_ratings(
+    country: &str,
+    region: &str,
+    name: &str,
+    page: u64,
+    page_size: u64,
+) -> Result<PageFlow, ExecutionError> {
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Fetch a page of city censuses.
+    let (total_items, body) =
+        fetch_cities_ratings(&db, country, region, name, page, page_size).await?;
 
     // Return the paginated response.
     Ok(PageFlow::new(
