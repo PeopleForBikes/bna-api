@@ -14,6 +14,7 @@ use thiserror;
 
 pub mod adaptor;
 pub mod db;
+pub mod endpoint;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ExecutionError {
