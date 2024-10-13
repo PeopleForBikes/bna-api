@@ -2,7 +2,7 @@ use dotenv::dotenv;
 use effortless::{api::extract_pagination_parameters, error::APIErrors};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::cities::{
-    extract_path_parameters, mapper::get_cities_ratings_adaptor, CitiesPathParameters,
+    adaptor::get_cities_ratings_adaptor, extract_path_parameters, CitiesPathParameters,
 };
 use tracing::info;
 
@@ -33,29 +33,6 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(v) => return Ok(v.payload().into_response().await),
         Err(e) => return Ok(APIErrors::from(e).into()),
     }
-
-    // // Set the database connection.
-    // let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // // Retrieve the city and associated BNA summary(ies).
-    // let select = city::Entity::find_by_id((params.country, params.region, params.name))
-    //     .find_also_related(summary::Entity);
-    // let model: Vec<(city::Model, Option<summary::Model>)> = select
-    //     .clone()
-    //     .paginate(&db, pagination.page_size())
-    //     .fetch_page(pagination.page)
-    //     .await?;
-    // if model.is_empty() {
-    //     return Ok(entry_not_found(&event).into());
-    // }
-    // let total_items = select.count(&db).await?;
-    // build_paginated_response(
-    //     json!(model),
-    //     total_items,
-    //     pagination.page,
-    //     pagination.page_size(),
-    //     &event,
-    // )
 }
 
 #[tokio::main]

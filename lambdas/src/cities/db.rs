@@ -1,6 +1,6 @@
-use entity::{census, city, country, state_region_crosswalk, summary};
+use entity::{census, city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter,
+    ColumnTrait, Condition, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter,
     QuerySelect,
 };
 
@@ -91,9 +91,43 @@ pub async fn fetch_state_region_crosswalk(
         .await
 }
 
-pub async fn insert_cities(
+pub async fn fetch_cities_submission(
     db: &DatabaseConnection,
-    city: entity::city::ActiveModel,
-) -> Result<city::Model, sea_orm::DbErr> {
-    city.insert(db).await
+    submission_id: i32,
+    status: Option<String>,
+) -> Result<Option<submission::Model>, sea_orm::DbErr> {
+    // Filter the query if needed.
+    let mut conditions = Condition::all();
+    if let Some(status) = status {
+        conditions = conditions.add(entity::submission::Column::Status.eq(status))
+    }
+
+    // Select the submission.
+    submission::Entity::find_by_id(submission_id)
+        .filter(conditions)
+        .one(db)
+        .await
+}
+
+pub async fn fetch_cities_submissions(
+    db: &DatabaseConnection,
+    status: Option<String>,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<entity::submission::Model>), sea_orm::DbErr> {
+    // Filter the query if needed.
+    let mut conditions = Condition::all();
+    if let Some(status) = status {
+        conditions = conditions.add(entity::submission::Column::Status.eq(status))
+    }
+
+    // Select the submissions.
+    let select = submission::Entity::find().filter(conditions);
+    let models = select
+        .clone()
+        .paginate(db, page_size)
+        .fetch_page(page)
+        .await?;
+    let count = select.count(db).await?;
+    Ok((count, models))
 }

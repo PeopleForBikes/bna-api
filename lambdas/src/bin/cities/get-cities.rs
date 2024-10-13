@@ -2,9 +2,8 @@ use dotenv::dotenv;
 use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::cities::{
-    extract_path_parameters,
-    mapper::{get_cities_adaptor, get_city_adaptor},
-    CitiesPathParameters,
+    adaptor::{get_cities_adaptor, get_city_adaptor},
+    extract_path_parameters, CitiesPathParameters,
 };
 use tracing::info;
 

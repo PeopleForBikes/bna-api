@@ -3,12 +3,15 @@ use axum::{
     routing::get,
     Json, Router,
 };
+use axum_extra::extract::OptionalQuery;
 use effortless::api::PaginationParameters;
 use entity::wrappers::city::CityPost;
 use lambda_http::tracing;
 use lambdas::cities::{
-    mapper::{
-        get_cities_adaptor, get_cities_censuses_adaptor, get_city_adaptor, post_cities_adaptor,
+    adaptor::{
+        get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
+        get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
+        post_cities_adaptor,
     },
     CitiesPathParameters, ExecutionError,
 };
@@ -44,7 +47,12 @@ async fn main() {
         )
         .route(
             "/cities/:country/:region/:name/ratings",
-            get(get_city_censuses),
+            get(get_city_ratings),
+        )
+        .route("/cities/submissions", get(get_cities_submissions))
+        .route(
+            "/cities/submissions/:submission_id",
+            get(get_cities_submission),
         );
 
     // run(app).await
@@ -59,8 +67,7 @@ async fn root() -> Json<Value> {
     Json(json!({ "msg": "I am GET /" }))
 }
 
-async fn get_city(params: Path<CitiesPathParameters>) -> Result<Json<Value>, ExecutionError> {
-    let Path(params) = params;
+async fn get_city(Path(params): Path<CitiesPathParameters>) -> Result<Json<Value>, ExecutionError> {
     get_city_adaptor(&params.country, &params.region, &params.name)
         .await
         .map(|v| Json(v))
@@ -76,12 +83,27 @@ async fn get_cities(
 }
 
 async fn get_city_censuses(
-    params: Path<CitiesPathParameters>,
+    Path(params): Path<CitiesPathParameters>,
     pagination: Option<Query<PaginationParameters>>,
 ) -> Result<Json<Value>, ExecutionError> {
-    let Path(params) = params;
     let Query(pagination) = pagination.unwrap_or_default();
     get_cities_censuses_adaptor(
+        &params.country,
+        &params.region,
+        &params.name,
+        pagination.page,
+        pagination.page_size(),
+    )
+    .await
+    .map(|v| Json(json!(v.payload())))
+}
+
+async fn get_city_ratings(
+    Path(params): Path<CitiesPathParameters>,
+    pagination: Option<Query<PaginationParameters>>,
+) -> Result<Json<Value>, ExecutionError> {
+    let Query(pagination) = pagination.unwrap_or_default();
+    get_cities_ratings_adaptor(
         &params.country,
         &params.region,
         &params.name,
@@ -95,4 +117,23 @@ async fn get_city_censuses(
 async fn post_cities(city: Json<CityPost>) -> Result<Json<Value>, ExecutionError> {
     let Json(city) = city;
     post_cities_adaptor(city).await.map(|v| Json(v))
+}
+
+async fn get_cities_submission(
+    Path(submission_id): Path<i32>,
+    OptionalQuery(status): OptionalQuery<String>,
+) -> Result<Json<Value>, ExecutionError> {
+    get_cities_submission_adaptor(submission_id, status)
+        .await
+        .map(|v| Json(v))
+}
+
+async fn get_cities_submissions(
+    OptionalQuery(status): OptionalQuery<String>,
+    pagination: Option<Query<PaginationParameters>>,
+) -> Result<Json<Value>, ExecutionError> {
+    let Query(pagination) = pagination.unwrap_or_default();
+    get_cities_submissions_adaptor(status, pagination.page, pagination.page_size())
+        .await
+        .map(|v| Json(json!(v.payload())))
 }

@@ -1,7 +1,9 @@
 use dotenv::dotenv;
 use effortless::{api::extract_pagination_parameters, error::APIErrors};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::{extract_path_parameters, mapper::get_cities_censuses_adaptor, CitiesPathParameters};
+use lambdas::cities::{
+    adaptor::get_cities_censuses_adaptor, extract_path_parameters, CitiesPathParameters,
+};
 use tracing::info;
 
 #[tokio::main]

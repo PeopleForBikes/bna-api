@@ -12,8 +12,8 @@ use serde::Deserialize;
 use serde_json::json;
 use thiserror;
 
+pub mod adaptor;
 pub mod db;
-pub mod mapper;
 
 #[derive(Debug, thiserror::Error)]
 pub enum ExecutionError {
