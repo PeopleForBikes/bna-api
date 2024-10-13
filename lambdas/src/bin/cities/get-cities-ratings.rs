@@ -34,7 +34,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         .find_also_related(summary::Entity);
     let model = select
         .clone()
-        .paginate(&db, pagination.page_size)
+        .paginate(&db, pagination.page_size())
         .fetch_page(pagination.page)
         .await?;
     if model.is_empty() {
@@ -45,7 +45,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         json!(model),
         total_items,
         pagination.page,
-        pagination.page_size,
+        pagination.page_size(),
         &event,
     )
 }

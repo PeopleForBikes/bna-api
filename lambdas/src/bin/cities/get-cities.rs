@@ -1,17 +1,11 @@
 use dotenv::dotenv;
-use effortless::{
-    api::{entry_not_found, extract_pagination_parameters},
-    fragment::BnaRequestExt,
-};
-use entity::city;
+use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{
-    build_paginated_response,
-    cities::{extract_path_parameters, CitiesPathParameters},
-    database_connect,
+use lambdas::cities::{
+    extract_path_parameters,
+    mapper::{map_cities, map_city},
+    CitiesPathParameters,
 };
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect};
-use serde_json::json;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -24,79 +18,23 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Err(e) => return Ok(e.into()),
         };
         info!("{:#?}", params);
-        return get_city_handler(&params.country, &params.region, &params.name, event).await;
+        match map_city(&params.country, &params.region, &params.name).await {
+            Ok(v) => return Ok(v.into_response().await),
+            Err(e) => return Ok(APIErrors::from(e).into()),
+        }
     }
 
-    // Retrieve all cities.
-    get_cities_handler(event).await
-}
-
-async fn get_city_handler(
-    country: &str,
-    region: &str,
-    name: &str,
-    event: Request,
-) -> Result<Response<Body>, Error> {
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Fetch the city model.
-    let model = fetch_city(&db, country, region, name).await?;
-    let res: Response<Body> = match model {
-        Some(model) => json!(model).into_response().await,
-        None => entry_not_found(&event).into(),
-    };
-    return Ok(res);
-}
-
-async fn get_cities_handler(event: Request) -> Result<Response<Body>, Error> {
     // Extract pagination parameters if any.
     let pagination = match extract_pagination_parameters(&event) {
         Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Fetch a page of cities.
-    let (total_items, body) = fetch_cities(&db, pagination.page, pagination.page_size).await?;
-
-    // Return the paginated response.
-    build_paginated_response(
-        json!(body),
-        total_items,
-        pagination.page,
-        pagination.page_size,
-        &event,
-    )
-}
-
-async fn fetch_city(
-    db: &DatabaseConnection,
-    country: &str,
-    region: &str,
-    name: &str,
-) -> Result<Option<city::Model>, sea_orm::DbErr> {
-    city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
-        .one(db)
-        .await
-}
-
-async fn fetch_cities(
-    db: &DatabaseConnection,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<city::Model>), sea_orm::DbErr> {
-    let select = city::Entity::find();
-    let count = select
-        .clone()
-        .select_only()
-        .column_as(city::Column::Id.count(), "count")
-        .count(db)
-        .await?;
-    let models = select.paginate(db, page_size).fetch_page(page).await?;
-    Ok((count, models))
+    // Retrieve all cities.
+    match map_cities(pagination.page, pagination.page_size()).await {
+        Ok(v) => return Ok(v.payload().into_response().await),
+        Err(e) => return Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]

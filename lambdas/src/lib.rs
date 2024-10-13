@@ -11,6 +11,7 @@ use effortless::{
 };
 use lambda_http::{http::header, Body, Error, Request, Response};
 use sea_orm::{Database, DatabaseConnection, DbErr};
+use serde::Serialize;
 use serde_json::Value;
 use std::env;
 use tracing::{debug, error};
@@ -130,7 +131,12 @@ pub fn build_paginated_response(
     page_size: u64,
     event: &Request,
 ) -> Result<Response<Body>, Error> {
-    let paginatron = Paginatron::new(event.uri().host(), total_items, page, page_size);
+    let paginatron = Paginatron::new(
+        event.uri().host().map(|h| h.to_string()),
+        total_items,
+        page,
+        page_size,
+    );
     let nav = paginatron.navigation();
 
     // Build the response.
@@ -188,16 +194,17 @@ impl NavigationPages {
 }
 
 /// Generates the pagination information.
-pub struct Paginatron<'a> {
-    url: Option<&'a str>,
+#[derive(Serialize)]
+pub struct Paginatron {
+    url: Option<String>,
     total_items: u64,
     page: u64,
     page_size: u64,
 }
 
-impl<'a> Paginatron<'a> {
+impl Paginatron {
     /// Creates a new Paginatron.
-    pub fn new(url: Option<&'a str>, total_items: u64, page: u64, page_size: u64) -> Self {
+    pub fn new(url: Option<String>, total_items: u64, page: u64, page_size: u64) -> Self {
         Self {
             url,
             total_items,
@@ -246,7 +253,7 @@ impl<'a> Paginatron<'a> {
     /// ```
     ///
     pub fn link_header(&self, defaul_page_size: Option<u64>) -> String {
-        match self.url {
+        match &self.url {
             None => String::new(),
             Some(url) => {
                 let nav = self.navigation();
@@ -264,6 +271,45 @@ impl<'a> Paginatron<'a> {
                 format!("{first}, {prev}, {next}, {last}")
             }
         }
+    }
+}
+
+#[derive(Serialize)]
+pub struct PageFlow {
+    paginatron: Paginatron,
+    payload: Value,
+}
+
+impl PageFlow {
+    pub fn new(paginatron: Paginatron, payload: Value) -> Self {
+        Self {
+            paginatron,
+            payload,
+        }
+    }
+
+    pub fn payload(&self) -> Value {
+        self.payload.clone()
+    }
+}
+
+impl From<PageFlow> for Response<Body> {
+    fn from(value: PageFlow) -> Self {
+        let nav = value.paginatron.navigation();
+        Response::builder()
+            .header(
+                "link",
+                value.paginatron.link_header(Some(DEFAULT_PAGE_SIZE)),
+            )
+            .header("x-next-page", nav.next())
+            .header("x-page", value.paginatron.page)
+            .header("x-per-page", value.paginatron.page_size)
+            .header("x-prev-page", nav.prev())
+            .header("x-total", value.paginatron.total_items)
+            .header("x-total-pages", nav.last())
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(Body::from(value.payload.to_string()))
+            .expect("failed to build response")
     }
 }
 
@@ -319,7 +365,12 @@ mod tests {
 
     #[test]
     fn test_paginatron_with_different_page_size() {
-        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 200, 3, 25);
+        let paginatron = Paginatron::new(
+            Some("https://api.peopleforbikes.xyz/bnas".to_string()),
+            200,
+            3,
+            25,
+        );
         assert_eq!(
             paginatron.link_header(Some(50)),
             r#"<https://api.peopleforbikes.xyz/bnas?page_size=25&page=1>; rel="first", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=2>; rel="prev", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=4>; rel="next", <https://api.peopleforbikes.xyz/bnas?page_size=25&page=8>; rel="last""#
@@ -328,7 +379,12 @@ mod tests {
 
     #[test]
     fn test_paginatron_invalid_page() {
-        let paginatron = Paginatron::new(Some("https://api.peopleforbikes.xyz/bnas"), 42, 3, 25);
+        let paginatron = Paginatron::new(
+            Some("https://api.peopleforbikes.xyz/bnas".to_string()),
+            42,
+            3,
+            25,
+        );
         let nav = paginatron.navigation();
         assert_eq!(nav.first(), 1);
         assert_eq!(nav.prev(), 1);

@@ -8,6 +8,7 @@ name = "effortless"
 path = "src/lib.rs"
 
 [dependencies]
+bon = { workspace = true }
 http-serde = { workspace = true }
 lambda_http = { workspace = true }
 serde = { workspace = true }

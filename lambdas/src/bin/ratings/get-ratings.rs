@@ -259,7 +259,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let select = Summary::find();
     let body = select
         .clone()
-        .paginate(&db, pagination.page_size)
+        .paginate(&db, pagination.page_size())
         .fetch_page(pagination.page)
         .await?;
     let total_items = select.count(&db).await?;
@@ -267,7 +267,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         json!(body),
         total_items,
         pagination.page,
-        pagination.page_size,
+        pagination.page_size(),
         &event,
     )
 }

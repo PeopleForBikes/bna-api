@@ -67,7 +67,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             let select = Submission::find().filter(conditions);
             let query = select
                 .clone()
-                .paginate(&db, pagination.page_size)
+                .paginate(&db, pagination.page_size())
                 .fetch_page(pagination.page)
                 .await;
             let res: Response<Body> = match query {
@@ -77,7 +77,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         json!(models),
                         total_items,
                         pagination.page,
-                        pagination.page_size,
+                        pagination.page_size(),
                         &event,
                     )?
                 }
