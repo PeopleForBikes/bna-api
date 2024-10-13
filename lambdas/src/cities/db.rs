@@ -1,5 +1,8 @@
-use entity::{census, city, summary};
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QuerySelect};
+use entity::{census, city, country, state_region_crosswalk, summary};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter,
+    QuerySelect,
+};
 
 pub async fn fetch_city(
     db: &DatabaseConnection,
@@ -66,4 +69,31 @@ pub async fn fetch_cities_ratings(
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
+}
+
+pub async fn fetch_country(
+    db: &DatabaseConnection,
+    country: &str,
+) -> Result<Option<country::Model>, sea_orm::DbErr> {
+    country::Entity::find()
+        .filter(country::Column::Name.eq(country))
+        .one(db)
+        .await
+}
+
+pub async fn fetch_state_region_crosswalk(
+    db: &DatabaseConnection,
+    state: &str,
+) -> Result<Option<state_region_crosswalk::Model>, sea_orm::DbErr> {
+    state_region_crosswalk::Entity::find()
+        .filter(state_region_crosswalk::Column::State.eq(state))
+        .one(db)
+        .await
+}
+
+pub async fn insert_cities(
+    db: &DatabaseConnection,
+    city: entity::city::ActiveModel,
+) -> Result<city::Model, sea_orm::DbErr> {
+    city.insert(db).await
 }

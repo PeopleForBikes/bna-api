@@ -4,9 +4,12 @@ use axum::{
     Json, Router,
 };
 use effortless::api::PaginationParameters;
+use entity::wrappers::city::CityPost;
 use lambda_http::tracing;
 use lambdas::cities::{
-    mapper::{map_cities, map_cities_censuses, map_city},
+    mapper::{
+        get_cities_adaptor, get_cities_censuses_adaptor, get_city_adaptor, post_cities_adaptor,
+    },
     CitiesPathParameters, ExecutionError,
 };
 use serde_json::{json, Value};
@@ -33,7 +36,7 @@ async fn main() {
 
     let app = Router::new()
         .route("/", get(root))
-        .route("/cities", get(get_cities))
+        .route("/cities", get(get_cities).post(post_cities))
         .route("/cities/:country/:region/:name", get(get_city))
         .route(
             "/cities/:country/:region/:name/census",
@@ -58,7 +61,7 @@ async fn root() -> Json<Value> {
 
 async fn get_city(params: Path<CitiesPathParameters>) -> Result<Json<Value>, ExecutionError> {
     let Path(params) = params;
-    map_city(&params.country, &params.region, &params.name)
+    get_city_adaptor(&params.country, &params.region, &params.name)
         .await
         .map(|v| Json(v))
 }
@@ -67,7 +70,7 @@ async fn get_cities(
     pagination: Option<Query<PaginationParameters>>,
 ) -> Result<Json<Value>, ExecutionError> {
     let Query(pagination) = pagination.unwrap_or_default();
-    map_cities(pagination.page, pagination.page_size())
+    get_cities_adaptor(pagination.page, pagination.page_size())
         .await
         .map(|v| Json(json!(v.payload())))
 }
@@ -78,7 +81,7 @@ async fn get_city_censuses(
 ) -> Result<Json<Value>, ExecutionError> {
     let Path(params) = params;
     let Query(pagination) = pagination.unwrap_or_default();
-    map_cities_censuses(
+    get_cities_censuses_adaptor(
         &params.country,
         &params.region,
         &params.name,
@@ -87,4 +90,9 @@ async fn get_city_censuses(
     )
     .await
     .map(|v| Json(json!(v.payload())))
+}
+
+async fn post_cities(city: Json<CityPost>) -> Result<Json<Value>, ExecutionError> {
+    let Json(city) = city;
+    post_cities_adaptor(city).await.map(|v| Json(v))
 }

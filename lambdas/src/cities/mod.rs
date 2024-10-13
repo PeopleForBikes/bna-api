@@ -12,7 +12,7 @@ use serde::Deserialize;
 use serde_json::json;
 use thiserror;
 
-mod db;
+pub mod db;
 pub mod mapper;
 
 #[derive(Debug, thiserror::Error)]
@@ -28,6 +28,14 @@ pub enum ExecutionError {
     /// Entry not found.
     #[error("entry not found: {0} {1}")]
     NotFound(String, String),
+
+    /// Uncovered country.
+    #[error("the country is not covered by the analyzer: {0}")]
+    UncoveredCountry(String),
+
+    /// Invalid US State.
+    #[error("the state is not a valid US state: {0}")]
+    InvalidUSState(String),
 }
 
 impl From<ExecutionError> for APIError {

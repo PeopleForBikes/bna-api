@@ -1,7 +1,9 @@
 use dotenv::dotenv;
 use effortless::{api::extract_pagination_parameters, error::APIErrors};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::{extract_path_parameters, mapper::map_cities_ratings, CitiesPathParameters};
+use lambdas::cities::{
+    extract_path_parameters, mapper::get_cities_ratings_adaptor, CitiesPathParameters,
+};
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -19,7 +21,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    match map_cities_ratings(
+    match get_cities_ratings_adaptor(
         &params.country,
         &params.region,
         &params.name,

@@ -3,7 +3,7 @@ use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment:
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::cities::{
     extract_path_parameters,
-    mapper::{map_cities, map_city},
+    mapper::{get_cities_adaptor, get_city_adaptor},
     CitiesPathParameters,
 };
 use tracing::info;
@@ -18,7 +18,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Err(e) => return Ok(e.into()),
         };
         info!("{:#?}", params);
-        match map_city(&params.country, &params.region, &params.name).await {
+        match get_city_adaptor(&params.country, &params.region, &params.name).await {
             Ok(v) => return Ok(v.into_response().await),
             Err(e) => return Ok(APIErrors::from(e).into()),
         }
@@ -31,7 +31,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     };
 
     // Retrieve all cities.
-    match map_cities(pagination.page, pagination.page_size()).await {
+    match get_cities_adaptor(pagination.page, pagination.page_size()).await {
         Ok(v) => return Ok(v.payload().into_response().await),
         Err(e) => return Ok(APIErrors::from(e).into()),
     }
