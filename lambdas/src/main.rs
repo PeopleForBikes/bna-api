@@ -5,13 +5,16 @@ use axum::{
 };
 use axum_extra::extract::OptionalQuery;
 use effortless::api::PaginationParameters;
-use entity::wrappers::city::CityPost;
+use entity::wrappers::{
+    city::CityPost,
+    submission::{SubmissionPatch, SubmissionPost},
+};
 use lambda_http::tracing;
 use lambdas::cities::{
     adaptor::{
         get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
         get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
-        post_cities_adaptor,
+        patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
     },
     CitiesPathParameters, ExecutionError,
 };
@@ -49,10 +52,13 @@ async fn main() {
             "/cities/:country/:region/:name/ratings",
             get(get_city_ratings),
         )
-        .route("/cities/submissions", get(get_cities_submissions))
+        .route(
+            "/cities/submissions",
+            get(get_cities_submissions).post(post_cities_submissions),
+        )
         .route(
             "/cities/submissions/:submission_id",
-            get(get_cities_submission),
+            get(get_cities_submission).patch(patch_cities_submission),
         );
 
     // run(app).await
@@ -114,8 +120,7 @@ async fn get_city_ratings(
     .map(|v| Json(json!(v.payload())))
 }
 
-async fn post_cities(city: Json<CityPost>) -> Result<Json<Value>, ExecutionError> {
-    let Json(city) = city;
+async fn post_cities(Json(city): Json<CityPost>) -> Result<Json<Value>, ExecutionError> {
     post_cities_adaptor(city).await.map(|v| Json(v))
 }
 
@@ -136,4 +141,21 @@ async fn get_cities_submissions(
     get_cities_submissions_adaptor(status, pagination.page, pagination.page_size())
         .await
         .map(|v| Json(json!(v.payload())))
+}
+
+async fn patch_cities_submission(
+    Query(submission_id): Query<i32>,
+    Json(submission): Json<SubmissionPatch>,
+) -> Result<Json<Value>, ExecutionError> {
+    patch_cities_submission_adaptor(submission_id, submission)
+        .await
+        .map(|v| Json(v))
+}
+
+async fn post_cities_submissions(
+    Json(submission): Json<SubmissionPost>,
+) -> Result<Json<Value>, ExecutionError> {
+    post_cities_submission_adaptor(submission)
+        .await
+        .map(|v| Json(v))
 }

@@ -9,7 +9,10 @@ use crate::{
     },
     database_connect, PageFlow, Paginatron,
 };
-use entity::wrappers::city::CityPost;
+use entity::wrappers::{
+    city::CityPost,
+    submission::{SubmissionPatch, SubmissionPost},
+};
 use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
 use serde_json::{json, Value};
 use uuid::Uuid;
@@ -104,16 +107,16 @@ pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError
     let region = city.region.clone();
 
     // Turn the post model into an active model.
-    let mut active_city: entity::city::ActiveModel = city.into_active_model();
+    let mut active_model: entity::city::ActiveModel = city.into_active_model();
 
     // Assign a city_id.
-    active_city.id = ActiveValue::Set(Uuid::new_v4());
+    active_model.id = ActiveValue::Set(Uuid::new_v4());
 
     // If the country is the United States, set the BNA region.
     if country.to_lowercase().eq("united states") {
         match fetch_state_region_crosswalk(&db, &state).await? {
             Some(model) => {
-                active_city.region = ActiveValue::Set(Some(model.region));
+                active_model.region = ActiveValue::Set(Some(model.region));
             }
             None => return Err(ExecutionError::InvalidUSState(state)),
         }
@@ -121,12 +124,12 @@ pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError
 
     // If the region is not set, ensure it is equal to the country.
     if region.is_none() {
-        active_city.region = ActiveValue::Set(Some(country));
+        active_model.region = ActiveValue::Set(Some(country));
     }
 
     // And insert a new entry.
     // info!("inserting City into database: {:?}", active_city);
-    let model = active_city.insert(&db).await?;
+    let model = active_model.insert(&db).await?;
     Ok(json!(model))
 }
 
@@ -165,4 +168,41 @@ pub async fn get_cities_submissions_adaptor(
         Paginatron::new(None, total_items, page, page_size),
         json!(models),
     ))
+}
+
+pub async fn patch_cities_submission_adaptor(
+    submission_id: i32,
+    submission: SubmissionPatch,
+) -> Result<Value, ExecutionError> {
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Turn the wrapper into an active model.
+    let mut active_model = submission.into_active_model();
+    active_model.id = ActiveValue::Unchanged(submission_id);
+
+    let model = active_model.update(&db).await?;
+    Ok(json!(model))
+}
+
+pub async fn post_cities_submission_adaptor(
+    submission: SubmissionPost,
+) -> Result<Value, ExecutionError> {
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Ensure the country is a valid one.
+    if fetch_country(&db, &submission.country).await?.is_none() {
+        return Err(ExecutionError::UncoveredCountry(submission.country));
+    }
+
+    // Turn the post model into an active model.
+    let mut active_model: entity::submission::ActiveModel = submission.into_active_model();
+
+    // Add the status.
+    active_model.status = ActiveValue::Set("Pending".to_string());
+
+    // And insert a new entry.
+    let model = active_model.insert(&db).await?;
+    Ok(json!(model))
 }
