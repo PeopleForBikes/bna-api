@@ -7,6 +7,10 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 use uuid::Uuid;
 
+pub mod adaptor;
+mod db;
+pub mod endpoint;
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BNAComponent {
     All,

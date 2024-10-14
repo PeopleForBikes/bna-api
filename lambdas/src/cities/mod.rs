@@ -13,7 +13,7 @@ use serde_json::json;
 use thiserror;
 
 pub mod adaptor;
-pub mod db;
+mod db;
 pub mod endpoint;
 
 #[derive(Debug, thiserror::Error)]

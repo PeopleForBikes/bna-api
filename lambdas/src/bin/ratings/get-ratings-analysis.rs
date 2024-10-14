@@ -1,23 +1,15 @@
 use dotenv::dotenv;
-use effortless::{
-    api::{entry_not_found, extract_pagination_parameters, internal_error},
-    fragment::BnaRequestExt,
-};
-use entity::prelude::*;
+use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, build_paginated_response, ratings::extract_path_parameters};
-use sea_orm::{EntityTrait, PaginatorTrait};
-use serde_json::json;
+use lambdas::ratings::{
+    adaptor::{get_ratings_analyses_adaptor, get_ratings_analysis_adaptor},
+    extract_path_parameters,
+};
 use tracing::{debug, info};
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Set the database connection.
-    let db = match api_database_connect(&event).await {
-        Ok(db) => db,
-        Err(e) => return Ok(e),
-    };
     if event.has_path_parameters() {
         let params = match extract_path_parameters(&event) {
             Ok(p) => p,
@@ -26,12 +18,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
         // Retrieve a specific entry.
         debug!("Processing the requests...");
-        let model = BnaPipeline::find_by_id(params.bna_id).one(&db).await?;
-        let res: Response<Body> = match model {
-            Some(model) => json!(model).into_response().await,
-            None => entry_not_found(&event).into(),
-        };
-        return Ok(res);
+        match get_ratings_analysis_adaptor(params.bna_id).await {
+            Ok(v) => return Ok(v.into_response().await),
+            Err(e) => return Ok(APIErrors::from(e).into()),
+        }
     }
 
     // Retrieve pagination parameters if any.
@@ -40,27 +30,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    //
-    let select = BnaPipeline::find();
-    let query = select
-        .clone()
-        .paginate(&db, pagination.page_size())
-        .fetch_page(pagination.page)
-        .await;
-    let res: Response<Body> = match query {
-        Ok(models) => {
-            let total_items = select.count(&db).await?;
-            build_paginated_response(
-                json!(models),
-                total_items,
-                pagination.page,
-                pagination.page_size(),
-                &event,
-            )?
-        }
-        Err(e) => internal_error(&event, e.to_string().as_str()).into(),
-    };
-    Ok(res)
+    match get_ratings_analyses_adaptor(pagination.page, pagination.page_size()).await {
+        Ok(v) => return Ok(v.into()),
+        Err(e) => return Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]
