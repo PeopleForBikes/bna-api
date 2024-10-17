@@ -79,6 +79,7 @@ pub async fn get_cities_ratings_adaptor(
     name: &str,
     page: u64,
     page_size: u64,
+    ctx: Context,
 ) -> Result<PageFlow, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -86,6 +87,15 @@ pub async fn get_cities_ratings_adaptor(
     // Fetch a page of city censuses.
     let (total_items, models) =
         fetch_cities_ratings(&db, country, region, name, page, page_size).await?;
+
+    // If there is no model, the city resource does not exist.
+    if models.is_empty() {
+        return Err(ExecutionError::NotFound(
+            ctx.request_id(),
+            ctx.source(),
+            format!("cannot find a city matching {country}, {region}, {name}"),
+        ));
+    }
 
     // Return the paginated response.
     Ok(PageFlow::new(

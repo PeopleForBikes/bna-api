@@ -47,10 +47,8 @@ pub fn routes() -> Router {
 
 async fn get_city(
     Path(params): Path<CitiesPathParameters>,
-    // Context(request_id, source): Context,
     ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    // let ctx = Context::new(request_id, path_and_query);
     get_city_adaptor(&params.country, &params.region, &params.name, ctx)
         .await
         .map(|v| Json(v))
@@ -84,6 +82,7 @@ async fn get_city_censuses(
 async fn get_city_ratings(
     Path(params): Path<CitiesPathParameters>,
     pagination: Option<Query<PaginationParameters>>,
+    ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
     let Query(pagination) = pagination.unwrap_or_default();
     get_cities_ratings_adaptor(
@@ -92,6 +91,7 @@ async fn get_city_ratings(
         &params.name,
         pagination.page,
         pagination.page_size(),
+        ctx,
     )
     .await
     .map(|v| Json(json!(v.payload())))
