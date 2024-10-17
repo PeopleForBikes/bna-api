@@ -26,17 +26,12 @@ test *env:
   hurl --test \
     --variables-file $1.vars \
     scenario/pagination.hurl \
-    endpoints/bnas.hurl \
+    endpoints/ratings.hurl \
     endpoints/cities.hurl
 
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-readonly *env:
   hurl --test --variables-file $1.vars smoke/public-readonly.hurl
-
-test-localhost:
-  hurl --test \
-    --variables-file localhost.vars \
-    endpoints/cities.hurl
 
 # Run the schemathesis tests again the openapi schema.
 test-staging-schemathesis:

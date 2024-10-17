@@ -5,8 +5,8 @@ use effortless::{
     fragment::BnaRequestExt,
 };
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::{
-    adaptor::{get_cities_submission_adaptor, get_cities_submissions_adaptor},
+use lambdas::{
+    cities::adaptor::{get_cities_submission_adaptor, get_cities_submissions_adaptor},
     Context,
 };
 use tracing::{debug, info};

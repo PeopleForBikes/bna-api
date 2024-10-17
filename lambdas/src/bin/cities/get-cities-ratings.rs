@@ -1,8 +1,9 @@
 use dotenv::dotenv;
-use effortless::{api::extract_pagination_parameters, error::APIErrors};
+use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::{
-    adaptor::get_cities_ratings_adaptor, extract_path_parameters, CitiesPathParameters,
+use lambdas::{
+    cities::{adaptor::get_cities_ratings_adaptor, extract_path_parameters, CitiesPathParameters},
+    Context,
 };
 use tracing::info;
 
@@ -20,6 +21,14 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(p) => p,
         Err(e) => return Ok(e),
     };
+    let ctx = Context::new(
+        event.apigw_request_id(),
+        event
+            .uri()
+            .path_and_query()
+            .expect("to have a path and optional query parameters")
+            .to_string(),
+    );
 
     match get_cities_ratings_adaptor(
         &params.country,
@@ -27,6 +36,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         &params.name,
         pagination.page,
         pagination.page_size(),
+        ctx,
     )
     .await
     {

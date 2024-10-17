@@ -3,9 +3,10 @@ use super::adaptor::{
     get_ratings_summaries_adaptor, get_ratings_summary_adaptor, patch_ratings_analysis_adaptor,
     post_ratings_analysis_adaptor,
 };
-use crate::cities::{Context, ExecutionError};
+use crate::{Context, ExecutionError};
 use axum::{
     extract::{Path, Query},
+    response::IntoResponse,
     routing::get,
     Json, Router,
 };
@@ -29,13 +30,9 @@ pub fn routes() -> Router {
         )
 }
 
-async fn get_ratings(
-    pagination: Option<Query<PaginationParameters>>,
-) -> Result<Json<Value>, ExecutionError> {
+async fn get_ratings(pagination: Option<Query<PaginationParameters>>) -> impl IntoResponse {
     let Query(pagination) = pagination.unwrap_or_default();
-    get_ratings_summaries_adaptor(pagination.page, pagination.page_size())
-        .await
-        .map(|v| Json(json!(v.payload())))
+    get_ratings_summaries_adaptor(pagination.page, pagination.page_size()).await
 }
 
 async fn get_rating(

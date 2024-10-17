@@ -2,8 +2,8 @@ use super::db::{
     fetch_ratings_analyses, fetch_ratings_analysis, fetch_ratings_city, fetch_ratings_summary,
 };
 use crate::{
-    cities::Context, cities::ExecutionError, database_connect,
-    ratings::db::fetch_ratings_summaries, PageFlow, Paginatron,
+    database_connect, ratings::db::fetch_ratings_summaries, Context, ExecutionError, PageFlow,
+    Paginatron,
 };
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
 use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};

@@ -1,13 +1,10 @@
-use super::{
-    db::{fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions},
-    Context, ExecutionError,
-};
+use super::db::{fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions};
 use crate::{
     cities::db::{
         fetch_cities, fetch_cities_censuses, fetch_city, fetch_country,
         fetch_state_region_crosswalk,
     },
-    database_connect, PageFlow, Paginatron,
+    database_connect, Context, ExecutionError, PageFlow, Paginatron,
 };
 use entity::wrappers::{
     city::CityPost,

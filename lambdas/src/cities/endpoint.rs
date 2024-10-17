@@ -1,11 +1,13 @@
-use super::Context;
-use crate::cities::{
-    adaptor::{
-        get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
-        get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
-        patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
+use crate::{
+    cities::{
+        adaptor::{
+            get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
+            get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
+            patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
+        },
+        CitiesPathParameters,
     },
-    CitiesPathParameters, ExecutionError,
+    Context, ExecutionError,
 };
 use axum::{
     debug_handler,

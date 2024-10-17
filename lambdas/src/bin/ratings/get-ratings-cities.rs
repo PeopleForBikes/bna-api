@@ -2,8 +2,8 @@ use dotenv::dotenv;
 use effortless::{error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    cities::Context,
     ratings::{adaptor::get_ratings_city_adaptor, extract_path_parameters},
+    Context,
 };
 use tracing::info;
 

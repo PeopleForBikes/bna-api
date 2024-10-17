@@ -3,17 +3,26 @@ pub mod db;
 pub mod link_header;
 pub mod ratings;
 
+use axum::{
+    async_trait,
+    extract::{FromRequest, OriginalUri},
+    response::IntoResponse,
+};
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
     api::DEFAULT_PAGE_SIZE,
     error::{APIError, APIErrors},
     fragment::BnaRequestExt,
 };
-use lambda_http::{http::header, Body, Error, Request, Response};
+use lambda_http::{
+    http::{header, StatusCode},
+    Body, Error, Request, Response,
+};
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 use std::env;
+use thiserror;
 use tracing::{debug, error};
 
 /// The result type to return to the caller of the Lambda API handler.
@@ -313,6 +322,25 @@ impl From<PageFlow> for Response<Body> {
     }
 }
 
+impl IntoResponse for PageFlow {
+    fn into_response(self) -> axum::response::Response {
+        let nav = self.paginatron.navigation();
+        let r = axum::response::Response::builder()
+            .header("link", self.paginatron.link_header(Some(DEFAULT_PAGE_SIZE)))
+            .header("x-next-page", nav.next())
+            .header("x-page", self.paginatron.page)
+            .header("x-per-page", self.paginatron.page_size)
+            .header("x-prev-page", nav.prev())
+            .header("x-total", self.paginatron.total_items)
+            .header("x-total-pages", nav.last())
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(axum::body::Body::from(self.payload.to_string()))
+            // .body(json!(self.payload).to_string().into())
+            .expect("failed to build response");
+        r
+    }
+}
+
 /// Generates a TryFrom<&'a str> implementation for a specific type.
 ///
 /// This macros expects the following items to be setup before use:
@@ -351,6 +379,116 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
             let api_error = APIError::db_error(apigw_request_id, event.uri().path(), &error_msg);
             Err(APIErrors::new(&[api_error]).into())
         }
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum ExecutionError {
+    ///  An error from unsuccessful database operations.
+    #[error("database error")]
+    DatabaseError(#[from] sea_orm::DbErr),
+
+    /// Unexpected error.
+    #[error("unexpected error: {0} {1}")]
+    Unexpected(String, String),
+
+    /// Entry not found.
+    #[error("entry not found at {1}: {2}")]
+    NotFound(Option<String>, String, String),
+
+    /// Uncovered country.
+    #[error("the country is not covered by the analyzer: {0}")]
+    UncoveredCountry(String),
+
+    /// Invalid US State.
+    #[error("the state is not a valid US state: {0}")]
+    InvalidUSState(String),
+}
+
+impl From<ExecutionError> for APIError {
+    fn from(value: ExecutionError) -> Self {
+        match value {
+            ExecutionError::DatabaseError(_) => APIError::db_error(None, "Unknown source", ""),
+            ExecutionError::NotFound(id, source, message) => {
+                APIError::not_found(id, &source, &message)
+            }
+            _ => APIError::internal_error(
+                None,
+                "Internal Error",
+                "Unknown details",
+                "Unknown source",
+            ),
+        }
+    }
+}
+
+impl From<ExecutionError> for APIErrors {
+    fn from(value: ExecutionError) -> Self {
+        APIError::from(value).into()
+    }
+}
+
+impl IntoResponse for ExecutionError {
+    fn into_response(self) -> axum::response::Response {
+        let api_error = APIError::from(self);
+        let api_errors = APIErrors::from(api_error);
+        let status = if api_errors.errors.len() == 1 {
+            api_errors.errors().first().unwrap().status()
+        } else {
+            StatusCode::BAD_REQUEST
+        };
+        Response::builder()
+            .status(status)
+            .header(header::CONTENT_TYPE, "application/json")
+            .body(json!(api_errors).to_string().into())
+            .unwrap()
+    }
+}
+
+pub struct Context {
+    // request_id: APIGatewayV2RequestID,
+    request_id: Option<String>,
+    source: String,
+}
+
+#[async_trait]
+impl<S> FromRequest<S> for Context
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request(req: axum::extract::Request, _: &S) -> Result<Self, Self::Rejection> {
+        let request_context = req
+            .extensions()
+            .get::<lambda_http::request::RequestContext>();
+        let request_id = match request_context {
+            Some(&lambda_http::request::RequestContext::ApiGatewayV2(ref ctx)) => {
+                ctx.request_id.clone()
+            }
+            _ => None,
+        };
+        let uri = req.extensions().get::<OriginalUri>();
+        let source = match uri {
+            Some(path) => path.0.path().to_owned(),
+            None => req.uri().path().to_owned(),
+        };
+
+        Ok(Self { request_id, source })
+    }
+}
+
+impl Context {
+    pub fn new(request_id: Option<String>, source: String) -> Self {
+        Self { request_id, source }
+    }
+
+    pub fn request_id(&self) -> Option<String> {
+        self.request_id.clone()
+    }
+
+    pub fn source(&self) -> String {
+        self.source.to_owned()
     }
 }
 
