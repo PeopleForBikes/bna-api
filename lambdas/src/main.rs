@@ -1,6 +1,6 @@
 use axum::{routing::get, Json, Router};
 use lambda_http::tracing;
-use lambdas::cities::endpoint::routes;
+use lambdas::{cities, ratings};
 use serde_json::{json, Value};
 use std::env::set_var;
 
@@ -23,7 +23,10 @@ async fn main() {
         .without_time()
         .init();
 
-    let app = Router::new().route("/", get(root)).merge(routes());
+    let app = Router::new()
+        .route("/", get(root))
+        .merge(cities::endpoint::routes())
+        .merge(ratings::endpoint::routes());
 
     // run(app).await
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")

@@ -3,7 +3,7 @@ use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment:
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::cities::{
     adaptor::{get_cities_adaptor, get_city_adaptor},
-    extract_path_parameters, CitiesPathParameters,
+    extract_path_parameters, CitiesPathParameters, Context,
 };
 use tracing::info;
 
@@ -16,8 +16,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Ok(p) => p,
             Err(e) => return Ok(e.into()),
         };
+        let ctx = Context::new(
+            event.apigw_request_id(),
+            event
+                .uri()
+                .path_and_query()
+                .expect("to have a path and optional query parameters")
+                .to_string(),
+        );
         info!("{:#?}", params);
-        match get_city_adaptor(&params.country, &params.region, &params.name).await {
+        match get_city_adaptor(&params.country, &params.region, &params.name, ctx).await {
             Ok(v) => return Ok(v.into_response().await),
             Err(e) => return Ok(APIErrors::from(e).into()),
         }

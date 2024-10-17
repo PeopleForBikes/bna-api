@@ -1,6 +1,6 @@
 use super::{
     db::{fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions},
-    ExecutionError,
+    Context, ExecutionError,
 };
 use crate::{
     cities::db::{
@@ -21,6 +21,7 @@ pub async fn get_city_adaptor(
     country: &str,
     region: &str,
     name: &str,
+    ctx: Context,
 ) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -30,7 +31,8 @@ pub async fn get_city_adaptor(
     match model {
         Some(model) => Ok(json!(model)),
         None => Err(ExecutionError::NotFound(
-            String::new(),
+            ctx.request_id(),
+            ctx.source(),
             format!("cannot find a city matching {country}, {region}, {name}"),
         )),
     }
@@ -136,6 +138,7 @@ pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError
 pub async fn get_cities_submission_adaptor(
     submission_id: i32,
     status: Option<String>,
+    ctx: Context,
 ) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -146,7 +149,8 @@ pub async fn get_cities_submission_adaptor(
     match model {
         Some(model) => Ok(json!(model)),
         None => Err(ExecutionError::NotFound(
-            String::new(),
+            ctx.request_id(),
+            ctx.source(),
             format!("cannot find submission with id {submission_id} and {status_str} status"),
         )),
     }

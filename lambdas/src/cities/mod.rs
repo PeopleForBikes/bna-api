@@ -1,12 +1,13 @@
 //! Module for the /cities enpoint.
-use axum::response::{IntoResponse, Response};
+use axum::{
+    async_trait,
+    extract::{FromRequest, OriginalUri, Request},
+    http::{header, StatusCode},
+    response::{IntoResponse, Response},
+};
 use effortless::{
     api::parse_path_parameter,
     error::{APIError, APIErrors},
-};
-use lambda_http::{
-    http::{header, StatusCode},
-    Request,
 };
 use serde::Deserialize;
 use serde_json::json;
@@ -27,8 +28,8 @@ pub enum ExecutionError {
     Unexpected(String, String),
 
     /// Entry not found.
-    #[error("entry not found: {0} {1}")]
-    NotFound(String, String),
+    #[error("entry not found at {1}: {2}")]
+    NotFound(Option<String>, String, String),
 
     /// Uncovered country.
     #[error("the country is not covered by the analyzer: {0}")]
@@ -43,8 +44,8 @@ impl From<ExecutionError> for APIError {
     fn from(value: ExecutionError) -> Self {
         match value {
             ExecutionError::DatabaseError(_) => APIError::db_error(None, "Unknown source", ""),
-            ExecutionError::NotFound(source, message) => {
-                APIError::not_found(None, &source, &message)
+            ExecutionError::NotFound(id, source, message) => {
+                APIError::not_found(id, &source, &message)
             }
             _ => APIError::internal_error(
                 None,
@@ -91,7 +92,9 @@ pub struct CitiesPathParameters {
 }
 
 /// Extract the path parameters for the /cities endpoint.
-pub fn extract_path_parameters(event: &Request) -> Result<CitiesPathParameters, APIErrors> {
+pub fn extract_path_parameters(
+    event: &lambda_http::Request,
+) -> Result<CitiesPathParameters, APIErrors> {
     let mut api_errors = APIErrors::empty();
 
     let country = match parse_path_parameter::<String>(event, "country") {
@@ -126,6 +129,141 @@ pub fn extract_path_parameters(event: &Request) -> Result<CitiesPathParameters, 
         region: region.unwrap(),
         name: name.unwrap(),
     })
+}
+
+// pub struct APIGatewayV2RequestID(String);
+
+// impl APIGatewayV2RequestID {
+//     pub fn request_id(&self) -> String {
+//         self.0.to_owned()
+//     }
+// }
+
+// #[async_trait]
+// impl<S> FromRequest<S> for APIGatewayV2RequestID
+// where
+//     Bytes: FromRequest<S>,
+//     S: Send + Sync,
+// {
+//     type Rejection = (StatusCode, &'static str);
+
+//     #[doc = " Perform the extraction."]
+//     #[must_use]
+//     #[allow(clippy::type_complexity, clippy::type_repetition_in_bounds)]
+//     fn from_request(req: Request<Body>, _state: &S) -> Result<Self, Self::Rejection> {
+//         let context = req
+//             .extensions()
+//             .get::<lambda_http::request::RequestContext>();
+//         if let Some(lambda_http::request::RequestContext::ApiGatewayV2(ctx)) = context {
+//             Ok(APIGatewayV2RequestID(
+//                 ctx.request_id
+//                     .clone()
+//                     .expect("a request coming from API Gateway V2"),
+//             ))
+//         } else {
+//             Err((StatusCode::BAD_REQUEST, "API Gateway Request ID is missing"))
+//         }
+//     }
+// }
+
+pub struct Context {
+    // request_id: APIGatewayV2RequestID,
+    request_id: Option<String>,
+    source: String,
+}
+
+#[async_trait]
+impl<S> FromRequest<S> for Context
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request(req: Request, _: &S) -> Result<Self, Self::Rejection> {
+        let request_context = req
+            .extensions()
+            .get::<lambda_http::request::RequestContext>();
+        let request_id = match request_context {
+            Some(&lambda_http::request::RequestContext::ApiGatewayV2(ref ctx)) => {
+                ctx.request_id.clone()
+            }
+            _ => None,
+        };
+
+        // .and_then(|c| match c {
+        //     lambda_http::request::RequestContext::ApiGatewayV2(context) => context.request_id,
+        //     _ => None,
+        // });
+        let uri = req.extensions().get::<OriginalUri>();
+        let source = match uri {
+            Some(path) => path.0.path().to_owned(),
+            None => req.uri().path().to_owned(),
+        };
+        // let context = req
+        //     .extensions()
+        //     .get::<lambda_http::request::RequestContext>();
+        // let request_id = match context {
+        //     Some(lambda_http::request::RequestContext::ApiGatewayV2(ctx)) => ctx
+        //         .request_id
+        //         .clone()
+        //         .expect("a request coming from API Gateway V2"),
+        //     _ => return Err((StatusCode::BAD_REQUEST, "API Gateway Request ID is missing")),
+        // };
+        // let uri = req.extensions().get::<OriginalUri>();
+        // let source = match uri {
+        //     Some(path) => path.0.path().to_owned(),
+        //     None => req.uri().path().to_owned(),
+        // };
+        Ok(Self { request_id, source })
+    }
+}
+
+// #[async_trait]
+// impl<S> FromRequest<S> for Context
+// where
+//     Bytes: FromRequest<S>,
+//     S: Send + Sync,
+// {
+//     type Rejection = (StatusCode, &'static str);
+
+//     #[doc = " Perform the extraction."]
+//     #[must_use]
+//     #[allow(clippy::type_complexity, clippy::type_repetition_in_bounds)]
+//     fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
+//         let context = req
+//             .extensions()
+//             .get::<lambda_http::request::RequestContext>();
+//         let request_id = match context {
+//             Some(lambda_http::request::RequestContext::ApiGatewayV2(ctx)) => ctx
+//                 .request_id
+//                 .clone()
+//                 .expect("a request coming from API Gateway V2"),
+//             _ => return Err((StatusCode::BAD_REQUEST, "API Gateway Request ID is missing")),
+//         };
+//         let uri = req.extensions().get::<OriginalUri>();
+//         let source = match uri {
+//             Some(path) => path.0.path().to_owned(),
+//             None => req.uri().path().to_owned(),
+//         };
+//         Ok(Context {
+//             request_id: APIGatewayV2RequestID(request_id),
+//             source,
+//         })
+//     }
+// }
+
+impl Context {
+    pub fn new(request_id: Option<String>, source: String) -> Self {
+        Self { request_id, source }
+    }
+
+    pub fn request_id(&self) -> Option<String> {
+        self.request_id.clone()
+    }
+
+    pub fn source(&self) -> String {
+        self.source.to_owned()
+    }
 }
 
 #[cfg(test)]

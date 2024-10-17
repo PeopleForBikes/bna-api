@@ -1,3 +1,5 @@
+set positional-arguments
+
 # Define variables.
 venv := ".venv"
 venv_bin := venv / "bin"
@@ -19,17 +21,27 @@ openapi-export:
     --no-include-extensions \
     openapi.yaml
 
-# Run the schemathesis tests again the openapi schema.
-test-staging-schemathesis:
-  . {{ activate }} && st run openapi.yml --base-url https://api.peopleforbikes.xyz/
-
-# Run the integration tests against the staging environment.
-test-staging:
-  hurl --variables-file staging.vars --test \
+# Run the integration tests against an environment [localhost, staging].
+test *env:
+  hurl --test \
+    --variables-file $1.vars \
     scenario/pagination.hurl \
     endpoints/bnas.hurl \
     endpoints/cities.hurl
 
+# Run the smoke tests against an environment [localhost, staging].
+test-smoke-readonly *env:
+  hurl --test --variables-file $1.vars smoke/public-readonly.hurl
+
+test-localhost:
+  hurl --test \
+    --variables-file localhost.vars \
+    endpoints/cities.hurl
+
+# Run the schemathesis tests again the openapi schema.
+test-staging-schemathesis:
+  . {{ activate }} && st run openapi.yml --base-url https://api.peopleforbikes.xyz/
+
 # Run the smoke tests against the staging environment.
 test-staging-smoke-readonly:
-  hurl --variables-file staging.vars --test smoke/public-readonly.hurl
+  hurl --test --variables-file staging.vars  smoke/public-readonly.hurl

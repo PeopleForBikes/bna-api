@@ -2,8 +2,8 @@ use super::db::{
     fetch_ratings_analyses, fetch_ratings_analysis, fetch_ratings_city, fetch_ratings_summary,
 };
 use crate::{
-    cities::ExecutionError, database_connect, ratings::db::fetch_ratings_summaries, PageFlow,
-    Paginatron,
+    cities::Context, cities::ExecutionError, database_connect,
+    ratings::db::fetch_ratings_summaries, PageFlow, Paginatron,
 };
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
 use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
@@ -28,7 +28,10 @@ pub async fn get_ratings_summaries_adaptor(
     ))
 }
 
-pub async fn get_ratings_summary_adaptor(rating_id: Uuid) -> Result<Value, ExecutionError> {
+pub async fn get_ratings_summary_adaptor(
+    rating_id: Uuid,
+    ctx: Context,
+) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -37,7 +40,8 @@ pub async fn get_ratings_summary_adaptor(rating_id: Uuid) -> Result<Value, Execu
     match model {
         Some(model) => Ok(json!(model)),
         None => Err(ExecutionError::NotFound(
-            String::new(),
+            ctx.request_id(),
+            ctx.source(),
             format!("cannot find a rating with the ID {rating_id}"),
         )),
     }
@@ -74,7 +78,10 @@ pub async fn get_ratings_analyses_adaptor(
     ))
 }
 
-pub async fn get_ratings_analysis_adaptor(analysis_id: Uuid) -> Result<Value, ExecutionError> {
+pub async fn get_ratings_analysis_adaptor(
+    analysis_id: Uuid,
+    ctx: Context,
+) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -83,13 +90,17 @@ pub async fn get_ratings_analysis_adaptor(analysis_id: Uuid) -> Result<Value, Ex
     match model {
         Some(model) => Ok(json!(model)),
         None => Err(ExecutionError::NotFound(
-            String::new(),
+            ctx.request_id(),
+            ctx.source(),
             format!("cannot find a rating with the ID {analysis_id}"),
         )),
     }
 }
 
-pub async fn get_ratings_city_adaptor(rating_id: Uuid) -> Result<Value, ExecutionError> {
+pub async fn get_ratings_city_adaptor(
+    rating_id: Uuid,
+    ctx: Context,
+) -> Result<Value, ExecutionError> {
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Fetch the model.
@@ -97,7 +108,8 @@ pub async fn get_ratings_city_adaptor(rating_id: Uuid) -> Result<Value, Executio
     match model {
         Some(model) => Ok(json!(model)),
         None => Err(ExecutionError::NotFound(
-            String::new(),
+            ctx.request_id(),
+            ctx.source(),
             format!("cannot find a rating with the ID {rating_id}"),
         )),
     }

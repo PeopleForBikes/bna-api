@@ -2,9 +2,13 @@ use dotenv::dotenv;
 use effortless::{
     api::{extract_pagination_parameters, parse_path_parameter, parse_query_string_parameter},
     error::APIErrors,
+    fragment::BnaRequestExt,
 };
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::cities::adaptor::{get_cities_submission_adaptor, get_cities_submissions_adaptor};
+use lambdas::cities::{
+    adaptor::{get_cities_submission_adaptor, get_cities_submissions_adaptor},
+    Context,
+};
 use tracing::{debug, info};
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -29,10 +33,19 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e.into()),
     };
 
+    let ctx = Context::new(
+        event.apigw_request_id(),
+        event
+            .uri()
+            .path_and_query()
+            .expect("to have a path and optional query parameters")
+            .to_string(),
+    );
+
     // Retrieve all submissions or a specific one.
     debug!("Processing the requests...");
     match submission_id {
-        Some(id) => match get_cities_submission_adaptor(id, status).await {
+        Some(id) => match get_cities_submission_adaptor(id, status, ctx).await {
             Ok(v) => return Ok(v.into_response().await),
             Err(e) => return Ok(APIErrors::from(e).into()),
         },

@@ -3,7 +3,7 @@ use super::adaptor::{
     get_ratings_summaries_adaptor, get_ratings_summary_adaptor, patch_ratings_analysis_adaptor,
     post_ratings_analysis_adaptor,
 };
-use crate::cities::ExecutionError;
+use crate::cities::{Context, ExecutionError};
 use axum::{
     extract::{Path, Query},
     routing::get,
@@ -38,14 +38,20 @@ async fn get_ratings(
         .map(|v| Json(json!(v.payload())))
 }
 
-async fn get_rating(Path(rating_id): Path<Uuid>) -> Result<Json<Value>, ExecutionError> {
-    get_ratings_summary_adaptor(rating_id)
+async fn get_rating(
+    Path(rating_id): Path<Uuid>,
+    ctx: Context,
+) -> Result<Json<Value>, ExecutionError> {
+    get_ratings_summary_adaptor(rating_id, ctx)
         .await
         .map(|v| Json(json!(v)))
 }
 
-async fn get_ratings_city(Path(bna_id): Path<Uuid>) -> Result<Json<Value>, ExecutionError> {
-    get_ratings_city_adaptor(bna_id).await.map(|v| Json(v))
+async fn get_ratings_city(
+    Path(bna_id): Path<Uuid>,
+    ctx: Context,
+) -> Result<Json<Value>, ExecutionError> {
+    get_ratings_city_adaptor(bna_id, ctx).await.map(|v| Json(v))
 }
 
 async fn get_ratings_analyses(
@@ -59,8 +65,9 @@ async fn get_ratings_analyses(
 
 async fn get_ratings_analysis(
     Path(analysis_id): Path<Uuid>,
+    ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_ratings_analysis_adaptor(analysis_id)
+    get_ratings_analysis_adaptor(analysis_id, ctx)
         .await
         .map(|v| Json(v))
 }

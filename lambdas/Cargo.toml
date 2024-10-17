@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = { workspace = true, features = ["macros"] }
+axum = { workspace = true, features = ["macros", "original-uri", "query"] }
 axum-extra = { workspace = true, features = ["query"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }

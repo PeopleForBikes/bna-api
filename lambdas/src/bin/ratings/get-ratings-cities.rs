@@ -1,7 +1,10 @@
 use dotenv::dotenv;
-use effortless::error::APIErrors;
+use effortless::{error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::ratings::{adaptor::get_ratings_city_adaptor, extract_path_parameters};
+use lambdas::{
+    cities::Context,
+    ratings::{adaptor::get_ratings_city_adaptor, extract_path_parameters},
+};
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -12,8 +15,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(p) => p,
         Err(e) => return Ok(e.into()),
     };
+    let ctx = Context::new(
+        event.apigw_request_id(),
+        event
+            .uri()
+            .path_and_query()
+            .expect("to have a path and optional query parameters")
+            .to_string(),
+    );
 
-    match get_ratings_city_adaptor(params.bna_id).await {
+    match get_ratings_city_adaptor(params.bna_id, ctx).await {
         Ok(v) => return Ok(v.into_response().await),
         Err(e) => return Ok(APIErrors::from(e).into()),
     }

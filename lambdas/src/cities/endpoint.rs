@@ -1,3 +1,4 @@
+use super::Context;
 use crate::cities::{
     adaptor::{
         get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
@@ -7,7 +8,9 @@ use crate::cities::{
     CitiesPathParameters, ExecutionError,
 };
 use axum::{
+    debug_handler,
     extract::{Path, Query},
+    http::StatusCode,
     routing::get,
     Json, Router,
 };
@@ -17,6 +20,7 @@ use entity::wrappers::{
     city::CityPost,
     submission::{SubmissionPatch, SubmissionPost},
 };
+use serde::Deserialize;
 use serde_json::{json, Value};
 
 pub fn routes() -> Router {
@@ -41,8 +45,13 @@ pub fn routes() -> Router {
         )
 }
 
-async fn get_city(Path(params): Path<CitiesPathParameters>) -> Result<Json<Value>, ExecutionError> {
-    get_city_adaptor(&params.country, &params.region, &params.name)
+async fn get_city(
+    Path(params): Path<CitiesPathParameters>,
+    // Context(request_id, source): Context,
+    ctx: Context,
+) -> Result<Json<Value>, ExecutionError> {
+    // let ctx = Context::new(request_id, path_and_query);
+    get_city_adaptor(&params.country, &params.region, &params.name, ctx)
         .await
         .map(|v| Json(v))
 }
@@ -95,20 +104,34 @@ async fn post_cities(Json(city): Json<CityPost>) -> Result<Json<Value>, Executio
 async fn get_cities_submission(
     Path(submission_id): Path<i32>,
     OptionalQuery(status): OptionalQuery<String>,
+    // Context(request_id, source): Context,
+    ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_cities_submission_adaptor(submission_id, status)
+    // let ctx = Context::new(request_id, source);
+    get_cities_submission_adaptor(submission_id, status, ctx)
         .await
         .map(|v| Json(v))
 }
 
+#[derive(Deserialize)]
+struct SubmissionParameters {
+    pub status: Option<String>,
+}
+
+#[debug_handler]
 async fn get_cities_submissions(
-    OptionalQuery(status): OptionalQuery<String>,
+    // OptionalQuery(status): OptionalQuery<String>,
+    Query(submission_params): Query<SubmissionParameters>,
     pagination: Option<Query<PaginationParameters>>,
 ) -> Result<Json<Value>, ExecutionError> {
     let Query(pagination) = pagination.unwrap_or_default();
-    get_cities_submissions_adaptor(status, pagination.page, pagination.page_size())
-        .await
-        .map(|v| Json(json!(v.payload())))
+    get_cities_submissions_adaptor(
+        submission_params.status,
+        pagination.page,
+        pagination.page_size(),
+    )
+    .await
+    .map(|v| Json(json!(v.payload())))
 }
 
 async fn patch_cities_submission(
@@ -122,8 +145,31 @@ async fn patch_cities_submission(
 
 async fn post_cities_submissions(
     Json(submission): Json<SubmissionPost>,
-) -> Result<Json<Value>, ExecutionError> {
+) -> Result<(StatusCode, Json<Value>), ExecutionError> {
     post_cities_submission_adaptor(submission)
         .await
-        .map(|v| Json(v))
+        .map(|v| (StatusCode::CREATED, Json(v)))
+}
+
+#[cfg(test)]
+mod tests {
+    use axum::extract::Query;
+    use lambda_http::http::Uri;
+    use serde::Deserialize;
+
+    #[derive(Debug, Deserialize)]
+    struct ExampleParams {
+        foo: Option<String>,
+        // bar: u32,
+    }
+
+    #[test]
+    fn query() {
+        let uri: Uri = "http://example.com/path?bar=42".parse().unwrap();
+        let result: Query<ExampleParams> = Query::try_from_uri(&uri).unwrap();
+        // let result: Query<Option<String>> = Query::try_from_uri(&uri).unwrap();
+        dbg!(&result);
+        assert_eq!(result.foo, None);
+        // assert_eq!(result.foo, String::from("hello"));
+    }
 }

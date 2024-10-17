@@ -1,13 +1,13 @@
 # Query the first page of the bnas.
-GET {{host}}/bnas
+GET {{host}}/ratings
 HTTP 200
 
 # Query a specific bna run.
-GET {{host}}/bnas/{{bna_id}}
+GET {{host}}/ratings/{{bna_id}}
 HTTP 200
 
 # Query a specific bna run and its associated city.
-GET {{host}}/bnas/{{bna_id}}/city
+GET {{host}}/ratings/{{bna_id}}/city
 HTTP 200
 
 # Query the first page of the cities.
@@ -19,7 +19,7 @@ GET {{host}}/cities/{{country}}/{{region}}/{{name}}
 HTTP 200
 
 # Query all the BNAs of a specific city.
-GET {{host}}/cities/{{country}}/{{region}}/{{name}}/bnas
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
 HTTP 200
 
 # Create a new submission.
