@@ -1463,6 +1463,10 @@ components:
     bad_request:
       description: >
         Your request was formatted incorrectly or missing required parameters.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errors"
 
     rating:
       description: "A city rating"
@@ -1549,6 +1553,10 @@ components:
       description: >
         You weren't authorized to make your request; most likely this indicates an issue
         with your credentials or permissions.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/errors"
 
     not_found:
       description: >
