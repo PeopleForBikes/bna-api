@@ -82,7 +82,7 @@ async fn main() -> Result<(), Report> {
         email: ActiveValue::Set("floyd.martin@organization.com".to_string()),
         country: ActiveValue::Set("usa".to_string()),
         city: ActiveValue::Set("Provincetown".to_string()),
-        region: ActiveValue::Set(Some("Massachussets".to_string())),
+        region: ActiveValue::Set(Some("Massachusetts".to_string())),
         fips_code: ActiveValue::Set("1234567".to_string()),
         consent: ActiveValue::Set(true),
         status: ActiveValue::NotSet,

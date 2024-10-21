@@ -68,7 +68,7 @@ impl APIError {
         Self {
             id,
             status: StatusCode::BAD_REQUEST,
-            title: String::from("Invalid Query Sring Parameter"),
+            title: String::from("Invalid Query String Parameter"),
             source: Some(APIErrorSource::Parameter(parameter.into())),
             details: message.into(),
         }

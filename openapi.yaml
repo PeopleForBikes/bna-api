@@ -421,7 +421,7 @@ components:
         torn_down:
           type: boolean
           description: >
-            Flag indicating wether the resources were torn down or not at the end of the
+            Flag indicating whether the resources were torn down or not at the end of the
             analysis
           nullable: true
       required:
@@ -492,7 +492,7 @@ components:
         torn_down:
           type: boolean
           description: >
-            Flag indicating wether the resources were torn down or not at the end of the
+            Flag indicating whether the resources were torn down or not at the end of the
             analysis
           nullable: true
     analysis_post:
@@ -545,7 +545,7 @@ components:
         torn_down:
           type: boolean
           description: >
-            Flag indicating wether the resources were torn down or not at the end of the
+            Flag indicating whether the resources were torn down or not at the end of the
             analysis
           nullable: true
     api_gateway_id:

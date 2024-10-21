@@ -6,10 +6,10 @@ set dotenv-load := true
 # Define variables.
 
 dbml := "docs/database.dbml"
-entites := "entity/src/entities"
+entities := "entity/src/entities"
 sql_dump := "docs/database.sql"
 
-# Meta task running ALL the CI tasks at onces.
+# Meta task running ALL the CI tasks at once.
 ci: lint
 
 # Meta tasks running all formatters at once.
@@ -26,7 +26,7 @@ fmt-md:
 # Meta task running all the linters at once.
 lint: lint-md lint-spellcheck
 
-# Lint markown files.
+# Lint markdown files.
 lint-md:
     npx --yes markdownlint-cli2 "**/*.md" "#.venv" "#docs/themes" "#target"
 
@@ -43,9 +43,9 @@ db-to-dbml: db-dump dbml-from-sql dbml-svg
 
 # Generate models
 db-generate-models:
-    rm -fr  {{ entites }}
+    rm -fr  {{ entities }}
     sea-orm-cli generate entity \
-      -o {{ entites }} \
+      -o {{ entities }} \
       --with-serde both \
       --date-time-crate time
 
