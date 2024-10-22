@@ -1043,9 +1043,6 @@ components:
       description: "A collection of errors"
       items:
         $ref: "#/components/schemas/error"
-      responses:
-        400:
-          $ref: "#/components/responses/bad_request"
     features:
       type: object
       properties:
@@ -1457,7 +1454,6 @@ components:
       description: "An analysis"
       content:
         application/json:
-          type: array
           schema:
             $ref: "#/components/schemas/analysis"
     bad_request:
@@ -1546,9 +1542,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/enqueue"
-      responses:
-        403:
-          $ref: "#/components/responses/forbidden"
     forbidden:
       description: >
         You weren't authorized to make your request; most likely this indicates an issue
