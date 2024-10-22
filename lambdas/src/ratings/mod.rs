@@ -28,12 +28,12 @@ impl FromStr for BNAComponent {
     }
 }
 
-/// Path parameters for the /bnas enpoint.
+/// Path parameters for the /bnas endpoint.
 pub struct BNAPathParameters {
     pub bna_id: Uuid,
 }
 
-/// Query parameters for the /bnas enpoint.
+/// Query parameters for the /bnas endpoint.
 pub struct BNAQueryParameters {
     pub component: BNAComponent,
 }

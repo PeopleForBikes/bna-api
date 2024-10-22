@@ -1,9 +1,9 @@
-//! Module for the /cities enpoint.
+//! Module for the /cities endpoint.
 
 use effortless::{api::parse_path_parameter, error::APIErrors};
 use lambda_http::Request;
 
-/// Path parameters for the /cities enpoint.
+/// Path parameters for the /cities endpoint.
 #[derive(Debug)]
 pub struct CitiesPathParameters {
     /// Country name.

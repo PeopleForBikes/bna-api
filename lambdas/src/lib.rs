@@ -245,14 +245,14 @@ impl<'a> Paginatron<'a> {
     /// );
     /// ```
     ///
-    pub fn link_header(&self, defaul_page_size: Option<u64>) -> String {
+    pub fn link_header(&self, default_page_size: Option<u64>) -> String {
         match self.url {
             None => String::new(),
             Some(url) => {
                 let nav = self.navigation();
                 let mut url = url.to_string();
                 url.push('?');
-                if let Some(default_page_size) = defaul_page_size {
+                if let Some(default_page_size) = default_page_size {
                     if self.page_size != default_page_size {
                         url.push_str(format!("page_size={}&", self.page_size).as_str());
                     }
