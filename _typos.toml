@@ -4,3 +4,9 @@
 [files]
 ignore-dot = false
 extend-exclude = ["migration/**"]
+
+[default.extend-words]
+# North Dakota
+nd = "nd"
+# santa claus
+claus = "claus"
