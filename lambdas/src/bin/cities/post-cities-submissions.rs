@@ -1,13 +1,8 @@
 use dotenv::dotenv;
-use effortless::api::{invalid_body, parse_request_body};
+use effortless::{api::parse_request_body, error::APIErrors};
 use entity::wrappers::submission::SubmissionPost;
-use lambda_http::{
-    http::{header, StatusCode},
-    run, service_fn, Body, Error, Request, Response,
-};
-use lambdas::{database_connect, db::find_country};
-use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
-use serde_json::json;
+use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambdas::core::resource::cities::adaptor::post_cities_submission_adaptor;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -18,44 +13,12 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Ok(value) => value,
         Err(e) => return Ok(e.into()),
     };
-    let country = wrapper.country.clone();
+    // let country = wrapper.country.clone();
 
-    // Turn the model wrapper into an active model.
-    let mut active_submission = wrapper.into_active_model();
-
-    // Get the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Add the status.
-    active_submission.status = ActiveValue::Set("Pending".to_string());
-
-    // Ensure the country is a valid one.
-    let country_found = find_country(&db, &country).await?;
-    dbg!(country_found);
-    if !find_country(&db, &country).await? {
-        return Ok(invalid_body(
-            &event,
-            format!("the country `{country}` is not in the list of countries supported by the BNA")
-                .as_str(),
-        )
-        .into());
+    match post_cities_submission_adaptor(wrapper).await {
+        Ok(v) => Ok(v.into_response().await),
+        Err(e) => Ok(APIErrors::from(e).into()),
     }
-
-    // And insert a new entry.
-    info!(
-        "inserting Submission into database: {:?}",
-        active_submission
-    );
-    let submission = match active_submission.insert(&db).await {
-        Ok(m) => m,
-        Err(e) => return Ok(invalid_body(&event, e.to_string().as_str()).into()),
-    };
-    let response = Response::builder()
-        .status(StatusCode::CREATED)
-        .header(header::CONTENT_TYPE, "application/json")
-        .body(Body::Text(json!(submission).to_string()))
-        .expect("unable to build http::Response");
-    Ok(response)
 }
 
 #[tokio::main]

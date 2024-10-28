@@ -45,7 +45,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         };
         let send_message = sqs_client
             .send_message()
-            .queue_url(&bna_sqs_queue)
+            .queue_url(&bna_sqs_queue.parameter.value)
             .message_body(enqueued_city_string)
             .send()
             .await;

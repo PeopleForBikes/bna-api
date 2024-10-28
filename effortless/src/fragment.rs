@@ -157,6 +157,9 @@ pub trait BnaRequestExt {
 
     /// Returns true if there are query parameters available.
     fn has_query_parameters(&self) -> bool;
+
+    /// Returns the path and query or "/" if not available.
+    fn path_and_query(&self) -> String;
 }
 
 impl<B> BnaRequestExt for http::Request<B> {
@@ -197,6 +200,12 @@ impl<B> BnaRequestExt for http::Request<B> {
 
     fn has_query_parameters(&self) -> bool {
         !self.query_string_parameters().is_empty()
+    }
+
+    fn path_and_query(&self) -> String {
+        self.uri()
+            .path_and_query()
+            .map_or(String::from("/"), |p| p.to_string())
     }
 }
 

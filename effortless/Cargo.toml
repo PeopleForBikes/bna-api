@@ -8,6 +8,7 @@ name = "effortless"
 path = "src/lib.rs"
 
 [dependencies]
+bon = { workspace = true }
 http-serde = { workspace = true }
 lambda_http = { workspace = true }
 serde = { workspace = true }
@@ -15,3 +16,6 @@ serde_json = { workspace = true }
 serde_with = { workspace = true }
 thiserror = { workspace = true }
 urlencoding = { workspace = true }
+
+[lints.clippy]
+result_large_err = "allow"

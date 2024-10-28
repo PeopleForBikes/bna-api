@@ -1,3 +1,4 @@
+use bon::Builder;
 use lambda_http::{http::header, http::StatusCode, Body, Response};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -25,7 +26,7 @@ pub enum APIErrorSource {
 
 /// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, Clone, Debug, PartialEq)]
+#[derive(Deserialize, Serialize, Clone, Debug, PartialEq, Builder)]
 pub struct APIError {
     /// A unique identifier for this particular occurrence of the problem.
     id: Option<String>,
@@ -111,6 +112,11 @@ impl APIError {
             details: message.into(),
         }
     }
+
+    /// Returns the APIError status.
+    pub fn status(&self) -> StatusCode {
+        self.status
+    }
 }
 
 impl From<APIError> for Response<Body> {
@@ -153,6 +159,11 @@ impl APIErrors {
     /// Returns True if there is no error.
     pub fn is_empty(&self) -> bool {
         self.errors.is_empty()
+    }
+
+    /// Returns the errors field.
+    pub fn errors(&self) -> &[APIError] {
+        self.errors.as_slice()
     }
 }
 

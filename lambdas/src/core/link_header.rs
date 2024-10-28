@@ -29,7 +29,7 @@ use url::Url;
 ///
 /// ## Example
 /// ```
-/// use lambdas::link_header::RelationType;
+/// use lambdas::core::link_header::RelationType;
 ///
 /// let rel = RelationType::try_from(r#";rel="prev""#).unwrap();
 /// assert_eq!(rel.relation_type(), "prev");
@@ -54,7 +54,7 @@ impl<'a> RelationType<'a> {
     ///
     /// ## Example
     /// ```
-    /// use lambdas::link_header::RelationType;
+    /// use lambdas::core::link_header::RelationType;
     ///
     /// assert_eq!(RelationType::parse(r#" ; rel="prev""#), Ok(("", RelationType::new("prev"))));
     /// assert_eq!(RelationType::parse(r#" ; rel="alternate stylesheet""#), Ok(("", RelationType::new("alternate stylesheet"))));
@@ -107,7 +107,7 @@ impl LinkTarget {
     /// Recognizes and validate a URI.
     ///
     /// ```
-    /// use lambdas::link_header::LinkTarget;
+    /// use lambdas::core::link_header::LinkTarget;
     /// use url::Url;
     ///
     /// assert_eq!(
@@ -145,7 +145,7 @@ impl<'a> Link<'a> {
     /// Recognizes a Link.
     ///
     /// ```
-    /// use lambdas::link_header::{Link, LinkValues, RelationType, LinkTarget};
+    /// use lambdas::core::link_header::{Link, LinkValues, RelationType, LinkTarget};
     /// use url::Url;
     ///
     /// let link = Link::parse(r#"link: <https://api.github.com/repositories/1300192/issues?page=2>; rel="prev""#).unwrap();

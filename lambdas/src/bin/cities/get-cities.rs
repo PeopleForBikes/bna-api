@@ -1,63 +1,50 @@
 use dotenv::dotenv;
-use effortless::{
-    api::{entry_not_found, extract_pagination_parameters},
-    fragment::BnaRequestExt,
-};
-use entity::city;
+use effortless::{api::extract_pagination_parameters, error::APIErrors, fragment::BnaRequestExt};
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    build_paginated_response,
-    cities::{extract_path_parameters, CitiesPathParameters},
-    database_connect,
+    core::resource::cities::{
+        adaptor::{get_cities_adaptor, get_city_adaptor},
+        extract_path_parameters, CitiesPathParameters,
+    },
+    Context,
 };
-use sea_orm::{EntityTrait, PaginatorTrait};
-use serde_json::json;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
 
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // With params.
+    // Retrieve a single city.
     if event.has_path_parameters() {
         let params: CitiesPathParameters = match extract_path_parameters(&event) {
             Ok(p) => p,
             Err(e) => return Ok(e.into()),
         };
+        let ctx = Context::new(
+            event.apigw_request_id(),
+            event
+                .uri()
+                .path_and_query()
+                .expect("to have a path and optional query parameters")
+                .to_string(),
+        );
         info!("{:#?}", params);
-
-        let select = city::Entity::find_by_id((params.country, params.region, params.name));
-        let model = select.one(&db).await?;
-        let res: Response<Body> = match model {
-            Some(model) => json!(model).into_response().await,
-            None => entry_not_found(&event).into(),
-        };
-        return Ok(res);
+        match get_city_adaptor(&params.country, &params.region, &params.name, ctx).await {
+            Ok(v) => return Ok(v.into_response().await),
+            Err(e) => return Ok(APIErrors::from(e).into()),
+        }
     }
 
-    // Retrieve pagination parameters if any.
+    // Extract pagination parameters if any.
     let pagination = match extract_pagination_parameters(&event) {
         Ok(p) => p,
         Err(e) => return Ok(e),
     };
 
-    // Without params.
-    let select = city::Entity::find();
-    let body = select
-        .clone()
-        .paginate(&db, pagination.page_size)
-        .fetch_page(pagination.page)
-        .await?;
-    let total_items = select.count(&db).await?;
-    build_paginated_response(
-        json!(body),
-        total_items,
-        pagination.page,
-        pagination.page_size,
-        &event,
-    )
+    // Retrieve all cities.
+    match get_cities_adaptor(pagination.page, pagination.page_size()).await {
+        Ok(v) => Ok(v.payload().into_response().await),
+        Err(e) => Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]

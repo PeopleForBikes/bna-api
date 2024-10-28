@@ -1,15 +1,15 @@
 use dotenv::dotenv;
 use effortless::{
-    api::{
-        entry_not_found, extract_pagination_parameters, invalid_path_parameter,
-        parse_query_string_parameter,
-    },
-    error::APIError,
+    api::{extract_pagination_parameters, invalid_path_parameter, parse_query_string_parameter},
+    error::{APIError, APIErrors},
     fragment::{get_apigw_request_id, BnaRequestExt},
 };
 use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::{api_database_connect, build_paginated_response};
+use lambdas::{
+    api_database_connect, build_paginated_response,
+    core::resource::price::adaptor::get_price_fargate_adaptor, Context,
+};
 use sea_orm::{EntityTrait, PaginatorTrait, QueryOrder, QuerySelect};
 use serde_json::json;
 use tracing::{debug, info};
@@ -38,12 +38,19 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     let res = match id {
         Some(id) => match id {
             Ok(id) => {
-                let model = FargatePrice::find_by_id(id).one(&db).await?;
-                let res: Response<Body> = match model {
-                    Some(model) => json!(model).into_response().await,
-                    None => entry_not_found(&event).into(),
-                };
-                res
+                let ctx = Context::new(
+                    event.apigw_request_id(),
+                    event
+                        .uri()
+                        .path_and_query()
+                        .expect("to have a path and optional query parameters")
+                        .to_string(),
+                );
+                // info!("{:#?}", params);
+                match get_price_fargate_adaptor(id, ctx).await {
+                    Ok(v) => return Ok(v.into_response().await),
+                    Err(e) => return Ok(APIErrors::from(e).into()),
+                }
             }
             Err(e) => {
                 return Ok(
@@ -72,7 +79,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             // Select the results.
             let query = select
                 .clone()
-                .paginate(&db, pagination.page_size)
+                .paginate(&db, pagination.page_size())
                 .fetch_page(pagination.page)
                 .await;
             let res: Response<Body> = match query {
@@ -82,7 +89,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
                         json!(models),
                         total_items,
                         pagination.page,
-                        pagination.page_size,
+                        pagination.page_size(),
                         &event,
                     )?
                 }

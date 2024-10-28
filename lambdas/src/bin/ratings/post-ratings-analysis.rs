@@ -1,10 +1,8 @@
 use dotenv::dotenv;
-use effortless::api::parse_request_body;
-use entity::{prelude::*, wrappers::bna_pipeline::BNAPipelinePost};
+use effortless::{api::parse_request_body, error::APIErrors};
+use entity::wrappers::bna_pipeline::BNAPipelinePost;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::database_connect;
-use sea_orm::{EntityTrait, IntoActiveModel};
-use serde_json::json;
+use lambdas::core::resource::ratings::adaptor::post_ratings_analysis_adaptor;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -16,19 +14,10 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e.into()),
     };
 
-    // Turn the model wrapper into an active model.
-    let active_model = wrapper.into_active_model();
-
-    // Get the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // And insert a new entry.
-    info!(
-        "inserting Brokenspoke pipeline into database: {:?}",
-        active_model
-    );
-    let res = BnaPipeline::insert(active_model).exec(&db).await?;
-    Ok(json!(res.last_insert_id).into_response().await)
+    match post_ratings_analysis_adaptor(wrapper).await {
+        Ok(v) => Ok(v.into_response().await),
+        Err(e) => Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]

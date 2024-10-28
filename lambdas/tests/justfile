@@ -1,14 +1,16 @@
+set positional-arguments
+
 # Define variables.
 venv := ".venv"
 venv_bin := venv / "bin"
 activate := venv_bin / "activate"
+top_dir := `git rev-parse --show-toplevel`
 
 # Setup the project.
 setup:
-    test -d "{{ venv }}" || python3 -m venv {{ venv }}
-    . {{ activate }} \
-      && pip install --upgrade pip setuptools \
-      && pip install -r requirements.txt
+    uv venv \
+      && uv pip install --upgrade pip setuptools \
+      && uv pip install -r requirements.txt
 
 # Export the OpenAPI specification.
 openapi-export:
@@ -19,17 +21,31 @@ openapi-export:
     --no-include-extensions \
     openapi.yaml
 
-# Run the schemathesis tests again the openapi schema.
-test-staging-schemathesis:
-  . {{ activate }} && st run openapi.yml --base-url https://api.peopleforbikes.xyz/
-
-# Run the integration tests against the staging environment.
-test-staging:
-  hurl --variables-file staging.vars --test \
+# Run the integration tests against an environment [localhost, staging].
+test *env:
+  hurl --test \
+    --variables-file $1.vars \
     scenario/pagination.hurl \
-    endpoints/bnas.hurl \
+    endpoints/ratings.hurl \
     endpoints/cities.hurl
 
-# Run the smoke tests against the staging environment.
-test-staging-smoke-readonly:
-  hurl --variables-file staging.vars --test smoke/public-readonly.hurl
+# Run the smoke tests against an environment [localhost, staging].
+test-smoke-readonly *env:
+  hurl --test --variables-file $1.vars smoke/public-readonly.hurl
+
+# Run the schemathesis tests locally again the openapi schema.
+test-localhost-schemathesis:
+  uv run st run \
+    {{top_dir}}/openapi.yaml \
+    --exclude-method 'POST' \
+    --exclude-method 'PATCH \
+    --base-url http://localhost:3000/
+
+# Run the schemathesis tests again the openapi schema.
+test-staging-schemathesis:
+  uv run st run \
+    {{top_dir}}/openapi.yaml \
+    --exclude-method 'POST' \
+    --exclude-method 'PATCH \
+    --base-url https://api.peopleforbikes.xyz/
+
