@@ -126,7 +126,7 @@ paths:
         - Authorizer: []
     parameters:
       - $ref: "#/components/parameters/analysis_id"
-  /ratings/{bna_id}:
+  /ratings/{rating_id}:
     get:
       operationId: getRating
       summary: Get a specific city rating summary
@@ -141,9 +141,9 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
     parameters:
-      - $ref: "#/components/parameters/bna_id"
+      - $ref: "#/components/parameters/rating_id"
       - $ref: "#/components/parameters/component"
-  /ratings/{bna_id}/city:
+  /ratings/{rating_id}/city:
     get:
       operationId: getRatingCity
       summary: Get a specific city rating summary and its associated city details
@@ -158,7 +158,7 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
     parameters:
-      - $ref: "#/components/parameters/bna_id"
+      - $ref: "#/components/parameters/rating_id"
   /cities:
     get:
       operationId: getCities
@@ -555,7 +555,7 @@ components:
     bna:
       type: object
       properties:
-        bna_id:
+        rating_id:
           type: string
           description: "Analysis identifier"
           example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
@@ -709,7 +709,7 @@ components:
     bna_summary:
       type: object
       properties:
-        bna_id:
+        rating_id:
           type: string
           description: "Analysis identifier"
           example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
@@ -1346,8 +1346,8 @@ components:
         $ref: "#/components/schemas/submission"
 
   parameters:
-    bna_id:
-      name: "bna_id"
+    rating_id:
+      name: "rating_id"
       in: "path"
       description: "Analysis identifier"
       required: true

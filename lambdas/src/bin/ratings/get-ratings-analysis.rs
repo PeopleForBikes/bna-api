@@ -29,7 +29,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
 
         // Retrieve a specific entry.
         debug!("Processing the requests...");
-        match get_ratings_analysis_adaptor(params.bna_id, ctx).await {
+        match get_ratings_analysis_adaptor(params.rating_id, ctx).await {
             Ok(v) => return Ok(v.into_response().await),
             Err(e) => return Ok(APIErrors::from(e).into()),
         }

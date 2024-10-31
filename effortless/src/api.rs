@@ -367,7 +367,7 @@ mod tests {
             .body(Body::Empty)
             .expect("failed to build request")
             .with_path_parameters(HashMap::from([(
-                "bna_id".to_string(),
+                "rating_id".to_string(),
                 "eac1dbfb-2137-44c5-be59-71fc613f2963".to_string(),
             )]))
             .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(

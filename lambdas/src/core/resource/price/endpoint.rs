@@ -17,7 +17,7 @@ use super::{
 pub fn routes() -> Router {
     Router::new()
         .route("/prices/fargate", get(get_prices_fargate))
-        .route("/prices/fargate/:id", get(get_price_fargate))
+        .route("/prices/fargate/:price_id", get(get_price_fargate))
 }
 
 pub async fn get_prices_fargate(
@@ -29,8 +29,8 @@ pub async fn get_prices_fargate(
 }
 
 pub async fn get_price_fargate(
-    Path(id): Path<i32>,
+    Path(price_id): Path<i32>,
     ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_price_fargate_adaptor(id, ctx).await.map(Json)
+    get_price_fargate_adaptor(price_id, ctx).await.map(Json)
 }

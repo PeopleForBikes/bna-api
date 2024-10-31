@@ -1,5 +1,5 @@
 {
-  "resource": "/bnas/{bna_id}",
+  "resource": "/bnas/{rating_id}",
   "path": "/bnas/9b5b76d8-f628-4367-bd1d-12e6423aacea",
   "httpMethod": "GET",
   "headers": {
@@ -42,7 +42,7 @@
   },
   "queryStringParameters": null,
   "pathParameters": {
-    "bna_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
+    "rating_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
   },
   "multiValueQueryStringParameters": null,
   "stageVariables": null,

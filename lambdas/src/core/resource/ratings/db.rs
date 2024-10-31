@@ -71,10 +71,10 @@ pub async fn fetch_ratings_summaries(
 
 // pub async fn fetch_ratings_summary(
 //     db: &DatabaseConnection,
-//     bna_id: Uuid,
+//     rating_id: Uuid,
 //     component: Option<BNAComponent>,
 // ) -> Result<Option<BNA>, sea_orm::DbErr> {
-//     let select = summary::Entity::find_by_id(bna_id);
+//     let select = summary::Entity::find_by_id(rating_id);
 //     let component = component.unwrap_or(BNAComponent::All);
 //     let res = match component {
 //         BNAComponent::All => {

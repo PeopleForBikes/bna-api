@@ -89,7 +89,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             Err(e) => return Ok(e.into()),
         };
 
-        let select = Summary::find_by_id(params.bna_id);
+        let select = Summary::find_by_id(params.rating_id);
         let res = match queries.component {
             BNAComponent::All => {
                 let model = select
@@ -291,7 +291,7 @@ mod tests {
     //         .body(Body::Empty)
     //         .expect("failed to build request")
     //         .with_path_parameters(HashMap::from([(
-    //             "bna_id".to_string(),
+    //             "rating_id".to_string(),
     //             "837082b8-c8a0-469e-b310-c868d7f140a2".to_string(), // Santa Monica, CA
     //         )]))
     //         .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(

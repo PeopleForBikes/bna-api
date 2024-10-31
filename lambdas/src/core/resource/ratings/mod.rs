@@ -32,9 +32,9 @@ impl FromStr for BNAComponent {
     }
 }
 
-/// Path parameters for the /bnas enpoint.
+/// Path parameters for the /ratings enpoint.
 pub struct BNAPathParameters {
-    pub bna_id: Uuid,
+    pub rating_id: Uuid,
 }
 
 /// Query parameters for the /bnas enpoint.
@@ -43,10 +43,10 @@ pub struct BNAQueryParameters {
 }
 
 pub fn extract_path_parameters(event: &Request) -> Result<BNAPathParameters, APIErrors> {
-    let bna_id =
-        parse_path_parameter::<Uuid>(event, "bna_id")?.expect("no bna_id parameter provided");
+    let rating_id =
+        parse_path_parameter::<Uuid>(event, "rating_id")?.expect("no rating_id parameter provided");
 
-    Ok(BNAPathParameters { bna_id })
+    Ok(BNAPathParameters { rating_id })
 }
 
 pub fn extract_query_parameters(event: &Request) -> Result<BNAQueryParameters, APIErrors> {

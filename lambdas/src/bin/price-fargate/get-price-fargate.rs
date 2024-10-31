@@ -62,7 +62,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     }
 
     // Retrieve the ID of the entry to retrieve.
-    let parameter = "id";
+    let parameter = "price_id";
     let id = event.path_parameter::<i32>(parameter);
 
     // Retrieve a specific entry if an id was specified.
