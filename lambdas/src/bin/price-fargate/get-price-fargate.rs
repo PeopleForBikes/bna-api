@@ -1,18 +1,18 @@
 use dotenv::dotenv;
 use effortless::{
-    api::{extract_pagination_parameters, invalid_path_parameter, parse_query_string_parameter},
-    error::{APIError, APIErrors},
-    fragment::{get_apigw_request_id, BnaRequestExt},
+    api::{extract_pagination_parameters, invalid_path_parameter, invalid_query_parameter},
+    error::APIErrors,
+    fragment::BnaRequestExt,
 };
-use entity::prelude::*;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
 use lambdas::{
-    api_database_connect, build_paginated_response,
-    core::resource::price::adaptor::get_price_fargate_adaptor, Context,
+    core::resource::price::{
+        adaptor::{get_price_fargate_adaptor, get_prices_fargate_adaptor},
+        PriceParameters,
+    },
+    Context, Sort,
 };
-use sea_orm::{EntityTrait, PaginatorTrait, QueryOrder, QuerySelect};
-use serde_json::json;
-use tracing::{debug, info};
+use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     dotenv().ok();
@@ -23,88 +23,81 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         Err(e) => return Ok(e),
     };
 
-    // Retrieve the ID of the entry to update.
+    // Retrieve price parameter.
+    let mut price_parameters = PriceParameters::default();
+    let parameter = "sort";
+    let sort = event.query_string_parameter::<Sort>(parameter);
+    if let Some(sort) = sort {
+        match sort {
+            Ok(sort) => {
+                price_parameters.set_sort(Some(sort));
+            }
+            Err(e) => {
+                let api_error = invalid_query_parameter(
+                    &event,
+                    parameter,
+                    format!("failed to process the `{parameter}` parameter: {e}").as_str(),
+                );
+                return Ok(APIErrors::new(&[api_error]).into());
+            }
+        }
+    }
+
+    let parameter = "latest";
+    let latest = event.query_string_parameter::<bool>(parameter);
+    if let Some(latest) = latest {
+        match latest {
+            Ok(latest) => {
+                price_parameters.set_latest(latest);
+            }
+            Err(e) => {
+                let api_error = invalid_query_parameter(
+                    &event,
+                    parameter,
+                    format!("failed to process the `{parameter}` parameter: {e}").as_str(),
+                );
+                return Ok(APIErrors::new(&[api_error]).into());
+            }
+        }
+    }
+
+    // Retrieve the ID of the entry to retrieve.
     let parameter = "id";
     let id = event.path_parameter::<i32>(parameter);
 
-    // Set the database connection.
-    let db = match api_database_connect(&event).await {
-        Ok(db) => db,
-        Err(e) => return Ok(e),
-    };
-
-    // Retrieve all entries or a specific one.
-    debug!("Processing the requests...");
-    let res = match id {
-        Some(id) => match id {
-            Ok(id) => {
-                let ctx = Context::new(
-                    event.apigw_request_id(),
-                    event
-                        .uri()
-                        .path_and_query()
-                        .expect("to have a path and optional query parameters")
-                        .to_string(),
-                );
-                // info!("{:#?}", params);
-                match get_price_fargate_adaptor(id, ctx).await {
-                    Ok(v) => return Ok(v.into_response().await),
-                    Err(e) => return Ok(APIErrors::from(e).into()),
-                }
-            }
+    // Retrieve a specific entry if an id was specified.
+    if let Some(id) = id {
+        let id = match id {
+            Ok(id) => id,
             Err(e) => {
-                return Ok(
-                    invalid_path_parameter(&event, parameter, e.to_string().as_str()).into(),
+                let api_error = invalid_path_parameter(
+                    &event,
+                    parameter,
+                    format!("failed to process the `{parameter}` parameter: {e}").as_str(),
                 );
+                return Ok(APIErrors::new(&[api_error]).into());
             }
-        },
-        None => {
-            // Retrieve the filter if any.
-            let latest: Option<bool> = match parse_query_string_parameter::<bool>(&event, "latest")
-            {
-                Ok(latest) => latest,
-                Err(e) => return Ok(e.into()),
-            };
-
-            // Select the entity.
-            let mut select = FargatePrice::find();
-
-            // Select latest only.
-            if latest.is_some() {
-                select = select
-                    .order_by_asc(entity::fargate_price::Column::CreatedAt)
-                    .limit(1);
-            }
-
-            // Select the results.
-            let query = select
-                .clone()
-                .paginate(&db, pagination.page_size())
-                .fetch_page(pagination.page)
-                .await;
-            let res: Response<Body> = match query {
-                Ok(models) => {
-                    let total_items = select.count(&db).await?;
-                    build_paginated_response(
-                        json!(models),
-                        total_items,
-                        pagination.page,
-                        pagination.page_size(),
-                        &event,
-                    )?
-                }
-                Err(e) => APIError::with_pointer(
-                    get_apigw_request_id(&event),
-                    event.uri().path().to_string().as_str(),
-                    e.to_string().as_str(),
-                )
-                .into(),
-            };
-            res
-        }
-    };
-
-    Ok(res)
+        };
+        let ctx = Context::new(
+            event.apigw_request_id(),
+            event
+                .uri()
+                .path_and_query()
+                .expect("to have a path and optional query parameters")
+                .to_string(),
+        );
+        match get_price_fargate_adaptor(id, ctx).await {
+            Ok(v) => return Ok(v.into_response().await),
+            Err(e) => return Ok(APIErrors::from(e).into()),
+        };
+    }
+    // Retrieve all entries.
+    match get_prices_fargate_adaptor(price_parameters, pagination.page, pagination.page_size())
+        .await
+    {
+        Ok(v) => Ok(v.payload().into_response().await),
+        Err(e) => Ok(APIErrors::from(e).into()),
+    }
 }
 
 #[tokio::main]

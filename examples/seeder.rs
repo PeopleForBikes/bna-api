@@ -7,8 +7,8 @@ use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
 use entity::{
-    census, city, core_services, fargate_price, infrastructure, opportunity, people, prelude::*,
-    recreation, retail, speed_limit, summary, transit,
+    census, city, core_services, infrastructure, opportunity, people, prelude::*, recreation,
+    retail, speed_limit, summary, transit,
 };
 use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
