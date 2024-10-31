@@ -42,7 +42,6 @@ async fn main() -> Result<(), Report> {
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
     let mut versions: HashMap<Uuid, Calver> = HashMap::new();
     let mut city_fips2limit: HashMap<u32, u32> = HashMap::new();
-    let mut fargate_price: Vec<fargate_price::ActiveModel> = Vec::new();
 
     // Set the database connection.
     let database_url = dotenv::var("DATABASE_URL")?;
