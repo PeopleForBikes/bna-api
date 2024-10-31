@@ -23,7 +23,7 @@ use tracing::{debug, info};
 #[derive(FromQueryResult, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNA {
     // BNA Summary
-    pub bna_id: Uuid,
+    pub id: Uuid,
     pub city_id: Uuid,
     pub score: f64,
     pub version: String,
