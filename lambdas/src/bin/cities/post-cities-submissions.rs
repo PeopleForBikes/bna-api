@@ -1,8 +1,9 @@
 use dotenv::dotenv;
-use effortless::{api::parse_request_body, error::APIErrors};
+use effortless::{api::parse_request_body, error::APIErrors, response::make_json_created_response};
 use entity::wrappers::submission::SubmissionPost;
-use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
+use lambda_http::{run, service_fn, Body, Error, Request, Response};
 use lambdas::core::resource::cities::adaptor::post_cities_submission_adaptor;
+use serde_json::json;
 use tracing::info;
 
 async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
@@ -16,7 +17,8 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
     // let country = wrapper.country.clone();
 
     match post_cities_submission_adaptor(wrapper).await {
-        Ok(v) => Ok(v.into_response().await),
+        Ok(v) => Ok(make_json_created_response(json!(v).to_string())
+            .expect("unable to build http::Response")),
         Err(e) => Ok(APIErrors::from(e).into()),
     }
 }
