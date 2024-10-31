@@ -1,22 +1,22 @@
 @host=https://api.peopleforbikes.xyz
 # Austin, TX, USA.
 @city_id=ef8384d5-b96f-439d-a83b-bc801735ddc6
-@bna_id=1a759b85-cd87-4bb1-9efa-5789e38e9982
+@rating_id=1a759b85-cd87-4bb1-9efa-5789e38e9982
 @country=United States
 @region=Texas
 @name=Austin
 
 ###
 # Query the first page of the bnas.
-GET {{host}}/bnas
+GET {{host}}/ratings
 
 ###
 # Query a specific bna run.
-GET {{host}}/bnas/{{bna_id}}
+GET {{host}}/ratings/{{rating_id}}
 
 ###
 # Query a specific bna run and its associated city.
-GET {{host}}/bnas/{{bna_id}}/city
+GET {{host}}/ratings/{{rating_id}}/city
 
 ###
 # Query the first page of the cities.
@@ -28,7 +28,7 @@ GET {{host}}/cities/{{country}}/{{region}}/{{name}}
 
 ###
 # Query all the BNAs of a specific city.
-GET {{host}}/cities/{{country}}/{{region}}/{{name}}/bnas
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
 
 ###
 # Query all the Census of a specific city.
@@ -122,7 +122,7 @@ Authorization: Bearer {{cognito_access}}
 
 ###
 # Collect the list of analysis that completed.
-GET {{host}}/bnas/results
+GET {{host}}/ratings/results
 Authorization: Bearer {{cognito_access}}
 
 ###
@@ -148,7 +148,7 @@ Authorization: Bearer {{cognito_access}}
 @state_machine_id=e6aade5a-b343-120b-dbaa-bd916cd99221
 
 ### Create a new BNA analysis performed by the Brokenspoke-analyzer pipeline.
-POST {{host}}/bnas/analysis
+POST {{host}}/ratings/analysis
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
@@ -163,15 +163,15 @@ Authorization: Bearer {{cognito_access}}
 }
 
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/bnas/analysis
+GET {{host}}/ratings/analysis
 Authorization: Bearer {{cognito_access}}
 
 ### Query a specific BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/bnas/analysis/{{state_machine_id}}
+GET {{host}}/ratings/analysis/{{state_machine_id}}
 Authorization: Bearer {{cognito_access}}
 
 ### Update an existing BNA analysis performed by the Brokenspoke-analyzer pipeline.
-PATCH {{host}}/bnas/analysis/{{state_machine_id}}
+PATCH {{host}}/ratings/analysis/{{state_machine_id}}
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
@@ -180,7 +180,7 @@ Authorization: Bearer {{cognito_access}}
 }
 
 ### Create a new BNA .
-POST {{host}}/bnas
+POST {{host}}/ratings
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
@@ -239,11 +239,11 @@ Authorization: Bearer {{cognito_access}}
 # Bellow this point are the tests from schemathesis.
 ################################################################################
 
-GET {{host}}/bnas/1
+GET {{host}}/ratings/1
 X-Schemathesis-TestCaseId: 3bf4a72a4cc04ed589c5eedaf57b3ca2
 
 ###
-GET {{host}}/bnas/0/city
+GET {{host}}/ratings/0/city
 X-Schemathesis-TestCaseId: 9fa24d92de444fd28180df72fa1fabd6
 
 ###
@@ -255,5 +255,5 @@ GET {{host}}/cities/0
 X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
 
 ###
-GET {{host}}/cities/0/bnas
+GET {{host}}/cities/0/ratings
 X-Schemathesis-TestCaseId: 1f951094a7f14597bb50cafc52b812e0

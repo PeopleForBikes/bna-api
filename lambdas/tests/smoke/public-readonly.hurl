@@ -3,11 +3,11 @@ GET {{host}}/ratings
 HTTP 200
 
 # Query a specific bna run.
-GET {{host}}/ratings/{{bna_id}}
+GET {{host}}/ratings/{{rating_id}}
 HTTP 200
 
 # Query a specific bna run and its associated city.
-GET {{host}}/ratings/{{bna_id}}/city
+GET {{host}}/ratings/{{rating_id}}/city
 HTTP 200
 
 # Query the first page of the cities.

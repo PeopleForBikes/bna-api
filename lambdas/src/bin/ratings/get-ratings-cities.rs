@@ -24,7 +24,7 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
             .to_string(),
     );
 
-    match get_ratings_city_adaptor(params.bna_id, ctx).await {
+    match get_ratings_city_adaptor(params.rating_id, ctx).await {
         Ok(v) => Ok(v.into_response().await),
         Err(e) => Ok(APIErrors::from(e).into()),
     }

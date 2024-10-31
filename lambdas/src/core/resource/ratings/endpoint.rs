@@ -18,8 +18,8 @@ use uuid::Uuid;
 pub fn routes() -> Router {
     Router::new()
         .route("/ratings", get(get_ratings))
-        .route("/ratings/:bna_id", get(get_rating))
-        .route("/ratings/:bna_id/city", get(get_ratings_city))
+        .route("/ratings/:rating_id", get(get_rating))
+        .route("/ratings/:rating_id/city", get(get_ratings_city))
         .route(
             "/ratings/analyses",
             get(get_ratings_analyses).post(post_ratings_analysis),
@@ -45,10 +45,10 @@ async fn get_rating(
 }
 
 async fn get_ratings_city(
-    Path(bna_id): Path<Uuid>,
+    Path(rating_id): Path<Uuid>,
     ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_ratings_city_adaptor(bna_id, ctx).await.map(Json)
+    get_ratings_city_adaptor(rating_id, ctx).await.map(Json)
 }
 
 async fn get_ratings_analyses(

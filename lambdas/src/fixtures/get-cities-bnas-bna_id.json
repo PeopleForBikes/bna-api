@@ -1,5 +1,5 @@
 {
-  "resource": "/cities/{city_id}/bnas/{bna_id}",
+  "resource": "/cities/{city_id}/bnas/{rating_id}",
   "path": "/cities/1208800/bnas/9b5b76d8-f628-4367-bd1d-12e6423aacea",
   "httpMethod": "GET",
   "headers": {
@@ -44,7 +44,7 @@
   "multiValueQueryStringParameters": null,
   "pathParameters": {
     "city_id": "1208800",
-    "bna_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
+    "rating_id": "9b5b76d8-f628-4367-bd1d-12e6423aacea"
   },
   "stageVariables": null,
   "requestContext": {
