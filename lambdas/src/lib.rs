@@ -18,6 +18,7 @@ use lambda_http::{
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
+use serde_plain::derive_fromstr_from_deserialize;
 use std::env;
 use tracing::{debug, error};
 
@@ -493,6 +494,8 @@ pub enum Sort {
     #[default]
     Desc,
 }
+
+derive_fromstr_from_deserialize!(Sort);
 
 #[cfg(test)]
 mod tests {

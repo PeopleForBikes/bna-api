@@ -15,6 +15,20 @@ pub struct PriceParameters {
     latest: bool,
 }
 
+impl PriceParameters {
+    pub fn new(sort: Option<Sort>, latest: bool) -> Self {
+        Self { sort, latest }
+    }
+
+    pub fn set_sort(&mut self, sort: Option<Sort>) {
+        self.sort = sort;
+    }
+
+    pub fn set_latest(&mut self, latest: bool) {
+        self.latest = latest;
+    }
+}
+
 impl Default for PriceParameters {
     fn default() -> Self {
         Self {
