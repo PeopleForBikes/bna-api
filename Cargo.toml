@@ -5,14 +5,14 @@ edition = "2021"
 publish = false
 
 [workspace]
-members = ["lambdas", "entity", "migration", "effortless"]
+members = ["bnaclient", "lambdas", "entity", "migration", "effortless"]
 
 [workspace.dependencies]
 async-std = "1"
 aws_lambda_events = "0.15.0"
 aws-config = "1.5.9"
-aws-sdk-s3 = "1.57.0"
-aws-sdk-sqs = "1.46.0"
+aws-sdk-s3 = "1.59.0"
+aws-sdk-sqs = "1.48.0"
 axum = "0.7.7"
 axum-extra = "0.9.4"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "c20ec31" }
@@ -35,11 +35,11 @@ reqwest = "0.12.8"
 rstest = "0.23.0"
 sea-orm = "1.1.0"
 sea-orm-migration = "1.0.0"
-serde = "1.0.213"
+serde = "1.0.214"
 serde_json = "1.0.132"
 serde_plain = "1.0.2"
 serde_with = "3.11.0"
-thiserror = "1.0.65"
+thiserror = "1.0.66"
 tokio = "1.41.0"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false }

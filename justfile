@@ -92,3 +92,13 @@ compose-down:
   docker compose down
   docker compose rm -sfv
   docker volume rm -f bna-api_postgres
+
+# Generate BNA API client.
+generate-client:
+    RUST_LOG="debug" \
+      cargo progenitor \
+      -i ./openapi.yaml \
+      -o bnaclient \
+      -n bnaclient \
+      --interface builder \
+      -v 1.0.0
