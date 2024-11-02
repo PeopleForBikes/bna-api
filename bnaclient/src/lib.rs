@@ -438,7 +438,7 @@ pub mod types {
     ///      "examples": [
     ///        "united states/new mexico/santa rosa/24.05.4"
     ///      ],
-    ///      "type":
+    ///      "type": [
     ///        "string",
     ///        "null"
     ///      ]
@@ -584,7 +584,8 @@ pub mod types {
     ///      "examples": [
     ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "community_centers": {
     ///      "description": "BNA category subscore for access to community
@@ -749,7 +750,8 @@ pub mod types {
     ///      "examples": [
     ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "recreation_score": {
     ///      "description": "BNA category score for access to recreational
@@ -838,7 +840,7 @@ pub mod types {
     #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
     pub struct Bna {
         ///City identifier
-        pub city_id: String,
+        pub city_id: uuid::Uuid,
         ///BNA category subscore for access to community centers
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub community_centers: Option<f64>,
@@ -885,7 +887,7 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub pharmacies: Option<f64>,
         ///Analysis identifier
-        pub rating_id: String,
+        pub rating_id: uuid::Uuid,
         ///BNA category score for access to recreational facilities
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub recreation_score: Option<f64>,
@@ -934,15 +936,15 @@ pub mod types {
     ///    "features",
     ///    "infrastructure",
     ///    "opportunity",
+    ///    "people",
     ///    "recreation",
-    ///    "summary"
+    ///    "retail",
+    ///    "summary",
+    ///    "transit"
     ///  ],
     ///  "properties": {
     ///    "core_services": {
     ///      "$ref": "#/components/schemas/core_services"
-    ///    },
-    ///    "features": {
-    ///      "$ref": "#/components/schemas/features"
     ///    },
     ///    "infrastructure": {
     ///      "$ref": "#/components/schemas/infrastructure"
@@ -950,11 +952,20 @@ pub mod types {
     ///    "opportunity": {
     ///      "$ref": "#/components/schemas/opportunity"
     ///    },
+    ///    "people": {
+    ///      "$ref": "#/components/schemas/people"
+    ///    },
     ///    "recreation": {
     ///      "$ref": "#/components/schemas/recreation"
     ///    },
+    ///    "retail": {
+    ///      "$ref": "#/components/schemas/retail"
+    ///    },
     ///    "summary": {
     ///      "$ref": "#/components/schemas/bna_summary"
+    ///    },
+    ///    "transit": {
+    ///      "$ref": "#/components/schemas/transit"
     ///    }
     ///  }
     ///}
@@ -963,11 +974,14 @@ pub mod types {
     #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
     pub struct BnaPost {
         pub core_services: CoreServices,
-        pub features: Features,
+        pub features: serde_json::Value,
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
+        pub people: People,
         pub recreation: Recreation,
+        pub retail: Retail,
         pub summary: BnaSummary,
+        pub transit: Transit,
     }
 
     impl From<&BnaPost> for BnaPost {
@@ -989,13 +1003,20 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "city_id",
+    ///    "rating_id",
+    ///    "score",
+    ///    "version"
+    ///  ],
     ///  "properties": {
     ///    "city_id": {
     ///      "description": "City identifier",
     ///      "examples": [
     ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
@@ -1022,7 +1043,8 @@ pub mod types {
     ///      "examples": [
     ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "score": {
     ///      "description": "BNA score",
@@ -1045,19 +1067,15 @@ pub mod types {
     #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
     pub struct BnaSummary {
         ///City identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<String>,
+        pub city_id: uuid::Uuid,
         ///Date and time
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         pub created_at: Vec<i64>,
         ///Analysis identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub rating_id: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        pub rating_id: uuid::Uuid,
+        pub score: f64,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub version: Option<String>,
+        pub version: String,
     }
 
     impl From<&BnaSummary> for BnaSummary {
@@ -1138,8 +1156,7 @@ pub mod types {
     /// </details>
     #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
     pub struct BnaSummaryWithCityItem {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<String>,
+        pub city_id: uuid::Uuid,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub country: Option<Country>,
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
@@ -1152,15 +1169,13 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub name: Option<String>,
         ///Analysis identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub rating_id: Option<String>,
+        pub rating_id: uuid::Uuid,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub region: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        pub score: f64,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub speed_limit: Option<f64>,
         ///State name
@@ -1172,8 +1187,7 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         pub updated_at: Vec<i64>,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub version: Option<String>,
+        pub version: String,
     }
 
     impl From<&BnaSummaryWithCityItem> for BnaSummaryWithCityItem {
@@ -1208,7 +1222,8 @@ pub mod types {
     ///      "examples": [
     ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
@@ -1268,7 +1283,7 @@ pub mod types {
         pub census_id: Option<i64>,
         ///City identifier
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<String>,
+        pub city_id: Option<uuid::Uuid>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Vec::is_empty")]
         pub created_at: Vec<i64>,
@@ -1371,7 +1386,8 @@ pub mod types {
     ///      "examples": [
     ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
     ///      ],
-    ///      "type": "string"
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "country": {
     ///      "$ref": "#/components/schemas/country"
@@ -1478,7 +1494,7 @@ pub mod types {
     pub struct City {
         ///City identifier
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<String>,
+        pub city_id: Option<uuid::Uuid>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub country: Option<Country>,
         ///Date and time
@@ -2264,11 +2280,10 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
-    pub struct GetCityRatingsResponseItem {
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_0: Option<City>,
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_1: Option<BnaSummary>,
+    #[serde(untagged)]
+    pub enum GetCityRatingsResponseItem {
+        City(City),
+        BnaSummary(BnaSummary),
     }
 
     impl From<&GetCityRatingsResponseItem> for GetCityRatingsResponseItem {
@@ -2277,9 +2292,15 @@ pub mod types {
         }
     }
 
-    impl GetCityRatingsResponseItem {
-        pub fn builder() -> builder::GetCityRatingsResponseItem {
-            Default::default()
+    impl From<City> for GetCityRatingsResponseItem {
+        fn from(value: City) -> Self {
+            Self::City(value)
+        }
+    }
+
+    impl From<BnaSummary> for GetCityRatingsResponseItem {
+        fn from(value: BnaSummary) -> Self {
+            Self::BnaSummary(value)
         }
     }
 
@@ -2664,6 +2685,39 @@ pub mod types {
         }
     }
 
+    ///People
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "score": {
+    ///      "type": "number"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct People {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub score: Option<f64>,
+    }
+
+    impl From<&People> for People {
+        fn from(value: &People) -> Self {
+            value.clone()
+        }
+    }
+
+    impl People {
+        pub fn builder() -> builder::People {
+            Default::default()
+        }
+    }
+
     ///A JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the value in the request document that caused the error [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
     ///
     /// <details><summary>JSON schema</summary>
@@ -2786,6 +2840,39 @@ pub mod types {
         }
     }
 
+    ///Retail
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "score": {
+    ///      "type": "number"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct Retail {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub score: Option<f64>,
+    }
+
+    impl From<&Retail> for Retail {
+        fn from(value: &Retail) -> Self {
+            value.clone()
+        }
+    }
+
+    impl Retail {
+        pub fn builder() -> builder::Retail {
+            Default::default()
+        }
+    }
+
     ///An object containing references to the primary source of the error.
     ///
     /// <details><summary>JSON schema</summary>
@@ -2904,22 +2991,21 @@ pub mod types {
     ///  "examples": [
     ///    "38f4f54e-98d6-4048-8c0f-99cde05a7e76"
     ///  ],
-    ///  "type": "string"
+    ///  "type": "string",
+    ///  "format": "uuid"
     ///}
     /// ```
     /// </details>
-    #[derive(
-        Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, serde :: Deserialize, serde :: Serialize,
-    )]
-    pub struct StateMachineId(pub String);
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct StateMachineId(pub uuid::Uuid);
     impl std::ops::Deref for StateMachineId {
-        type Target = String;
-        fn deref(&self) -> &String {
+        type Target = uuid::Uuid;
+        fn deref(&self) -> &uuid::Uuid {
             &self.0
         }
     }
 
-    impl From<StateMachineId> for String {
+    impl From<StateMachineId> for uuid::Uuid {
         fn from(value: StateMachineId) -> Self {
             value.0
         }
@@ -2931,16 +3017,37 @@ pub mod types {
         }
     }
 
-    impl From<String> for StateMachineId {
-        fn from(value: String) -> Self {
+    impl From<uuid::Uuid> for StateMachineId {
+        fn from(value: uuid::Uuid) -> Self {
             Self(value)
         }
     }
 
     impl std::str::FromStr for StateMachineId {
-        type Err = std::convert::Infallible;
+        type Err = <uuid::Uuid as std::str::FromStr>::Err;
         fn from_str(value: &str) -> Result<Self, Self::Err> {
-            Ok(Self(value.to_string()))
+            Ok(Self(value.parse()?))
+        }
+    }
+
+    impl std::convert::TryFrom<&str> for StateMachineId {
+        type Error = <uuid::Uuid as std::str::FromStr>::Err;
+        fn try_from(value: &str) -> Result<Self, Self::Error> {
+            value.parse()
+        }
+    }
+
+    impl std::convert::TryFrom<&String> for StateMachineId {
+        type Error = <uuid::Uuid as std::str::FromStr>::Err;
+        fn try_from(value: &String) -> Result<Self, Self::Error> {
+            value.parse()
+        }
+    }
+
+    impl std::convert::TryFrom<String> for StateMachineId {
+        type Error = <uuid::Uuid as std::str::FromStr>::Err;
+        fn try_from(value: String) -> Result<Self, Self::Error> {
+            value.parse()
         }
     }
 
@@ -3573,6 +3680,39 @@ pub mod types {
         }
     }
 
+    ///Transit
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "score": {
+    ///      "type": "number"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct Transit {
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub score: Option<f64>,
+    }
+
+    impl From<&Transit> for Transit {
+        fn from(value: &Transit) -> Self {
+            value.clone()
+        }
+    }
+
+    impl Transit {
+        pub fn builder() -> builder::Transit {
+            Default::default()
+        }
+    }
+
     /// Types for composing complex structures.
     pub mod builder {
         #[derive(Clone, Debug)]
@@ -4054,7 +4194,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Bna {
-            city_id: Result<String, String>,
+            city_id: Result<uuid::Uuid, String>,
             community_centers: Result<Option<f64>, String>,
             coreservices_score: Result<Option<f64>, String>,
             dentists: Result<Option<f64>, String>,
@@ -4070,7 +4210,7 @@ pub mod types {
             parks: Result<Option<f64>, String>,
             people: Result<Option<f64>, String>,
             pharmacies: Result<Option<f64>, String>,
-            rating_id: Result<String, String>,
+            rating_id: Result<uuid::Uuid, String>,
             recreation_score: Result<Option<f64>, String>,
             recreation_trails: Result<Option<f64>, String>,
             retail: Result<Option<f64>, String>,
@@ -4116,7 +4256,7 @@ pub mod types {
         impl Bna {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -4294,7 +4434,7 @@ pub mod types {
             }
             pub fn rating_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.rating_id = value
@@ -4461,11 +4601,14 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct BnaPost {
             core_services: Result<super::CoreServices, String>,
-            features: Result<super::Features, String>,
+            features: Result<serde_json::Value, String>,
             infrastructure: Result<super::Infrastructure, String>,
             opportunity: Result<super::Opportunity, String>,
+            people: Result<super::People, String>,
             recreation: Result<super::Recreation, String>,
+            retail: Result<super::Retail, String>,
             summary: Result<super::BnaSummary, String>,
+            transit: Result<super::Transit, String>,
         }
 
         impl Default for BnaPost {
@@ -4475,8 +4618,11 @@ pub mod types {
                     features: Err("no value supplied for features".to_string()),
                     infrastructure: Err("no value supplied for infrastructure".to_string()),
                     opportunity: Err("no value supplied for opportunity".to_string()),
+                    people: Err("no value supplied for people".to_string()),
                     recreation: Err("no value supplied for recreation".to_string()),
+                    retail: Err("no value supplied for retail".to_string()),
                     summary: Err("no value supplied for summary".to_string()),
+                    transit: Err("no value supplied for transit".to_string()),
                 }
             }
         }
@@ -4494,7 +4640,7 @@ pub mod types {
             }
             pub fn features<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::Features>,
+                T: std::convert::TryInto<serde_json::Value>,
                 T::Error: std::fmt::Display,
             {
                 self.features = value
@@ -4522,6 +4668,16 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for opportunity: {}", e));
                 self
             }
+            pub fn people<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<super::People>,
+                T::Error: std::fmt::Display,
+            {
+                self.people = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for people: {}", e));
+                self
+            }
             pub fn recreation<T>(mut self, value: T) -> Self
             where
                 T: std::convert::TryInto<super::Recreation>,
@@ -4530,6 +4686,16 @@ pub mod types {
                 self.recreation = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for recreation: {}", e));
+                self
+            }
+            pub fn retail<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<super::Retail>,
+                T::Error: std::fmt::Display,
+            {
+                self.retail = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
                 self
             }
             pub fn summary<T>(mut self, value: T) -> Self
@@ -4542,6 +4708,16 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for summary: {}", e));
                 self
             }
+            pub fn transit<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<super::Transit>,
+                T::Error: std::fmt::Display,
+            {
+                self.transit = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
+                self
+            }
         }
 
         impl std::convert::TryFrom<BnaPost> for super::BnaPost {
@@ -4552,8 +4728,11 @@ pub mod types {
                     features: value.features?,
                     infrastructure: value.infrastructure?,
                     opportunity: value.opportunity?,
+                    people: value.people?,
                     recreation: value.recreation?,
+                    retail: value.retail?,
                     summary: value.summary?,
+                    transit: value.transit?,
                 })
             }
         }
@@ -4565,29 +4744,32 @@ pub mod types {
                     features: Ok(value.features),
                     infrastructure: Ok(value.infrastructure),
                     opportunity: Ok(value.opportunity),
+                    people: Ok(value.people),
                     recreation: Ok(value.recreation),
+                    retail: Ok(value.retail),
                     summary: Ok(value.summary),
+                    transit: Ok(value.transit),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct BnaSummary {
-            city_id: Result<Option<String>, String>,
+            city_id: Result<uuid::Uuid, String>,
             created_at: Result<Vec<i64>, String>,
-            rating_id: Result<Option<String>, String>,
-            score: Result<Option<f64>, String>,
-            version: Result<Option<String>, String>,
+            rating_id: Result<uuid::Uuid, String>,
+            score: Result<f64, String>,
+            version: Result<String, String>,
         }
 
         impl Default for BnaSummary {
             fn default() -> Self {
                 Self {
-                    city_id: Ok(Default::default()),
+                    city_id: Err("no value supplied for city_id".to_string()),
                     created_at: Ok(Default::default()),
-                    rating_id: Ok(Default::default()),
-                    score: Ok(Default::default()),
-                    version: Ok(Default::default()),
+                    rating_id: Err("no value supplied for rating_id".to_string()),
+                    score: Err("no value supplied for score".to_string()),
+                    version: Err("no value supplied for version".to_string()),
                 }
             }
         }
@@ -4595,7 +4777,7 @@ pub mod types {
         impl BnaSummary {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -4615,7 +4797,7 @@ pub mod types {
             }
             pub fn rating_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.rating_id = value
@@ -4625,7 +4807,7 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<f64>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -4635,7 +4817,7 @@ pub mod types {
             }
             pub fn version<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<String>,
                 T::Error: std::fmt::Display,
             {
                 self.version = value
@@ -4672,39 +4854,39 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct BnaSummaryWithCityItem {
-            city_id: Result<Option<String>, String>,
+            city_id: Result<uuid::Uuid, String>,
             country: Result<Option<super::Country>, String>,
             created_at: Result<Vec<i64>, String>,
             latitude: Result<Option<f64>, String>,
             longitude: Result<Option<f64>, String>,
             name: Result<Option<String>, String>,
-            rating_id: Result<Option<String>, String>,
+            rating_id: Result<uuid::Uuid, String>,
             region: Result<Option<String>, String>,
-            score: Result<Option<f64>, String>,
+            score: Result<f64, String>,
             speed_limit: Result<Option<f64>, String>,
             state: Result<Option<String>, String>,
             state_abbrev: Result<Option<f64>, String>,
             updated_at: Result<Vec<i64>, String>,
-            version: Result<Option<String>, String>,
+            version: Result<String, String>,
         }
 
         impl Default for BnaSummaryWithCityItem {
             fn default() -> Self {
                 Self {
-                    city_id: Ok(Default::default()),
+                    city_id: Err("no value supplied for city_id".to_string()),
                     country: Ok(Default::default()),
                     created_at: Ok(Default::default()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
                     name: Ok(Default::default()),
-                    rating_id: Ok(Default::default()),
+                    rating_id: Err("no value supplied for rating_id".to_string()),
                     region: Ok(Default::default()),
-                    score: Ok(Default::default()),
+                    score: Err("no value supplied for score".to_string()),
                     speed_limit: Ok(Default::default()),
                     state: Ok(Default::default()),
                     state_abbrev: Ok(Default::default()),
                     updated_at: Ok(Default::default()),
-                    version: Ok(Default::default()),
+                    version: Err("no value supplied for version".to_string()),
                 }
             }
         }
@@ -4712,7 +4894,7 @@ pub mod types {
         impl BnaSummaryWithCityItem {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -4772,7 +4954,7 @@ pub mod types {
             }
             pub fn rating_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<uuid::Uuid>,
                 T::Error: std::fmt::Display,
             {
                 self.rating_id = value
@@ -4792,7 +4974,7 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<f64>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -4842,7 +5024,7 @@ pub mod types {
             }
             pub fn version<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<String>,
                 T::Error: std::fmt::Display,
             {
                 self.version = value
@@ -4900,7 +5082,7 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct Census {
             census_id: Result<Option<i64>, String>,
-            city_id: Result<Option<String>, String>,
+            city_id: Result<Option<uuid::Uuid>, String>,
             created_at: Result<Vec<i64>, String>,
             fips_code: Result<Option<String>, String>,
             pop_size: Result<Option<super::CensusPopSize>, String>,
@@ -4933,7 +5115,7 @@ pub mod types {
             }
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<Option<uuid::Uuid>>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -5012,7 +5194,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct City {
-            city_id: Result<Option<String>, String>,
+            city_id: Result<Option<uuid::Uuid>, String>,
             country: Result<Option<super::Country>, String>,
             created_at: Result<Vec<i64>, String>,
             latitude: Result<Option<f64>, String>,
@@ -5046,7 +5228,7 @@ pub mod types {
         impl City {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<Option<uuid::Uuid>>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -5847,65 +6029,6 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct GetCityRatingsResponseItem {
-            subtype_0: Result<Option<super::City>, String>,
-            subtype_1: Result<Option<super::BnaSummary>, String>,
-        }
-
-        impl Default for GetCityRatingsResponseItem {
-            fn default() -> Self {
-                Self {
-                    subtype_0: Ok(Default::default()),
-                    subtype_1: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl GetCityRatingsResponseItem {
-            pub fn subtype_0<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<Option<super::City>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_0 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_0: {}", e));
-                self
-            }
-            pub fn subtype_1<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<Option<super::BnaSummary>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_1 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_1: {}", e));
-                self
-            }
-        }
-
-        impl std::convert::TryFrom<GetCityRatingsResponseItem> for super::GetCityRatingsResponseItem {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCityRatingsResponseItem,
-            ) -> Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    subtype_0: value.subtype_0?,
-                    subtype_1: value.subtype_1?,
-                })
-            }
-        }
-
-        impl From<super::GetCityRatingsResponseItem> for GetCityRatingsResponseItem {
-            fn from(value: super::GetCityRatingsResponseItem) -> Self {
-                Self {
-                    subtype_0: Ok(value.subtype_0),
-                    subtype_1: Ok(value.subtype_1),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct Infrastructure {
             high_stress_miles: Result<Option<f64>, String>,
             low_stress_miles: Result<Option<f64>, String>,
@@ -6074,6 +6197,49 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct People {
+            score: Result<Option<f64>, String>,
+        }
+
+        impl Default for People {
+            fn default() -> Self {
+                Self {
+                    score: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl People {
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<People> for super::People {
+            type Error = super::error::ConversionError;
+            fn try_from(value: People) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    score: value.score?,
+                })
+            }
+        }
+
+        impl From<super::People> for People {
+            fn from(value: super::People) -> Self {
+                Self {
+                    score: Ok(value.score),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct Recreation {
             community_centers: Result<Option<f64>, String>,
             parks: Result<Option<f64>, String>,
@@ -6159,6 +6325,49 @@ pub mod types {
                     community_centers: Ok(value.community_centers),
                     parks: Ok(value.parks),
                     recreation_trails: Ok(value.recreation_trails),
+                    score: Ok(value.score),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct Retail {
+            score: Result<Option<f64>, String>,
+        }
+
+        impl Default for Retail {
+            fn default() -> Self {
+                Self {
+                    score: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl Retail {
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<Retail> for super::Retail {
+            type Error = super::error::ConversionError;
+            fn try_from(value: Retail) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    score: value.score?,
+                })
+            }
+        }
+
+        impl From<super::Retail> for Retail {
+            fn from(value: super::Retail) -> Self {
+                Self {
                     score: Ok(value.score),
                 }
             }
@@ -6746,6 +6955,49 @@ pub mod types {
                     organization: Ok(value.organization),
                     region: Ok(value.region),
                     submission_status: Ok(value.submission_status),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct Transit {
+            score: Result<Option<f64>, String>,
+        }
+
+        impl Default for Transit {
+            fn default() -> Self {
+                Self {
+                    score: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl Transit {
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<Transit> for super::Transit {
+            type Error = super::error::ConversionError;
+            fn try_from(value: Transit) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    score: value.score?,
+                })
+            }
+        }
+
+        impl From<super::Transit> for Transit {
+            fn from(value: super::Transit) -> Self {
+                Self {
+                    score: Ok(value.score),
                 }
             }
         }
@@ -7657,7 +7909,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetRating<'a> {
         client: &'a super::Client,
-        rating_id: Result<String, String>,
+        rating_id: Result<uuid::Uuid, String>,
         component: Result<Option<types::GetRatingComponent>, String>,
     }
 
@@ -7672,11 +7924,11 @@ pub mod builder {
 
         pub fn rating_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<uuid::Uuid>,
         {
             self.rating_id = value
                 .try_into()
-                .map_err(|_| "conversion to `String` for rating_id failed".to_string());
+                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
             self
         }
 
@@ -7740,7 +7992,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetRatingCity<'a> {
         client: &'a super::Client,
-        rating_id: Result<String, String>,
+        rating_id: Result<uuid::Uuid, String>,
     }
 
     impl<'a> GetRatingCity<'a> {
@@ -7753,11 +8005,11 @@ pub mod builder {
 
         pub fn rating_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<uuid::Uuid>,
         {
             self.rating_id = value
                 .try_into()
-                .map_err(|_| "conversion to `String` for rating_id failed".to_string());
+                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
             self
         }
 

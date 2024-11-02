@@ -101,4 +101,5 @@ generate-client:
       -o bnaclient \
       -n bnaclient \
       --interface builder \
+      --license-name MIT \
       -v 1.0.0
