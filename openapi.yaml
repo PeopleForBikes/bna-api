@@ -557,10 +557,12 @@ components:
       properties:
         rating_id:
           type: string
+          format: uuid
           description: "Analysis identifier"
           example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
         city_id:
           type: string
+          format: uuid
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         community_centers:
@@ -689,32 +691,41 @@ components:
       properties:
         core_services:
           $ref: "#/components/schemas/core_services"
-        features:
-          $ref: "#/components/schemas/features"
         infrastructure:
           $ref: "#/components/schemas/infrastructure"
         opportunity:
           $ref: "#/components/schemas/opportunity"
+        people:
+          $ref: "#/components/schemas/people"
         recreation:
           $ref: "#/components/schemas/recreation"
+        retail:
+          $ref: "#/components/schemas/retail"
         summary:
           $ref: "#/components/schemas/bna_summary"
+        transit:
+          $ref: "#/components/schemas/transit"
       required:
         - core_services
         - features
         - infrastructure
         - opportunity
+        - people
         - recreation
+        - retail
         - summary
+        - transit
     bna_summary:
       type: object
       properties:
         rating_id:
           type: string
+          format: uuid
           description: "Analysis identifier"
           example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
         city_id:
           type: string
+          format: uuid
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         created_at:
@@ -743,6 +754,11 @@ components:
             specification with the YY.0M[.Minor] scheme.
 
           example: "23.02"
+      required:
+        - city_id
+        - rating_id
+        - score
+        - version
     bna_summary_with_city:
       type: array
       items:
@@ -758,6 +774,7 @@ components:
           example: 788
         city_id:
           type: string
+          format: uuid
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         created_at:
@@ -799,6 +816,7 @@ components:
       properties:
         city_id:
           type: string
+          format: uuid
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         country:
@@ -1138,6 +1156,7 @@ components:
         source: Parameter "/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221?"
     state_machine_id:
       type: string
+      format: uuid
       description: "ID of the AWS state machine that was used to run the pipeline"
       example: "38f4f54e-98d6-4048-8c0f-99cde05a7e76"
     step:
@@ -1344,6 +1363,21 @@ components:
       description: "A collection of submissions"
       items:
         $ref: "#/components/schemas/submission"
+    people:
+      type: object
+      properties:
+        score:
+          type: number
+    retail:
+      type: object
+      properties:
+        score:
+          type: number
+    transit:
+      type: object
+      properties:
+        score:
+          type: number
 
   parameters:
     rating_id:
@@ -1353,6 +1387,7 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
         description: "Analysis identifier"
         example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
     country:
