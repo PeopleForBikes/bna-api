@@ -65,26 +65,11 @@ pub mod types {
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
     ///      "type": [
-    ///        "array",
+    ///        "string",
     ///        "null"
     ///      ],
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "format": "date-time"
     ///    },
     ///    "fargate_task_arn": {
     ///      "description": "The ARN of the Fargate task that performed the
@@ -129,26 +114,11 @@ pub mod types {
     ///    },
     ///    "start_time": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
     ///      "type": [
-    ///        "array",
+    ///        "string",
     ///        "null"
     ///      ],
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "format": "date-time"
     ///    },
     ///    "state_machine_id": {
     ///      "$ref": "#/components/schemas/state_machine_id"
@@ -175,7 +145,7 @@ pub mod types {
         pub cost: Option<f64>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<Vec<i64>>,
+        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///The ARN of the Fargate task that performed the analysis
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub fargate_task_arn: Option<String>,
@@ -189,7 +159,7 @@ pub mod types {
         pub sqs_message: Option<String>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub start_time: Option<Vec<i64>>,
+        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
         pub state_machine_id: StateMachineId,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub step: Option<Step>,
@@ -231,26 +201,11 @@ pub mod types {
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
     ///      "type": [
-    ///        "array",
+    ///        "string",
     ///        "null"
     ///      ],
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "format": "date-time"
     ///    },
     ///    "fargate_task_arn": {
     ///      "description": "The ARN of the Fargate task that performed the
@@ -295,26 +250,11 @@ pub mod types {
     ///    },
     ///    "start_time": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
     ///      "type": [
-    ///        "array",
+    ///        "string",
     ///        "null"
     ///      ],
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "format": "date-time"
     ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
@@ -338,7 +278,7 @@ pub mod types {
         pub cost: Option<f64>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<Vec<i64>>,
+        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///The ARN of the Fargate task that performed the analysis
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub fargate_task_arn: Option<String>,
@@ -352,7 +292,7 @@ pub mod types {
         pub sqs_message: Option<String>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub start_time: Option<Vec<i64>>,
+        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub step: Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
@@ -393,26 +333,16 @@ pub mod types {
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
     ///      "type": [
-    ///        "array",
+    ///        "string",
     ///        "null"
     ///      ],
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "format": "date-time"
+    ///    },
+    ///    "fargate_price_id": {
+    ///      "description": "Identifier of the Fargate Price rate used to
+    /// compute the cost of the pipeline run.\n",
+    ///      "type": "number"
     ///    },
     ///    "fargate_task_arn": {
     ///      "description": "The ARN of the Fargate task that performed the
@@ -455,6 +385,29 @@ pub mod types {
     ///        "null"
     ///      ]
     ///    },
+    ///    "start_time": {
+    ///      "description": "Date and time",
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ],
+    ///      "format": "date-time"
+    ///    },
+    ///    "state_machine_id": {
+    ///      "$ref": "#/components/schemas/state_machine_id"
+    ///    },
+    ///    "status": {
+    ///      "description": "",
+    ///      "examples": [
+    ///        "Pending"
+    ///      ],
+    ///      "type": "string",
+    ///      "enum": [
+    ///        "Complete",
+    ///        "Pending",
+    ///        "InProgress"
+    ///      ]
+    ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
     ///    },
@@ -477,7 +430,9 @@ pub mod types {
         pub cost: Option<f64>,
         ///Date and time
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<Vec<i64>>,
+        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub fargate_price_id: Option<f64>,
         ///The ARN of the Fargate task that performed the analysis
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub fargate_task_arn: Option<String>,
@@ -489,6 +444,14 @@ pub mod types {
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub sqs_message: Option<String>,
+        ///Date and time
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub state_machine_id: Option<StateMachineId>,
+        ///
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub status: Option<AnalysisPostStatus>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub step: Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
@@ -506,6 +469,92 @@ pub mod types {
     impl AnalysisPost {
         pub fn builder() -> builder::AnalysisPost {
             Default::default()
+        }
+    }
+
+    ///
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "",
+    ///  "examples": [
+    ///    "Pending"
+    ///  ],
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Complete",
+    ///    "Pending",
+    ///    "InProgress"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+        serde :: Deserialize,
+        serde :: Serialize,
+    )]
+    pub enum AnalysisPostStatus {
+        Complete,
+        Pending,
+        InProgress,
+    }
+
+    impl From<&AnalysisPostStatus> for AnalysisPostStatus {
+        fn from(value: &AnalysisPostStatus) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ToString for AnalysisPostStatus {
+        fn to_string(&self) -> String {
+            match *self {
+                Self::Complete => "Complete".to_string(),
+                Self::Pending => "Pending".to_string(),
+                Self::InProgress => "InProgress".to_string(),
+            }
+        }
+    }
+
+    impl std::str::FromStr for AnalysisPostStatus {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+            match value {
+                "Complete" => Ok(Self::Complete),
+                "Pending" => Ok(Self::Pending),
+                "InProgress" => Ok(Self::InProgress),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl std::convert::TryFrom<&str> for AnalysisPostStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl std::convert::TryFrom<&String> for AnalysisPostStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl std::convert::TryFrom<String> for AnalysisPostStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
 
@@ -1020,23 +1069,8 @@ pub mod types {
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
-    ///      "type": "array",
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "type": "string",
+    ///      "format": "date-time"
     ///    },
     ///    "rating_id": {
     ///      "description": "Analysis identifier",
@@ -1069,8 +1103,8 @@ pub mod types {
         ///City identifier
         pub city_id: uuid::Uuid,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub created_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Analysis identifier
         pub rating_id: uuid::Uuid,
         pub score: f64,
@@ -1159,8 +1193,8 @@ pub mod types {
         pub city_id: uuid::Uuid,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub country: Option<Country>,
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub created_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub latitude: Option<f64>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1184,8 +1218,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub state_abbrev: Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub updated_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub updated_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
         pub version: String,
     }
@@ -1227,23 +1261,8 @@ pub mod types {
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
-    ///      "type": "array",
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "type": "string",
+    ///      "format": "date-time"
     ///    },
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
@@ -1285,8 +1304,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub city_id: Option<uuid::Uuid>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub created_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1394,23 +1413,8 @@ pub mod types {
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
-    ///      "type": "array",
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "type": "string",
+    ///      "format": "date-time"
     ///    },
     ///    "latitude": {
     ///      "description": "Geographic coordinate that specifies the
@@ -1468,23 +1472,8 @@ pub mod types {
     ///    },
     ///    "updated_at": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
-    ///      "type": "array",
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "type": "string",
+    ///      "format": "date-time"
     ///    }
     ///  }
     ///}
@@ -1498,8 +1487,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub country: Option<Country>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub created_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub latitude: Option<f64>,
         #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1520,8 +1509,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub state_abbrev: Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub updated_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub updated_at: Option<chrono::DateTime<chrono::offset::Utc>>,
     }
 
     impl From<&City> for City {
@@ -3168,30 +3157,18 @@ pub mod types {
     ///      "examples": [
     ///        true
     ///      ],
-    ///      "type": "boolean"
+    ///      "type": [
+    ///        "boolean",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "country": {
     ///      "$ref": "#/components/schemas/country"
     ///    },
     ///    "created_at": {
     ///      "description": "Date and time",
-    ///      "examples": [
-    ///        [
-    ///          2023,
-    ///          6,
-    ///          16,
-    ///          22,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0,
-    ///          0
-    ///        ]
-    ///      ],
-    ///      "type": "array",
-    ///      "items": {
-    ///        "type": "integer"
-    ///      }
+    ///      "type": "string",
+    ///      "format": "date-time"
     ///    },
     ///    "email": {
     ///      "description": "Email address",
@@ -3274,8 +3251,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub country: Option<Country>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Vec::is_empty")]
-        pub created_at: Vec<i64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Email address
         #[serde(default, skip_serializing_if = "Option::is_none")]
         pub email: Option<String>,
@@ -3718,12 +3695,12 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct Analysis {
             cost: Result<Option<f64>, String>,
-            end_time: Result<Option<Vec<i64>>, String>,
+            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             fargate_task_arn: Result<Option<String>, String>,
             results_posted: Result<Option<bool>, String>,
             s3_bucket: Result<Option<String>, String>,
             sqs_message: Result<Option<String>, String>,
-            start_time: Result<Option<Vec<i64>>, String>,
+            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             state_machine_id: Result<super::StateMachineId, String>,
             step: Result<Option<super::Step>, String>,
             torn_down: Result<Option<bool>, String>,
@@ -3759,7 +3736,7 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<Vec<i64>>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
@@ -3812,7 +3789,7 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<Vec<i64>>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.start_time = value
@@ -3893,12 +3870,12 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct AnalysisPatch {
             cost: Result<Option<f64>, String>,
-            end_time: Result<Option<Vec<i64>>, String>,
+            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             fargate_task_arn: Result<Option<String>, String>,
             results_posted: Result<Option<bool>, String>,
             s3_bucket: Result<Option<String>, String>,
             sqs_message: Result<Option<String>, String>,
-            start_time: Result<Option<Vec<i64>>, String>,
+            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             step: Result<Option<super::Step>, String>,
             torn_down: Result<Option<bool>, String>,
         }
@@ -3932,7 +3909,7 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<Vec<i64>>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
@@ -3985,7 +3962,7 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<Vec<i64>>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.start_time = value
@@ -4051,11 +4028,15 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct AnalysisPost {
             cost: Result<Option<f64>, String>,
-            end_time: Result<Option<Vec<i64>>, String>,
+            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+            fargate_price_id: Result<Option<f64>, String>,
             fargate_task_arn: Result<Option<String>, String>,
             result_posted: Result<Option<bool>, String>,
             s3_bucket: Result<Option<String>, String>,
             sqs_message: Result<Option<String>, String>,
+            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+            state_machine_id: Result<Option<super::StateMachineId>, String>,
+            status: Result<Option<super::AnalysisPostStatus>, String>,
             step: Result<Option<super::Step>, String>,
             torn_down: Result<Option<bool>, String>,
         }
@@ -4065,10 +4046,14 @@ pub mod types {
                 Self {
                     cost: Ok(Default::default()),
                     end_time: Ok(Default::default()),
+                    fargate_price_id: Ok(Default::default()),
                     fargate_task_arn: Ok(Default::default()),
                     result_posted: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
+                    start_time: Ok(Default::default()),
+                    state_machine_id: Ok(Default::default()),
+                    status: Ok(Default::default()),
                     step: Ok(Default::default()),
                     torn_down: Ok(Default::default()),
                 }
@@ -4088,12 +4073,25 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<Vec<i64>>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for end_time: {}", e));
+                self
+            }
+            pub fn fargate_price_id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.fargate_price_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for fargate_price_id: {}",
+                        e
+                    )
+                });
                 self
             }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
@@ -4139,6 +4137,39 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for sqs_message: {}", e));
                 self
             }
+            pub fn start_time<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T::Error: std::fmt::Display,
+            {
+                self.start_time = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for start_time: {}", e));
+                self
+            }
+            pub fn state_machine_id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<super::StateMachineId>>,
+                T::Error: std::fmt::Display,
+            {
+                self.state_machine_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for state_machine_id: {}",
+                        e
+                    )
+                });
+                self
+            }
+            pub fn status<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<super::AnalysisPostStatus>>,
+                T::Error: std::fmt::Display,
+            {
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
+                self
+            }
             pub fn step<T>(mut self, value: T) -> Self
             where
                 T: std::convert::TryInto<Option<super::Step>>,
@@ -4167,10 +4198,14 @@ pub mod types {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
+                    fargate_price_id: value.fargate_price_id?,
                     fargate_task_arn: value.fargate_task_arn?,
                     result_posted: value.result_posted?,
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
+                    start_time: value.start_time?,
+                    state_machine_id: value.state_machine_id?,
+                    status: value.status?,
                     step: value.step?,
                     torn_down: value.torn_down?,
                 })
@@ -4182,10 +4217,14 @@ pub mod types {
                 Self {
                     cost: Ok(value.cost),
                     end_time: Ok(value.end_time),
+                    fargate_price_id: Ok(value.fargate_price_id),
                     fargate_task_arn: Ok(value.fargate_task_arn),
                     result_posted: Ok(value.result_posted),
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
+                    start_time: Ok(value.start_time),
+                    state_machine_id: Ok(value.state_machine_id),
+                    status: Ok(value.status),
                     step: Ok(value.step),
                     torn_down: Ok(value.torn_down),
                 }
@@ -4756,7 +4795,7 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct BnaSummary {
             city_id: Result<uuid::Uuid, String>,
-            created_at: Result<Vec<i64>, String>,
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             rating_id: Result<uuid::Uuid, String>,
             score: Result<f64, String>,
             version: Result<String, String>,
@@ -4787,7 +4826,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -4856,7 +4895,7 @@ pub mod types {
         pub struct BnaSummaryWithCityItem {
             city_id: Result<uuid::Uuid, String>,
             country: Result<Option<super::Country>, String>,
-            created_at: Result<Vec<i64>, String>,
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             latitude: Result<Option<f64>, String>,
             longitude: Result<Option<f64>, String>,
             name: Result<Option<String>, String>,
@@ -4866,7 +4905,7 @@ pub mod types {
             speed_limit: Result<Option<f64>, String>,
             state: Result<Option<String>, String>,
             state_abbrev: Result<Option<f64>, String>,
-            updated_at: Result<Vec<i64>, String>,
+            updated_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             version: Result<String, String>,
         }
 
@@ -4914,7 +4953,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5014,7 +5053,7 @@ pub mod types {
             }
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.updated_at = value
@@ -5083,7 +5122,7 @@ pub mod types {
         pub struct Census {
             census_id: Result<Option<i64>, String>,
             city_id: Result<Option<uuid::Uuid>, String>,
-            created_at: Result<Vec<i64>, String>,
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             fips_code: Result<Option<String>, String>,
             pop_size: Result<Option<super::CensusPopSize>, String>,
             population: Result<Option<i64>, String>,
@@ -5125,7 +5164,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5196,7 +5235,7 @@ pub mod types {
         pub struct City {
             city_id: Result<Option<uuid::Uuid>, String>,
             country: Result<Option<super::Country>, String>,
-            created_at: Result<Vec<i64>, String>,
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             latitude: Result<Option<f64>, String>,
             longitude: Result<Option<f64>, String>,
             name: Result<Option<String>, String>,
@@ -5204,7 +5243,7 @@ pub mod types {
             speed_limit: Result<Option<f64>, String>,
             state: Result<Option<String>, String>,
             state_abbrev: Result<Option<f64>, String>,
-            updated_at: Result<Vec<i64>, String>,
+            updated_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
         }
 
         impl Default for City {
@@ -5248,7 +5287,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5328,7 +5367,7 @@ pub mod types {
             }
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.updated_at = value
@@ -6378,7 +6417,7 @@ pub mod types {
             city: Result<Option<String>, String>,
             consent: Result<Option<bool>, String>,
             country: Result<Option<super::Country>, String>,
-            created_at: Result<Vec<i64>, String>,
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
             email: Result<Option<String>, String>,
             fips_code: Result<Option<String>, String>,
             first_name: Result<Option<String>, String>,
@@ -6443,7 +6482,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Vec<i64>>,
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value

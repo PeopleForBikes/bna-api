@@ -9,6 +9,8 @@ info:
 servers:
   - url: "https://api.peopleforbikes.xyz"
     description: Staging API
+  - url: "https://localhost:3000"
+    description: Locol API
 tags:
   - name: rating
   - name: city
@@ -44,7 +46,7 @@ paths:
         403:
           $ref: "#/components/responses/forbidden"
       security:
-        - Authorizer: []
+        - Authorize: []
   /ratings/analyses:
     get:
       operationId: getRatingsAnalyses
@@ -61,7 +63,7 @@ paths:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/page_size"
       security:
-        - Authorizer: []
+        - Authorize: []
     post:
       operationId: postRatingsAnalyses
       summary: Submit a new city to analyze
@@ -80,7 +82,7 @@ paths:
         400:
           $ref: "#/components/responses/bad_request"
       security:
-        - Authorizer: []
+        - Authorize: []
   /ratings/analyses/{analysis_id}:
     get:
       operationId: getAnalysis
@@ -100,7 +102,7 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
       security:
-        - Authorizer: []
+        - Authorize: []
     patch:
       operationId: patchAnalysis
       summary: Update an analysis
@@ -123,7 +125,7 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
       security:
-        - Authorizer: []
+        - Authorize: []
     parameters:
       - $ref: "#/components/parameters/analysis_id"
   /ratings/{rating_id}:
@@ -193,7 +195,7 @@ paths:
         - $ref: "#/components/parameters/page"
         - $ref: "#/components/parameters/page_size"
       security:
-        - Authorizer: []
+        - Authorize: [write]
   /cities/submissions:
     get:
       operationId: getCitySubmissions
@@ -260,7 +262,7 @@ paths:
         404:
           $ref: "#/components/responses/not_found"
       security:
-        - Authorizer: []
+        - Authorize: []
     parameters:
       - $ref: "#/components/parameters/submission_id"
   /cities/{country}/{region}/{name}:
@@ -350,7 +352,7 @@ paths:
         403:
           $ref: "#/components/responses/forbidden"
       security:
-        - Authorizer: []
+        - Authorize: []
 components:
   schemas:
     analysis:
@@ -362,20 +364,9 @@ components:
           example: 6.8941
           nullable: true
         end_time:
-          type: array
-          items:
-            type: integer
+          type: string
+          format: date-time
           description: "Date and time"
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
           nullable: true
         fargate_task_arn:
           type: string
@@ -399,20 +390,9 @@ components:
             "fips_code":"3570670"}
           nullable: true
         start_time:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
           nullable: true
         state_machine_id:
           $ref: "#/components/schemas/state_machine_id"
@@ -435,20 +415,9 @@ components:
           example: 6.8941
           nullable: true
         end_time:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
           nullable: true
         fargate_task_arn:
           type: string
@@ -472,20 +441,9 @@ components:
             "fips_code":"3570670"}
           nullable: true
         start_time:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
           nullable: true
         step:
           $ref: "#/components/schemas/step"
@@ -504,20 +462,9 @@ components:
           example: 6.8941
           nullable: true
         end_time:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
           nullable: true
         fargate_task_arn:
           type: string
@@ -540,6 +487,11 @@ components:
             {"country":"United States","city":"santa rosa","region":"new mexico",
             "fips_code":"3570670"}
           nullable: true
+        start_time:
+          type: string
+          format: date-time
+          description: "Date and time"
+          nullable: true
         step:
           $ref: "#/components/schemas/step"
         torn_down:
@@ -548,6 +500,21 @@ components:
             Flag indicating wether the resources were torn down or not at the end of the
             analysis
           nullable: true
+        state_machine_id:
+          $ref: "#/components/schemas/state_machine_id"
+        fargate_price_id:
+          type: number
+          description: >
+            Identifier of the Fargate Price rate used to compute the cost of the pipeline
+            run.
+        status:
+          type: string
+          enum:
+            - Complete
+            - Pending
+            - InProgress
+          description: ""
+          example: "Pending"
     api_gateway_id:
       type: string
       description: "API Gateway ID associated with the request "
@@ -729,20 +696,9 @@ components:
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         created_at:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
         score:
           type: number
           description: "BNA score"
@@ -778,20 +734,9 @@ components:
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
         created_at:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
         fips_code:
           type: string
           description: >
@@ -822,20 +767,9 @@ components:
         country:
           $ref: "#/components/schemas/country"
         created_at:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
         latitude:
           type: number
           description: >
@@ -874,20 +808,9 @@ components:
           description: "A short version of the state name, usually 2 or 3 character long."
           example: "VAN"
         updated_at:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
     city_post:
       type: object
       properties:
@@ -1177,25 +1100,15 @@ components:
           example: "Antwerp"
         consent:
           type: boolean
+          nullable: true
           description: "Consent status"
           example: true
         country:
           $ref: "#/components/schemas/country"
         created_at:
-          type: array
+          type: string
+          format: date-time
           description: "Date and time"
-          items:
-            type: integer
-          example:
-            - 2023
-            - 6
-            - 16
-            - 22
-            - 0
-            - 0
-            - 0
-            - 0
-            - 0
         email:
           type: string
           description: Email address
@@ -1610,6 +1523,13 @@ components:
             items:
               $ref: "#/components/schemas/submission"
   securitySchemes:
-    Authorizer:
-      type: "oauth2"
-      flows: {}
+    Authorize:
+      description: |
+        Bearer token using a JWT.
+
+        Authenticate against AWS Cognito using the AWS CLI to obtain the token (replace the placeholders):
+
+        `aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id <client_id> --auth-parameters USERNAME=<username>,PASSWORD=<password>`
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

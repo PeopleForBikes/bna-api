@@ -10,4 +10,5 @@ debug/
 lambdas/.env
 lambdas/tests/.hypothesis
 lambdas/tests/.venv
+specs/
 target/
