@@ -10,10 +10,11 @@ servers:
   - url: "https://api.peopleforbikes.xyz"
     description: Staging API
   - url: "https://localhost:3000"
-    description: Locol API
+    description: Local development API
 tags:
-  - name: rating
   - name: city
+  - name: price
+  - name: rating
 paths:
   /ratings:
     get:
@@ -327,6 +328,27 @@ paths:
           $ref: "#/components/responses/bad_request"
         404:
           $ref: "#/components/responses/not_found"
+    post:
+      operationId: patchCityCensus
+      summary: Create census information for a specific city.
+      description: Create census information for a specific city.
+      tags:
+        - city
+      requestBody:
+        description: Create the census information for a specific city.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/census_post"
+      responses:
+        201:
+          $ref: "#/components/responses/city_with_census"
+        400:
+          $ref: "#/components/responses/bad_request"
+        404:
+          $ref: "#/components/responses/not_found"
+      security:
+        - Authorize: []
     parameters:
       - $ref: "#/components/parameters/country"
       - $ref: "#/components/parameters/region"
@@ -353,6 +375,30 @@ paths:
           $ref: "#/components/responses/forbidden"
       security:
         - Authorize: []
+  /price/fargate:
+    get:
+      operationId: getPricesFargate
+      summary: "Get all the AWS Fargate prices used to compute analysis costs."
+      description: "Get all the AWS Fargate prices used to compute analysis costs."
+      tags:
+        - price
+      responses:
+        200:
+          $ref: "#/components/responses/fargate_prices"
+  /price/fargate/{fargate_price_id}:
+    get:
+      operationId: getPriceFargate
+      summary: "Get a AWS Fargate price used to compute the cost of an analysis."
+      description: "Get a AWS Fargate price used to compute the cost of analysis cost."
+      tags:
+        - price
+      parameters:
+        - $ref: "#/components/parameters/fargate_price_id"
+      responses:
+        200:
+          $ref: "#/components/responses/fargate_price"
+        404:
+          $ref: "#/components/responses/not_found"
 components:
   schemas:
     analysis:
@@ -737,6 +783,28 @@ components:
           type: string
           format: date-time
           description: "Date and time"
+        fips_code:
+          type: string
+          description: >
+            Numerical city identifier given by the U.S. census, or 0 for non-US cities
+          example: "4805000"
+        pop_size:
+          type: integer
+          description: >
+            City population size category (small (0), medium (1), large (2))
+
+          enum:
+            - 0
+            - 1
+            - 2
+          example: 2
+        population:
+          type: integer
+          description: "City population"
+          example: 907779
+    census_post:
+      type: object
+      properties:
         fips_code:
           type: string
           description: >
@@ -1291,6 +1359,23 @@ components:
       properties:
         score:
           type: number
+    fargate_price:
+      type: object
+      properties:
+        fargate_price_id:
+          type: number
+          description: >
+            Identifier of the Fargate Price rate used to compute the cost of the pipeline
+            run.
+          example: 1
+        per_second:
+          type: number
+          description: Cost to run Fargate for 1 second
+          example: 0.0023
+        created_at:
+          type: string
+          format: date-time
+          description: "Date and time"
 
   parameters:
     rating_id:
@@ -1389,6 +1474,13 @@ components:
         type: integer
         default: 25
         example: 25
+    fargate_price_id:
+      name: fargate_price_id
+      in: path
+      required: true
+      description: "Identifier of a Fargate price"
+      schema:
+        type: integer
   responses:
     analyses:
       description: "A collection of BNA analysis"
@@ -1522,6 +1614,21 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/submission"
+    fargate_price:
+      description: "Fargate price used to estimate the cost of an analysis."
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/fargate_price"
+    fargate_prices:
+      description: "A collection of Fargate prices"
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/fargate_price"
+
   securitySchemes:
     Authorize:
       description: |
