@@ -1,57 +1,127 @@
-use entity::{bna_pipeline, city, summary};
-use sea_orm::{DatabaseConnection, EntityTrait, FromQueryResult, PaginatorTrait};
+use entity::{
+    bna_pipeline, city, core_services, infrastructure, opportunity, people, recreation, retail,
+    summary, transit,
+};
+use sea_orm::{
+    DatabaseConnection, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
+    RelationTrait,
+};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
+
+use super::BNAComponent;
 
 #[derive(FromQueryResult, Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Bna {
     // BNA Summary
-    pub bna_id: Uuid,
-    pub city_id: Uuid,
-    pub score: f64,
-    pub version: String,
+    bna_id: Uuid,
+    city_id: Uuid,
+    score: f64,
+    version: String,
 
     // BNAInfrastructure
-    pub low_stress_miles: Option<f64>,
-    pub high_stress_miles: Option<f64>,
+    low_stress_miles: Option<f64>,
+    high_stress_miles: Option<f64>,
 
     // BNA Recreation
-    pub community_centers: Option<f64>,
-    pub parks: Option<f64>,
-    pub recreation_trails: Option<f64>,
-    pub recreation_score: Option<f64>,
+    community_centers: Option<f64>,
+    parks: Option<f64>,
+    recreation_trails: Option<f64>,
+    recreation_score: Option<f64>,
 
     // BNA Opportunity
-    pub employment: Option<f64>,
-    pub higher_education: Option<f64>,
-    pub k12_education: Option<f64>,
-    pub opportunity_score: Option<f64>,
-    pub technical_vocational_college: Option<f64>,
+    employment: Option<f64>,
+    higher_education: Option<f64>,
+    k12_education: Option<f64>,
+    opportunity_score: Option<f64>,
+    technical_vocational_college: Option<f64>,
 
     // BNA Core Services
-    pub dentists: Option<f64>,
-    pub doctors: Option<f64>,
-    pub grocery: Option<f64>,
-    pub hospitals: Option<f64>,
-    pub pharmacies: Option<f64>,
-    pub coreservices_score: Option<f64>,
-    pub social_services: Option<f64>,
+    dentists: Option<f64>,
+    doctors: Option<f64>,
+    grocery: Option<f64>,
+    hospitals: Option<f64>,
+    pharmacies: Option<f64>,
+    coreservices_score: Option<f64>,
+    social_services: Option<f64>,
 
     // BNA People
-    pub people: Option<f64>,
+    people: Option<f64>,
 
     // BNA Retail
-    pub retail: Option<f64>,
+    retail: Option<f64>,
 
     // BNA Transit
-    pub transit: Option<f64>,
+    transit: Option<f64>,
 }
 
-pub async fn fetch_ratings_summary(
-    db: &DatabaseConnection,
-    rating_id: Uuid,
-) -> Result<Option<summary::Model>, sea_orm::DbErr> {
-    summary::Entity::find_by_id(rating_id).one(db).await
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Summary {
+    bna_id: Uuid,
+    city_id: Uuid,
+    score: f64,
+    version: String,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Infrastructure {
+    low_stress_miles: Option<f64>,
+    high_stress_miles: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Recreation {
+    community_centers: Option<f64>,
+    parks: Option<f64>,
+    recreation_trails: Option<f64>,
+    recreation_score: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Opportunity {
+    employment: Option<f64>,
+    higher_education: Option<f64>,
+    k12_education: Option<f64>,
+    opportunity_score: Option<f64>,
+    technical_vocational_college: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct CoreServices {
+    dentists: Option<f64>,
+    doctors: Option<f64>,
+    grocery: Option<f64>,
+    hospitals: Option<f64>,
+    pharmacies: Option<f64>,
+    coreservices_score: Option<f64>,
+    social_services: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct People {
+    people: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Retail {
+    retail: Option<f64>,
+}
+
+#[derive(FromQueryResult, Deserialize, Serialize)]
+pub struct Transit {
+    transit: Option<f64>,
+}
+
+pub enum BNAComponentValue {
+    All(Bna),
+    Summary(Summary),
+    Infrastructure(Summary, Option<Infrastructure>),
+    Recreation(Summary, Option<Recreation>),
+    Opportunity(Summary, Option<Opportunity>),
+    CoreServices(Summary, Option<CoreServices>),
+    People(Summary, Option<People>),
+    Retail(Summary, Option<Retail>),
+    Transit(Summary, Option<Transit>),
 }
 
 pub async fn fetch_ratings_summaries(
@@ -69,161 +139,135 @@ pub async fn fetch_ratings_summaries(
     Ok((count, models))
 }
 
-// pub async fn fetch_ratings_summary(
-//     db: &DatabaseConnection,
-//     rating_id: Uuid,
-//     component: Option<BNAComponent>,
-// ) -> Result<Option<BNA>, sea_orm::DbErr> {
-//     let select = summary::Entity::find_by_id(rating_id);
-//     let component = component.unwrap_or(BNAComponent::All);
-//     let res = match component {
-//         BNAComponent::All => {
-//             select
-//                 .clone()
-//                 .columns([
-//                     entity::core_services::Column::Dentists,
-//                     entity::core_services::Column::Doctors,
-//                     entity::core_services::Column::Grocery,
-//                     entity::core_services::Column::Hospitals,
-//                     entity::core_services::Column::Pharmacies,
-//                     entity::core_services::Column::SocialServices,
-//                 ])
-//                 .column_as(entity::core_services::Column::Score, "coreservices_score")
-//                 .columns([
-//                     entity::infrastructure::Column::HighStressMiles,
-//                     entity::infrastructure::Column::LowStressMiles,
-//                 ])
-//                 .columns([
-//                     entity::recreation::Column::CommunityCenters,
-//                     entity::recreation::Column::Parks,
-//                     entity::recreation::Column::RecreationTrails,
-//                 ])
-//                 .column_as(entity::recreation::Column::Score, "recreation_score")
-//                 .columns([
-//                     entity::opportunity::Column::Employment,
-//                     entity::opportunity::Column::HigherEducation,
-//                     entity::opportunity::Column::K12Education,
-//                     entity::opportunity::Column::TechnicalVocationalCollege,
-//                 ])
-//                 .column_as(entity::opportunity::Column::Score, "opportunity_score")
-//                 .column_as(entity::people::Column::Score, "people_score")
-//                 .column_as(entity::retail::Column::Score, "retail_score")
-//                 .column_as(entity::transit::Column::Score, "transit_score")
-//                 .join(
-//                     JoinType::InnerJoin,
-//                     entity::summary::Relation::CoreServices.def(),
-//                 )
-//                 .join(
-//                     JoinType::InnerJoin,
-//                     entity::summary::Relation::Infrastructure.def(),
-//                 )
-//                 .join(
-//                     JoinType::InnerJoin,
-//                     entity::summary::Relation::Recreation.def(),
-//                 )
-//                 .join(
-//                     JoinType::InnerJoin,
-//                     entity::summary::Relation::Opportunity.def(),
-//                 )
-//                 .join(
-//                     sea_orm::JoinType::InnerJoin,
-//                     entity::summary::Relation::People.def(),
-//                 )
-//                 .join(
-//                     sea_orm::JoinType::InnerJoin,
-//                     entity::summary::Relation::Retail.def(),
-//                 )
-//                 .join(
-//                     sea_orm::JoinType::InnerJoin,
-//                     entity::summary::Relation::Transit.def(),
-//                 )
-//                 .into_model::<BNA>()
-//                 .one(db)
-//                 .await?
-//         }
-//         BNAComponent::Summary => {
-//             let model: Option<summary::Model> = select.clone().one(&db).await?;
-//         }
-//         BNAComponent::Infratructure => {
-//             let model:Option<(summary::Model, Option<infrastructure::Model>)>  = select
-//                 .clone()
-//                 .find_also_related(infrastructure::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::Recreation => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(recreation::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::Opportunity => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(opportunity::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::CoreServices => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(core_services::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::People => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(people::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::Retail => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(retail::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//         BNAComponent::Transit => {
-//             let model = select
-//                 .clone()
-//                 .find_also_related(transit::Entity)
-//                 .one(&db)
-//                 .await?;
-//             match model {
-//                 Some(model) => json!(model).into_response().await,
-//                 None => entry_not_found(&event).into(),
-//             }
-//         }
-//     };
-//     Ok(res)
-// }
+pub async fn fetch_ratings_summary_with_parts(
+    db: &DatabaseConnection,
+    rating_id: Uuid,
+    component: Option<BNAComponent>,
+) -> Result<Option<BNAComponentValue>, sea_orm::DbErr> {
+    let select = summary::Entity::find_by_id(rating_id);
+    let component = component.unwrap_or(BNAComponent::All);
+    let res = match component {
+        BNAComponent::All => select
+            .clone()
+            .columns([
+                entity::core_services::Column::Dentists,
+                entity::core_services::Column::Doctors,
+                entity::core_services::Column::Grocery,
+                entity::core_services::Column::Hospitals,
+                entity::core_services::Column::Pharmacies,
+                entity::core_services::Column::SocialServices,
+            ])
+            .column_as(entity::core_services::Column::Score, "coreservices_score")
+            .columns([
+                entity::infrastructure::Column::HighStressMiles,
+                entity::infrastructure::Column::LowStressMiles,
+            ])
+            .columns([
+                entity::recreation::Column::CommunityCenters,
+                entity::recreation::Column::Parks,
+                entity::recreation::Column::RecreationTrails,
+            ])
+            .column_as(entity::recreation::Column::Score, "recreation_score")
+            .columns([
+                entity::opportunity::Column::Employment,
+                entity::opportunity::Column::HigherEducation,
+                entity::opportunity::Column::K12Education,
+                entity::opportunity::Column::TechnicalVocationalCollege,
+            ])
+            .column_as(entity::opportunity::Column::Score, "opportunity_score")
+            .column_as(entity::people::Column::Score, "people_score")
+            .column_as(entity::retail::Column::Score, "retail_score")
+            .column_as(entity::transit::Column::Score, "transit_score")
+            .join(
+                JoinType::InnerJoin,
+                entity::summary::Relation::CoreServices.def(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                entity::summary::Relation::Infrastructure.def(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                entity::summary::Relation::Recreation.def(),
+            )
+            .join(
+                JoinType::InnerJoin,
+                entity::summary::Relation::Opportunity.def(),
+            )
+            .join(
+                sea_orm::JoinType::InnerJoin,
+                entity::summary::Relation::People.def(),
+            )
+            .join(
+                sea_orm::JoinType::InnerJoin,
+                entity::summary::Relation::Retail.def(),
+            )
+            .join(
+                sea_orm::JoinType::InnerJoin,
+                entity::summary::Relation::Transit.def(),
+            )
+            .into_model::<Bna>()
+            .one(db)
+            .await?
+            .map(BNAComponentValue::All),
+        BNAComponent::Summary => select
+            .clone()
+            .into_model::<Summary>()
+            .one(db)
+            .await?
+            .map(BNAComponentValue::Summary),
+        BNAComponent::Infratructure => select
+            .clone()
+            .find_also_related(infrastructure::Entity)
+            .into_model::<Summary, Infrastructure>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::Infrastructure(m.0, m.1)),
+        BNAComponent::Recreation => select
+            .clone()
+            .find_also_related(recreation::Entity)
+            .into_model::<Summary, Recreation>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::Recreation(m.0, m.1)),
+        BNAComponent::Opportunity => select
+            .clone()
+            .find_also_related(opportunity::Entity)
+            .into_model::<Summary, Opportunity>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::Opportunity(m.0, m.1)),
+        BNAComponent::CoreServices => select
+            .clone()
+            .find_also_related(core_services::Entity)
+            .into_model::<Summary, CoreServices>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::CoreServices(m.0, m.1)),
+        BNAComponent::People => select
+            .clone()
+            .find_also_related(people::Entity)
+            .into_model::<Summary, People>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::People(m.0, m.1)),
+        BNAComponent::Retail => select
+            .clone()
+            .find_also_related(retail::Entity)
+            .into_model::<Summary, Retail>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::Retail(m.0, m.1)),
+        BNAComponent::Transit => select
+            .clone()
+            .find_also_related(transit::Entity)
+            .into_model::<Summary, Transit>()
+            .one(db)
+            .await?
+            .map(|m| BNAComponentValue::Transit(m.0, m.1)),
+    };
+    Ok(res)
+}
 
 pub async fn fetch_ratings_analyses(
     db: &DatabaseConnection,
