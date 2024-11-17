@@ -1,7 +1,10 @@
-use super::adaptor::{
-    get_ratings_analyses_adaptor, get_ratings_analysis_adaptor, get_ratings_city_adaptor,
-    get_ratings_summaries_adaptor, get_ratings_summary_adaptor, patch_ratings_analysis_adaptor,
-    post_ratings_analysis_adaptor,
+use super::{
+    adaptor::{
+        get_rating_adaptor, get_ratings_analyses_adaptor, get_ratings_analysis_adaptor,
+        get_ratings_city_adaptor, get_ratings_summaries_adaptor, patch_ratings_analysis_adaptor,
+        post_ratings_analysis_adaptor,
+    },
+    BNAComponent,
 };
 use crate::{Context, ExecutionError};
 use axum::{
@@ -37,9 +40,18 @@ async fn get_ratings(pagination: Option<Query<PaginationParameters>>) -> impl In
 
 async fn get_rating(
     Path(rating_id): Path<Uuid>,
+    component: Option<Query<BNAComponent>>,
     ctx: Context,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_ratings_summary_adaptor(rating_id, ctx)
+    let component = match component {
+        Some(c) => {
+            let Query(c) = c;
+            Some(c)
+        }
+        None => None,
+    };
+
+    get_rating_adaptor(rating_id, component, ctx)
         .await
         .map(|v| Json(json!(v)))
 }

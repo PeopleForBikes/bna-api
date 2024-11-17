@@ -38,6 +38,7 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 
 [lints.clippy]
 result_large_err = "allow"
+large_enum_variant = "allow"
 
 [lib]
 name = "lambdas"

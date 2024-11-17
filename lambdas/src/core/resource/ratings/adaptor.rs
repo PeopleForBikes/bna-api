@@ -1,6 +1,9 @@
-use super::db::{
-    fetch_ratings_analyses, fetch_ratings_analysis, fetch_ratings_city, fetch_ratings_summaries,
-    fetch_ratings_summary,
+use super::{
+    db::{
+        fetch_ratings_analyses, fetch_ratings_analysis, fetch_ratings_city,
+        fetch_ratings_summaries, fetch_ratings_summary_with_parts,
+    },
+    BNAComponent,
 };
 use crate::{database_connect, Context, ExecutionError, PageFlow, Paginatron};
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
@@ -26,17 +29,38 @@ pub async fn get_ratings_summaries_adaptor(
     ))
 }
 
-pub async fn get_ratings_summary_adaptor(
+pub async fn get_rating_adaptor(
     rating_id: Uuid,
+    component: Option<BNAComponent>,
     ctx: Context,
 ) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Fetch the model.
-    let model = fetch_ratings_summary(&db, rating_id).await?;
+    let model = fetch_ratings_summary_with_parts(&db, rating_id, component).await?;
     match model {
-        Some(model) => Ok(json!(model)),
+        Some(model) => match model {
+            super::db::BNAComponentValue::All(bna) => Ok(json!(bna)),
+            super::db::BNAComponentValue::Summary(summary) => Ok(json!(summary)),
+            super::db::BNAComponentValue::Infrastructure(summary, infrastructure) => {
+                Ok(json!((summary, infrastructure)))
+            }
+            super::db::BNAComponentValue::Recreation(summary, recreation) => {
+                Ok(json!((summary, recreation)))
+            }
+            super::db::BNAComponentValue::Opportunity(summary, opportunity) => {
+                Ok(json!((summary, opportunity)))
+            }
+            super::db::BNAComponentValue::CoreServices(summary, core_services) => {
+                Ok(json!((summary, core_services)))
+            }
+            super::db::BNAComponentValue::People(summary, people) => Ok(json!((summary, people))),
+            super::db::BNAComponentValue::Retail(summary, retail) => Ok(json!((summary, retail))),
+            super::db::BNAComponentValue::Transit(summary, transit) => {
+                Ok(json!((summary, transit)))
+            }
+        },
         None => Err(ExecutionError::NotFound(
             ctx.request_id(),
             ctx.source(),
