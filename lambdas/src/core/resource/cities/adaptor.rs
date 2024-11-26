@@ -4,6 +4,7 @@ use super::db::{
 };
 use crate::{database_connect, Context, ExecutionError, PageFlow, Paginatron};
 use entity::wrappers::{
+    census::CensusFromCityPost,
     city::CityPost,
     submission::{SubmissionPatch, SubmissionPost},
 };
@@ -72,6 +73,37 @@ pub async fn get_cities_censuses_adaptor(
         Paginatron::new(None, total_items, page, page_size),
         json!(models),
     ))
+}
+
+pub async fn post_cities_census_adaptor(
+    country: &str,
+    region: &str,
+    name: &str,
+    census: CensusFromCityPost,
+) -> Result<Value, ExecutionError> {
+    // Set the database connection.
+    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+
+    // Fetch the city.
+    let city = fetch_city(&db, country, region, name).await?;
+    if let Some(city) = city {
+        // Turn the post model into an active model.
+        let mut active_model: entity::census::ActiveModel = census.into_active_model();
+
+        // Update the active model.
+        active_model.city_id = ActiveValue::Set(city.id);
+
+        // And insert a new entry.
+        let model = active_model.insert(&db).await?;
+        let value = json!(model);
+        Ok(value)
+    } else {
+        Err(ExecutionError::NotFound(
+            Some(country.to_string()),
+            region.to_string(),
+            name.to_string(),
+        ))
+    }
 }
 
 pub async fn get_cities_ratings_adaptor(

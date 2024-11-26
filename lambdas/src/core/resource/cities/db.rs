@@ -1,6 +1,6 @@
 use entity::{census, city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
-    ColumnTrait, Condition, DatabaseConnection, EntityTrait, PaginatorTrait, QueryFilter,
+    ColumnTrait, Condition, DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
     QuerySelect,
 };
 
@@ -9,7 +9,7 @@ pub async fn fetch_city(
     country: &str,
     region: &str,
     name: &str,
-) -> Result<Option<city::Model>, sea_orm::DbErr> {
+) -> Result<Option<city::Model>, DbErr> {
     city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
         .one(db)
         .await
@@ -19,7 +19,7 @@ pub async fn fetch_cities(
     db: &DatabaseConnection,
     page: u64,
     page_size: u64,
-) -> Result<(u64, Vec<city::Model>), sea_orm::DbErr> {
+) -> Result<(u64, Vec<city::Model>), DbErr> {
     let select = city::Entity::find();
     let count = select
         .clone()
@@ -38,7 +38,7 @@ pub async fn fetch_cities_censuses(
     name: &str,
     page: u64,
     page_size: u64,
-) -> Result<(u64, Vec<(city::Model, Option<census::Model>)>), sea_orm::DbErr> {
+) -> Result<(u64, Vec<(city::Model, Option<census::Model>)>), DbErr> {
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
             .find_also_related(census::Entity);
@@ -58,7 +58,7 @@ pub async fn fetch_cities_ratings(
     name: &str,
     page: u64,
     page_size: u64,
-) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), sea_orm::DbErr> {
+) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), DbErr> {
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
             .find_also_related(summary::Entity);
@@ -74,7 +74,7 @@ pub async fn fetch_cities_ratings(
 pub async fn fetch_country(
     db: &DatabaseConnection,
     country: &str,
-) -> Result<Option<country::Model>, sea_orm::DbErr> {
+) -> Result<Option<country::Model>, DbErr> {
     country::Entity::find()
         .filter(country::Column::Name.eq(country))
         .one(db)
@@ -84,7 +84,7 @@ pub async fn fetch_country(
 pub async fn fetch_state_region_crosswalk(
     db: &DatabaseConnection,
     state: &str,
-) -> Result<Option<state_region_crosswalk::Model>, sea_orm::DbErr> {
+) -> Result<Option<state_region_crosswalk::Model>, DbErr> {
     state_region_crosswalk::Entity::find()
         .filter(state_region_crosswalk::Column::State.eq(state))
         .one(db)
@@ -95,7 +95,7 @@ pub async fn fetch_cities_submission(
     db: &DatabaseConnection,
     submission_id: i32,
     status: Option<String>,
-) -> Result<Option<submission::Model>, sea_orm::DbErr> {
+) -> Result<Option<submission::Model>, DbErr> {
     // Filter the query if needed.
     let mut conditions = Condition::all();
     if let Some(status) = status {
@@ -114,7 +114,7 @@ pub async fn fetch_cities_submissions(
     status: Option<String>,
     page: u64,
     page_size: u64,
-) -> Result<(u64, Vec<entity::submission::Model>), sea_orm::DbErr> {
+) -> Result<(u64, Vec<entity::submission::Model>), DbErr> {
     // Filter the query if needed.
     let mut conditions = Condition::all();
     if let Some(status) = status {

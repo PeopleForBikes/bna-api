@@ -1,7 +1,8 @@
 use super::adaptor::{
     get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
     get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
-    patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
+    patch_cities_submission_adaptor, post_cities_adaptor, post_cities_census_adaptor,
+    post_cities_submission_adaptor,
 };
 use crate::{core::resource::cities::CitiesPathParameters, Context, ExecutionError};
 use axum::{
@@ -15,6 +16,7 @@ use axum::{
 use axum_extra::extract::OptionalQuery;
 use effortless::api::PaginationParameters;
 use entity::wrappers::{
+    census::CensusFromCityPost,
     city::CityPost,
     submission::{SubmissionPatch, SubmissionPost},
 };
@@ -27,7 +29,7 @@ pub fn routes() -> Router {
         .route("/cities/:country/:region/:name", get(get_city))
         .route(
             "/cities/:country/:region/:name/census",
-            get(get_city_censuses),
+            get(get_city_censuses).post(post_city_census),
         )
         .route(
             "/cities/:country/:region/:name/ratings",
@@ -137,6 +139,16 @@ async fn post_cities_submissions(
     Json(submission): Json<SubmissionPost>,
 ) -> Result<(StatusCode, Json<Value>), ExecutionError> {
     post_cities_submission_adaptor(submission)
+        .await
+        .map(|v| (StatusCode::CREATED, Json(v)))
+}
+
+#[axum::debug_handler]
+async fn post_city_census(
+    Path(params): Path<CitiesPathParameters>,
+    Json(census): Json<CensusFromCityPost>,
+) -> Result<(StatusCode, Json<Value>), ExecutionError> {
+    post_cities_census_adaptor(&params.country, &params.region, &params.name, census)
         .await
         .map(|v| (StatusCode::CREATED, Json(v)))
 }

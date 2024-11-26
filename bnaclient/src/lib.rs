@@ -1392,6 +1392,134 @@ pub mod types {
         }
     }
 
+    ///CensusPost
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "fips_code": {
+    ///      "description": "Numerical city identifier given by the U.S. census,
+    /// or 0 for non-US cities\n",
+    ///      "examples": [
+    ///        "4805000"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "pop_size": {
+    ///      "description": "City population size category (small (0), medium
+    /// (1), large (2))\n",
+    ///      "examples": [
+    ///        2
+    ///      ],
+    ///      "type": "integer",
+    ///      "enum": [
+    ///        0,
+    ///        1,
+    ///        2
+    ///      ]
+    ///    },
+    ///    "population": {
+    ///      "description": "City population",
+    ///      "examples": [
+    ///        907779
+    ///      ],
+    ///      "type": "integer"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct CensusPost {
+        ///Numerical city identifier given by the U.S. census, or 0 for non-US
+        /// cities
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub fips_code: Option<String>,
+        ///City population size category (small (0), medium (1), large (2))
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub pop_size: Option<CensusPostPopSize>,
+        ///City population
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub population: Option<i64>,
+    }
+
+    impl From<&CensusPost> for CensusPost {
+        fn from(value: &CensusPost) -> Self {
+            value.clone()
+        }
+    }
+
+    impl CensusPost {
+        pub fn builder() -> builder::CensusPost {
+            Default::default()
+        }
+    }
+
+    ///City population size category (small (0), medium (1), large (2))
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "City population size category (small (0), medium (1),
+    /// large (2))\n",
+    ///  "examples": [
+    ///    2
+    ///  ],
+    ///  "type": "integer",
+    ///  "enum": [
+    ///    0,
+    ///    1,
+    ///    2
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Serialize)]
+    pub struct CensusPostPopSize(i64);
+    impl std::ops::Deref for CensusPostPopSize {
+        type Target = i64;
+        fn deref(&self) -> &i64 {
+            &self.0
+        }
+    }
+
+    impl From<CensusPostPopSize> for i64 {
+        fn from(value: CensusPostPopSize) -> Self {
+            value.0
+        }
+    }
+
+    impl From<&CensusPostPopSize> for CensusPostPopSize {
+        fn from(value: &CensusPostPopSize) -> Self {
+            value.clone()
+        }
+    }
+
+    impl std::convert::TryFrom<i64> for CensusPostPopSize {
+        type Error = self::error::ConversionError;
+        fn try_from(value: i64) -> Result<Self, self::error::ConversionError> {
+            if ![0_i64, 1_i64, 2_i64].contains(&value) {
+                Err("invalid value".into())
+            } else {
+                Ok(Self(value))
+            }
+        }
+    }
+
+    impl<'de> serde::Deserialize<'de> for CensusPostPopSize {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            Self::try_from(<i64>::deserialize(deserializer)?)
+                .map_err(|e| <D::Error as serde::de::Error>::custom(e.to_string()))
+        }
+    }
+
     ///City
     ///
     /// <details><summary>JSON schema</summary>
@@ -2156,6 +2284,61 @@ pub mod types {
         }
     }
 
+    ///FargatePrice
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "created_at": {
+    ///      "description": "Date and time",
+    ///      "type": "string",
+    ///      "format": "date-time"
+    ///    },
+    ///    "fargate_price_id": {
+    ///      "description": "Identifier of the Fargate Price rate used to
+    /// compute the cost of the pipeline run.\n",
+    ///      "examples": [
+    ///        1
+    ///      ],
+    ///      "type": "number"
+    ///    },
+    ///    "per_second": {
+    ///      "description": "Cost to run Fargate for 1 second",
+    ///      "examples": [
+    ///        0.0023
+    ///      ],
+    ///      "type": "number"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct FargatePrice {
+        ///Date and time
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub fargate_price_id: Option<f64>,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        pub per_second: Option<f64>,
+    }
+
+    impl From<&FargatePrice> for FargatePrice {
+        fn from(value: &FargatePrice) -> Self {
+            value.clone()
+        }
+    }
+
+    impl FargatePrice {
+        pub fn builder() -> builder::FargatePrice {
+            Default::default()
+        }
+    }
+
     ///Features
     ///
     /// <details><summary>JSON schema</summary>
@@ -2671,6 +2854,43 @@ pub mod types {
     impl ToString for Parameter {
         fn to_string(&self) -> String {
             self.0.to_string()
+        }
+    }
+
+    ///PatchCityCensusResponseItem
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "anyOf": [
+    ///    {
+    ///      "$ref": "#/components/schemas/city"
+    ///    },
+    ///    {
+    ///      "$ref": "#/components/schemas/census"
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    pub struct PatchCityCensusResponseItem {
+        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
+        pub subtype_0: Option<City>,
+        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
+        pub subtype_1: Option<Census>,
+    }
+
+    impl From<&PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
+        fn from(value: &PatchCityCensusResponseItem) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PatchCityCensusResponseItem {
+        pub fn builder() -> builder::PatchCityCensusResponseItem {
+            Default::default()
         }
     }
 
@@ -5232,6 +5452,77 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct CensusPost {
+            fips_code: Result<Option<String>, String>,
+            pop_size: Result<Option<super::CensusPostPopSize>, String>,
+            population: Result<Option<i64>, String>,
+        }
+
+        impl Default for CensusPost {
+            fn default() -> Self {
+                Self {
+                    fips_code: Ok(Default::default()),
+                    pop_size: Ok(Default::default()),
+                    population: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl CensusPost {
+            pub fn fips_code<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<String>>,
+                T::Error: std::fmt::Display,
+            {
+                self.fips_code = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
+                self
+            }
+            pub fn pop_size<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<super::CensusPostPopSize>>,
+                T::Error: std::fmt::Display,
+            {
+                self.pop_size = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for pop_size: {}", e));
+                self
+            }
+            pub fn population<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<i64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.population = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for population: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<CensusPost> for super::CensusPost {
+            type Error = super::error::ConversionError;
+            fn try_from(value: CensusPost) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    fips_code: value.fips_code?,
+                    pop_size: value.pop_size?,
+                    population: value.population?,
+                })
+            }
+        }
+
+        impl From<super::CensusPost> for CensusPost {
+            fn from(value: super::CensusPost) -> Self {
+                Self {
+                    fips_code: Ok(value.fips_code),
+                    pop_size: Ok(value.pop_size),
+                    population: Ok(value.population),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct City {
             city_id: Result<Option<uuid::Uuid>, String>,
             country: Result<Option<super::Country>, String>,
@@ -5938,6 +6229,80 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct FargatePrice {
+            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+            fargate_price_id: Result<Option<f64>, String>,
+            per_second: Result<Option<f64>, String>,
+        }
+
+        impl Default for FargatePrice {
+            fn default() -> Self {
+                Self {
+                    created_at: Ok(Default::default()),
+                    fargate_price_id: Ok(Default::default()),
+                    per_second: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl FargatePrice {
+            pub fn created_at<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T::Error: std::fmt::Display,
+            {
+                self.created_at = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for created_at: {}", e));
+                self
+            }
+            pub fn fargate_price_id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.fargate_price_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for fargate_price_id: {}",
+                        e
+                    )
+                });
+                self
+            }
+            pub fn per_second<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<f64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.per_second = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for per_second: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<FargatePrice> for super::FargatePrice {
+            type Error = super::error::ConversionError;
+            fn try_from(value: FargatePrice) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    created_at: value.created_at?,
+                    fargate_price_id: value.fargate_price_id?,
+                    per_second: value.per_second?,
+                })
+            }
+        }
+
+        impl From<super::FargatePrice> for FargatePrice {
+            fn from(value: super::FargatePrice) -> Self {
+                Self {
+                    created_at: Ok(value.created_at),
+                    fargate_price_id: Ok(value.fargate_price_id),
+                    per_second: Ok(value.per_second),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct Features {
             people: Result<Option<f64>, String>,
             retail: Result<Option<f64>, String>,
@@ -6231,6 +6596,65 @@ pub mod types {
                     k12_education: Ok(value.k12_education),
                     score: Ok(value.score),
                     technical_vocational_college: Ok(value.technical_vocational_college),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PatchCityCensusResponseItem {
+            subtype_0: Result<Option<super::City>, String>,
+            subtype_1: Result<Option<super::Census>, String>,
+        }
+
+        impl Default for PatchCityCensusResponseItem {
+            fn default() -> Self {
+                Self {
+                    subtype_0: Ok(Default::default()),
+                    subtype_1: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl PatchCityCensusResponseItem {
+            pub fn subtype_0<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<super::City>>,
+                T::Error: std::fmt::Display,
+            {
+                self.subtype_0 = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for subtype_0: {}", e));
+                self
+            }
+            pub fn subtype_1<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<Option<super::Census>>,
+                T::Error: std::fmt::Display,
+            {
+                self.subtype_1 = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for subtype_1: {}", e));
+                self
+            }
+        }
+
+        impl std::convert::TryFrom<PatchCityCensusResponseItem> for super::PatchCityCensusResponseItem {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PatchCityCensusResponseItem,
+            ) -> Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    subtype_0: value.subtype_0?,
+                    subtype_1: value.subtype_1?,
+                })
+            }
+        }
+
+        impl From<super::PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
+            fn from(value: super::PatchCityCensusResponseItem) -> Self {
+                Self {
+                    subtype_0: Ok(value.subtype_0),
+                    subtype_1: Ok(value.subtype_1),
                 }
             }
         }
@@ -7463,6 +7887,33 @@ impl Client {
         builder::GetCityCensus::new(self)
     }
 
+    ///Create census information for a specific city
+    ///
+    ///Create census information for a specific city.
+    ///
+    ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
+    ///
+    ///Arguments:
+    /// - `country`: Country name
+    /// - `region`: Region name. A region can be a state, a province, a
+    ///   community, or something similar depending on the country. If a country
+    ///   does not have this concept, then the country name is used.
+    ///
+    /// - `name`: City name
+    /// - `body`: Create the census information for a specific city.
+    ///```ignore
+    /// let response = client.patch_city_census()
+    ///    .country(country)
+    ///    .region(region)
+    ///    .name(name)
+    ///    .body(body)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn patch_city_census(&self) -> builder::PatchCityCensus {
+        builder::PatchCityCensus::new(self)
+    }
+
     ///Enqueue a city to process
     ///
     ///Enqueue a city to process.
@@ -7479,6 +7930,39 @@ impl Client {
     /// ```
     pub fn post_rating_enqueue(&self) -> builder::PostRatingEnqueue {
         builder::PostRatingEnqueue::new(self)
+    }
+
+    ///Get all the AWS Fargate prices used to compute analysis costs
+    ///
+    ///Get all the AWS Fargate prices used to compute analysis costs.
+    ///
+    ///Sends a `GET` request to `/price/fargate`
+    ///
+    ///```ignore
+    /// let response = client.get_prices_fargate()
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_prices_fargate(&self) -> builder::GetPricesFargate {
+        builder::GetPricesFargate::new(self)
+    }
+
+    ///Get a AWS Fargate price used to compute the cost of an analysis
+    ///
+    ///Get a AWS Fargate price used to compute the cost of analysis cost.
+    ///
+    ///Sends a `GET` request to `/price/fargate/{fargate_price_id}`
+    ///
+    ///Arguments:
+    /// - `fargate_price_id`: Identifier of a Fargate price
+    ///```ignore
+    /// let response = client.get_price_fargate()
+    ///    .fargate_price_id(fargate_price_id)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_price_fargate(&self) -> builder::GetPriceFargate {
+        builder::GetPriceFargate::new(self)
     }
 }
 
@@ -8856,6 +9340,129 @@ pub mod builder {
         }
     }
 
+    ///Builder for [`Client::patch_city_census`]
+    ///
+    ///[`Client::patch_city_census`]: super::Client::patch_city_census
+    #[derive(Debug, Clone)]
+    pub struct PatchCityCensus<'a> {
+        client: &'a super::Client,
+        country: Result<types::Country, String>,
+        region: Result<String, String>,
+        name: Result<String, String>,
+        body: Result<types::builder::CensusPost, String>,
+    }
+
+    impl<'a> PatchCityCensus<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                country: Err("country was not initialized".to_string()),
+                region: Err("region was not initialized".to_string()),
+                name: Err("name was not initialized".to_string()),
+                body: Ok(types::builder::CensusPost::default()),
+            }
+        }
+
+        pub fn country<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::Country>,
+        {
+            self.country = value
+                .try_into()
+                .map_err(|_| "conversion to `Country` for country failed".to_string());
+            self
+        }
+
+        pub fn region<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<String>,
+        {
+            self.region = value
+                .try_into()
+                .map_err(|_| "conversion to `String` for region failed".to_string());
+            self
+        }
+
+        pub fn name<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<String>,
+        {
+            self.name = value
+                .try_into()
+                .map_err(|_| "conversion to `String` for name failed".to_string());
+            self
+        }
+
+        pub fn body<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::CensusPost>,
+            <V as std::convert::TryInto<types::CensusPost>>::Error: std::fmt::Display,
+        {
+            self.body = value
+                .try_into()
+                .map(From::from)
+                .map_err(|s| format!("conversion to `CensusPost` for body failed: {}", s));
+            self
+        }
+
+        pub fn body_map<F>(mut self, f: F) -> Self
+        where
+            F: std::ops::FnOnce(types::builder::CensusPost) -> types::builder::CensusPost,
+        {
+            self.body = self.body.map(f);
+            self
+        }
+
+        ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<Vec<types::PatchCityCensusResponseItem>>, Error<types::Errors>>
+        {
+            let Self {
+                client,
+                country,
+                region,
+                name,
+                body,
+            } = self;
+            let country = country.map_err(Error::InvalidRequest)?;
+            let region = region.map_err(Error::InvalidRequest)?;
+            let name = name.map_err(Error::InvalidRequest)?;
+            let body = body
+                .and_then(|v| types::CensusPost::try_from(v).map_err(|e| e.to_string()))
+                .map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/cities/{}/{}/{}/census",
+                client.baseurl,
+                encode_path(&country.to_string()),
+                encode_path(&region.to_string()),
+                encode_path(&name.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .post(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .json(&body)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                201u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
     ///Builder for [`Client::post_rating_enqueue`]
     ///
     ///[`Client::post_rating_enqueue`]: super::Client::post_rating_enqueue
@@ -8918,6 +9525,103 @@ pub mod builder {
                     ResponseValue::from_response(response).await?,
                 )),
                 403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_prices_fargate`]
+    ///
+    ///[`Client::get_prices_fargate`]: super::Client::get_prices_fargate
+    #[derive(Debug, Clone)]
+    pub struct GetPricesFargate<'a> {
+        client: &'a super::Client,
+    }
+
+    impl<'a> GetPricesFargate<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self { client: client }
+        }
+
+        ///Sends a `GET` request to `/price/fargate`
+        pub async fn send(self) -> Result<ResponseValue<Vec<types::FargatePrice>>, Error<()>> {
+            let Self { client } = self;
+            let url = format!("{}/price/fargate", client.baseurl,);
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_price_fargate`]
+    ///
+    ///[`Client::get_price_fargate`]: super::Client::get_price_fargate
+    #[derive(Debug, Clone)]
+    pub struct GetPriceFargate<'a> {
+        client: &'a super::Client,
+        fargate_price_id: Result<i64, String>,
+    }
+
+    impl<'a> GetPriceFargate<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                fargate_price_id: Err("fargate_price_id was not initialized".to_string()),
+            }
+        }
+
+        pub fn fargate_price_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.fargate_price_id = value
+                .try_into()
+                .map_err(|_| "conversion to `i64` for fargate_price_id failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/price/fargate/{fargate_price_id}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::FargatePrice>, Error<types::Errors>> {
+            let Self {
+                client,
+                fargate_price_id,
+            } = self;
+            let fargate_price_id = fargate_price_id.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/price/fargate/{}",
+                client.baseurl,
+                encode_path(&fargate_price_id.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),

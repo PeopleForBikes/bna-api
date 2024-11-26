@@ -1,5 +1,6 @@
 use crate::census;
 use sea_orm::{prelude::Uuid, ActiveValue, IntoActiveModel};
+use serde::Deserialize;
 
 pub struct CensusPost {
     pub city_id: Uuid,
@@ -13,6 +14,26 @@ impl IntoActiveModel<census::ActiveModel> for CensusPost {
         census::ActiveModel {
             id: ActiveValue::NotSet,
             city_id: ActiveValue::Set(self.city_id),
+            created_at: ActiveValue::NotSet,
+            fips_code: ActiveValue::Set(self.fips_code),
+            pop_size: ActiveValue::Set(self.pop_size),
+            population: ActiveValue::Set(self.population),
+        }
+    }
+}
+
+#[derive(Deserialize)]
+pub struct CensusFromCityPost {
+    pub fips_code: String,
+    pub pop_size: i32,
+    pub population: i32,
+}
+
+impl IntoActiveModel<census::ActiveModel> for CensusFromCityPost {
+    fn into_active_model(self) -> census::ActiveModel {
+        census::ActiveModel {
+            id: ActiveValue::NotSet,
+            city_id: ActiveValue::NotSet,
             created_at: ActiveValue::NotSet,
             fips_code: ActiveValue::Set(self.fips_code),
             pop_size: ActiveValue::Set(self.pop_size),
