@@ -45,7 +45,7 @@ name = "lambdas"
 path = "src/lib.rs"
 
 [[bin]]
-name = "server"
+name = "axumed"
 path = "src/main.rs"
 
 [[bin]]

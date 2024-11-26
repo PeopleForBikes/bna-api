@@ -16,6 +16,7 @@ use axum::{
 use effortless::api::PaginationParameters;
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
 use serde_json::{json, Value};
+use tracing::debug;
 use uuid::Uuid;
 
 pub fn routes() -> Router {
@@ -53,6 +54,10 @@ async fn get_rating(
 
     get_rating_adaptor(rating_id, component, ctx)
         .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
         .map(|v| Json(json!(v)))
 }
 
