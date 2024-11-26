@@ -13,9 +13,18 @@ async fn main() -> Result<(), Error> {
     // i.e with: `GET /test-stage/todo/id/123` without: `GET /todo/id/123`
     set_var("AWS_LAMBDA_HTTP_IGNORE_STAGE_IN_PATH", "true");
 
+    // Check for user-defined log level.
+    let log_level = match env::var("BNA_API_LOG_LEVEL") {
+        Ok(v) => match v.to_ascii_lowercase().as_str() {
+            "debug" => tracing::Level::DEBUG,
+            _ => tracing::Level::INFO,
+        },
+        Err(_) => tracing::Level::INFO,
+    };
+
     // required to enable CloudWatch error logging by the runtime
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::INFO)
+        .with_max_level(log_level)
         // disable printing the name of the module in every log line.
         .with_target(false)
         // disabling time is handy because CloudWatch will add the ingestion time.

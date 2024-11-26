@@ -11,10 +11,10 @@ use uuid::Uuid;
 
 use super::BNAComponent;
 
-#[derive(FromQueryResult, Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, FromQueryResult, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Bna {
     // BNA Summary
-    bna_id: Uuid,
+    id: Uuid,
     city_id: Uuid,
     score: f64,
     version: String,
@@ -55,21 +55,21 @@ pub struct Bna {
     transit: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Summary {
-    bna_id: Uuid,
+    id: Uuid,
     city_id: Uuid,
     score: f64,
     version: String,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Infrastructure {
     low_stress_miles: Option<f64>,
     high_stress_miles: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Recreation {
     community_centers: Option<f64>,
     parks: Option<f64>,
@@ -77,7 +77,7 @@ pub struct Recreation {
     recreation_score: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Opportunity {
     employment: Option<f64>,
     higher_education: Option<f64>,
@@ -86,7 +86,7 @@ pub struct Opportunity {
     technical_vocational_college: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct CoreServices {
     dentists: Option<f64>,
     doctors: Option<f64>,
@@ -97,21 +97,22 @@ pub struct CoreServices {
     social_services: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct People {
     people: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Retail {
     retail: Option<f64>,
 }
 
-#[derive(FromQueryResult, Deserialize, Serialize)]
+#[derive(Debug, FromQueryResult, Deserialize, Serialize)]
 pub struct Transit {
     transit: Option<f64>,
 }
 
+#[derive(Debug)]
 pub enum BNAComponentValue {
     All(Bna),
     Summary(Summary),
@@ -146,6 +147,7 @@ pub async fn fetch_ratings_summary_with_parts(
 ) -> Result<Option<BNAComponentValue>, sea_orm::DbErr> {
     let select = summary::Entity::find_by_id(rating_id);
     let component = component.unwrap_or(BNAComponent::All);
+    dbg!(&component);
     let res = match component {
         BNAComponent::All => select
             .clone()
