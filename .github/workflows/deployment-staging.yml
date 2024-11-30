@@ -35,7 +35,8 @@ jobs:
         run: cd lambdas && cargo lambda build --release
       - name: Deploy lambdas
         run: |
-          LAMBDAS="get-ratings
+          LAMBDAS="axumed
+          get-ratings
           get-ratings-analysis
           get-ratings-cities
           get-ratings-results
