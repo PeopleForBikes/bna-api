@@ -1,6 +1,6 @@
 use crate::entities::bna_pipeline;
 use sea_orm::{
-    prelude::{Decimal, Json, TimeDateTimeWithTimeZone, Uuid},
+    prelude::{DateTimeWithTimeZone, Decimal, Json, Uuid},
     ActiveValue, IntoActiveModel,
 };
 use serde::{Deserialize, Serialize};
@@ -8,13 +8,13 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BNAPipelinePost {
     pub cost: Option<Decimal>,
-    pub end_time: Option<TimeDateTimeWithTimeZone>,
+    pub end_time: Option<DateTimeWithTimeZone>,
     pub fargate_price_id: Option<i32>,
     pub fargate_task_arn: Option<String>,
     pub result_posted: Option<bool>,
     pub s3_bucket: Option<String>,
     pub sqs_message: Option<Json>,
-    pub start_time: TimeDateTimeWithTimeZone,
+    pub start_time: DateTimeWithTimeZone,
     pub state_machine_id: Uuid,
     pub step: Option<String>,
     pub torn_down: Option<bool>,
@@ -42,13 +42,13 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BNAPipelinePatch {
     pub cost: Option<Option<Decimal>>,
-    pub end_time: Option<Option<TimeDateTimeWithTimeZone>>,
+    pub end_time: Option<Option<DateTimeWithTimeZone>>,
     pub fargate_price_id: Option<Option<i32>>,
     pub fargate_task_arn: Option<Option<String>>,
     pub result_posted: Option<Option<bool>>,
     pub s3_bucket: Option<Option<String>>,
     pub sqs_message: Option<Option<Json>>,
-    pub start_time: Option<Option<TimeDateTimeWithTimeZone>>,
+    pub start_time: Option<Option<DateTimeWithTimeZone>>,
     pub status: Option<String>,
     pub step: Option<Option<String>>,
     pub torn_down: Option<Option<bool>>,

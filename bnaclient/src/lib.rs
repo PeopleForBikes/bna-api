@@ -9,23 +9,20 @@ use reqwest::header::{HeaderMap, HeaderValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
-    use serde::{Deserialize, Serialize};
-    #[allow(unused_imports)]
-    use std::convert::TryFrom;
     /// Error types.
     pub mod error {
         /// Error from a TryFrom or FromStr implementation.
-        pub struct ConversionError(std::borrow::Cow<'static, str>);
-        impl std::error::Error for ConversionError {}
-        impl std::fmt::Display for ConversionError {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-                std::fmt::Display::fmt(&self.0, f)
+        pub struct ConversionError(::std::borrow::Cow<'static, str>);
+        impl ::std::error::Error for ConversionError {}
+        impl ::std::fmt::Display for ConversionError {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+                ::std::fmt::Display::fmt(&self.0, f)
             }
         }
 
-        impl std::fmt::Debug for ConversionError {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> Result<(), std::fmt::Error> {
-                std::fmt::Debug::fmt(&self.0, f)
+        impl ::std::fmt::Debug for ConversionError {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+                ::std::fmt::Debug::fmt(&self.0, f)
             }
         }
 
@@ -70,6 +67,16 @@ pub mod types {
     ///        "null"
     ///      ],
     ///      "format": "date-time"
+    ///    },
+    ///    "fargate_price_id": {
+    ///      "description": "Fargate price identifier",
+    ///      "examples": [
+    ///        1
+    ///      ],
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "fargate_task_arn": {
     ///      "description": "The ARN of the Fargate task that performed the
@@ -123,6 +130,13 @@ pub mod types {
     ///    "state_machine_id": {
     ///      "$ref": "#/components/schemas/state_machine_id"
     ///    },
+    ///    "status": {
+    ///      "description": "Pipeline status",
+    ///      "examples": [
+    ///        "Pending"
+    ///      ],
+    ///      "type": "string"
+    ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
     ///    },
@@ -138,35 +152,41 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Analysis {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub cost: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub cost: ::std::option::Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        ///Fargate price identifier
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_price_id: ::std::option::Option<i64>,
         ///The ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fargate_task_arn: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub results_posted: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_task_arn: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub results_posted: ::std::option::Option<bool>,
         ///the path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub s3_bucket: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub sqs_message: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         pub state_machine_id: StateMachineId,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub step: Option<Step>,
+        ///Pipeline status
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
         /// end of the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub torn_down: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub torn_down: ::std::option::Option<bool>,
     }
 
     impl From<&Analysis> for Analysis {
@@ -271,34 +291,34 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct AnalysisPatch {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub cost: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub cost: ::std::option::Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         ///The ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fargate_task_arn: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub results_posted: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_task_arn: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub results_posted: ::std::option::Option<bool>,
         ///the path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub s3_bucket: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub sqs_message: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub step: Option<Step>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
         /// end of the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub torn_down: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub torn_down: ::std::option::Option<bool>,
     }
 
     impl From<&AnalysisPatch> for AnalysisPatch {
@@ -423,41 +443,41 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct AnalysisPost {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub cost: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub cost: ::std::option::Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub end_time: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fargate_price_id: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_price_id: ::std::option::Option<f64>,
         ///The ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fargate_task_arn: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub result_posted: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_task_arn: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub result_posted: ::std::option::Option<bool>,
         ///the path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub s3_bucket: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub sqs_message: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub start_time: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state_machine_id: Option<StateMachineId>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state_machine_id: ::std::option::Option<StateMachineId>,
         ///
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub status: Option<AnalysisPostStatus>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub step: Option<Step>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<AnalysisPostStatus>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
         /// end of the analysis
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub torn_down: Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub torn_down: ::std::option::Option<bool>,
     }
 
     impl From<&AnalysisPost> for AnalysisPost {
@@ -492,6 +512,8 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
         Clone,
         Copy,
         Debug,
@@ -500,8 +522,6 @@ pub mod types {
         Ord,
         PartialEq,
         PartialOrd,
-        serde :: Deserialize,
-        serde :: Serialize,
     )]
     pub enum AnalysisPostStatus {
         Complete,
@@ -515,19 +535,19 @@ pub mod types {
         }
     }
 
-    impl ToString for AnalysisPostStatus {
-        fn to_string(&self) -> String {
+    impl ::std::fmt::Display for AnalysisPostStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Complete => "Complete".to_string(),
-                Self::Pending => "Pending".to_string(),
-                Self::InProgress => "InProgress".to_string(),
+                Self::Complete => write!(f, "Complete"),
+                Self::Pending => write!(f, "Pending"),
+                Self::InProgress => write!(f, "InProgress"),
             }
         }
     }
 
     impl std::str::FromStr for AnalysisPostStatus {
         type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "Complete" => Ok(Self::Complete),
                 "Pending" => Ok(Self::Pending),
@@ -539,21 +559,25 @@ pub mod types {
 
     impl std::convert::TryFrom<&str> for AnalysisPostStatus {
         type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&String> for AnalysisPostStatus {
+    impl std::convert::TryFrom<&::std::string::String> for AnalysisPostStatus {
         type Error = self::error::ConversionError;
-        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<String> for AnalysisPostStatus {
+    impl std::convert::TryFrom<::std::string::String> for AnalysisPostStatus {
         type Error = self::error::ConversionError;
-        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
@@ -573,17 +597,25 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
-        Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, serde :: Deserialize, serde :: Serialize,
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
     )]
-    pub struct ApiGatewayId(pub String);
-    impl std::ops::Deref for ApiGatewayId {
-        type Target = String;
-        fn deref(&self) -> &String {
+    pub struct ApiGatewayId(pub ::std::string::String);
+    impl ::std::ops::Deref for ApiGatewayId {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
             &self.0
         }
     }
 
-    impl From<ApiGatewayId> for String {
+    impl From<ApiGatewayId> for ::std::string::String {
         fn from(value: ApiGatewayId) -> Self {
             value.0
         }
@@ -595,22 +627,22 @@ pub mod types {
         }
     }
 
-    impl From<String> for ApiGatewayId {
-        fn from(value: String) -> Self {
+    impl From<::std::string::String> for ApiGatewayId {
+        fn from(value: ::std::string::String) -> Self {
             Self(value)
         }
     }
 
-    impl std::str::FromStr for ApiGatewayId {
-        type Err = std::convert::Infallible;
-        fn from_str(value: &str) -> Result<Self, Self::Err> {
+    impl ::std::str::FromStr for ApiGatewayId {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
             Ok(Self(value.to_string()))
         }
     }
 
-    impl ToString for ApiGatewayId {
-        fn to_string(&self) -> String {
-            self.0.to_string()
+    impl ::std::fmt::Display for ApiGatewayId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
         }
     }
 
@@ -886,79 +918,79 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Bna {
         ///City identifier
         pub city_id: uuid::Uuid,
         ///BNA category subscore for access to community centers
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub community_centers: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub community_centers: ::std::option::Option<f64>,
         ///BNA category score for access to core services
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub coreservices_score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub coreservices_score: ::std::option::Option<f64>,
         ///BNA category subscore for access to dentists
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub dentists: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub dentists: ::std::option::Option<f64>,
         ///BNA category subscore for access to doctors
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub doctors: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub doctors: ::std::option::Option<f64>,
         ///BNA category subscore for access to job location areas
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub employment: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub employment: ::std::option::Option<f64>,
         ///BNA category subscore for access to grocery stores
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub grocery: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub grocery: ::std::option::Option<f64>,
         ///Total miles of high-stress streets in the measured area
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub high_stress_miles: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub high_stress_miles: ::std::option::Option<f64>,
         ///BNA category subscore for access to universities and colleges
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub higher_education: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub higher_education: ::std::option::Option<f64>,
         ///BNA category subscore for access to hospitals
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub hospitals: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub hospitals: ::std::option::Option<f64>,
         ///BNA category subscore for access to k12 schools
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub k12_education: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub k12_education: ::std::option::Option<f64>,
         ///Total miles of low-stress streets and paths in the measured area
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub low_stress_miles: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub low_stress_miles: ::std::option::Option<f64>,
         ///BNA category score for access to education and jobs""
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub opportunity_score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub opportunity_score: ::std::option::Option<f64>,
         ///BNA category subscore for access to parks
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub parks: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub parks: ::std::option::Option<f64>,
         ///BNA category score for access to residential areas
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub people: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub people: ::std::option::Option<f64>,
         ///BNA category subscore for access to pharmacies
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub pharmacies: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub pharmacies: ::std::option::Option<f64>,
         ///Analysis identifier
         pub rating_id: uuid::Uuid,
         ///BNA category score for access to recreational facilities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub recreation_score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub recreation_score: ::std::option::Option<f64>,
         ///BNA category subscore for access to bikeable trails
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub recreation_trails: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub recreation_trails: ::std::option::Option<f64>,
         ///BNA category score for access to major retail centers
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub retail: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub retail: ::std::option::Option<f64>,
         pub score: f64,
         ///BNA category subscore for access to social services
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub social_services: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub social_services: ::std::option::Option<f64>,
         ///BNA category subscore for access to technical and vocational
         /// colleges
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub technical_vocational_college: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub technical_vocational_college: ::std::option::Option<f64>,
         ///BNA category score for access to major transit stops
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub transit: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub transit: ::std::option::Option<f64>,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: String,
+        pub version: ::std::string::String,
     }
 
     impl From<&Bna> for Bna {
@@ -1020,10 +1052,10 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaPost {
         pub core_services: CoreServices,
-        pub features: serde_json::Value,
+        pub features: ::serde_json::Value,
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
         pub people: People,
@@ -1098,18 +1130,18 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaSummary {
         ///City identifier
         pub city_id: uuid::Uuid,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Analysis identifier
         pub rating_id: uuid::Uuid,
         pub score: f64,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: String,
+        pub version: ::std::string::String,
     }
 
     impl From<&BnaSummary> for BnaSummary {
@@ -1144,16 +1176,16 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
-    pub struct BnaSummaryWithCity(pub Vec<BnaSummaryWithCityItem>);
-    impl std::ops::Deref for BnaSummaryWithCity {
-        type Target = Vec<BnaSummaryWithCityItem>;
-        fn deref(&self) -> &Vec<BnaSummaryWithCityItem> {
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct BnaSummaryWithCity(pub ::std::vec::Vec<BnaSummaryWithCityItem>);
+    impl ::std::ops::Deref for BnaSummaryWithCity {
+        type Target = ::std::vec::Vec<BnaSummaryWithCityItem>;
+        fn deref(&self) -> &::std::vec::Vec<BnaSummaryWithCityItem> {
             &self.0
         }
     }
 
-    impl From<BnaSummaryWithCity> for Vec<BnaSummaryWithCityItem> {
+    impl From<BnaSummaryWithCity> for ::std::vec::Vec<BnaSummaryWithCityItem> {
         fn from(value: BnaSummaryWithCity) -> Self {
             value.0
         }
@@ -1165,8 +1197,8 @@ pub mod types {
         }
     }
 
-    impl From<Vec<BnaSummaryWithCityItem>> for BnaSummaryWithCity {
-        fn from(value: Vec<BnaSummaryWithCityItem>) -> Self {
+    impl From<::std::vec::Vec<BnaSummaryWithCityItem>> for BnaSummaryWithCity {
+        fn from(value: ::std::vec::Vec<BnaSummaryWithCityItem>) -> Self {
             Self(value)
         }
     }
@@ -1188,40 +1220,40 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaSummaryWithCityItem {
         pub city_id: uuid::Uuid,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub latitude: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub longitude: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub latitude: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub longitude: ::std::option::Option<f64>,
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<::std::string::String>,
         ///Analysis identifier
         pub rating_id: uuid::Uuid,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
         pub score: f64,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub speed_limit: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub speed_limit: ::std::option::Option<f64>,
         ///State name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state_abbrev: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state_abbrev: ::std::option::Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub updated_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: String,
+        pub version: ::std::string::String,
     }
 
     impl From<&BnaSummaryWithCityItem> for BnaSummaryWithCityItem {
@@ -1296,26 +1328,26 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Census {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub census_id: Option<i64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub census_id: ::std::option::Option<i64>,
         ///City identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<uuid::Uuid>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city_id: ::std::option::Option<uuid::Uuid>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///City population size category (small (0), medium (1), large (2))
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub pop_size: Option<CensusPopSize>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub pop_size: ::std::option::Option<CensusPopSize>,
         ///City population
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub population: Option<i64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub population: ::std::option::Option<i64>,
     }
 
     impl From<&Census> for Census {
@@ -1350,9 +1382,9 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Serialize)]
+    #[derive(:: serde :: Serialize, Clone, Debug)]
     pub struct CensusPopSize(i64);
-    impl std::ops::Deref for CensusPopSize {
+    impl ::std::ops::Deref for CensusPopSize {
         type Target = i64;
         fn deref(&self) -> &i64 {
             &self.0
@@ -1371,9 +1403,9 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<i64> for CensusPopSize {
+    impl ::std::convert::TryFrom<i64> for CensusPopSize {
         type Error = self::error::ConversionError;
-        fn try_from(value: i64) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: i64) -> ::std::result::Result<Self, self::error::ConversionError> {
             if ![0_i64, 1_i64, 2_i64].contains(&value) {
                 Err("invalid value".into())
             } else {
@@ -1382,13 +1414,13 @@ pub mod types {
         }
     }
 
-    impl<'de> serde::Deserialize<'de> for CensusPopSize {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    impl<'de> ::serde::Deserialize<'de> for CensusPopSize {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
-            D: serde::Deserializer<'de>,
+            D: ::serde::Deserializer<'de>,
         {
             Self::try_from(<i64>::deserialize(deserializer)?)
-                .map_err(|e| <D::Error as serde::de::Error>::custom(e.to_string()))
+                .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
 
@@ -1432,18 +1464,18 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CensusPost {
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///City population size category (small (0), medium (1), large (2))
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub pop_size: Option<CensusPostPopSize>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub pop_size: ::std::option::Option<CensusPostPopSize>,
         ///City population
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub population: Option<i64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub population: ::std::option::Option<i64>,
     }
 
     impl From<&CensusPost> for CensusPost {
@@ -1478,9 +1510,9 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Serialize)]
+    #[derive(:: serde :: Serialize, Clone, Debug)]
     pub struct CensusPostPopSize(i64);
-    impl std::ops::Deref for CensusPostPopSize {
+    impl ::std::ops::Deref for CensusPostPopSize {
         type Target = i64;
         fn deref(&self) -> &i64 {
             &self.0
@@ -1499,9 +1531,9 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<i64> for CensusPostPopSize {
+    impl ::std::convert::TryFrom<i64> for CensusPostPopSize {
         type Error = self::error::ConversionError;
-        fn try_from(value: i64) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: i64) -> ::std::result::Result<Self, self::error::ConversionError> {
             if ![0_i64, 1_i64, 2_i64].contains(&value) {
                 Err("invalid value".into())
             } else {
@@ -1510,13 +1542,13 @@ pub mod types {
         }
     }
 
-    impl<'de> serde::Deserialize<'de> for CensusPostPopSize {
-        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    impl<'de> ::serde::Deserialize<'de> for CensusPostPopSize {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
         where
-            D: serde::Deserializer<'de>,
+            D: ::serde::Deserializer<'de>,
         {
             Self::try_from(<i64>::deserialize(deserializer)?)
-                .map_err(|e| <D::Error as serde::de::Error>::custom(e.to_string()))
+                .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
         }
     }
 
@@ -1607,38 +1639,38 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct City {
         ///City identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city_id: Option<uuid::Uuid>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city_id: ::std::option::Option<uuid::Uuid>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub latitude: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub longitude: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub latitude: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub longitude: ::std::option::Option<f64>,
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub name: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub speed_limit: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub speed_limit: ::std::option::Option<f64>,
         ///State name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state_abbrev: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state_abbrev: ::std::option::Option<f64>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub updated_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
     }
 
     impl From<&City> for City {
@@ -1726,27 +1758,27 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityPost {
         pub country: Country,
         ///Geographic coordinate that specifies the north-south position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub latitude: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub latitude: ::std::option::Option<f64>,
         ///Geographic coordinate that specifies the east–west position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub longitude: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub longitude: ::std::option::Option<f64>,
         ///City name
-        pub name: String,
+        pub name: ::std::string::String,
         ///Speed limit in kilometer per hour (km/h).
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub speed_limit: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub speed_limit: ::std::option::Option<f64>,
         ///State name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub state_abbrev: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub state_abbrev: ::std::option::Option<f64>,
     }
 
     impl From<&CityPost> for CityPost {
@@ -1824,22 +1856,22 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CoreServices {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub dentists: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub doctors: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub grocery: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub hospitals: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub pharmacies: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub social_services: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub dentists: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub doctors: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub grocery: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub hospitals: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub pharmacies: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub social_services: ::std::option::Option<f64>,
     }
 
     impl From<&CoreServices> for CoreServices {
@@ -1894,6 +1926,8 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
         Clone,
         Copy,
         Debug,
@@ -1902,8 +1936,6 @@ pub mod types {
         Ord,
         PartialEq,
         PartialOrd,
-        serde :: Deserialize,
-        serde :: Serialize,
     )]
     pub enum Country {
         Australia,
@@ -1944,43 +1976,43 @@ pub mod types {
         }
     }
 
-    impl ToString for Country {
-        fn to_string(&self) -> String {
+    impl ::std::fmt::Display for Country {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Australia => "Australia".to_string(),
-                Self::Belgium => "Belgium".to_string(),
-                Self::Brazil => "Brazil".to_string(),
-                Self::Canada => "Canada".to_string(),
-                Self::Chile => "Chile".to_string(),
-                Self::Colombia => "Colombia".to_string(),
-                Self::Croatia => "Croatia".to_string(),
-                Self::Cuba => "Cuba".to_string(),
-                Self::England => "England".to_string(),
-                Self::France => "France".to_string(),
-                Self::Germany => "Germany".to_string(),
-                Self::Greece => "Greece".to_string(),
-                Self::Guatemala => "Guatemala".to_string(),
-                Self::Iran => "Iran".to_string(),
-                Self::Iraq => "Iraq".to_string(),
-                Self::Ireland => "Ireland".to_string(),
-                Self::Italy => "Italy".to_string(),
-                Self::Mexico => "Mexico".to_string(),
-                Self::Netherlands => "Netherlands".to_string(),
-                Self::NewZealand => "New Zealand".to_string(),
-                Self::NorthernIreland => "Northern Ireland".to_string(),
-                Self::Portugal => "Portugal".to_string(),
-                Self::Scotland => "Scotland".to_string(),
-                Self::Spain => "Spain".to_string(),
-                Self::UnitedStates => "United States".to_string(),
-                Self::Vietnam => "Vietnam".to_string(),
-                Self::Wales => "Wales".to_string(),
+                Self::Australia => write!(f, "Australia"),
+                Self::Belgium => write!(f, "Belgium"),
+                Self::Brazil => write!(f, "Brazil"),
+                Self::Canada => write!(f, "Canada"),
+                Self::Chile => write!(f, "Chile"),
+                Self::Colombia => write!(f, "Colombia"),
+                Self::Croatia => write!(f, "Croatia"),
+                Self::Cuba => write!(f, "Cuba"),
+                Self::England => write!(f, "England"),
+                Self::France => write!(f, "France"),
+                Self::Germany => write!(f, "Germany"),
+                Self::Greece => write!(f, "Greece"),
+                Self::Guatemala => write!(f, "Guatemala"),
+                Self::Iran => write!(f, "Iran"),
+                Self::Iraq => write!(f, "Iraq"),
+                Self::Ireland => write!(f, "Ireland"),
+                Self::Italy => write!(f, "Italy"),
+                Self::Mexico => write!(f, "Mexico"),
+                Self::Netherlands => write!(f, "Netherlands"),
+                Self::NewZealand => write!(f, "New Zealand"),
+                Self::NorthernIreland => write!(f, "Northern Ireland"),
+                Self::Portugal => write!(f, "Portugal"),
+                Self::Scotland => write!(f, "Scotland"),
+                Self::Spain => write!(f, "Spain"),
+                Self::UnitedStates => write!(f, "United States"),
+                Self::Vietnam => write!(f, "Vietnam"),
+                Self::Wales => write!(f, "Wales"),
             }
         }
     }
 
     impl std::str::FromStr for Country {
         type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "Australia" => Ok(Self::Australia),
                 "Belgium" => Ok(Self::Belgium),
@@ -2016,21 +2048,25 @@ pub mod types {
 
     impl std::convert::TryFrom<&str> for Country {
         type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&String> for Country {
+    impl std::convert::TryFrom<&::std::string::String> for Country {
         type Error = self::error::ConversionError;
-        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<String> for Country {
+    impl std::convert::TryFrom<::std::string::String> for Country {
         type Error = self::error::ConversionError;
-        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
@@ -2074,22 +2110,22 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Enqueue {
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&Enqueue> for Enqueue {
@@ -2143,22 +2179,22 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct EnqueuePost {
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&EnqueuePost> for EnqueuePost {
@@ -2214,21 +2250,21 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Error {
         ///detailed error message
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub details: Option<String>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub id: Option<ApiGatewayId>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub source: Option<Source>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub details: ::std::option::Option<::std::string::String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub id: ::std::option::Option<ApiGatewayId>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub source: ::std::option::Option<Source>,
         ///HTTP status associated with the error
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub status: Option<i64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<i64>,
         ///Error title
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub title: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub title: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&Error> for Error {
@@ -2257,16 +2293,16 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
-    pub struct Errors(pub Vec<Error>);
-    impl std::ops::Deref for Errors {
-        type Target = Vec<Error>;
-        fn deref(&self) -> &Vec<Error> {
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Errors(pub ::std::vec::Vec<Error>);
+    impl ::std::ops::Deref for Errors {
+        type Target = ::std::vec::Vec<Error>;
+        fn deref(&self) -> &::std::vec::Vec<Error> {
             &self.0
         }
     }
 
-    impl From<Errors> for Vec<Error> {
+    impl From<Errors> for ::std::vec::Vec<Error> {
         fn from(value: Errors) -> Self {
             value.0
         }
@@ -2278,8 +2314,8 @@ pub mod types {
         }
     }
 
-    impl From<Vec<Error>> for Errors {
-        fn from(value: Vec<Error>) -> Self {
+    impl From<::std::vec::Vec<Error>> for Errors {
+        fn from(value: ::std::vec::Vec<Error>) -> Self {
             Self(value)
         }
     }
@@ -2316,15 +2352,15 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct FargatePrice {
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fargate_price_id: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub per_second: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_price_id: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub per_second: ::std::option::Option<f64>,
     }
 
     impl From<&FargatePrice> for FargatePrice {
@@ -2375,14 +2411,14 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Features {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub people: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub retail: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub transit: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub people: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub retail: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub transit: ::std::option::Option<f64>,
     }
 
     impl From<&Features> for Features {
@@ -2414,12 +2450,20 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct GetCityCensusResponseItem {
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_0: Option<City>,
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_1: Option<Census>,
+        #[serde(
+            flatten,
+            default,
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub subtype_0: ::std::option::Option<City>,
+        #[serde(
+            flatten,
+            default,
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub subtype_1: ::std::option::Option<Census>,
     }
 
     impl From<&GetCityCensusResponseItem> for GetCityCensusResponseItem {
@@ -2451,7 +2495,7 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(untagged)]
     pub enum GetCityRatingsResponseItem {
         City(City),
@@ -2493,7 +2537,7 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(untagged)]
     pub enum GetRatingCityResponseItem {
         BnaSummaryWithCity(BnaSummaryWithCity),
@@ -2541,6 +2585,8 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
         Clone,
         Copy,
         Debug,
@@ -2549,8 +2595,6 @@ pub mod types {
         Ord,
         PartialEq,
         PartialOrd,
-        serde :: Deserialize,
-        serde :: Serialize,
     )]
     pub enum GetRatingComponent {
         All,
@@ -2568,23 +2612,23 @@ pub mod types {
         }
     }
 
-    impl ToString for GetRatingComponent {
-        fn to_string(&self) -> String {
+    impl ::std::fmt::Display for GetRatingComponent {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::All => "All".to_string(),
-                Self::CoreServices => "CoreServices".to_string(),
-                Self::Features => "Features".to_string(),
-                Self::Infratructure => "Infratructure".to_string(),
-                Self::Opportunity => "Opportunity".to_string(),
-                Self::Recreation => "Recreation".to_string(),
-                Self::Summary => "Summary".to_string(),
+                Self::All => write!(f, "All"),
+                Self::CoreServices => write!(f, "CoreServices"),
+                Self::Features => write!(f, "Features"),
+                Self::Infratructure => write!(f, "Infratructure"),
+                Self::Opportunity => write!(f, "Opportunity"),
+                Self::Recreation => write!(f, "Recreation"),
+                Self::Summary => write!(f, "Summary"),
             }
         }
     }
 
     impl std::str::FromStr for GetRatingComponent {
         type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "All" => Ok(Self::All),
                 "CoreServices" => Ok(Self::CoreServices),
@@ -2600,21 +2644,25 @@ pub mod types {
 
     impl std::convert::TryFrom<&str> for GetRatingComponent {
         type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&String> for GetRatingComponent {
+    impl std::convert::TryFrom<&::std::string::String> for GetRatingComponent {
         type Error = self::error::ConversionError;
-        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<String> for GetRatingComponent {
+    impl std::convert::TryFrom<::std::string::String> for GetRatingComponent {
         type Error = self::error::ConversionError;
-        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
@@ -2635,17 +2683,25 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
-        Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, serde :: Deserialize, serde :: Serialize,
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
     )]
-    pub struct Header(pub String);
-    impl std::ops::Deref for Header {
-        type Target = String;
-        fn deref(&self) -> &String {
+    pub struct Header(pub ::std::string::String);
+    impl ::std::ops::Deref for Header {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
             &self.0
         }
     }
 
-    impl From<Header> for String {
+    impl From<Header> for ::std::string::String {
         fn from(value: Header) -> Self {
             value.0
         }
@@ -2657,22 +2713,22 @@ pub mod types {
         }
     }
 
-    impl From<String> for Header {
-        fn from(value: String) -> Self {
+    impl From<::std::string::String> for Header {
+        fn from(value: ::std::string::String) -> Self {
             Self(value)
         }
     }
 
-    impl std::str::FromStr for Header {
-        type Err = std::convert::Infallible;
-        fn from_str(value: &str) -> Result<Self, Self::Err> {
+    impl ::std::str::FromStr for Header {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
             Ok(Self(value.to_string()))
         }
     }
 
-    impl ToString for Header {
-        fn to_string(&self) -> String {
-            self.0.to_string()
+    impl ::std::fmt::Display for Header {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
         }
     }
 
@@ -2704,12 +2760,12 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Infrastructure {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub high_stress_miles: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub low_stress_miles: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub high_stress_miles: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub low_stress_miles: ::std::option::Option<f64>,
     }
 
     impl From<&Infrastructure> for Infrastructure {
@@ -2775,18 +2831,18 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Opportunity {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub employment: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub higher_education: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub k12_education: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub technical_vocational_college: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub employment: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub higher_education: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub k12_education: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub technical_vocational_college: ::std::option::Option<f64>,
     }
 
     impl From<&Opportunity> for Opportunity {
@@ -2816,17 +2872,25 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
-        Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, serde :: Deserialize, serde :: Serialize,
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
     )]
-    pub struct Parameter(pub String);
-    impl std::ops::Deref for Parameter {
-        type Target = String;
-        fn deref(&self) -> &String {
+    pub struct Parameter(pub ::std::string::String);
+    impl ::std::ops::Deref for Parameter {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
             &self.0
         }
     }
 
-    impl From<Parameter> for String {
+    impl From<Parameter> for ::std::string::String {
         fn from(value: Parameter) -> Self {
             value.0
         }
@@ -2838,22 +2902,22 @@ pub mod types {
         }
     }
 
-    impl From<String> for Parameter {
-        fn from(value: String) -> Self {
+    impl From<::std::string::String> for Parameter {
+        fn from(value: ::std::string::String) -> Self {
             Self(value)
         }
     }
 
-    impl std::str::FromStr for Parameter {
-        type Err = std::convert::Infallible;
-        fn from_str(value: &str) -> Result<Self, Self::Err> {
+    impl ::std::str::FromStr for Parameter {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
             Ok(Self(value.to_string()))
         }
     }
 
-    impl ToString for Parameter {
-        fn to_string(&self) -> String {
-            self.0.to_string()
+    impl ::std::fmt::Display for Parameter {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
         }
     }
 
@@ -2874,12 +2938,20 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct PatchCityCensusResponseItem {
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_0: Option<City>,
-        #[serde(flatten, default, skip_serializing_if = "Option::is_none")]
-        pub subtype_1: Option<Census>,
+        #[serde(
+            flatten,
+            default,
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub subtype_0: ::std::option::Option<City>,
+        #[serde(
+            flatten,
+            default,
+            skip_serializing_if = "::std::option::Option::is_none"
+        )]
+        pub subtype_1: ::std::option::Option<Census>,
     }
 
     impl From<&PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
@@ -2909,10 +2981,10 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct People {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
     }
 
     impl From<&People> for People {
@@ -2942,17 +3014,25 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
-        Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd, serde :: Deserialize, serde :: Serialize,
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
     )]
-    pub struct Pointer(pub String);
-    impl std::ops::Deref for Pointer {
-        type Target = String;
-        fn deref(&self) -> &String {
+    pub struct Pointer(pub ::std::string::String);
+    impl ::std::ops::Deref for Pointer {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
             &self.0
         }
     }
 
-    impl From<Pointer> for String {
+    impl From<Pointer> for ::std::string::String {
         fn from(value: Pointer) -> Self {
             value.0
         }
@@ -2964,22 +3044,22 @@ pub mod types {
         }
     }
 
-    impl From<String> for Pointer {
-        fn from(value: String) -> Self {
+    impl From<::std::string::String> for Pointer {
+        fn from(value: ::std::string::String) -> Self {
             Self(value)
         }
     }
 
-    impl std::str::FromStr for Pointer {
-        type Err = std::convert::Infallible;
-        fn from_str(value: &str) -> Result<Self, Self::Err> {
+    impl ::std::str::FromStr for Pointer {
+        type Err = ::std::convert::Infallible;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
             Ok(Self(value.to_string()))
         }
     }
 
-    impl ToString for Pointer {
-        fn to_string(&self) -> String {
-            self.0.to_string()
+    impl ::std::fmt::Display for Pointer {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
         }
     }
 
@@ -3025,16 +3105,16 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Recreation {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub community_centers: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub parks: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub recreation_trails: Option<f64>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub community_centers: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub parks: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub recreation_trails: ::std::option::Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
     }
 
     impl From<&Recreation> for Recreation {
@@ -3064,10 +3144,10 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Retail {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
     }
 
     impl From<&Retail> for Retail {
@@ -3111,7 +3191,7 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(untagged)]
     pub enum Source {
         Parameter(Parameter),
@@ -3127,7 +3207,7 @@ pub mod types {
 
     impl std::str::FromStr for Source {
         type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if let Ok(v) = value.parse() {
                 Ok(Self::Parameter(v))
             } else if let Ok(v) = value.parse() {
@@ -3142,31 +3222,35 @@ pub mod types {
 
     impl std::convert::TryFrom<&str> for Source {
         type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&String> for Source {
+    impl std::convert::TryFrom<&::std::string::String> for Source {
         type Error = self::error::ConversionError;
-        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<String> for Source {
+    impl std::convert::TryFrom<::std::string::String> for Source {
         type Error = self::error::ConversionError;
-        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl ToString for Source {
-        fn to_string(&self) -> String {
+    impl ::std::fmt::Display for Source {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match self {
-                Self::Parameter(x) => x.to_string(),
-                Self::Pointer(x) => x.to_string(),
-                Self::Header(x) => x.to_string(),
+                Self::Parameter(x) => x.fmt(f),
+                Self::Pointer(x) => x.fmt(f),
+                Self::Header(x) => x.fmt(f),
             }
         }
     }
@@ -3205,9 +3289,9 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct StateMachineId(pub uuid::Uuid);
-    impl std::ops::Deref for StateMachineId {
+    impl ::std::ops::Deref for StateMachineId {
         type Target = uuid::Uuid;
         fn deref(&self) -> &uuid::Uuid {
             &self.0
@@ -3233,36 +3317,36 @@ pub mod types {
     }
 
     impl std::str::FromStr for StateMachineId {
-        type Err = <uuid::Uuid as std::str::FromStr>::Err;
-        fn from_str(value: &str) -> Result<Self, Self::Err> {
+        type Err = <uuid::Uuid as ::std::str::FromStr>::Err;
+        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
             Ok(Self(value.parse()?))
         }
     }
 
     impl std::convert::TryFrom<&str> for StateMachineId {
-        type Error = <uuid::Uuid as std::str::FromStr>::Err;
-        fn try_from(value: &str) -> Result<Self, Self::Error> {
+        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
+        fn try_from(value: &str) -> ::std::result::Result<Self, Self::Error> {
             value.parse()
         }
     }
 
     impl std::convert::TryFrom<&String> for StateMachineId {
-        type Error = <uuid::Uuid as std::str::FromStr>::Err;
-        fn try_from(value: &String) -> Result<Self, Self::Error> {
+        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
+        fn try_from(value: &String) -> ::std::result::Result<Self, Self::Error> {
             value.parse()
         }
     }
 
     impl std::convert::TryFrom<String> for StateMachineId {
-        type Error = <uuid::Uuid as std::str::FromStr>::Err;
-        fn try_from(value: String) -> Result<Self, Self::Error> {
+        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
+        fn try_from(value: String) -> ::std::result::Result<Self, Self::Error> {
             value.parse()
         }
     }
 
-    impl ToString for StateMachineId {
-        fn to_string(&self) -> String {
-            self.0.to_string()
+    impl ::std::fmt::Display for StateMachineId {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            self.0.fmt(f)
         }
     }
 
@@ -3288,6 +3372,8 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
         Clone,
         Copy,
         Debug,
@@ -3296,8 +3382,6 @@ pub mod types {
         Ord,
         PartialEq,
         PartialOrd,
-        serde :: Deserialize,
-        serde :: Serialize,
     )]
     pub enum Step {
         SqsMessage,
@@ -3312,20 +3396,20 @@ pub mod types {
         }
     }
 
-    impl ToString for Step {
-        fn to_string(&self) -> String {
+    impl ::std::fmt::Display for Step {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::SqsMessage => "SqsMessage".to_string(),
-                Self::Setup => "Setup".to_string(),
-                Self::Analysis => "Analysis".to_string(),
-                Self::Cleanup => "Cleanup".to_string(),
+                Self::SqsMessage => write!(f, "SqsMessage"),
+                Self::Setup => write!(f, "Setup"),
+                Self::Analysis => write!(f, "Analysis"),
+                Self::Cleanup => write!(f, "Cleanup"),
             }
         }
     }
 
     impl std::str::FromStr for Step {
         type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
                 "SqsMessage" => Ok(Self::SqsMessage),
                 "Setup" => Ok(Self::Setup),
@@ -3338,21 +3422,25 @@ pub mod types {
 
     impl std::convert::TryFrom<&str> for Step {
         type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&String> for Step {
+    impl std::convert::TryFrom<&::std::string::String> for Step {
         type Error = self::error::ConversionError;
-        fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<String> for Step {
+    impl std::convert::TryFrom<::std::string::String> for Step {
         type Error = self::error::ConversionError;
-        fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
@@ -3460,49 +3548,49 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Submission {
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
         ///Consent status
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub consent: Option<bool>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub consent: ::std::option::Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///Date and time
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub created_at: Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         ///Email address
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub email: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub email: ::std::option::Option<::std::string::String>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///First name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub first_name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub first_name: ::std::option::Option<::std::string::String>,
         ///Submission identifier
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub id: Option<i64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub id: ::std::option::Option<i64>,
         ///Last name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub last_name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_name: ::std::option::Option<::std::string::String>,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub occupation: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub occupation: ::std::option::Option<::std::string::String>,
         ///Name of the organization
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub organization: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
         ///The current status of the submission
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub submission_status: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub submission_status: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&Submission> for Submission {
@@ -3635,43 +3723,43 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPatch {
         ///City name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub city: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
         ///Consent status
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub consent: Option<bool>,
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub country: Option<Country>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub consent: ::std::option::Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///Email address
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub email: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub email: ::std::option::Option<::std::string::String>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub fips_code: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///First name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub first_name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub first_name: ::std::option::Option<::std::string::String>,
         ///Last name
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub last_name: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_name: ::std::option::Option<::std::string::String>,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub occupation: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub occupation: ::std::option::Option<::std::string::String>,
         ///Name of the organization
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub organization: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
         ///The current status of the submission
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub submission_status: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub submission_status: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&SubmissionPatch> for SubmissionPatch {
@@ -3792,36 +3880,36 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPost {
         ///City name
-        pub city: String,
+        pub city: ::std::string::String,
         ///Consent status
         pub consent: bool,
         pub country: Country,
         ///Email address
-        pub email: String,
+        pub email: ::std::string::String,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        pub fips_code: String,
+        pub fips_code: ::std::string::String,
         ///First name
-        pub first_name: String,
+        pub first_name: ::std::string::String,
         ///Last name
-        pub last_name: String,
+        pub last_name: ::std::string::String,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub occupation: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub occupation: ::std::option::Option<::std::string::String>,
         ///Name of the organization
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub organization: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub region: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
         ///The current status of the submission
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub submission_status: Option<String>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub submission_status: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&SubmissionPost> for SubmissionPost {
@@ -3850,16 +3938,16 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
-    pub struct Submissions(pub Vec<Submission>);
-    impl std::ops::Deref for Submissions {
-        type Target = Vec<Submission>;
-        fn deref(&self) -> &Vec<Submission> {
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Submissions(pub ::std::vec::Vec<Submission>);
+    impl ::std::ops::Deref for Submissions {
+        type Target = ::std::vec::Vec<Submission>;
+        fn deref(&self) -> &::std::vec::Vec<Submission> {
             &self.0
         }
     }
 
-    impl From<Submissions> for Vec<Submission> {
+    impl From<Submissions> for ::std::vec::Vec<Submission> {
         fn from(value: Submissions) -> Self {
             value.0
         }
@@ -3871,8 +3959,8 @@ pub mod types {
         }
     }
 
-    impl From<Vec<Submission>> for Submissions {
-        fn from(value: Vec<Submission>) -> Self {
+    impl From<::std::vec::Vec<Submission>> for Submissions {
+        fn from(value: ::std::vec::Vec<Submission>) -> Self {
             Self(value)
         }
     }
@@ -3892,10 +3980,10 @@ pub mod types {
     ///}
     /// ```
     /// </details>
-    #[derive(Clone, Debug, serde :: Deserialize, serde :: Serialize)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Transit {
-        #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub score: Option<f64>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub score: ::std::option::Option<f64>,
     }
 
     impl From<&Transit> for Transit {
@@ -3914,16 +4002,38 @@ pub mod types {
     pub mod builder {
         #[derive(Clone, Debug)]
         pub struct Analysis {
-            cost: Result<Option<f64>, String>,
-            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            fargate_task_arn: Result<Option<String>, String>,
-            results_posted: Result<Option<bool>, String>,
-            s3_bucket: Result<Option<String>, String>,
-            sqs_message: Result<Option<String>, String>,
-            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            state_machine_id: Result<super::StateMachineId, String>,
-            step: Result<Option<super::Step>, String>,
-            torn_down: Result<Option<bool>, String>,
+            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            end_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            fargate_price_id:
+                ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            fargate_task_arn: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            results_posted:
+                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            s3_bucket: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            sqs_message: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            start_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            state_machine_id: ::std::result::Result<super::StateMachineId, ::std::string::String>,
+            status: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
+            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
         }
 
         impl Default for Analysis {
@@ -3931,12 +4041,14 @@ pub mod types {
                 Self {
                     cost: Ok(Default::default()),
                     end_time: Ok(Default::default()),
+                    fargate_price_id: Ok(Default::default()),
                     fargate_task_arn: Ok(Default::default()),
                     results_posted: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
                     start_time: Ok(Default::default()),
                     state_machine_id: Err("no value supplied for state_machine_id".to_string()),
+                    status: Ok(Default::default()),
                     step: Ok(Default::default()),
                     torn_down: Ok(Default::default()),
                 }
@@ -3946,7 +4058,7 @@ pub mod types {
         impl Analysis {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.cost = value
@@ -3956,7 +4068,9 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
@@ -3964,9 +4078,22 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for end_time: {}", e));
                 self
             }
+            pub fn fargate_price_id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<::std::option::Option<i64>>,
+                T::Error: std::fmt::Display,
+            {
+                self.fargate_price_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for fargate_price_id: {}",
+                        e
+                    )
+                });
+                self
+            }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fargate_task_arn = value.try_into().map_err(|e| {
@@ -3979,7 +4106,7 @@ pub mod types {
             }
             pub fn results_posted<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.results_posted = value.try_into().map_err(|e| {
@@ -3989,7 +4116,7 @@ pub mod types {
             }
             pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.s3_bucket = value
@@ -3999,7 +4126,7 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4009,7 +4136,9 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.start_time = value
@@ -4030,9 +4159,19 @@ pub mod types {
                 });
                 self
             }
+            pub fn status<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: std::fmt::Display,
+            {
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
+                self
+            }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Step>>,
+                T: std::convert::TryInto<::std::option::Option<super::Step>>,
                 T::Error: std::fmt::Display,
             {
                 self.step = value
@@ -4042,7 +4181,7 @@ pub mod types {
             }
             pub fn torn_down<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.torn_down = value
@@ -4052,18 +4191,22 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Analysis> for super::Analysis {
+        impl ::std::convert::TryFrom<Analysis> for super::Analysis {
             type Error = super::error::ConversionError;
-            fn try_from(value: Analysis) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Analysis,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
+                    fargate_price_id: value.fargate_price_id?,
                     fargate_task_arn: value.fargate_task_arn?,
                     results_posted: value.results_posted?,
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
                     start_time: value.start_time?,
                     state_machine_id: value.state_machine_id?,
+                    status: value.status?,
                     step: value.step?,
                     torn_down: value.torn_down?,
                 })
@@ -4075,12 +4218,14 @@ pub mod types {
                 Self {
                     cost: Ok(value.cost),
                     end_time: Ok(value.end_time),
+                    fargate_price_id: Ok(value.fargate_price_id),
                     fargate_task_arn: Ok(value.fargate_task_arn),
                     results_posted: Ok(value.results_posted),
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
                     start_time: Ok(value.start_time),
                     state_machine_id: Ok(value.state_machine_id),
+                    status: Ok(value.status),
                     step: Ok(value.step),
                     torn_down: Ok(value.torn_down),
                 }
@@ -4089,15 +4234,31 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct AnalysisPatch {
-            cost: Result<Option<f64>, String>,
-            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            fargate_task_arn: Result<Option<String>, String>,
-            results_posted: Result<Option<bool>, String>,
-            s3_bucket: Result<Option<String>, String>,
-            sqs_message: Result<Option<String>, String>,
-            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            step: Result<Option<super::Step>, String>,
-            torn_down: Result<Option<bool>, String>,
+            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            end_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            fargate_task_arn: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            results_posted:
+                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            s3_bucket: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            sqs_message: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            start_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
+            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
         }
 
         impl Default for AnalysisPatch {
@@ -4119,7 +4280,7 @@ pub mod types {
         impl AnalysisPatch {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.cost = value
@@ -4129,7 +4290,9 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
@@ -4139,7 +4302,7 @@ pub mod types {
             }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fargate_task_arn = value.try_into().map_err(|e| {
@@ -4152,7 +4315,7 @@ pub mod types {
             }
             pub fn results_posted<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.results_posted = value.try_into().map_err(|e| {
@@ -4162,7 +4325,7 @@ pub mod types {
             }
             pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.s3_bucket = value
@@ -4172,7 +4335,7 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4182,7 +4345,9 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.start_time = value
@@ -4192,7 +4357,7 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Step>>,
+                T: std::convert::TryInto<::std::option::Option<super::Step>>,
                 T::Error: std::fmt::Display,
             {
                 self.step = value
@@ -4202,7 +4367,7 @@ pub mod types {
             }
             pub fn torn_down<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.torn_down = value
@@ -4212,9 +4377,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<AnalysisPatch> for super::AnalysisPatch {
+        impl ::std::convert::TryFrom<AnalysisPatch> for super::AnalysisPatch {
             type Error = super::error::ConversionError;
-            fn try_from(value: AnalysisPatch) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: AnalysisPatch,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
@@ -4247,18 +4414,41 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct AnalysisPost {
-            cost: Result<Option<f64>, String>,
-            end_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            fargate_price_id: Result<Option<f64>, String>,
-            fargate_task_arn: Result<Option<String>, String>,
-            result_posted: Result<Option<bool>, String>,
-            s3_bucket: Result<Option<String>, String>,
-            sqs_message: Result<Option<String>, String>,
-            start_time: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            state_machine_id: Result<Option<super::StateMachineId>, String>,
-            status: Result<Option<super::AnalysisPostStatus>, String>,
-            step: Result<Option<super::Step>, String>,
-            torn_down: Result<Option<bool>, String>,
+            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            end_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            fargate_price_id:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            fargate_task_arn: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            result_posted:
+                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            s3_bucket: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            sqs_message: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            start_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            state_machine_id: ::std::result::Result<
+                ::std::option::Option<super::StateMachineId>,
+                ::std::string::String,
+            >,
+            status: ::std::result::Result<
+                ::std::option::Option<super::AnalysisPostStatus>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
+            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
         }
 
         impl Default for AnalysisPost {
@@ -4283,7 +4473,7 @@ pub mod types {
         impl AnalysisPost {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.cost = value
@@ -4293,7 +4483,9 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.end_time = value
@@ -4303,7 +4495,7 @@ pub mod types {
             }
             pub fn fargate_price_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.fargate_price_id = value.try_into().map_err(|e| {
@@ -4316,7 +4508,7 @@ pub mod types {
             }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fargate_task_arn = value.try_into().map_err(|e| {
@@ -4329,7 +4521,7 @@ pub mod types {
             }
             pub fn result_posted<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.result_posted = value.try_into().map_err(|e| {
@@ -4339,7 +4531,7 @@ pub mod types {
             }
             pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.s3_bucket = value
@@ -4349,7 +4541,7 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4359,7 +4551,9 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.start_time = value
@@ -4369,7 +4563,7 @@ pub mod types {
             }
             pub fn state_machine_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::StateMachineId>>,
+                T: std::convert::TryInto<::std::option::Option<super::StateMachineId>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_machine_id = value.try_into().map_err(|e| {
@@ -4382,7 +4576,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::AnalysisPostStatus>>,
+                T: std::convert::TryInto<::std::option::Option<super::AnalysisPostStatus>>,
                 T::Error: std::fmt::Display,
             {
                 self.status = value
@@ -4392,7 +4586,7 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Step>>,
+                T: std::convert::TryInto<::std::option::Option<super::Step>>,
                 T::Error: std::fmt::Display,
             {
                 self.step = value
@@ -4402,7 +4596,7 @@ pub mod types {
             }
             pub fn torn_down<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.torn_down = value
@@ -4412,9 +4606,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<AnalysisPost> for super::AnalysisPost {
+        impl ::std::convert::TryFrom<AnalysisPost> for super::AnalysisPost {
             type Error = super::error::ConversionError;
-            fn try_from(value: AnalysisPost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: AnalysisPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
@@ -4453,31 +4649,41 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Bna {
-            city_id: Result<uuid::Uuid, String>,
-            community_centers: Result<Option<f64>, String>,
-            coreservices_score: Result<Option<f64>, String>,
-            dentists: Result<Option<f64>, String>,
-            doctors: Result<Option<f64>, String>,
-            employment: Result<Option<f64>, String>,
-            grocery: Result<Option<f64>, String>,
-            high_stress_miles: Result<Option<f64>, String>,
-            higher_education: Result<Option<f64>, String>,
-            hospitals: Result<Option<f64>, String>,
-            k12_education: Result<Option<f64>, String>,
-            low_stress_miles: Result<Option<f64>, String>,
-            opportunity_score: Result<Option<f64>, String>,
-            parks: Result<Option<f64>, String>,
-            people: Result<Option<f64>, String>,
-            pharmacies: Result<Option<f64>, String>,
-            rating_id: Result<uuid::Uuid, String>,
-            recreation_score: Result<Option<f64>, String>,
-            recreation_trails: Result<Option<f64>, String>,
-            retail: Result<Option<f64>, String>,
-            score: Result<f64, String>,
-            social_services: Result<Option<f64>, String>,
-            technical_vocational_college: Result<Option<f64>, String>,
-            transit: Result<Option<f64>, String>,
-            version: Result<String, String>,
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            community_centers:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            coreservices_score:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            dentists: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            doctors: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            employment: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            grocery: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            high_stress_miles:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            higher_education:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            hospitals: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            k12_education: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            low_stress_miles:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            opportunity_score:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            parks: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            pharmacies: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            recreation_score:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            recreation_trails:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            retail: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            score: ::std::result::Result<f64, ::std::string::String>,
+            social_services:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            technical_vocational_college:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            transit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
         impl Default for Bna {
@@ -4525,7 +4731,7 @@ pub mod types {
             }
             pub fn community_centers<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.community_centers = value.try_into().map_err(|e| {
@@ -4538,7 +4744,7 @@ pub mod types {
             }
             pub fn coreservices_score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.coreservices_score = value.try_into().map_err(|e| {
@@ -4551,7 +4757,7 @@ pub mod types {
             }
             pub fn dentists<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.dentists = value
@@ -4561,7 +4767,7 @@ pub mod types {
             }
             pub fn doctors<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.doctors = value
@@ -4571,7 +4777,7 @@ pub mod types {
             }
             pub fn employment<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.employment = value
@@ -4581,7 +4787,7 @@ pub mod types {
             }
             pub fn grocery<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.grocery = value
@@ -4591,7 +4797,7 @@ pub mod types {
             }
             pub fn high_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.high_stress_miles = value.try_into().map_err(|e| {
@@ -4604,7 +4810,7 @@ pub mod types {
             }
             pub fn higher_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.higher_education = value.try_into().map_err(|e| {
@@ -4617,7 +4823,7 @@ pub mod types {
             }
             pub fn hospitals<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.hospitals = value
@@ -4627,7 +4833,7 @@ pub mod types {
             }
             pub fn k12_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.k12_education = value.try_into().map_err(|e| {
@@ -4637,7 +4843,7 @@ pub mod types {
             }
             pub fn low_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.low_stress_miles = value.try_into().map_err(|e| {
@@ -4650,7 +4856,7 @@ pub mod types {
             }
             pub fn opportunity_score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.opportunity_score = value.try_into().map_err(|e| {
@@ -4663,7 +4869,7 @@ pub mod types {
             }
             pub fn parks<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.parks = value
@@ -4673,7 +4879,7 @@ pub mod types {
             }
             pub fn people<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.people = value
@@ -4683,7 +4889,7 @@ pub mod types {
             }
             pub fn pharmacies<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.pharmacies = value
@@ -4703,7 +4909,7 @@ pub mod types {
             }
             pub fn recreation_score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.recreation_score = value.try_into().map_err(|e| {
@@ -4716,7 +4922,7 @@ pub mod types {
             }
             pub fn recreation_trails<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.recreation_trails = value.try_into().map_err(|e| {
@@ -4729,7 +4935,7 @@ pub mod types {
             }
             pub fn retail<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.retail = value
@@ -4749,7 +4955,7 @@ pub mod types {
             }
             pub fn social_services<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.social_services = value.try_into().map_err(|e| {
@@ -4759,7 +4965,7 @@ pub mod types {
             }
             pub fn technical_vocational_college<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.technical_vocational_college = value.try_into().map_err(|e| {
@@ -4772,7 +4978,7 @@ pub mod types {
             }
             pub fn transit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.transit = value
@@ -4782,7 +4988,7 @@ pub mod types {
             }
             pub fn version<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.version = value
@@ -4792,9 +4998,9 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Bna> for super::Bna {
+        impl ::std::convert::TryFrom<Bna> for super::Bna {
             type Error = super::error::ConversionError;
-            fn try_from(value: Bna) -> Result<Self, super::error::ConversionError> {
+            fn try_from(value: Bna) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city_id: value.city_id?,
                     community_centers: value.community_centers?,
@@ -4859,15 +5065,15 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct BnaPost {
-            core_services: Result<super::CoreServices, String>,
-            features: Result<serde_json::Value, String>,
-            infrastructure: Result<super::Infrastructure, String>,
-            opportunity: Result<super::Opportunity, String>,
-            people: Result<super::People, String>,
-            recreation: Result<super::Recreation, String>,
-            retail: Result<super::Retail, String>,
-            summary: Result<super::BnaSummary, String>,
-            transit: Result<super::Transit, String>,
+            core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
+            features: ::std::result::Result<::serde_json::Value, ::std::string::String>,
+            infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
+            opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
+            people: ::std::result::Result<super::People, ::std::string::String>,
+            recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
+            retail: ::std::result::Result<super::Retail, ::std::string::String>,
+            summary: ::std::result::Result<super::BnaSummary, ::std::string::String>,
+            transit: ::std::result::Result<super::Transit, ::std::string::String>,
         }
 
         impl Default for BnaPost {
@@ -4899,7 +5105,7 @@ pub mod types {
             }
             pub fn features<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<serde_json::Value>,
+                T: std::convert::TryInto<::serde_json::Value>,
                 T::Error: std::fmt::Display,
             {
                 self.features = value
@@ -4979,9 +5185,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<BnaPost> for super::BnaPost {
+        impl ::std::convert::TryFrom<BnaPost> for super::BnaPost {
             type Error = super::error::ConversionError;
-            fn try_from(value: BnaPost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: BnaPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     core_services: value.core_services?,
                     features: value.features?,
@@ -5014,11 +5222,14 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct BnaSummary {
-            city_id: Result<uuid::Uuid, String>,
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            rating_id: Result<uuid::Uuid, String>,
-            score: Result<f64, String>,
-            version: Result<String, String>,
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            score: ::std::result::Result<f64, ::std::string::String>,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
         impl Default for BnaSummary {
@@ -5046,7 +5257,9 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5076,7 +5289,7 @@ pub mod types {
             }
             pub fn version<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.version = value
@@ -5086,9 +5299,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<BnaSummary> for super::BnaSummary {
+        impl ::std::convert::TryFrom<BnaSummary> for super::BnaSummary {
             type Error = super::error::ConversionError;
-            fn try_from(value: BnaSummary) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: BnaSummary,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city_id: value.city_id?,
                     created_at: value.created_at?,
@@ -5113,20 +5328,36 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct BnaSummaryWithCityItem {
-            city_id: Result<uuid::Uuid, String>,
-            country: Result<Option<super::Country>, String>,
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            latitude: Result<Option<f64>, String>,
-            longitude: Result<Option<f64>, String>,
-            name: Result<Option<String>, String>,
-            rating_id: Result<uuid::Uuid, String>,
-            region: Result<Option<String>, String>,
-            score: Result<f64, String>,
-            speed_limit: Result<Option<f64>, String>,
-            state: Result<Option<String>, String>,
-            state_abbrev: Result<Option<f64>, String>,
-            updated_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            version: Result<String, String>,
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            score: ::std::result::Result<f64, ::std::string::String>,
+            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            state: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            updated_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
         impl Default for BnaSummaryWithCityItem {
@@ -5163,7 +5394,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -5173,7 +5404,9 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5183,7 +5416,7 @@ pub mod types {
             }
             pub fn latitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.latitude = value
@@ -5193,7 +5426,7 @@ pub mod types {
             }
             pub fn longitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.longitude = value
@@ -5203,7 +5436,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.name = value
@@ -5223,7 +5456,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -5243,7 +5476,7 @@ pub mod types {
             }
             pub fn speed_limit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.speed_limit = value
@@ -5253,7 +5486,7 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state = value
@@ -5263,7 +5496,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -5273,7 +5506,9 @@ pub mod types {
             }
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.updated_at = value
@@ -5283,7 +5518,7 @@ pub mod types {
             }
             pub fn version<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.version = value
@@ -5293,11 +5528,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<BnaSummaryWithCityItem> for super::BnaSummaryWithCityItem {
+        impl ::std::convert::TryFrom<BnaSummaryWithCityItem> for super::BnaSummaryWithCityItem {
             type Error = super::error::ConversionError;
             fn try_from(
                 value: BnaSummaryWithCityItem,
-            ) -> Result<Self, super::error::ConversionError> {
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city_id: value.city_id?,
                     country: value.country?,
@@ -5340,12 +5575,22 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Census {
-            census_id: Result<Option<i64>, String>,
-            city_id: Result<Option<uuid::Uuid>, String>,
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            fips_code: Result<Option<String>, String>,
-            pop_size: Result<Option<super::CensusPopSize>, String>,
-            population: Result<Option<i64>, String>,
+            census_id: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            city_id:
+                ::std::result::Result<::std::option::Option<uuid::Uuid>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            pop_size: ::std::result::Result<
+                ::std::option::Option<super::CensusPopSize>,
+                ::std::string::String,
+            >,
+            population: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
         }
 
         impl Default for Census {
@@ -5364,7 +5609,7 @@ pub mod types {
         impl Census {
             pub fn census_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<i64>>,
+                T: std::convert::TryInto<::std::option::Option<i64>>,
                 T::Error: std::fmt::Display,
             {
                 self.census_id = value
@@ -5374,7 +5619,7 @@ pub mod types {
             }
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<uuid::Uuid>>,
+                T: std::convert::TryInto<::std::option::Option<uuid::Uuid>>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -5384,7 +5629,9 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5394,7 +5641,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -5404,7 +5651,7 @@ pub mod types {
             }
             pub fn pop_size<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::CensusPopSize>>,
+                T: std::convert::TryInto<::std::option::Option<super::CensusPopSize>>,
                 T::Error: std::fmt::Display,
             {
                 self.pop_size = value
@@ -5414,7 +5661,7 @@ pub mod types {
             }
             pub fn population<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<i64>>,
+                T: std::convert::TryInto<::std::option::Option<i64>>,
                 T::Error: std::fmt::Display,
             {
                 self.population = value
@@ -5424,9 +5671,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Census> for super::Census {
+        impl ::std::convert::TryFrom<Census> for super::Census {
             type Error = super::error::ConversionError;
-            fn try_from(value: Census) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Census,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     census_id: value.census_id?,
                     city_id: value.city_id?,
@@ -5453,9 +5702,15 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct CensusPost {
-            fips_code: Result<Option<String>, String>,
-            pop_size: Result<Option<super::CensusPostPopSize>, String>,
-            population: Result<Option<i64>, String>,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            pop_size: ::std::result::Result<
+                ::std::option::Option<super::CensusPostPopSize>,
+                ::std::string::String,
+            >,
+            population: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
         }
 
         impl Default for CensusPost {
@@ -5471,7 +5726,7 @@ pub mod types {
         impl CensusPost {
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -5481,7 +5736,7 @@ pub mod types {
             }
             pub fn pop_size<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::CensusPostPopSize>>,
+                T: std::convert::TryInto<::std::option::Option<super::CensusPostPopSize>>,
                 T::Error: std::fmt::Display,
             {
                 self.pop_size = value
@@ -5491,7 +5746,7 @@ pub mod types {
             }
             pub fn population<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<i64>>,
+                T: std::convert::TryInto<::std::option::Option<i64>>,
                 T::Error: std::fmt::Display,
             {
                 self.population = value
@@ -5501,9 +5756,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<CensusPost> for super::CensusPost {
+        impl ::std::convert::TryFrom<CensusPost> for super::CensusPost {
             type Error = super::error::ConversionError;
-            fn try_from(value: CensusPost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: CensusPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     fips_code: value.fips_code?,
                     pop_size: value.pop_size?,
@@ -5524,17 +5781,34 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct City {
-            city_id: Result<Option<uuid::Uuid>, String>,
-            country: Result<Option<super::Country>, String>,
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            latitude: Result<Option<f64>, String>,
-            longitude: Result<Option<f64>, String>,
-            name: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
-            speed_limit: Result<Option<f64>, String>,
-            state: Result<Option<String>, String>,
-            state_abbrev: Result<Option<f64>, String>,
-            updated_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
+            city_id:
+                ::std::result::Result<::std::option::Option<uuid::Uuid>, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            state: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            updated_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for City {
@@ -5558,7 +5832,7 @@ pub mod types {
         impl City {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<uuid::Uuid>>,
+                T: std::convert::TryInto<::std::option::Option<uuid::Uuid>>,
                 T::Error: std::fmt::Display,
             {
                 self.city_id = value
@@ -5568,7 +5842,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -5578,7 +5852,9 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -5588,7 +5864,7 @@ pub mod types {
             }
             pub fn latitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.latitude = value
@@ -5598,7 +5874,7 @@ pub mod types {
             }
             pub fn longitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.longitude = value
@@ -5608,7 +5884,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.name = value
@@ -5618,7 +5894,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -5628,7 +5904,7 @@ pub mod types {
             }
             pub fn speed_limit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.speed_limit = value
@@ -5638,7 +5914,7 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state = value
@@ -5648,7 +5924,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -5658,7 +5934,9 @@ pub mod types {
             }
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.updated_at = value
@@ -5668,9 +5946,9 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<City> for super::City {
+        impl ::std::convert::TryFrom<City> for super::City {
             type Error = super::error::ConversionError;
-            fn try_from(value: City) -> Result<Self, super::error::ConversionError> {
+            fn try_from(value: City) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city_id: value.city_id?,
                     country: value.country?,
@@ -5707,13 +5985,16 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct CityPost {
-            country: Result<super::Country, String>,
-            latitude: Result<Option<f64>, String>,
-            longitude: Result<Option<f64>, String>,
-            name: Result<String, String>,
-            speed_limit: Result<Option<f64>, String>,
-            state: Result<Option<String>, String>,
-            state_abbrev: Result<Option<f64>, String>,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            state: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for CityPost {
@@ -5743,7 +6024,7 @@ pub mod types {
             }
             pub fn latitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.latitude = value
@@ -5753,7 +6034,7 @@ pub mod types {
             }
             pub fn longitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.longitude = value
@@ -5763,7 +6044,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.name = value
@@ -5773,7 +6054,7 @@ pub mod types {
             }
             pub fn speed_limit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.speed_limit = value
@@ -5783,7 +6064,7 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state = value
@@ -5793,7 +6074,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -5803,9 +6084,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<CityPost> for super::CityPost {
+        impl ::std::convert::TryFrom<CityPost> for super::CityPost {
             type Error = super::error::ConversionError;
-            fn try_from(value: CityPost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: CityPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     country: value.country?,
                     latitude: value.latitude?,
@@ -5834,13 +6117,14 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct CoreServices {
-            dentists: Result<Option<f64>, String>,
-            doctors: Result<Option<f64>, String>,
-            grocery: Result<Option<f64>, String>,
-            hospitals: Result<Option<f64>, String>,
-            pharmacies: Result<Option<f64>, String>,
-            score: Result<Option<f64>, String>,
-            social_services: Result<Option<f64>, String>,
+            dentists: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            doctors: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            grocery: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            hospitals: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            pharmacies: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            social_services:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for CoreServices {
@@ -5860,7 +6144,7 @@ pub mod types {
         impl CoreServices {
             pub fn dentists<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.dentists = value
@@ -5870,7 +6154,7 @@ pub mod types {
             }
             pub fn doctors<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.doctors = value
@@ -5880,7 +6164,7 @@ pub mod types {
             }
             pub fn grocery<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.grocery = value
@@ -5890,7 +6174,7 @@ pub mod types {
             }
             pub fn hospitals<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.hospitals = value
@@ -5900,7 +6184,7 @@ pub mod types {
             }
             pub fn pharmacies<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.pharmacies = value
@@ -5910,7 +6194,7 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -5920,7 +6204,7 @@ pub mod types {
             }
             pub fn social_services<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.social_services = value.try_into().map_err(|e| {
@@ -5930,9 +6214,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<CoreServices> for super::CoreServices {
+        impl ::std::convert::TryFrom<CoreServices> for super::CoreServices {
             type Error = super::error::ConversionError;
-            fn try_from(value: CoreServices) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: CoreServices,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     dentists: value.dentists?,
                     doctors: value.doctors?,
@@ -5961,10 +6247,20 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Enqueue {
-            city: Result<Option<String>, String>,
-            country: Result<Option<super::Country>, String>,
-            fips_code: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for Enqueue {
@@ -5981,7 +6277,7 @@ pub mod types {
         impl Enqueue {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.city = value
@@ -5991,7 +6287,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -6001,7 +6297,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -6011,7 +6307,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -6021,9 +6317,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Enqueue> for super::Enqueue {
+        impl ::std::convert::TryFrom<Enqueue> for super::Enqueue {
             type Error = super::error::ConversionError;
-            fn try_from(value: Enqueue) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Enqueue,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
                     country: value.country?,
@@ -6046,10 +6344,20 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct EnqueuePost {
-            city: Result<Option<String>, String>,
-            country: Result<Option<super::Country>, String>,
-            fips_code: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for EnqueuePost {
@@ -6066,7 +6374,7 @@ pub mod types {
         impl EnqueuePost {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.city = value
@@ -6076,7 +6384,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -6086,7 +6394,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -6096,7 +6404,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -6106,9 +6414,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<EnqueuePost> for super::EnqueuePost {
+        impl ::std::convert::TryFrom<EnqueuePost> for super::EnqueuePost {
             type Error = super::error::ConversionError;
-            fn try_from(value: EnqueuePost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: EnqueuePost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
                     country: value.country?,
@@ -6131,11 +6441,21 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Error {
-            details: Result<Option<String>, String>,
-            id: Result<Option<super::ApiGatewayId>, String>,
-            source: Result<Option<super::Source>, String>,
-            status: Result<Option<i64>, String>,
-            title: Result<Option<String>, String>,
+            details: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            id: ::std::result::Result<
+                ::std::option::Option<super::ApiGatewayId>,
+                ::std::string::String,
+            >,
+            source:
+                ::std::result::Result<::std::option::Option<super::Source>, ::std::string::String>,
+            status: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            title: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for Error {
@@ -6153,7 +6473,7 @@ pub mod types {
         impl Error {
             pub fn details<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.details = value
@@ -6163,7 +6483,7 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::ApiGatewayId>>,
+                T: std::convert::TryInto<::std::option::Option<super::ApiGatewayId>>,
                 T::Error: std::fmt::Display,
             {
                 self.id = value
@@ -6173,7 +6493,7 @@ pub mod types {
             }
             pub fn source<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Source>>,
+                T: std::convert::TryInto<::std::option::Option<super::Source>>,
                 T::Error: std::fmt::Display,
             {
                 self.source = value
@@ -6183,7 +6503,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<i64>>,
+                T: std::convert::TryInto<::std::option::Option<i64>>,
                 T::Error: std::fmt::Display,
             {
                 self.status = value
@@ -6193,7 +6513,7 @@ pub mod types {
             }
             pub fn title<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.title = value
@@ -6203,9 +6523,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Error> for super::Error {
+        impl ::std::convert::TryFrom<Error> for super::Error {
             type Error = super::error::ConversionError;
-            fn try_from(value: Error) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Error,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     details: value.details?,
                     id: value.id?,
@@ -6230,9 +6552,13 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct FargatePrice {
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            fargate_price_id: Result<Option<f64>, String>,
-            per_second: Result<Option<f64>, String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            fargate_price_id:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            per_second: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for FargatePrice {
@@ -6248,7 +6574,9 @@ pub mod types {
         impl FargatePrice {
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -6258,7 +6586,7 @@ pub mod types {
             }
             pub fn fargate_price_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.fargate_price_id = value.try_into().map_err(|e| {
@@ -6271,7 +6599,7 @@ pub mod types {
             }
             pub fn per_second<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.per_second = value
@@ -6281,9 +6609,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<FargatePrice> for super::FargatePrice {
+        impl ::std::convert::TryFrom<FargatePrice> for super::FargatePrice {
             type Error = super::error::ConversionError;
-            fn try_from(value: FargatePrice) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: FargatePrice,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     created_at: value.created_at?,
                     fargate_price_id: value.fargate_price_id?,
@@ -6304,9 +6634,9 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Features {
-            people: Result<Option<f64>, String>,
-            retail: Result<Option<f64>, String>,
-            transit: Result<Option<f64>, String>,
+            people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            retail: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            transit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Features {
@@ -6322,7 +6652,7 @@ pub mod types {
         impl Features {
             pub fn people<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.people = value
@@ -6332,7 +6662,7 @@ pub mod types {
             }
             pub fn retail<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.retail = value
@@ -6342,7 +6672,7 @@ pub mod types {
             }
             pub fn transit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.transit = value
@@ -6352,9 +6682,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Features> for super::Features {
+        impl ::std::convert::TryFrom<Features> for super::Features {
             type Error = super::error::ConversionError;
-            fn try_from(value: Features) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Features,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     people: value.people?,
                     retail: value.retail?,
@@ -6375,8 +6707,10 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct GetCityCensusResponseItem {
-            subtype_0: Result<Option<super::City>, String>,
-            subtype_1: Result<Option<super::Census>, String>,
+            subtype_0:
+                ::std::result::Result<::std::option::Option<super::City>, ::std::string::String>,
+            subtype_1:
+                ::std::result::Result<::std::option::Option<super::Census>, ::std::string::String>,
         }
 
         impl Default for GetCityCensusResponseItem {
@@ -6391,7 +6725,7 @@ pub mod types {
         impl GetCityCensusResponseItem {
             pub fn subtype_0<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::City>>,
+                T: std::convert::TryInto<::std::option::Option<super::City>>,
                 T::Error: std::fmt::Display,
             {
                 self.subtype_0 = value
@@ -6401,7 +6735,7 @@ pub mod types {
             }
             pub fn subtype_1<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Census>>,
+                T: std::convert::TryInto<::std::option::Option<super::Census>>,
                 T::Error: std::fmt::Display,
             {
                 self.subtype_1 = value
@@ -6411,11 +6745,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<GetCityCensusResponseItem> for super::GetCityCensusResponseItem {
+        impl ::std::convert::TryFrom<GetCityCensusResponseItem> for super::GetCityCensusResponseItem {
             type Error = super::error::ConversionError;
             fn try_from(
                 value: GetCityCensusResponseItem,
-            ) -> Result<Self, super::error::ConversionError> {
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     subtype_0: value.subtype_0?,
                     subtype_1: value.subtype_1?,
@@ -6434,8 +6768,10 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Infrastructure {
-            high_stress_miles: Result<Option<f64>, String>,
-            low_stress_miles: Result<Option<f64>, String>,
+            high_stress_miles:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            low_stress_miles:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Infrastructure {
@@ -6450,7 +6786,7 @@ pub mod types {
         impl Infrastructure {
             pub fn high_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.high_stress_miles = value.try_into().map_err(|e| {
@@ -6463,7 +6799,7 @@ pub mod types {
             }
             pub fn low_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.low_stress_miles = value.try_into().map_err(|e| {
@@ -6476,9 +6812,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Infrastructure> for super::Infrastructure {
+        impl ::std::convert::TryFrom<Infrastructure> for super::Infrastructure {
             type Error = super::error::ConversionError;
-            fn try_from(value: Infrastructure) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Infrastructure,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     high_stress_miles: value.high_stress_miles?,
                     low_stress_miles: value.low_stress_miles?,
@@ -6497,11 +6835,13 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Opportunity {
-            employment: Result<Option<f64>, String>,
-            higher_education: Result<Option<f64>, String>,
-            k12_education: Result<Option<f64>, String>,
-            score: Result<Option<f64>, String>,
-            technical_vocational_college: Result<Option<f64>, String>,
+            employment: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            higher_education:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            k12_education: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            technical_vocational_college:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Opportunity {
@@ -6519,7 +6859,7 @@ pub mod types {
         impl Opportunity {
             pub fn employment<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.employment = value
@@ -6529,7 +6869,7 @@ pub mod types {
             }
             pub fn higher_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.higher_education = value.try_into().map_err(|e| {
@@ -6542,7 +6882,7 @@ pub mod types {
             }
             pub fn k12_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.k12_education = value.try_into().map_err(|e| {
@@ -6552,7 +6892,7 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -6562,7 +6902,7 @@ pub mod types {
             }
             pub fn technical_vocational_college<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.technical_vocational_college = value.try_into().map_err(|e| {
@@ -6575,9 +6915,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Opportunity> for super::Opportunity {
+        impl ::std::convert::TryFrom<Opportunity> for super::Opportunity {
             type Error = super::error::ConversionError;
-            fn try_from(value: Opportunity) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Opportunity,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     employment: value.employment?,
                     higher_education: value.higher_education?,
@@ -6602,8 +6944,10 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct PatchCityCensusResponseItem {
-            subtype_0: Result<Option<super::City>, String>,
-            subtype_1: Result<Option<super::Census>, String>,
+            subtype_0:
+                ::std::result::Result<::std::option::Option<super::City>, ::std::string::String>,
+            subtype_1:
+                ::std::result::Result<::std::option::Option<super::Census>, ::std::string::String>,
         }
 
         impl Default for PatchCityCensusResponseItem {
@@ -6618,7 +6962,7 @@ pub mod types {
         impl PatchCityCensusResponseItem {
             pub fn subtype_0<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::City>>,
+                T: std::convert::TryInto<::std::option::Option<super::City>>,
                 T::Error: std::fmt::Display,
             {
                 self.subtype_0 = value
@@ -6628,7 +6972,7 @@ pub mod types {
             }
             pub fn subtype_1<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Census>>,
+                T: std::convert::TryInto<::std::option::Option<super::Census>>,
                 T::Error: std::fmt::Display,
             {
                 self.subtype_1 = value
@@ -6638,11 +6982,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<PatchCityCensusResponseItem> for super::PatchCityCensusResponseItem {
+        impl ::std::convert::TryFrom<PatchCityCensusResponseItem> for super::PatchCityCensusResponseItem {
             type Error = super::error::ConversionError;
             fn try_from(
                 value: PatchCityCensusResponseItem,
-            ) -> Result<Self, super::error::ConversionError> {
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     subtype_0: value.subtype_0?,
                     subtype_1: value.subtype_1?,
@@ -6661,7 +7005,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct People {
-            score: Result<Option<f64>, String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for People {
@@ -6675,7 +7019,7 @@ pub mod types {
         impl People {
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -6685,9 +7029,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<People> for super::People {
+        impl ::std::convert::TryFrom<People> for super::People {
             type Error = super::error::ConversionError;
-            fn try_from(value: People) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: People,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     score: value.score?,
                 })
@@ -6704,10 +7050,12 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Recreation {
-            community_centers: Result<Option<f64>, String>,
-            parks: Result<Option<f64>, String>,
-            recreation_trails: Result<Option<f64>, String>,
-            score: Result<Option<f64>, String>,
+            community_centers:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            parks: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            recreation_trails:
+                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Recreation {
@@ -6724,7 +7072,7 @@ pub mod types {
         impl Recreation {
             pub fn community_centers<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.community_centers = value.try_into().map_err(|e| {
@@ -6737,7 +7085,7 @@ pub mod types {
             }
             pub fn parks<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.parks = value
@@ -6747,7 +7095,7 @@ pub mod types {
             }
             pub fn recreation_trails<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.recreation_trails = value.try_into().map_err(|e| {
@@ -6760,7 +7108,7 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -6770,9 +7118,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Recreation> for super::Recreation {
+        impl ::std::convert::TryFrom<Recreation> for super::Recreation {
             type Error = super::error::ConversionError;
-            fn try_from(value: Recreation) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Recreation,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     community_centers: value.community_centers?,
                     parks: value.parks?,
@@ -6795,7 +7145,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Retail {
-            score: Result<Option<f64>, String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Retail {
@@ -6809,7 +7159,7 @@ pub mod types {
         impl Retail {
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -6819,9 +7169,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Retail> for super::Retail {
+        impl ::std::convert::TryFrom<Retail> for super::Retail {
             type Error = super::error::ConversionError;
-            fn try_from(value: Retail) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Retail,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     score: value.score?,
                 })
@@ -6838,19 +7190,50 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Submission {
-            city: Result<Option<String>, String>,
-            consent: Result<Option<bool>, String>,
-            country: Result<Option<super::Country>, String>,
-            created_at: Result<Option<chrono::DateTime<chrono::offset::Utc>>, String>,
-            email: Result<Option<String>, String>,
-            fips_code: Result<Option<String>, String>,
-            first_name: Result<Option<String>, String>,
-            id: Result<Option<i64>, String>,
-            last_name: Result<Option<String>, String>,
-            occupation: Result<Option<String>, String>,
-            organization: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
-            submission_status: Result<Option<String>, String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            email: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            first_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            id: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            last_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            occupation: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            organization: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            submission_status: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for Submission {
@@ -6876,7 +7259,7 @@ pub mod types {
         impl Submission {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.city = value
@@ -6886,7 +7269,7 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.consent = value
@@ -6896,7 +7279,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -6906,7 +7289,9 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<chrono::DateTime<chrono::offset::Utc>>>,
+                T: std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
@@ -6916,7 +7301,7 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.email = value
@@ -6926,7 +7311,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -6936,7 +7321,7 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.first_name = value
@@ -6946,7 +7331,7 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<i64>>,
+                T: std::convert::TryInto<::std::option::Option<i64>>,
                 T::Error: std::fmt::Display,
             {
                 self.id = value
@@ -6956,7 +7341,7 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.last_name = value
@@ -6966,7 +7351,7 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.occupation = value
@@ -6976,7 +7361,7 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
@@ -6986,7 +7371,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -6996,7 +7381,7 @@ pub mod types {
             }
             pub fn submission_status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.submission_status = value.try_into().map_err(|e| {
@@ -7009,9 +7394,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Submission> for super::Submission {
+        impl ::std::convert::TryFrom<Submission> for super::Submission {
             type Error = super::error::ConversionError;
-            fn try_from(value: Submission) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Submission,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
                     consent: value.consent?,
@@ -7052,17 +7439,45 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct SubmissionPatch {
-            city: Result<Option<String>, String>,
-            consent: Result<Option<bool>, String>,
-            country: Result<Option<super::Country>, String>,
-            email: Result<Option<String>, String>,
-            fips_code: Result<Option<String>, String>,
-            first_name: Result<Option<String>, String>,
-            last_name: Result<Option<String>, String>,
-            occupation: Result<Option<String>, String>,
-            organization: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
-            submission_status: Result<Option<String>, String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            email: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            first_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            last_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            occupation: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            organization: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            submission_status: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for SubmissionPatch {
@@ -7086,7 +7501,7 @@ pub mod types {
         impl SubmissionPatch {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.city = value
@@ -7096,7 +7511,7 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<bool>>,
+                T: std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: std::fmt::Display,
             {
                 self.consent = value
@@ -7106,7 +7521,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<super::Country>>,
+                T: std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -7116,7 +7531,7 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.email = value
@@ -7126,7 +7541,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -7136,7 +7551,7 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.first_name = value
@@ -7146,7 +7561,7 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.last_name = value
@@ -7156,7 +7571,7 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.occupation = value
@@ -7166,7 +7581,7 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
@@ -7176,7 +7591,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -7186,7 +7601,7 @@ pub mod types {
             }
             pub fn submission_status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.submission_status = value.try_into().map_err(|e| {
@@ -7199,9 +7614,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<SubmissionPatch> for super::SubmissionPatch {
+        impl ::std::convert::TryFrom<SubmissionPatch> for super::SubmissionPatch {
             type Error = super::error::ConversionError;
-            fn try_from(value: SubmissionPatch) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: SubmissionPatch,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
                     consent: value.consent?,
@@ -7238,17 +7655,29 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct SubmissionPost {
-            city: Result<String, String>,
-            consent: Result<bool, String>,
-            country: Result<super::Country, String>,
-            email: Result<String, String>,
-            fips_code: Result<String, String>,
-            first_name: Result<String, String>,
-            last_name: Result<String, String>,
-            occupation: Result<Option<String>, String>,
-            organization: Result<Option<String>, String>,
-            region: Result<Option<String>, String>,
-            submission_status: Result<Option<String>, String>,
+            city: ::std::result::Result<::std::string::String, ::std::string::String>,
+            consent: ::std::result::Result<bool, ::std::string::String>,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            email: ::std::result::Result<::std::string::String, ::std::string::String>,
+            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
+            first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            last_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            occupation: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            organization: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            region: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            submission_status: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for SubmissionPost {
@@ -7272,7 +7701,7 @@ pub mod types {
         impl SubmissionPost {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.city = value
@@ -7302,7 +7731,7 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.email = value
@@ -7312,7 +7741,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.fips_code = value
@@ -7322,7 +7751,7 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.first_name = value
@@ -7332,7 +7761,7 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<String>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.last_name = value
@@ -7342,7 +7771,7 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.occupation = value
@@ -7352,7 +7781,7 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
@@ -7362,7 +7791,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.region = value
@@ -7372,7 +7801,7 @@ pub mod types {
             }
             pub fn submission_status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<String>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.submission_status = value.try_into().map_err(|e| {
@@ -7385,9 +7814,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<SubmissionPost> for super::SubmissionPost {
+        impl ::std::convert::TryFrom<SubmissionPost> for super::SubmissionPost {
             type Error = super::error::ConversionError;
-            fn try_from(value: SubmissionPost) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: SubmissionPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
                     consent: value.consent?,
@@ -7424,7 +7855,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Transit {
-            score: Result<Option<f64>, String>,
+            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
         impl Default for Transit {
@@ -7438,7 +7869,7 @@ pub mod types {
         impl Transit {
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<f64>>,
                 T::Error: std::fmt::Display,
             {
                 self.score = value
@@ -7448,9 +7879,11 @@ pub mod types {
             }
         }
 
-        impl std::convert::TryFrom<Transit> for super::Transit {
+        impl ::std::convert::TryFrom<Transit> for super::Transit {
             type Error = super::error::ConversionError;
-            fn try_from(value: Transit) -> Result<Self, super::error::ConversionError> {
+            fn try_from(
+                value: Transit,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     score: value.score?,
                 })
@@ -8016,7 +8449,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/ratings`
-        pub async fn send(self) -> Result<ResponseValue<Vec<types::BnaSummary>>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<::std::vec::Vec<types::BnaSummary>>, Error<()>> {
             let Self {
                 client,
                 page,
@@ -8161,7 +8596,7 @@ pub mod builder {
         ///Sends a `GET` request to `/ratings/analyses`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<Vec<types::Analysis>>, Error<types::Errors>> {
+        ) -> Result<ResponseValue<::std::vec::Vec<types::Analysis>>, Error<types::Errors>> {
             let Self {
                 client,
                 page,
@@ -8237,9 +8672,7 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/ratings/analyses`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<Vec<types::Analysis>>, Error<types::Errors>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Analysis>, Error<types::Errors>> {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::AnalysisPost::try_from(v).map_err(|e| e.to_string()))
@@ -8539,8 +8972,10 @@ pub mod builder {
         ///Sends a `GET` request to `/ratings/{rating_id}/city`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<Vec<types::GetRatingCityResponseItem>>, Error<types::Errors>>
-        {
+        ) -> Result<
+            ResponseValue<::std::vec::Vec<types::GetRatingCityResponseItem>>,
+            Error<types::Errors>,
+        > {
             let Self { client, rating_id } = self;
             let rating_id = rating_id.map_err(Error::InvalidRequest)?;
             let url = format!(
@@ -8614,7 +9049,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities`
-        pub async fn send(self) -> Result<ResponseValue<Vec<types::City>>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<::std::vec::Vec<types::City>>, Error<()>> {
             let Self {
                 client,
                 page,
@@ -8798,7 +9233,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities/submissions`
-        pub async fn send(self) -> Result<ResponseValue<Vec<types::Submission>>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<::std::vec::Vec<types::Submission>>, Error<()>> {
             let Self {
                 client,
                 page,
@@ -9062,8 +9499,8 @@ pub mod builder {
     pub struct GetCity<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<String, String>,
-        name: Result<String, String>,
+        region: Result<::std::string::String, String>,
+        name: Result<::std::string::String, String>,
     }
 
     impl<'a> GetCity<'a> {
@@ -9088,21 +9525,21 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.region = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for region failed".to_string());
+            self.region = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for region failed".to_string()
+            });
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.name = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for name failed".to_string());
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
             self
         }
 
@@ -9155,8 +9592,8 @@ pub mod builder {
     pub struct GetCityRatings<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<String, String>,
-        name: Result<String, String>,
+        region: Result<::std::string::String, String>,
+        name: Result<::std::string::String, String>,
     }
 
     impl<'a> GetCityRatings<'a> {
@@ -9181,29 +9618,31 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.region = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for region failed".to_string());
+            self.region = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for region failed".to_string()
+            });
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.name = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for name failed".to_string());
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
             self
         }
 
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<Vec<types::GetCityRatingsResponseItem>>, Error<types::Errors>>
-        {
+        ) -> Result<
+            ResponseValue<::std::vec::Vec<types::GetCityRatingsResponseItem>>,
+            Error<types::Errors>,
+        > {
             let Self {
                 client,
                 country,
@@ -9251,8 +9690,8 @@ pub mod builder {
     pub struct GetCityCensus<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<String, String>,
-        name: Result<String, String>,
+        region: Result<::std::string::String, String>,
+        name: Result<::std::string::String, String>,
     }
 
     impl<'a> GetCityCensus<'a> {
@@ -9277,29 +9716,31 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.region = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for region failed".to_string());
+            self.region = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for region failed".to_string()
+            });
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.name = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for name failed".to_string());
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
             self
         }
 
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<Vec<types::GetCityCensusResponseItem>>, Error<types::Errors>>
-        {
+        ) -> Result<
+            ResponseValue<::std::vec::Vec<types::GetCityCensusResponseItem>>,
+            Error<types::Errors>,
+        > {
             let Self {
                 client,
                 country,
@@ -9347,8 +9788,8 @@ pub mod builder {
     pub struct PatchCityCensus<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<String, String>,
-        name: Result<String, String>,
+        region: Result<::std::string::String, String>,
+        name: Result<::std::string::String, String>,
         body: Result<types::builder::CensusPost, String>,
     }
 
@@ -9375,21 +9816,21 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.region = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for region failed".to_string());
+            self.region = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for region failed".to_string()
+            });
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<String>,
+            V: std::convert::TryInto<::std::string::String>,
         {
-            self.name = value
-                .try_into()
-                .map_err(|_| "conversion to `String` for name failed".to_string());
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
             self
         }
 
@@ -9416,8 +9857,10 @@ pub mod builder {
         ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<Vec<types::PatchCityCensusResponseItem>>, Error<types::Errors>>
-        {
+        ) -> Result<
+            ResponseValue<::std::vec::Vec<types::PatchCityCensusResponseItem>>,
+            Error<types::Errors>,
+        > {
             let Self {
                 client,
                 country,
@@ -9546,7 +9989,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/price/fargate`
-        pub async fn send(self) -> Result<ResponseValue<Vec<types::FargatePrice>>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<::std::vec::Vec<types::FargatePrice>>, Error<()>> {
             let Self { client } = self;
             let url = format!("{}/price/fargate", client.baseurl,);
             #[allow(unused_mut)]

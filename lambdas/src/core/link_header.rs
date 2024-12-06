@@ -39,7 +39,7 @@ pub struct RelationType<'a>(&'a str);
 
 nomstr!(RelationType);
 
-impl<'a> Display for RelationType<'a> {
+impl Display for RelationType<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let rel_type = self.0;
         write!(f, "rel=\"{rel_type}\"")
@@ -133,7 +133,7 @@ pub struct Link<'a> {
 
 nomstr!(Link);
 
-impl<'a> Display for Link<'a> {
+impl Display for Link<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let lv: Vec<String> = self.links.iter().map(|l| l.to_string()).collect();
         let lv_str = lv.join(", ");
@@ -200,7 +200,7 @@ pub struct LinkValues<'a> {
 
 nomstr!(LinkValues);
 
-impl<'a> Display for LinkValues<'a> {
+impl Display for LinkValues<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let uri_str = self.uri.to_string();
         let rel = format!(r#"; rel="{}""#, self.rel.0);

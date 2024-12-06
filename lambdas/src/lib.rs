@@ -51,70 +51,6 @@ pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnect
     Database::connect(database_url).await
 }
 
-// /// Retrieves the pagination parameters.
-// ///
-// /// If nothing is provided, the first page is returned and will contain up to
-// /// [`DEFAULT_PAGE_SIZE`] items.
-// ///
-// /// If `page` does not exist, the lambda functions will return an empty array.
-// pub fn pagination_parameters(event: &Request) -> APIResult<(u64, u64)> {
-//     debug!("Retrieving pagination...");
-//     let apigw_request_id = get_apigw_request_id(event);
-//     let page_size = match event
-//         .query_string_parameters()
-//         .first("page_size")
-//         .unwrap_or(DEFAULT_PAGE_SIZE.to_string().as_str())
-//         .parse::<u64>()
-//     {
-//         Ok(page_size) => match page_size {
-//             0 => 1,
-//             1..=MAX_PAGE_SIZE => page_size,
-//             _ => MAX_PAGE_SIZE,
-//         },
-//         Err(e) => {
-//             let api_error = APIError::with_parameter(
-//                 apigw_request_id,
-//                 "page_size",
-//                 format!("Failed to process the page_size parameter: {e}").as_str(),
-//             );
-//             return Err(APIErrors::new(&[api_error]).into());
-//         }
-//     };
-//     let page = match event
-//         .query_string_parameters()
-//         .first("page")
-//         .unwrap_or("1")
-//         .parse::<u64>()
-//     {
-//         Ok(page) => match page {
-//             0 => 1,
-//             _ => page,
-//         },
-//         Err(e) => {
-//             let api_error = APIError::with_parameter(
-//                 apigw_request_id,
-//                 "page",
-//                 format!("Failed to process the page parameter: {e}").as_str(),
-//             );
-//             return Err(APIErrors::new(&[api_error]).into());
-//         }
-//     };
-
-//     Ok((page_size, page))
-// }
-
-/// Represent the query parameters related to the pagination.
-// pub struct PaginationParameters {
-//     /// The number of items per page.
-//     pub page_size: u64,
-//     /// The result page being returned.
-//     pub page: u64,
-// }
-
-// pub fn pagination_parameters_2(event: &Request) -> Result<PaginationParameters, Response<Body>> {
-//     pagination_parameters(event).map(|(page_size, page)| PaginationParameters { page_size, page })
-// }
-
 /// Builds a paginated Response.
 ///
 /// Builds a Response struct which contains the pagination information in the headers.
@@ -234,7 +170,7 @@ impl Paginatron {
     /// ```
     pub fn navigation(&self) -> NavigationPages {
         const FIRST: u64 = 1;
-        let last = (self.total_items + self.page_size - 1) / self.page_size;
+        let last = self.total_items.div_ceil(self.page_size);
         let page = if self.page >= last { last } else { self.page };
         let previous = if page <= FIRST { FIRST } else { page - 1 };
         let next = if page >= last { last } else { page + 1 };

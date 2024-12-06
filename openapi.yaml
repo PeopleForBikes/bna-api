@@ -79,7 +79,7 @@ paths:
               $ref: "#/components/schemas/analysis_post"
       responses:
         201:
-          $ref: "#/components/responses/analyses"
+          $ref: "#/components/responses/analysis"
         400:
           $ref: "#/components/responses/bad_request"
       security:
@@ -414,6 +414,11 @@ components:
           format: date-time
           description: "Date and time"
           nullable: true
+        fargate_price_id:
+          type: integer
+          description: "Fargate price identifier"
+          example: 1
+          nullable: true
         fargate_task_arn:
           type: string
           description: "The ARN of the Fargate task that performed the analysis"
@@ -442,6 +447,10 @@ components:
           nullable: true
         state_machine_id:
           $ref: "#/components/schemas/state_machine_id"
+        status:
+          type: string
+          description: "Pipeline status"
+          example: "Pending"
         step:
           $ref: "#/components/schemas/step"
         torn_down:

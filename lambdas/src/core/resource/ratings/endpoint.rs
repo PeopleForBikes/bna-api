@@ -9,6 +9,7 @@ use super::{
 use crate::{Context, ExecutionError};
 use axum::{
     extract::{Path, Query},
+    http::StatusCode,
     response::IntoResponse,
     routing::get,
     Json, Router,
@@ -88,8 +89,14 @@ async fn get_ratings_analysis(
 
 async fn post_ratings_analysis(
     Json(bna_pipeline): Json<BNAPipelinePost>,
-) -> Result<Json<Value>, ExecutionError> {
-    post_ratings_analysis_adaptor(bna_pipeline).await.map(Json)
+) -> Result<(StatusCode, Json<Value>), ExecutionError> {
+    post_ratings_analysis_adaptor(bna_pipeline)
+        .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
+        .map(|v| (StatusCode::CREATED, Json(v)))
 }
 
 async fn patch_ratings_analysis(

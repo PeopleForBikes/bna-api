@@ -1,3 +1,4 @@
+use ::tracing::debug;
 use axum::Router;
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{cities, price, ratings};
@@ -30,6 +31,7 @@ async fn main() -> Result<(), Error> {
         // disabling time is handy because CloudWatch will add the ingestion time.
         .without_time()
         .init();
+    debug!(loglevel= ?log_level);
 
     // Create the app router.
     let app = Router::new()
