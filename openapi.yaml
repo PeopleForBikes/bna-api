@@ -729,7 +729,6 @@ components:
           $ref: "#/components/schemas/transit"
       required:
         - core_services
-        - features
         - infrastructure
         - opportunity
         - people
@@ -1068,21 +1067,6 @@ components:
       description: "A collection of errors"
       items:
         $ref: "#/components/schemas/error"
-    features:
-      type: object
-      properties:
-        people:
-          type: number
-          description: "BNA category score for access to residential areas"
-          example: 75.81
-        retail:
-          type: number
-          description: "BNA category score for access to major retail centers"
-          example: 73.71
-        transit:
-          type: number
-          description: "BNA category score for access to major transit stops"
-          example: 71.59
     header:
       type: string
       description: "The name of a single request header which caused the error"
@@ -1465,13 +1449,14 @@ components:
         enum:
           - All
           - CoreServices
-          - Features
           - Infratructure
           - Opportunity
+          - People
           - Recreation
+          - Retail
           - Summary
+          - Transit
         example: All
-
     page:
       name: page
       in: query
