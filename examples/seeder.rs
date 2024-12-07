@@ -3,6 +3,7 @@ use bnacore::{
     scorecard::{scorecard24::ScoreCard24, Scorecard},
     versioning::Calver,
 };
+use chrono::{DateTime, FixedOffset};
 use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
@@ -81,7 +82,11 @@ async fn main() -> Result<(), Report> {
         let version = Calver::try_from_ubuntu(&calver).unwrap();
 
         // Get the records creation date.
-        let created_at = scorecard.creation_date;
+        let created_at = scorecard
+            .creation_date
+            .to_string()
+            .parse::<DateTime<FixedOffset>>()
+            .unwrap();
 
         // Get the City UUID.
         let city_uuid = Uuid::parse_str(&scorecard.bna_id).unwrap();

@@ -47,7 +47,7 @@ db-generate-models:
     sea-orm-cli generate entity \
       -o {{ entites }} \
       --with-serde both \
-      --date-time-crate time
+      --date-time-crate chrono
 
 
 # Apply migrations and seed the database.
