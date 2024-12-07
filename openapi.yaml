@@ -836,11 +836,12 @@ components:
     city:
       type: object
       properties:
-        city_id:
+        id:
           type: string
           format: uuid
           description: "City identifier"
           example: "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
+          nullable: false
         country:
           $ref: "#/components/schemas/country"
         created_at:
@@ -881,13 +882,19 @@ components:
           description: "State name"
           example: "Antwerp"
         state_abbrev:
-          type: number
+          type: string
           description: "A short version of the state name, usually 2 or 3 character long."
           example: "VAN"
         updated_at:
           type: string
           format: date-time
           description: "Date and time"
+      required:
+        - country
+        - created_at
+        - id
+        - name
+        - state
     city_post:
       type: object
       properties:
@@ -917,7 +924,7 @@ components:
           description: "State name"
           example: "Antwerp"
         state_abbrev:
-          type: number
+          type: string
           description: "A short version of the state name, usually 2 or 3 character long."
           example: "VAN"
         speed_limit:
