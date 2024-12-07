@@ -1014,7 +1014,6 @@ pub mod types {
     ///  "type": "object",
     ///  "required": [
     ///    "core_services",
-    ///    "features",
     ///    "infrastructure",
     ///    "opportunity",
     ///    "people",
@@ -1055,7 +1054,6 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaPost {
         pub core_services: CoreServices,
-        pub features: ::serde_json::Value,
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
         pub people: People,
@@ -2379,64 +2377,6 @@ pub mod types {
         }
     }
 
-    ///Features
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "people": {
-    ///      "description": "BNA category score for access to residential
-    /// areas",
-    ///      "examples": [
-    ///        75.81
-    ///      ],
-    ///      "type": "number"
-    ///    },
-    ///    "retail": {
-    ///      "description": "BNA category score for access to major retail
-    /// centers",
-    ///      "examples": [
-    ///        73.71
-    ///      ],
-    ///      "type": "number"
-    ///    },
-    ///    "transit": {
-    ///      "description": "BNA category score for access to major transit
-    /// stops",
-    ///      "examples": [
-    ///        71.59
-    ///      ],
-    ///      "type": "number"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Features {
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub people: ::std::option::Option<f64>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub retail: ::std::option::Option<f64>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub transit: ::std::option::Option<f64>,
-    }
-
-    impl From<&Features> for Features {
-        fn from(value: &Features) -> Self {
-            value.clone()
-        }
-    }
-
-    impl Features {
-        pub fn builder() -> builder::Features {
-            Default::default()
-        }
-    }
-
     ///GetCityCensusResponseItem
     ///
     /// <details><summary>JSON schema</summary>
@@ -2576,11 +2516,13 @@ pub mod types {
     ///  "enum": [
     ///    "All",
     ///    "CoreServices",
-    ///    "Features",
     ///    "Infratructure",
     ///    "Opportunity",
+    ///    "People",
     ///    "Recreation",
-    ///    "Summary"
+    ///    "Retail",
+    ///    "Summary",
+    ///    "Transit"
     ///  ]
     ///}
     /// ```
@@ -2600,11 +2542,13 @@ pub mod types {
     pub enum GetRatingComponent {
         All,
         CoreServices,
-        Features,
         Infratructure,
         Opportunity,
+        People,
         Recreation,
+        Retail,
         Summary,
+        Transit,
     }
 
     impl From<&GetRatingComponent> for GetRatingComponent {
@@ -2618,11 +2562,13 @@ pub mod types {
             match *self {
                 Self::All => write!(f, "All"),
                 Self::CoreServices => write!(f, "CoreServices"),
-                Self::Features => write!(f, "Features"),
                 Self::Infratructure => write!(f, "Infratructure"),
                 Self::Opportunity => write!(f, "Opportunity"),
+                Self::People => write!(f, "People"),
                 Self::Recreation => write!(f, "Recreation"),
+                Self::Retail => write!(f, "Retail"),
                 Self::Summary => write!(f, "Summary"),
+                Self::Transit => write!(f, "Transit"),
             }
         }
     }
@@ -2633,11 +2579,13 @@ pub mod types {
             match value {
                 "All" => Ok(Self::All),
                 "CoreServices" => Ok(Self::CoreServices),
-                "Features" => Ok(Self::Features),
                 "Infratructure" => Ok(Self::Infratructure),
                 "Opportunity" => Ok(Self::Opportunity),
+                "People" => Ok(Self::People),
                 "Recreation" => Ok(Self::Recreation),
+                "Retail" => Ok(Self::Retail),
                 "Summary" => Ok(Self::Summary),
+                "Transit" => Ok(Self::Transit),
                 _ => Err("invalid value".into()),
             }
         }
@@ -5064,7 +5012,6 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct BnaPost {
             core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
-            features: ::std::result::Result<::serde_json::Value, ::std::string::String>,
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
             people: ::std::result::Result<super::People, ::std::string::String>,
@@ -5078,7 +5025,6 @@ pub mod types {
             fn default() -> Self {
                 Self {
                     core_services: Err("no value supplied for core_services".to_string()),
-                    features: Err("no value supplied for features".to_string()),
                     infrastructure: Err("no value supplied for infrastructure".to_string()),
                     opportunity: Err("no value supplied for opportunity".to_string()),
                     people: Err("no value supplied for people".to_string()),
@@ -5099,16 +5045,6 @@ pub mod types {
                 self.core_services = value.try_into().map_err(|e| {
                     format!("error converting supplied value for core_services: {}", e)
                 });
-                self
-            }
-            pub fn features<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::serde_json::Value>,
-                T::Error: std::fmt::Display,
-            {
-                self.features = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for features: {}", e));
                 self
             }
             pub fn infrastructure<T>(mut self, value: T) -> Self
@@ -5190,7 +5126,6 @@ pub mod types {
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     core_services: value.core_services?,
-                    features: value.features?,
                     infrastructure: value.infrastructure?,
                     opportunity: value.opportunity?,
                     people: value.people?,
@@ -5206,7 +5141,6 @@ pub mod types {
             fn from(value: super::BnaPost) -> Self {
                 Self {
                     core_services: Ok(value.core_services),
-                    features: Ok(value.features),
                     infrastructure: Ok(value.infrastructure),
                     opportunity: Ok(value.opportunity),
                     people: Ok(value.people),
@@ -6626,79 +6560,6 @@ pub mod types {
                     created_at: Ok(value.created_at),
                     fargate_price_id: Ok(value.fargate_price_id),
                     per_second: Ok(value.per_second),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct Features {
-            people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            retail: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            transit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-        }
-
-        impl Default for Features {
-            fn default() -> Self {
-                Self {
-                    people: Ok(Default::default()),
-                    retail: Ok(Default::default()),
-                    transit: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl Features {
-            pub fn people<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.people = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for people: {}", e));
-                self
-            }
-            pub fn retail<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.retail = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
-                self
-            }
-            pub fn transit<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.transit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<Features> for super::Features {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: Features,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    people: value.people?,
-                    retail: value.retail?,
-                    transit: value.transit?,
-                })
-            }
-        }
-
-        impl From<super::Features> for Features {
-            fn from(value: super::Features) -> Self {
-                Self {
-                    people: Ok(value.people),
-                    retail: Ok(value.retail),
-                    transit: Ok(value.transit),
                 }
             }
         }
