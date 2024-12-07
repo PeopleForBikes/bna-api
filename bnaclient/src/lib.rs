@@ -1222,18 +1222,18 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaSummaryWithCityItem {
+        ///City identifier
         pub city_id: uuid::Uuid,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub country: Country,
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        ///City identifier
+        pub id: uuid::Uuid,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub latitude: ::std::option::Option<f64>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub name: ::std::option::Option<::std::string::String>,
+        pub name: ::std::string::String,
         ///Analysis identifier
         pub rating_id: uuid::Uuid,
         ///Region name. A region can be a state, a province, a community, or
@@ -1245,10 +1245,10 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub speed_limit: ::std::option::Option<f64>,
         ///State name
+        pub state: ::std::string::String,
+        ///A short version of the state name, usually 2 or 3 character long.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state_abbrev: ::std::option::Option<f64>,
+        pub state_abbrev: ::std::option::Option<::std::string::String>,
         ///Date and time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
@@ -1559,15 +1559,14 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "country",
+    ///    "created_at",
+    ///    "id",
+    ///    "name",
+    ///    "state"
+    ///  ],
     ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "examples": [
-    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
     ///    "country": {
     ///      "$ref": "#/components/schemas/country"
     ///    },
@@ -1575,6 +1574,14 @@ pub mod types {
     ///      "description": "Date and time",
     ///      "type": "string",
     ///      "format": "date-time"
+    ///    },
+    ///    "id": {
+    ///      "description": "City identifier",
+    ///      "examples": [
+    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
+    ///      ],
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "latitude": {
     ///      "description": "Geographic coordinate that specifies the
@@ -1628,7 +1635,7 @@ pub mod types {
     ///      "examples": [
     ///        "VAN"
     ///      ],
-    ///      "type": "number"
+    ///      "type": "string"
     ///    },
     ///    "updated_at": {
     ///      "description": "Date and time",
@@ -1641,21 +1648,17 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct City {
-        ///City identifier
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city_id: ::std::option::Option<uuid::Uuid>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
+        pub country: Country,
         ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        ///City identifier
+        pub id: uuid::Uuid,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub latitude: ::std::option::Option<f64>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub name: ::std::option::Option<::std::string::String>,
+        pub name: ::std::string::String,
         ///Region name. A region can be a state, a province, a community, or
         /// something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
@@ -1664,10 +1667,10 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub speed_limit: ::std::option::Option<f64>,
         ///State name
+        pub state: ::std::string::String,
+        ///A short version of the state name, usually 2 or 3 character long.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state_abbrev: ::std::option::Option<f64>,
+        pub state_abbrev: ::std::option::Option<::std::string::String>,
         ///Date and time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
@@ -1752,7 +1755,7 @@ pub mod types {
     ///      "examples": [
     ///        "VAN"
     ///      ],
-    ///      "type": "number"
+    ///      "type": "string"
     ///    }
     ///  }
     ///}
@@ -1777,8 +1780,9 @@ pub mod types {
         ///State name
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub state: ::std::option::Option<::std::string::String>,
+        ///A short version of the state name, usually 2 or 3 character long.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state_abbrev: ::std::option::Option<f64>,
+        pub state_abbrev: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&CityPost> for CityPost {
@@ -2451,19 +2455,10 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCityCensusResponseItem {
-        #[serde(
-            flatten,
-            default,
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub subtype_0: ::std::option::Option<City>,
-        #[serde(
-            flatten,
-            default,
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub subtype_1: ::std::option::Option<Census>,
+    #[serde(untagged)]
+    pub enum GetCityCensusResponseItem {
+        City(City),
+        Census(Census),
     }
 
     impl From<&GetCityCensusResponseItem> for GetCityCensusResponseItem {
@@ -2472,9 +2467,15 @@ pub mod types {
         }
     }
 
-    impl GetCityCensusResponseItem {
-        pub fn builder() -> builder::GetCityCensusResponseItem {
-            Default::default()
+    impl From<City> for GetCityCensusResponseItem {
+        fn from(value: City) -> Self {
+            Self::City(value)
+        }
+    }
+
+    impl From<Census> for GetCityCensusResponseItem {
+        fn from(value: Census) -> Self {
+            Self::Census(value)
         }
     }
 
@@ -2939,19 +2940,10 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PatchCityCensusResponseItem {
-        #[serde(
-            flatten,
-            default,
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub subtype_0: ::std::option::Option<City>,
-        #[serde(
-            flatten,
-            default,
-            skip_serializing_if = "::std::option::Option::is_none"
-        )]
-        pub subtype_1: ::std::option::Option<Census>,
+    #[serde(untagged)]
+    pub enum PatchCityCensusResponseItem {
+        City(City),
+        Census(Census),
     }
 
     impl From<&PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
@@ -2960,9 +2952,15 @@ pub mod types {
         }
     }
 
-    impl PatchCityCensusResponseItem {
-        pub fn builder() -> builder::PatchCityCensusResponseItem {
-            Default::default()
+    impl From<City> for PatchCityCensusResponseItem {
+        fn from(value: City) -> Self {
+            Self::City(value)
+        }
+    }
+
+    impl From<Census> for PatchCityCensusResponseItem {
+        fn from(value: Census) -> Self {
+            Self::Census(value)
         }
     }
 
@@ -5329,18 +5327,13 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct BnaSummaryWithCityItem {
             city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            name: ::std::result::Result<::std::string::String, ::std::string::String>,
             rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
             region: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
@@ -5348,11 +5341,11 @@ pub mod types {
             >,
             score: ::std::result::Result<f64, ::std::string::String>,
             speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            state: ::std::result::Result<
+            state: ::std::result::Result<::std::string::String, ::std::string::String>,
+            state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             updated_at: ::std::result::Result<
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
@@ -5364,16 +5357,17 @@ pub mod types {
             fn default() -> Self {
                 Self {
                     city_id: Err("no value supplied for city_id".to_string()),
-                    country: Ok(Default::default()),
-                    created_at: Ok(Default::default()),
+                    country: Err("no value supplied for country".to_string()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    id: Err("no value supplied for id".to_string()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
-                    name: Ok(Default::default()),
+                    name: Err("no value supplied for name".to_string()),
                     rating_id: Err("no value supplied for rating_id".to_string()),
                     region: Ok(Default::default()),
                     score: Err("no value supplied for score".to_string()),
                     speed_limit: Ok(Default::default()),
-                    state: Ok(Default::default()),
+                    state: Err("no value supplied for state".to_string()),
                     state_abbrev: Ok(Default::default()),
                     updated_at: Ok(Default::default()),
                     version: Err("no value supplied for version".to_string()),
@@ -5394,7 +5388,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
+                T: std::convert::TryInto<super::Country>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -5404,14 +5398,22 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
+                T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for created_at: {}", e));
+                self
+            }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<uuid::Uuid>,
+                T::Error: std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
                 self
             }
             pub fn latitude<T>(mut self, value: T) -> Self
@@ -5436,7 +5438,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.name = value
@@ -5486,7 +5488,7 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.state = value
@@ -5496,7 +5498,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -5537,6 +5539,7 @@ pub mod types {
                     city_id: value.city_id?,
                     country: value.country?,
                     created_at: value.created_at?,
+                    id: value.id?,
                     latitude: value.latitude?,
                     longitude: value.longitude?,
                     name: value.name?,
@@ -5558,6 +5561,7 @@ pub mod types {
                     city_id: Ok(value.city_id),
                     country: Ok(value.country),
                     created_at: Ok(value.created_at),
+                    id: Ok(value.id),
                     latitude: Ok(value.latitude),
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),
@@ -5781,30 +5785,23 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct City {
-            city_id:
-                ::std::result::Result<::std::option::Option<uuid::Uuid>, ::std::string::String>,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            name: ::std::result::Result<::std::string::String, ::std::string::String>,
             region: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
             speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            state: ::std::result::Result<
+            state: ::std::result::Result<::std::string::String, ::std::string::String>,
+            state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             updated_at: ::std::result::Result<
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
@@ -5814,15 +5811,15 @@ pub mod types {
         impl Default for City {
             fn default() -> Self {
                 Self {
-                    city_id: Ok(Default::default()),
-                    country: Ok(Default::default()),
-                    created_at: Ok(Default::default()),
+                    country: Err("no value supplied for country".to_string()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    id: Err("no value supplied for id".to_string()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
-                    name: Ok(Default::default()),
+                    name: Err("no value supplied for name".to_string()),
                     region: Ok(Default::default()),
                     speed_limit: Ok(Default::default()),
-                    state: Ok(Default::default()),
+                    state: Err("no value supplied for state".to_string()),
                     state_abbrev: Ok(Default::default()),
                     updated_at: Ok(Default::default()),
                 }
@@ -5830,19 +5827,9 @@ pub mod types {
         }
 
         impl City {
-            pub fn city_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<uuid::Uuid>>,
-                T::Error: std::fmt::Display,
-            {
-                self.city_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
-                self
-            }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
+                T: std::convert::TryInto<super::Country>,
                 T::Error: std::fmt::Display,
             {
                 self.country = value
@@ -5852,14 +5839,22 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
+                T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
                 T::Error: std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for created_at: {}", e));
+                self
+            }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<uuid::Uuid>,
+                T::Error: std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
                 self
             }
             pub fn latitude<T>(mut self, value: T) -> Self
@@ -5884,7 +5879,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.name = value
@@ -5914,7 +5909,7 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: std::convert::TryInto<::std::string::String>,
                 T::Error: std::fmt::Display,
             {
                 self.state = value
@@ -5924,7 +5919,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -5950,9 +5945,9 @@ pub mod types {
             type Error = super::error::ConversionError;
             fn try_from(value: City) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    city_id: value.city_id?,
                     country: value.country?,
                     created_at: value.created_at?,
+                    id: value.id?,
                     latitude: value.latitude?,
                     longitude: value.longitude?,
                     name: value.name?,
@@ -5968,9 +5963,9 @@ pub mod types {
         impl From<super::City> for City {
             fn from(value: super::City) -> Self {
                 Self {
-                    city_id: Ok(value.city_id),
                     country: Ok(value.country),
                     created_at: Ok(value.created_at),
+                    id: Ok(value.id),
                     latitude: Ok(value.latitude),
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),
@@ -5994,7 +5989,10 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            state_abbrev: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            state_abbrev: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for CityPost {
@@ -6074,7 +6072,7 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
@@ -6706,67 +6704,6 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct GetCityCensusResponseItem {
-            subtype_0:
-                ::std::result::Result<::std::option::Option<super::City>, ::std::string::String>,
-            subtype_1:
-                ::std::result::Result<::std::option::Option<super::Census>, ::std::string::String>,
-        }
-
-        impl Default for GetCityCensusResponseItem {
-            fn default() -> Self {
-                Self {
-                    subtype_0: Ok(Default::default()),
-                    subtype_1: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl GetCityCensusResponseItem {
-            pub fn subtype_0<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::City>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_0 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_0: {}", e));
-                self
-            }
-            pub fn subtype_1<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Census>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_1 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_1: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCityCensusResponseItem> for super::GetCityCensusResponseItem {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCityCensusResponseItem,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    subtype_0: value.subtype_0?,
-                    subtype_1: value.subtype_1?,
-                })
-            }
-        }
-
-        impl From<super::GetCityCensusResponseItem> for GetCityCensusResponseItem {
-            fn from(value: super::GetCityCensusResponseItem) -> Self {
-                Self {
-                    subtype_0: Ok(value.subtype_0),
-                    subtype_1: Ok(value.subtype_1),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct Infrastructure {
             high_stress_miles:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
@@ -6938,67 +6875,6 @@ pub mod types {
                     k12_education: Ok(value.k12_education),
                     score: Ok(value.score),
                     technical_vocational_college: Ok(value.technical_vocational_college),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PatchCityCensusResponseItem {
-            subtype_0:
-                ::std::result::Result<::std::option::Option<super::City>, ::std::string::String>,
-            subtype_1:
-                ::std::result::Result<::std::option::Option<super::Census>, ::std::string::String>,
-        }
-
-        impl Default for PatchCityCensusResponseItem {
-            fn default() -> Self {
-                Self {
-                    subtype_0: Ok(Default::default()),
-                    subtype_1: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl PatchCityCensusResponseItem {
-            pub fn subtype_0<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::City>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_0 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_0: {}", e));
-                self
-            }
-            pub fn subtype_1<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Census>>,
-                T::Error: std::fmt::Display,
-            {
-                self.subtype_1 = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for subtype_1: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PatchCityCensusResponseItem> for super::PatchCityCensusResponseItem {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PatchCityCensusResponseItem,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    subtype_0: value.subtype_0?,
-                    subtype_1: value.subtype_1?,
-                })
-            }
-        }
-
-        impl From<super::PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
-            fn from(value: super::PatchCityCensusResponseItem) -> Self {
-                Self {
-                    subtype_0: Ok(value.subtype_0),
-                    subtype_1: Ok(value.subtype_1),
                 }
             }
         }
