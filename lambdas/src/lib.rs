@@ -317,7 +317,7 @@ pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnecti
 #[derive(Debug, thiserror::Error)]
 pub enum ExecutionError {
     ///  An error from unsuccessful database operations.
-    #[error("database error")]
+    #[error("database error: {0:?}")]
     DatabaseError(#[from] sea_orm::DbErr),
 
     /// Unexpected error.

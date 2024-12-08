@@ -655,7 +655,7 @@ pub mod types {
     ///  "type": "object",
     ///  "required": [
     ///    "city_id",
-    ///    "rating_id",
+    ///    "id",
     ///    "score",
     ///    "version"
     ///  ],
@@ -763,6 +763,14 @@ pub mod types {
     ///        "null"
     ///      ]
     ///    },
+    ///    "id": {
+    ///      "description": "Analysis identifier",
+    ///      "examples": [
+    ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
+    ///      ],
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
     ///    "k12_education": {
     ///      "description": "BNA category subscore for access to k12 schools",
     ///      "examples": [
@@ -825,14 +833,6 @@ pub mod types {
     ///        "number",
     ///        "null"
     ///      ]
-    ///    },
-    ///    "rating_id": {
-    ///      "description": "Analysis identifier",
-    ///      "examples": [
-    ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
     ///    },
     ///    "recreation_score": {
     ///      "description": "BNA category score for access to recreational
@@ -949,6 +949,8 @@ pub mod types {
         ///BNA category subscore for access to hospitals
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub hospitals: ::std::option::Option<f64>,
+        ///Analysis identifier
+        pub id: uuid::Uuid,
         ///BNA category subscore for access to k12 schools
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub k12_education: ::std::option::Option<f64>,
@@ -967,8 +969,6 @@ pub mod types {
         ///BNA category subscore for access to pharmacies
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub pharmacies: ::std::option::Option<f64>,
-        ///Analysis identifier
-        pub rating_id: uuid::Uuid,
         ///BNA category score for access to recreational facilities
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub recreation_score: ::std::option::Option<f64>,
@@ -4609,6 +4609,7 @@ pub mod types {
             higher_education:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             hospitals: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
             k12_education: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             low_stress_miles:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
@@ -4617,7 +4618,6 @@ pub mod types {
             parks: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             pharmacies: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
             recreation_score:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             recreation_trails:
@@ -4645,13 +4645,13 @@ pub mod types {
                     high_stress_miles: Ok(Default::default()),
                     higher_education: Ok(Default::default()),
                     hospitals: Ok(Default::default()),
+                    id: Err("no value supplied for id".to_string()),
                     k12_education: Ok(Default::default()),
                     low_stress_miles: Ok(Default::default()),
                     opportunity_score: Ok(Default::default()),
                     parks: Ok(Default::default()),
                     people: Ok(Default::default()),
                     pharmacies: Ok(Default::default()),
-                    rating_id: Err("no value supplied for rating_id".to_string()),
                     recreation_score: Ok(Default::default()),
                     recreation_trails: Ok(Default::default()),
                     retail: Ok(Default::default()),
@@ -4777,6 +4777,16 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for hospitals: {}", e));
                 self
             }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<uuid::Uuid>,
+                T::Error: std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
+                self
+            }
             pub fn k12_education<T>(mut self, value: T) -> Self
             where
                 T: std::convert::TryInto<::std::option::Option<f64>>,
@@ -4841,16 +4851,6 @@ pub mod types {
                 self.pharmacies = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for pharmacies: {}", e));
-                self
-            }
-            pub fn rating_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.rating_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for rating_id: {}", e));
                 self
             }
             pub fn recreation_score<T>(mut self, value: T) -> Self
@@ -4958,13 +4958,13 @@ pub mod types {
                     high_stress_miles: value.high_stress_miles?,
                     higher_education: value.higher_education?,
                     hospitals: value.hospitals?,
+                    id: value.id?,
                     k12_education: value.k12_education?,
                     low_stress_miles: value.low_stress_miles?,
                     opportunity_score: value.opportunity_score?,
                     parks: value.parks?,
                     people: value.people?,
                     pharmacies: value.pharmacies?,
-                    rating_id: value.rating_id?,
                     recreation_score: value.recreation_score?,
                     recreation_trails: value.recreation_trails?,
                     retail: value.retail?,
@@ -4990,13 +4990,13 @@ pub mod types {
                     high_stress_miles: Ok(value.high_stress_miles),
                     higher_education: Ok(value.higher_education),
                     hospitals: Ok(value.hospitals),
+                    id: Ok(value.id),
                     k12_education: Ok(value.k12_education),
                     low_stress_miles: Ok(value.low_stress_miles),
                     opportunity_score: Ok(value.opportunity_score),
                     parks: Ok(value.parks),
                     people: Ok(value.people),
                     pharmacies: Ok(value.pharmacies),
-                    rating_id: Ok(value.rating_id),
                     recreation_score: Ok(value.recreation_score),
                     recreation_trails: Ok(value.recreation_trails),
                     retail: Ok(value.retail),

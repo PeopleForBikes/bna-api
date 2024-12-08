@@ -1,5 +1,5 @@
-@host=https://api.peopleforbikes.xyz
-# @host=http://localhost:3000
+# @host=https://api.peopleforbikes.xyz
+@host=http://localhost:3000
 # Austin, TX, USA.
 @city_id=ef8384d5-b96f-439d-a83b-bc801735ddc6
 @rating_id=1a759b85-cd87-4bb1-9efa-5789e38e9982
@@ -192,34 +192,41 @@ Authorization: Bearer {{cognito_access}}
     "grocery": 1.69,
     "hospitals": 5.18,
     "pharmacies": 0,
-    "social_services": 0
-  },
-  "features": {
-    "people": 19.17,
-    "retail": 0,
-    "transit": 0
+    "score": 3.24
   },
   "infrastructure": {
-    "low_stress_miles": 9.3,
-    "high_stress_miles": 64.5
+    "high_stress_miles": 64.5,
+    "low_stress_miles": 9.3
   },
   "opportunity": {
     "employment": 8.26,
     "higher_education": 0,
     "k12_education": 8.31,
+    "score": 8.29,
     "technical_vocational_college": 0
+  },
+  "people": {
+    "score": 19.17
   },
   "recreation": {
     "community_centers": 0,
     "parks": 7.13,
-    "recreation_trails": 0
+    "recreation_trails": 0,
+    "score": 7.13
+  },
+  "retail": {
+    "score": 0
   },
   "summary": {
-    "bna_uuid": "3414afd2-42be-412b-9fce-3597b466e291",
-    "version": "24.04.8"
+    "city_id": "aac22433-37d4-4cb7-b6b8-e7e77cbbcf41",
+    "rating_id": "7b80ac57-f32e-44db-8442-e9cbf449b306",
+    "score": 0,
+    "version": "24.12"
+  },
+  "transit": {
+    "score": 0
   }
 }
-
 ### Create a new city.
 POST {{host}}/cities/
 content-type: application/json
