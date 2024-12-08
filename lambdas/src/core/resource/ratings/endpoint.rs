@@ -2,7 +2,7 @@ use super::{
     adaptor::{
         get_rating_adaptor, get_ratings_analyses_adaptor, get_ratings_analysis_adaptor,
         get_ratings_city_adaptor, get_ratings_summaries_adaptor, patch_ratings_analysis_adaptor,
-        post_ratings_analysis_adaptor,
+        post_ratings_adaptor, post_ratings_analysis_adaptor,
     },
     BNAComponent,
 };
@@ -15,14 +15,17 @@ use axum::{
     Json, Router,
 };
 use effortless::api::PaginationParameters;
-use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
+use entity::wrappers::{
+    bna::BNAPost,
+    bna_pipeline::{BNAPipelinePatch, BNAPipelinePost},
+};
 use serde_json::{json, Value};
 use tracing::debug;
 use uuid::Uuid;
 
 pub fn routes() -> Router {
     Router::new()
-        .route("/ratings", get(get_ratings))
+        .route("/ratings", get(get_ratings).post(post_ratings))
         .route("/ratings/:rating_id", get(get_rating))
         .route("/ratings/:rating_id/city", get(get_ratings_city))
         .route(
@@ -106,4 +109,16 @@ async fn patch_ratings_analysis(
     patch_ratings_analysis_adaptor(bna_pipeline, analysis_id)
         .await
         .map(Json)
+}
+
+async fn post_ratings(
+    Json(bna): Json<BNAPost>,
+) -> Result<(StatusCode, Json<Value>), ExecutionError> {
+    post_ratings_adaptor(bna)
+        .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
+        .map(|v| (StatusCode::CREATED, Json(v)))
 }

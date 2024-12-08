@@ -1,9 +1,12 @@
+use crate::{
+    core_services, infrastructure, opportunity, people, recreation, retail, summary, transit,
+};
 use sea_orm::prelude::Uuid;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNASummary {
-    pub bna_uuid: Uuid,
+    pub rating_id: Uuid,
     pub city_id: Uuid,
     pub score: f64,
     pub version: String,
@@ -93,13 +96,13 @@ pub struct BNATransit {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct BNAPost {
     pub core_services: BNACoreServices,
-    pub people: BNAPeople,
-    pub retail: BNARetail,
-    pub transit: BNATransit,
     pub infrastructure: BNAInfrastructure,
     pub opportunity: BNAOpportunity,
+    pub people: BNAPeople,
     pub recreation: BNARecreation,
+    pub retail: BNARetail,
     pub summary: BNASummary,
+    pub transit: BNATransit,
 }
 
 impl BNAPost {
@@ -123,4 +126,26 @@ pub struct BNAPatch {
     pub opportunity: BNAOpportunity,
     pub recreation: BNARecreation,
     pub summary: BNASummary,
+}
+
+// Note(rgreinho): This struct is name Rating* because the Bna* structs should/will
+//  eventually be renamed to Rating*.
+#[derive(Debug, Serialize)]
+pub struct RatingFlat {
+    #[serde(flatten)]
+    pub core_services: core_services::Model,
+    #[serde(flatten)]
+    pub infrastructure: infrastructure::Model,
+    #[serde(flatten)]
+    pub opportunity: opportunity::Model,
+    #[serde(flatten)]
+    pub people: people::Model,
+    #[serde(flatten)]
+    pub recreation: recreation::Model,
+    #[serde(flatten)]
+    pub retail: retail::Model,
+    #[serde(flatten)]
+    pub summary: summary::Model,
+    #[serde(flatten)]
+    pub transit: transit::Model,
 }

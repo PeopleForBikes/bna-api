@@ -577,11 +577,12 @@ components:
     bna:
       type: object
       properties:
-        rating_id:
+        id:
           type: string
           format: uuid
           description: "Analysis identifier"
           example: "1a759b85-cd87-4bb1-9efa-5789e38e9982"
+          nullable: false
         city_id:
           type: string
           format: uuid
@@ -704,7 +705,7 @@ components:
 
           example: "23.02"
       required:
-        - rating_id
+        - id
         - city_id
         - score
         - version
