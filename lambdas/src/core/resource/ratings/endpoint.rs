@@ -8,6 +8,7 @@ use super::{
 };
 use crate::{Context, ExecutionError};
 use axum::{
+    debug_handler,
     extract::{Path, Query},
     http::StatusCode,
     response::IntoResponse,
@@ -90,6 +91,7 @@ async fn get_ratings_analysis(
         .map(Json)
 }
 
+#[debug_handler]
 async fn post_ratings_analysis(
     Json(bna_pipeline): Json<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<Value>), ExecutionError> {

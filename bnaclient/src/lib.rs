@@ -53,12 +53,13 @@ pub mod types {
     ///    "cost": {
     ///      "description": "Cost of an analysis in USD",
     ///      "examples": [
-    ///        6.8941
+    ///        "6.8941"
     ///      ],
     ///      "type": [
-    ///        "number",
+    ///        "string",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "decimal"
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
@@ -156,7 +157,7 @@ pub mod types {
     pub struct Analysis {
         ///Cost of an analysis in USD
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub cost: ::std::option::Option<f64>,
+        pub cost: ::std::option::Option<::std::string::String>,
         ///Date and time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
@@ -217,7 +218,8 @@ pub mod types {
     ///      "type": [
     ///        "number",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
@@ -349,7 +351,8 @@ pub mod types {
     ///      "type": [
     ///        "number",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "end_time": {
     ///      "description": "Date and time",
@@ -2346,9 +2349,10 @@ pub mod types {
     ///    "per_second": {
     ///      "description": "Cost to run Fargate for 1 second",
     ///      "examples": [
-    ///        0.0023
+    ///        "0.0023"
     ///      ],
-    ///      "type": "number"
+    ///      "type": "string",
+    ///      "format": "decimal"
     ///    }
     ///  }
     ///}
@@ -2361,8 +2365,9 @@ pub mod types {
         pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<f64>,
+        ///Cost to run Fargate for 1 second
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub per_second: ::std::option::Option<f64>,
+        pub per_second: ::std::option::Option<::std::string::String>,
     }
 
     impl From<&FargatePrice> for FargatePrice {
@@ -3948,7 +3953,10 @@ pub mod types {
     pub mod builder {
         #[derive(Clone, Debug)]
         pub struct Analysis {
-            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            cost: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
             end_time: ::std::result::Result<
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
@@ -4004,7 +4012,7 @@ pub mod types {
         impl Analysis {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.cost = value
@@ -6490,7 +6498,10 @@ pub mod types {
             >,
             fargate_price_id:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            per_second: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            per_second: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
         }
 
         impl Default for FargatePrice {
@@ -6531,7 +6542,7 @@ pub mod types {
             }
             pub fn per_second<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
+                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: std::fmt::Display,
             {
                 self.per_second = value
