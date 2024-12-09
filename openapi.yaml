@@ -449,9 +449,7 @@ components:
         state_machine_id:
           $ref: "#/components/schemas/state_machine_id"
         status:
-          type: string
-          description: "Pipeline status"
-          example: "Pending"
+          $ref: "#/components/schemas/analysis_status"
         step:
           $ref: "#/components/schemas/step"
         torn_down:
@@ -502,6 +500,8 @@ components:
           format: date-time
           description: "Date and time"
           nullable: true
+        status:
+          $ref: "#/components/schemas/analysis_status"
         step:
           $ref: "#/components/schemas/step"
         torn_down:
@@ -566,13 +566,15 @@ components:
             Identifier of the Fargate Price rate used to compute the cost of the pipeline
             run.
         status:
-          type: string
-          enum:
-            - Complete
-            - Pending
-            - InProgress
-          description: ""
-          example: "Pending"
+          $ref: "#/components/schemas/analysis_status"
+    analysis_status:
+      type: string
+      enum:
+        - Complete
+        - Pending
+        - InProgress
+      description: ""
+      example: "Pending"
     api_gateway_id:
       type: string
       description: "API Gateway ID associated with the request "
