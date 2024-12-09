@@ -48,6 +48,10 @@ GET {{host}}/cities/submissions?status=Pending
 GET {{host}}/cities/submissions/1
 
 ###
+# Query Fargate prices.
+GET {{host}}/prices/fargate
+
+###
 # Create a new submission.
 POST {{host}}/cities/submissions
 content-type: application/json
@@ -154,13 +158,10 @@ content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 {
-  "state": "Analysis",
-  "state_machine_id": {{state_machine_id}},
-  "scheduled_trigger_id": "04ca18b9-6e0c-1aa5-2c3f-d4b445f840bc",
-  "sqs_message": "{\"city\": \"Valetta\", \"country\": \"Malta\"}",
-  "neon_branch_id": null,
-  "fargate_task_id": null,
-  "s3_bucket": null
+  "cost": 10.345,
+  "start_time": "2024-12-09T14:16:11.133641Z",
+  "state_machine_id": "804594ed-b3a6-4138-a9d3-454a0578e5f7",
+  "step": "Setup"
 }
 
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
