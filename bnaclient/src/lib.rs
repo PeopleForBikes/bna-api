@@ -485,21 +485,21 @@ pub mod types {
         }
     }
 
-    ///
+    ///BNA Pipeline status
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "",
+    ///  "description": "BNA Pipeline status",
     ///  "examples": [
     ///    "Pending"
     ///  ],
     ///  "type": "string",
     ///  "enum": [
-    ///    "Complete",
+    ///    "Completed",
     ///    "Pending",
-    ///    "InProgress"
+    ///    "Processing"
     ///  ]
     ///}
     /// ```
@@ -517,9 +517,9 @@ pub mod types {
         PartialOrd,
     )]
     pub enum AnalysisStatus {
-        Complete,
+        Completed,
         Pending,
-        InProgress,
+        Processing,
     }
 
     impl From<&AnalysisStatus> for AnalysisStatus {
@@ -531,9 +531,9 @@ pub mod types {
     impl ::std::fmt::Display for AnalysisStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Complete => write!(f, "Complete"),
+                Self::Completed => write!(f, "Completed"),
                 Self::Pending => write!(f, "Pending"),
-                Self::InProgress => write!(f, "InProgress"),
+                Self::Processing => write!(f, "Processing"),
             }
         }
     }
@@ -542,9 +542,9 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "Complete" => Ok(Self::Complete),
+                "Completed" => Ok(Self::Completed),
                 "Pending" => Ok(Self::Pending),
-                "InProgress" => Ok(Self::InProgress),
+                "Processing" => Ok(Self::Processing),
                 _ => Err("invalid value".into()),
             }
         }
