@@ -91,7 +91,6 @@ async fn get_ratings_analysis(
         .map(Json)
 }
 
-#[debug_handler]
 async fn post_ratings_analysis(
     Json(bna_pipeline): Json<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<Value>), ExecutionError> {
@@ -104,12 +103,17 @@ async fn post_ratings_analysis(
         .map(|v| (StatusCode::CREATED, Json(v)))
 }
 
+#[debug_handler]
 async fn patch_ratings_analysis(
     Path(analysis_id): Path<Uuid>,
     Json(bna_pipeline): Json<BNAPipelinePatch>,
 ) -> Result<Json<Value>, ExecutionError> {
     patch_ratings_analysis_adaptor(bna_pipeline, analysis_id)
         .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
         .map(Json)
 }
 

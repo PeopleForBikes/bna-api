@@ -165,11 +165,11 @@ Authorization: Bearer {{cognito_access}}
 }
 
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/ratings/analysis
+GET {{host}}/ratings/analyses
 Authorization: Bearer {{cognito_access}}
 
 ### Query a specific BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/ratings/analysis/{{state_machine_id}}
+GET {{host}}/ratings/analyses/{{state_machine_id}}
 Authorization: Bearer {{cognito_access}}
 
 ### Update an existing BNA analysis performed by the Brokenspoke-analyzer pipeline.
@@ -179,6 +179,22 @@ Authorization: Bearer {{cognito_access}}
 
 {
   "neon_branch_id": "br-aged-salad-637688"
+}
+
+
+
+###
+#
+PATCH {{host}}/ratings/analyses/c86473dd-53b5-4abd-be0d-c25ed6b5f029
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
+{
+  "cost": 10.345,
+  "results_posted": true,
+  "start_time": "2024-12-09T18:02:22.607245Z",
+  "status": "Completed",
+  "step": "Setup"
 }
 
 ### Create a new BNA .

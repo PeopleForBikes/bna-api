@@ -570,10 +570,10 @@ components:
     analysis_status:
       type: string
       enum:
-        - Complete
+        - Completed
         - Pending
-        - InProgress
-      description: ""
+        - Processing
+      description: "BNA Pipeline status"
       example: "Pending"
     api_gateway_id:
       type: string
