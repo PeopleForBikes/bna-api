@@ -132,11 +132,7 @@ pub mod types {
     ///      "$ref": "#/components/schemas/state_machine_id"
     ///    },
     ///    "status": {
-    ///      "description": "Pipeline status",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
+    ///      "$ref": "#/components/schemas/analysis_status"
     ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
@@ -179,9 +175,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         pub state_machine_id: StateMachineId,
-        ///Pipeline status
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<::std::string::String>,
+        pub status: ::std::option::Option<AnalysisStatus>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
@@ -278,6 +273,9 @@ pub mod types {
     ///      ],
     ///      "format": "date-time"
     ///    },
+    ///    "status": {
+    ///      "$ref": "#/components/schemas/analysis_status"
+    ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
     ///    },
@@ -315,6 +313,8 @@ pub mod types {
         ///Date and time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<AnalysisStatus>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
@@ -420,16 +420,7 @@ pub mod types {
     ///      "$ref": "#/components/schemas/state_machine_id"
     ///    },
     ///    "status": {
-    ///      "description": "",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string",
-    ///      "enum": [
-    ///        "Complete",
-    ///        "Pending",
-    ///        "InProgress"
-    ///      ]
+    ///      "$ref": "#/components/schemas/analysis_status"
     ///    },
     ///    "step": {
     ///      "$ref": "#/components/schemas/step"
@@ -472,9 +463,8 @@ pub mod types {
         pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub state_machine_id: ::std::option::Option<StateMachineId>,
-        ///
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<AnalysisPostStatus>,
+        pub status: ::std::option::Option<AnalysisStatus>,
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub step: ::std::option::Option<Step>,
         ///Flag indicating wether the resources were torn down or not at the
@@ -526,19 +516,19 @@ pub mod types {
         PartialEq,
         PartialOrd,
     )]
-    pub enum AnalysisPostStatus {
+    pub enum AnalysisStatus {
         Complete,
         Pending,
         InProgress,
     }
 
-    impl From<&AnalysisPostStatus> for AnalysisPostStatus {
-        fn from(value: &AnalysisPostStatus) -> Self {
+    impl From<&AnalysisStatus> for AnalysisStatus {
+        fn from(value: &AnalysisStatus) -> Self {
             value.clone()
         }
     }
 
-    impl ::std::fmt::Display for AnalysisPostStatus {
+    impl ::std::fmt::Display for AnalysisStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
                 Self::Complete => write!(f, "Complete"),
@@ -548,7 +538,7 @@ pub mod types {
         }
     }
 
-    impl std::str::FromStr for AnalysisPostStatus {
+    impl std::str::FromStr for AnalysisStatus {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
@@ -560,14 +550,14 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<&str> for AnalysisPostStatus {
+    impl std::convert::TryFrom<&str> for AnalysisStatus {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&::std::string::String> for AnalysisPostStatus {
+    impl std::convert::TryFrom<&::std::string::String> for AnalysisStatus {
         type Error = self::error::ConversionError;
         fn try_from(
             value: &::std::string::String,
@@ -576,7 +566,7 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<::std::string::String> for AnalysisPostStatus {
+    impl std::convert::TryFrom<::std::string::String> for AnalysisStatus {
         type Error = self::error::ConversionError;
         fn try_from(
             value: ::std::string::String,
@@ -3983,7 +3973,7 @@ pub mod types {
             >,
             state_machine_id: ::std::result::Result<super::StateMachineId, ::std::string::String>,
             status: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<super::AnalysisStatus>,
                 ::std::string::String,
             >,
             step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
@@ -4115,7 +4105,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
                 T::Error: std::fmt::Display,
             {
                 self.status = value
@@ -4211,6 +4201,10 @@ pub mod types {
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
             >,
+            status: ::std::result::Result<
+                ::std::option::Option<super::AnalysisStatus>,
+                ::std::string::String,
+            >,
             step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
             torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
         }
@@ -4225,6 +4219,7 @@ pub mod types {
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
                     start_time: Ok(Default::default()),
+                    status: Ok(Default::default()),
                     step: Ok(Default::default()),
                     torn_down: Ok(Default::default()),
                 }
@@ -4309,6 +4304,16 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for start_time: {}", e));
                 self
             }
+            pub fn status<T>(mut self, value: T) -> Self
+            where
+                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
+                T::Error: std::fmt::Display,
+            {
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
+                self
+            }
             pub fn step<T>(mut self, value: T) -> Self
             where
                 T: std::convert::TryInto<::std::option::Option<super::Step>>,
@@ -4344,6 +4349,7 @@ pub mod types {
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
                     start_time: value.start_time?,
+                    status: value.status?,
                     step: value.step?,
                     torn_down: value.torn_down?,
                 })
@@ -4360,6 +4366,7 @@ pub mod types {
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
                     start_time: Ok(value.start_time),
+                    status: Ok(value.status),
                     step: Ok(value.step),
                     torn_down: Ok(value.torn_down),
                 }
@@ -4398,7 +4405,7 @@ pub mod types {
                 ::std::string::String,
             >,
             status: ::std::result::Result<
-                ::std::option::Option<super::AnalysisPostStatus>,
+                ::std::option::Option<super::AnalysisStatus>,
                 ::std::string::String,
             >,
             step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
@@ -4530,7 +4537,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::AnalysisPostStatus>>,
+                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
                 T::Error: std::fmt::Display,
             {
                 self.status = value
