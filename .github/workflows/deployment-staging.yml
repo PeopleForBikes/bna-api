@@ -34,26 +34,8 @@ jobs:
       - name: Build all lambdas
         run: cd lambdas && cargo lambda build --release
       - name: Deploy lambdas
-        run: |
-          LAMBDAS="axumed
-          get-ratings
-          get-ratings-analysis
-          get-ratings-cities
-          get-ratings-results
-          get-cities
-          get-cities-ratings
-          get-cities-census
-          get-cities-submissions
-          get-price-fargate
-          patch-ratings-analysis
-          patch-cities-submissions
-          post-ratings
-          post-ratings-analysis
-          post-ratings-enqueue
-          post-cities
-          post-cities-submissions"
-          echo $LAMBDAS \
-          | xargs -n1 -t \
-            cargo lambda deploy \
-            --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }} \
-            --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
+        run: >
+          cargo lambda deploy
+          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
+          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
+          axumed
