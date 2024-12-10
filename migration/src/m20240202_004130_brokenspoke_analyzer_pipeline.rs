@@ -69,7 +69,7 @@ impl MigrationTrait for Migration {
         let insert_prices = Query::insert()
             .into_table(FargatePrice::Table)
             .columns([FargatePrice::PerSecond])
-            .values_panic([0.0023.into()])
+            .values_panic([0.000038.into()])
             .to_owned();
         manager.exec_stmt(insert_prices).await?;
 
@@ -181,13 +181,13 @@ pub enum BNAPipelineStep {
 // https://cloudtempo.dev/fargate-pricing-calculator
 //
 // The final value is obtained by converting the price per hour to price per second.
-// This is done by dividing the price per hour per 60 and rounding it up to the
+// This is done by dividing the price per hour per 3600 and rounding it up to the
 // ten thousandths (4th decimal).
 //
 // For instance:
-// Price per hour is $0.137, which gives a price per second of 0.137/60 = 0.00228333333333.
-// Rounding it up to the nearest $0.0001 brings a price of $0.0023 per second.
-// https://www.calculator.net/rounding-calculator.html?cnum=0.00228333333333&cpre=4&cpren=2&cmode=nearest&sp=0&x=Calculate
+// Price per hour is $0.137, which gives a price per second of 0.137/3600 = 0.0000380555555556.
+// Rounding it up to the nearest $0.000001 brings a price of $0.000038 per second.
+// Use for example https://www.calculator.io/rounding-calculator/.
 #[derive(Iden)]
 pub enum FargatePrice {
     Table,
