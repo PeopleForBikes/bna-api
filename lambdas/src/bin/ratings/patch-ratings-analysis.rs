@@ -2,10 +2,11 @@ use dotenv::dotenv;
 use effortless::{
     api::{missing_parameter, parse_path_parameter, parse_request_body},
     error::APIErrors,
+    fragment::BnaRequestExt,
 };
 use entity::wrappers::bna_pipeline::BNAPipelinePatch;
 use lambda_http::{run, service_fn, Body, Error, IntoResponse, Request, Response};
-use lambdas::core::resource::ratings::adaptor::patch_ratings_analysis_adaptor;
+use lambdas::{core::resource::ratings::adaptor::patch_ratings_analysis_adaptor, Context};
 use sea_orm::prelude::Uuid;
 use tracing::info;
 
@@ -27,8 +28,16 @@ async fn function_handler(event: Request) -> Result<Response<Body>, Error> {
         },
         Err(e) => return Ok(e.into()),
     };
+    let ctx = Context::new(
+        event.apigw_request_id(),
+        event
+            .uri()
+            .path_and_query()
+            .expect("to have a path and optional query parameters")
+            .to_string(),
+    );
 
-    match patch_ratings_analysis_adaptor(wrapper, analysis_id).await {
+    match patch_ratings_analysis_adaptor(wrapper, analysis_id, ctx).await {
         Ok(v) => Ok(v.into_response().await),
         Err(e) => Ok(APIErrors::from(e).into()),
     }

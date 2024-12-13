@@ -11,6 +11,11 @@
 # Query the first page of the bnas.
 GET {{host}}/ratings
 
+
+###
+# Query the first page of the bnas.
+GET {{host}}/ratings?page_size=1257596201
+
 ###
 # Query a specific bna run.
 GET {{host}}/ratings/{{rating_id}}

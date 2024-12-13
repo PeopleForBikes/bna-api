@@ -31,6 +31,7 @@ serde_json = { workspace = true }
 serde_plain = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["macros"] }
+tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
 url = { workspace = true }
