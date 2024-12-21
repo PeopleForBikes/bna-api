@@ -42,7 +42,7 @@ pub async fn fetch_cities_censuses(
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
             .find_also_related(census::Entity);
-    let models = select
+    let models: Vec<(city::Model, Option<census::Model>)> = select
         .clone()
         .paginate(db, page_size)
         .fetch_page(page)

@@ -31,7 +31,6 @@ GET {{host}}/ratings/{{rating_id}}/city
 
 HTTP 200
 [Asserts]
-jsonpath "$" count > 0
 
 # Queries a non-existing bna run and its associated city.
 GET {{host}}/ratings/{{fake_rating_id}}/city

@@ -1,9 +1,20 @@
-use ::tracing::debug;
-use axum::Router;
+use ::tracing::{debug, info};
 use lambda_http::{run, tracing, Error};
-use lambdas::core::resource::{cities, price, ratings};
-use std::env::{self, set_var};
+use lambdas::core::resource::{
+    cities, pipelines, price, ratings,
+    schema::{APIError, APIErrorSource},
+};
+use std::{
+    env::{self, set_var},
+    fs,
+};
 use tower_http::trace::TraceLayer;
+use utoipa::{
+    openapi::{Components, ContactBuilder, Info, OpenApiBuilder, Server, Tag},
+    schema,
+};
+use utoipa_axum::router::OpenApiRouter;
+use utoipa_swagger_ui::SwaggerUi;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -34,12 +45,92 @@ async fn main() -> Result<(), Error> {
         .init();
     debug!(loglevel= ?log_level);
 
+    // Define the OpenApi Specification.
+    let api = OpenApiBuilder::new()
+        .info(
+            Info::builder()
+                .title("BNA REST API")
+                .version("1.0.0")
+                .description(Some(
+                    "Provides a way to retrieve the BNA results programmatically.",
+                ))
+                .contact(Some(
+                    ContactBuilder::new()
+                        .name(Some("The BNA Mechanics team"))
+                        .url(Some("https://peopleforbikes.github.io/"))
+                        .build(),
+                ))
+                .build(),
+        )
+        .servers(Some(vec![
+            Server::builder()
+                .description(Some("Local development API"))
+                .url("https://localhost:3000")
+                .build(),
+            Server::builder()
+                .description(Some("Staging API"))
+                .url("https://api.peopleforbikes.xyz")
+                .build(),
+        ]))
+        .tags(Some(vec![
+            Tag::builder()
+                .name("city")
+                .description(Some("City API endpoints"))
+                .build(),
+            Tag::builder()
+                .name("pipeline")
+                .description(Some("Pipeline API endpoints"))
+                .build(),
+            Tag::builder()
+                .name("price")
+                .description(Some("Price API endpoints"))
+                .build(),
+            Tag::builder()
+                .name("rating")
+                .description(Some("Rating API endpoints"))
+                .build(),
+        ]))
+        .components(Some(
+            Components::builder()
+                .schema(
+                    "APIError",
+                    schema!(
+                        #[inline]
+                        APIError
+                    ),
+                )
+                .schema(
+                    "APIErrorSource",
+                    schema!(
+                        #[inline]
+                        APIErrorSource
+                    ),
+                )
+                .build(),
+        ))
+        .build();
+
     // Create the app router.
-    let app = Router::new()
+    let (app, api) = OpenApiRouter::with_openapi(api)
         .merge(cities::endpoint::routes())
+        .merge(pipelines::endpoint::routes())
         .merge(price::endpoint::routes())
         .merge(ratings::endpoint::routes())
-        .layer(TraceLayer::new_for_http());
+        .layer(TraceLayer::new_for_http())
+        .split_for_parts();
+
+    // Write the specification file to disk.
+    if env::var("BNA_API_GENERATE_ONLY")
+        .ok()
+        .map_or(false, |v| v == *"1")
+    {
+        info!("Regenerating the OpenAPI specification file.");
+        let _ = fs::write("./openapi-3.1.yaml", api.to_yaml().unwrap());
+        return Ok(());
+    }
+
+    // Add the Swagger UI.
+    let app = app.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")

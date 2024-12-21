@@ -28,7 +28,7 @@ GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
 
 HTTP 200
 [Asserts]
-jsonpath "$" count > 0
+jsonpath "$.ratings" count > 0
 
 # Queries all the BNAs of a non-existing city.
 GET {{host}}/cities/{{country}}/{{region}}/unknown_city/ratings

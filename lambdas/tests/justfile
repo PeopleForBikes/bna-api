@@ -43,12 +43,12 @@ test-localhost-schemathesis:
     --generation-allow-x00 false \
     --exclude-method 'POST' \
     --exclude-method 'PATCH' \
-    {{top_dir}}/openapi.yaml
+    {{top_dir}}/openapi-3.0.yaml
 
 # Run the schemathesis tests again the openapi schema.
 test-staging-schemathesis:
   uv run st run \
-    {{top_dir}}/openapi.yaml \
+    {{top_dir}}/openapi-3.0.yaml \
     --exclude-method 'POST' \
     --exclude-method 'PATCH' \
     --base-url https://api.peopleforbikes.xyz/

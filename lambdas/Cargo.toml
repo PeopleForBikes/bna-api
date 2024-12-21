@@ -11,6 +11,7 @@ aws-sdk-s3 = { workspace = true }
 aws-sdk-sqs = { workspace = true }
 aws_lambda_events = { workspace = true }
 bnacore = { workspace = true }
+chrono = { workspace = true }
 dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
@@ -29,12 +30,16 @@ sea-orm = { workspace = true, features = [
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_plain = { workspace = true }
+serde_with = { workspace = true }
 thiserror = { workspace = true }
 tokio = { workspace = true, features = ["macros"] }
 tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
 url = { workspace = true }
+utoipa = { workspace = true, features = ["chrono", "decimal", "uuid", "yaml"] }
+utoipa-axum = { workspace = true }
+utoipa-swagger-ui = { workspace = true, features = ["axum"] }
 uuid = { workspace = true, features = ["v4", "serde"] }
 
 [lints.clippy]
@@ -48,74 +53,6 @@ path = "src/lib.rs"
 [[bin]]
 name = "axumed"
 path = "src/main.rs"
-
-[[bin]]
-name = "get-ratings"
-path = "src/bin/ratings/get-ratings.rs"
-
-[[bin]]
-name = "post-ratings"
-path = "src/bin/ratings/post-ratings.rs"
-
-# [[bin]]
-# name = "patch-bnas"
-# path = "src/bnas/patch-bnas.rs"
-
-[[bin]]
-name = "get-ratings-cities"
-path = "src/bin/ratings/get-ratings-cities.rs"
-
-[[bin]]
-name = "get-ratings-analysis"
-path = "src/bin/ratings/get-ratings-analysis.rs"
-
-[[bin]]
-name = "get-cities"
-path = "src/bin/cities/get-cities.rs"
-
-[[bin]]
-name = "get-cities-ratings"
-path = "src/bin/cities/get-cities-ratings.rs"
-
-[[bin]]
-name = "get-cities-census"
-path = "src/bin/cities/get-cities-census.rs"
-
-[[bin]]
-name = "get-cities-submissions"
-path = "src/bin/cities/get-cities-submissions.rs"
-
-[[bin]]
-name = "get-price-fargate"
-path = "src/bin/price-fargate/get-price-fargate.rs"
-
-[[bin]]
-name = "patch-ratings-analysis"
-path = "src/bin/ratings/patch-ratings-analysis.rs"
-
-[[bin]]
-name = "patch-cities-submissions"
-path = "src/bin/cities/patch-cities-submissions.rs"
-
-[[bin]]
-name = "post-cities-submissions"
-path = "src/bin/cities/post-cities-submissions.rs"
-
-[[bin]]
-name = "post-ratings-analysis"
-path = "src/bin/ratings/post-ratings-analysis.rs"
-
-[[bin]]
-name = "post-ratings-enqueue"
-path = "src/bin/ratings/post-ratings-enqueue.rs"
-
-[[bin]]
-name = "get-ratings-results"
-path = "src/bin/ratings/get-ratings-results.rs"
-
-[[bin]]
-name = "post-cities"
-path = "src/bin/cities/post-cities.rs"
 
 [dev-dependencies]
 color-eyre = { workspace = true }
