@@ -108,13 +108,20 @@ async fn patch_ratings_analysis(
     Path(analysis_id): Path<Uuid>,
     Json(bna_pipeline): Json<BNAPipelinePatch>,
 ) -> Result<Json<Value>, ExecutionError> {
-    patch_ratings_analysis_adaptor(bna_pipeline, analysis_id)
-        .await
-        .map_err(|e| {
-            debug!("{e}");
-            e
-        })
-        .map(Json)
+    patch_ratings_analysis_adaptor(
+        bna_pipeline,
+        analysis_id,
+        Context {
+            request_id: None,
+            source: format!("/ratings/analyses/{analysis_id}"),
+        },
+    )
+    .await
+    .map_err(|e| {
+        debug!("{e}");
+        e
+    })
+    .map(Json)
 }
 
 async fn post_ratings(

@@ -14,6 +14,7 @@ use entity::{
 use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
+use time::format_description::well_known;
 
 const US_STATE_COUNT: usize = 51; // w/ Puerto Rico
 const CHUNK_SIZE: usize = 1000;
@@ -82,11 +83,11 @@ async fn main() -> Result<(), Report> {
         let version = Calver::try_from_ubuntu(&calver).unwrap();
 
         // Get the records creation date.
-        let created_at = scorecard
+        let created_at_str = scorecard
             .creation_date
-            .to_string()
-            .parse::<DateTime<FixedOffset>>()
+            .format(&well_known::Iso8601::DEFAULT)
             .unwrap();
+        let created_at = created_at_str.parse::<DateTime<FixedOffset>>().unwrap();
 
         // Get the City UUID.
         let city_uuid = Uuid::parse_str(&scorecard.bna_id).unwrap();

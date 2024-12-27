@@ -13,7 +13,7 @@ use entity::{
         bna_pipeline::{BNAPipelinePatch, BNAPipelinePost},
     },
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, DbErr, IntoActiveModel};
 use serde_json::{json, Value};
 use tracing::info;
 use uuid::Uuid;
@@ -164,6 +164,7 @@ pub async fn post_ratings_analysis_adaptor(
 pub async fn patch_ratings_analysis_adaptor(
     bna_pipeline: BNAPipelinePatch,
     analysis_id: Uuid,
+    ctx: Context,
 ) -> Result<Value, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -173,7 +174,22 @@ pub async fn patch_ratings_analysis_adaptor(
     active_model.state_machine_id = ActiveValue::Unchanged(analysis_id);
 
     // Update the entry.
-    let model = active_model.update(&db).await?;
+    info!("Tartiflette!");
+    let model = match active_model.update(&db).await {
+        Ok(m) => m,
+        Err(db_err) => {
+            dbg!(&db_err);
+            match db_err {
+                DbErr::RecordNotUpdated => {
+                    match get_ratings_analysis_adaptor(analysis_id, ctx).await {
+                        Ok(_) => return Err(ExecutionError::DatabaseError(db_err)),
+                        Err(exec_err) => return Err(exec_err),
+                    }
+                }
+                _ => return Err(ExecutionError::DatabaseError(db_err)),
+            }
+        }
+    };
     Ok(json!(model))
 }
 

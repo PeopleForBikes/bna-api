@@ -211,7 +211,15 @@ impl Default for PaginationParameters {
 
 impl PaginationParameters {
     pub fn page_size(&self) -> u64 {
-        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
+        // self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
+        match self.page_size {
+            Some(value) => match value {
+                0 => 1,
+                1..=MAX_PAGE_SIZE => value,
+                _ => MAX_PAGE_SIZE,
+            },
+            None => DEFAULT_PAGE_SIZE,
+        }
     }
 }
 
@@ -237,7 +245,7 @@ pub fn extract_pagination_parameters(
         match page_size.parse::<u64>() {
             Ok(page_size) => {
                 pagination.page_size = match page_size {
-                    0..=MAX_PAGE_SIZE => Some(page_size),
+                    1..=MAX_PAGE_SIZE => Some(page_size),
                     _ => Some(MAX_PAGE_SIZE),
                 }
             }

@@ -3,6 +3,7 @@ use axum::Router;
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{cities, price, ratings};
 use std::env::{self, set_var};
+use tower_http::trace::TraceLayer;
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
@@ -37,7 +38,8 @@ async fn main() -> Result<(), Error> {
     let app = Router::new()
         .merge(cities::endpoint::routes())
         .merge(price::endpoint::routes())
-        .merge(ratings::endpoint::routes());
+        .merge(ratings::endpoint::routes())
+        .layer(TraceLayer::new_for_http());
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")

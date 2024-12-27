@@ -1473,6 +1473,8 @@ components:
         type: integer
         default: 1
         example: 1
+        minimum: 1
+        maximum: 65535
     page_size:
       name: page_size
       in: query
@@ -1482,6 +1484,8 @@ components:
         type: integer
         default: 25
         example: 25
+        minimum: 1
+        maximum: 65535
     fargate_price_id:
       name: fargate_price_id
       in: path
