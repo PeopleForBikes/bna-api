@@ -9,7 +9,7 @@ members = ["bnaclient", "lambdas", "entity", "migration", "effortless"]
 
 [workspace.dependencies]
 async-std = "1"
-aws_lambda_events = "0.15.0"
+aws_lambda_events = "0.16.0"
 aws-config = "1.5.9"
 aws-sdk-s3 = "1.59.0"
 aws-sdk-sqs = "1.48.0"
@@ -25,7 +25,7 @@ entity = { path = "entity" }
 futures = "0.3.31"
 http-serde = "2.0.0"
 itertools = "0.13.0"
-lambda_http = "0.13.0"
+lambda_http = "0.14.0"
 lambda_runtime = "0.13.0"
 migration = { path = "migration" }
 nom = "7.1.3"
