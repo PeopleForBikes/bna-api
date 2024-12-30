@@ -1,7 +1,7 @@
 use sea_orm_migration::{
     prelude::*,
     schema::{
-        boolean_null, decimal, decimal_null, integer_null, json_null, pk_auto, string, string_null,
+        decimal, decimal_null, integer_null, json_null, pk_auto, string, string_null,
         timestamp_with_time_zone, timestamp_with_time_zone_null, uuid,
     },
 };
@@ -80,7 +80,7 @@ impl MigrationTrait for Migration {
                     .table(BNAPipeline::Table)
                     .if_not_exists()
                     .col(uuid(BNAPipeline::StateMachineId).primary_key())
-                    .col(string_null(BNAPipeline::Step))
+                    .col(string(BNAPipeline::Step))
                     .col(json_null(BNAPipeline::SqsMessage))
                     .col(integer_null(BNAPipeline::FargatePriceId))
                     .col(string_null(BNAPipeline::FargateTaskARN))
@@ -88,8 +88,6 @@ impl MigrationTrait for Migration {
                     .col(string(BNAPipeline::Status).default("Pending".to_string()))
                     .col(timestamp_with_time_zone(BNAPipeline::StartTime))
                     .col(timestamp_with_time_zone_null(BNAPipeline::EndTime))
-                    .col(boolean_null(BNAPipeline::TornDown))
-                    .col(boolean_null(BNAPipeline::ResultsPosted))
                     .col(decimal_null(BNAPipeline::Cost))
                     .foreign_key(
                         ForeignKey::create()
@@ -137,14 +135,12 @@ enum BNAPipeline {
     EndTime,
     FargatePriceId,
     FargateTaskARN,
-    ResultsPosted,
     S3Bucket,
     SqsMessage,
     StartTime,
     StateMachineId,
     Status,
     Step,
-    TornDown,
 }
 
 /// Lookup table for the brokenspoke statuses.

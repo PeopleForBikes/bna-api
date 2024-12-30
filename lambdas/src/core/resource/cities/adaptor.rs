@@ -2,11 +2,14 @@ use super::db::{
     fetch_cities, fetch_cities_censuses, fetch_cities_ratings, fetch_cities_submission,
     fetch_cities_submissions, fetch_city, fetch_country, fetch_state_region_crosswalk,
 };
-use crate::{database_connect, Context, ExecutionError, PageFlow, Paginatron};
-use entity::wrappers::{
-    census::CensusFromCityPost,
-    city::CityPost,
-    submission::{SubmissionPatch, SubmissionPost},
+use crate::{database_connect, Context, ExecutionError};
+use entity::{
+    census, city, summary,
+    wrappers::{
+        census::CensusFromCityPost,
+        city::CityPost,
+        submission::{SubmissionPatch, SubmissionPost},
+    },
 };
 use sea_orm::{ActiveModelTrait, ActiveValue, IntoActiveModel};
 use serde_json::{json, Value};
@@ -18,7 +21,7 @@ pub async fn get_city_adaptor(
     region: &str,
     name: &str,
     ctx: Context,
-) -> Result<Value, ExecutionError> {
+) -> Result<city::Model, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -31,7 +34,7 @@ pub async fn get_city_adaptor(
         }
     };
     match model {
-        Some(model) => Ok(json!(model)),
+        Some(model) => Ok(model),
         None => Err(ExecutionError::NotFound(
             ctx.request_id(),
             ctx.source(),
@@ -40,18 +43,15 @@ pub async fn get_city_adaptor(
     }
 }
 
-pub async fn get_cities_adaptor(page: u64, page_size: u64) -> Result<PageFlow, ExecutionError> {
+pub async fn get_cities_adaptor(
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<entity::city::Model>), ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Fetch a page of cities.
-    let (total_items, models) = fetch_cities(&db, page, page_size).await?;
-
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        json!(models),
-    ))
+    Ok(fetch_cities(&db, page, page_size).await?)
 }
 
 pub async fn get_cities_censuses_adaptor(
@@ -60,19 +60,21 @@ pub async fn get_cities_censuses_adaptor(
     name: &str,
     page: u64,
     page_size: u64,
-) -> Result<PageFlow, ExecutionError> {
+) -> Result<(u64, Vec<(city::Model, Option<census::Model>)>), ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Fetch a page of city censuses.
-    let (total_items, models) =
-        fetch_cities_censuses(&db, country, region, name, page, page_size).await?;
-
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        json!(models),
-    ))
+    let res = fetch_cities_censuses(&db, country, region, name, page, page_size).await?;
+    if res.1.is_empty() {
+        Err(ExecutionError::NotFound(
+            Some(country.to_string()),
+            region.to_string(),
+            name.to_string(),
+        ))
+    } else {
+        Ok(res)
+    }
 }
 
 pub async fn post_cities_census_adaptor(
@@ -80,7 +82,7 @@ pub async fn post_cities_census_adaptor(
     region: &str,
     name: &str,
     census: CensusFromCityPost,
-) -> Result<Value, ExecutionError> {
+) -> Result<census::Model, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -95,8 +97,7 @@ pub async fn post_cities_census_adaptor(
 
         // And insert a new entry.
         let model = active_model.insert(&db).await?;
-        let value = json!(model);
-        Ok(value)
+        Ok(model)
     } else {
         Err(ExecutionError::NotFound(
             Some(country.to_string()),
@@ -113,7 +114,7 @@ pub async fn get_cities_ratings_adaptor(
     page: u64,
     page_size: u64,
     ctx: Context,
-) -> Result<PageFlow, ExecutionError> {
+) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -130,11 +131,7 @@ pub async fn get_cities_ratings_adaptor(
         ));
     }
 
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        json!(models),
-    ))
+    Ok((total_items, models))
 }
 
 pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError> {
@@ -173,7 +170,6 @@ pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError
     }
 
     // And insert a new entry.
-    // info!("inserting City into database: {:?}", active_city);
     let model = active_model.insert(&db).await?;
     Ok(json!(model))
 }
@@ -182,7 +178,7 @@ pub async fn get_cities_submission_adaptor(
     submission_id: i32,
     status: Option<String>,
     ctx: Context,
-) -> Result<Value, ExecutionError> {
+) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -190,7 +186,7 @@ pub async fn get_cities_submission_adaptor(
     let status_str = status.clone().unwrap_or("any".to_string());
     let model = fetch_cities_submission(&db, submission_id, status).await?;
     match model {
-        Some(model) => Ok(json!(model)),
+        Some(model) => Ok(model),
         None => Err(ExecutionError::NotFound(
             ctx.request_id(),
             ctx.source(),
@@ -203,24 +199,18 @@ pub async fn get_cities_submissions_adaptor(
     status: Option<String>,
     page: u64,
     page_size: u64,
-) -> Result<PageFlow, ExecutionError> {
+) -> Result<(u64, Vec<entity::submission::Model>), ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
     // Fetch the model.
-    let (total_items, models) = fetch_cities_submissions(&db, status, page, page_size).await?;
-
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        json!(models),
-    ))
+    Ok(fetch_cities_submissions(&db, status, page, page_size).await?)
 }
 
 pub async fn patch_cities_submission_adaptor(
     submission_id: i32,
     submission: SubmissionPatch,
-) -> Result<Value, ExecutionError> {
+) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -229,12 +219,12 @@ pub async fn patch_cities_submission_adaptor(
     active_model.id = ActiveValue::Unchanged(submission_id);
 
     let model = active_model.update(&db).await?;
-    Ok(json!(model))
+    Ok(model)
 }
 
 pub async fn post_cities_submission_adaptor(
     submission: SubmissionPost,
-) -> Result<Value, ExecutionError> {
+) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
 
@@ -251,5 +241,5 @@ pub async fn post_cities_submission_adaptor(
 
     // And insert a new entry.
     let model = active_model.insert(&db).await?;
-    Ok(json!(model))
+    Ok(model)
 }

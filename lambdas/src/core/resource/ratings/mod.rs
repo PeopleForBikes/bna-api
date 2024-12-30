@@ -10,6 +10,7 @@ use uuid::Uuid;
 pub mod adaptor;
 mod db;
 pub mod endpoint;
+mod schema;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BNAComponent {

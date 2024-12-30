@@ -97,7 +97,7 @@ compose-down:
 generate-client:
     RUST_LOG="debug" \
       cargo progenitor \
-      -i ./openapi.yaml \
+      -i ./openapi-3.0.yaml \
       -o bnaclient \
       -n bnaclient \
       --interface builder \
@@ -111,3 +111,16 @@ debug-axum:
   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres \
   cargo watch -x \
     'run -p lambdas --bin axumed'
+# Generate the OAS 3.1.x from the Axum source code.
+generate-oas-31:
+  BNA_API_GENERATE_ONLY=1 \
+    cargo run \
+    -p lambdas \
+    --bin axumed
+
+# Generate the OAS 3.0.x from the OAS 3.1.x.
+generate-oas-30:
+  openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
+
+# Regenerate the OpenAPI specifications and the client.
+regenerate-all: generate-oas-31 generate-oas-30 generate-client

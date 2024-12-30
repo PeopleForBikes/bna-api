@@ -2,6 +2,7 @@
 pub mod adaptor;
 mod db;
 pub mod endpoint;
+mod schema;
 
 use effortless::{api::parse_path_parameter, error::APIErrors};
 use serde::Deserialize;

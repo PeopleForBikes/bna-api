@@ -39,7 +39,197 @@ pub mod types {
         }
     }
 
-    ///Analysis
+    ///Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Single API Error object as described in <https://jsonapi.org/format/#error-objects>.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "details",
+    ///    "source",
+    ///    "status",
+    ///    "title"
+    ///  ],
+    ///  "properties": {
+    ///    "details": {
+    ///      "description": "A human-readable explanation specific to this
+    /// occurrence of the problem",
+    ///      "examples": [
+    ///        "the entry was not found"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "id": {
+    ///      "description": "A unique identifier for this particular occurrence
+    /// of the problem.",
+    ///      "examples": [
+    ///        "blfwkg8nvHcEJnQ="
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    "source": {
+    ///      "$ref": "#/components/schemas/APIErrorSource"
+    ///    },
+    ///    "status": {
+    ///      "description": "The HTTP status code applicable to this problem,
+    /// expressed as a string value.",
+    ///      "examples": [
+    ///        "404"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "title": {
+    ///      "description": "A short, human-readable summary of the problem",
+    ///      "examples": [
+    ///        "Item Not Found"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct ApiError {
+        ///A human-readable explanation specific to this occurrence of the
+        /// problem
+        pub details: ::std::string::String,
+        ///A unique identifier for this particular occurrence of the problem.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub id: ::std::option::Option<::std::string::String>,
+        pub source: ApiErrorSource,
+        ///The HTTP status code applicable to this problem, expressed as a
+        /// string value.
+        pub status: ::std::string::String,
+        ///A short, human-readable summary of the problem
+        pub title: ::std::string::String,
+    }
+
+    impl ::std::convert::From<&ApiError> for ApiError {
+        fn from(value: &ApiError) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ApiError {
+        pub fn builder() -> builder::ApiError {
+            Default::default()
+        }
+    }
+
+    ///An object containing references to the primary source of the error.
+    ///
+    ///It SHOULD include one of the following members or be omitted:
+    ///
+    ///  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901)
+    ///    to the value in the request document that caused the error [e.g.
+    ///    "/data" for a primary data object, or "/data/attributes/title" for a
+    ///    specific attribute]. This MUST point to a value in the request
+    ///    document that exists; if it doesn’t, the client SHOULD simply ignore
+    ///    the pointer.
+    ///  - parameter: a string indicating which URI query parameter caused the
+    ///    error.
+    ///  - header: a string indicating the name of a single request header which
+    ///    caused the error.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "An object containing references to the primary source of the error.\n\nIt SHOULD include one of the following members or be omitted:\n\n  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the\n    value in the request document that caused the error [e.g. \"/data\" for a primary\n    data object, or \"/data/attributes/title\" for a specific attribute].\n    This MUST point to a value in the request document that exists; if it doesn’t,\n    the client SHOULD simply ignore the pointer.\n  - parameter: a string indicating which URI query parameter caused the error.\n  - header: a string indicating the name of a single request header which caused the\n    error.",
+    ///  "oneOf": [
+    ///    {
+    ///      "description": "A JSON Pointer [RFC6901] to the value in the
+    /// request document that caused the error.",
+    ///      "examples": [
+    ///        {
+    ///          "pointer": "/data/attributes/title"
+    ///        }
+    ///      ],
+    ///      "type": "object",
+    ///      "required": [
+    ///        "pointer"
+    ///      ],
+    ///      "properties": {
+    ///        "pointer": {
+    ///          "description": "A JSON Pointer [RFC6901] to the value in the
+    /// request document that caused the error.",
+    ///          "type": "string"
+    ///        }
+    ///      }
+    ///    },
+    ///    {
+    ///      "description": "A string indicating which URI query parameter
+    /// caused the error.",
+    ///      "examples": [
+    ///        {
+    ///          "parameter": "include"
+    ///        }
+    ///      ],
+    ///      "type": "object",
+    ///      "required": [
+    ///        "parameter"
+    ///      ],
+    ///      "properties": {
+    ///        "parameter": {
+    ///          "description": "A string indicating which URI query parameter
+    /// caused the error.",
+    ///          "type": "string"
+    ///        }
+    ///      }
+    ///    },
+    ///    {
+    ///      "description": "A string indicating the name of a single request
+    /// header which caused the error.",
+    ///      "examples": [
+    ///        {
+    ///          "header": "Content-Type"
+    ///        }
+    ///      ],
+    ///      "type": "object",
+    ///      "required": [
+    ///        "header"
+    ///      ],
+    ///      "properties": {
+    ///        "header": {
+    ///          "description": "A string indicating the name of a single
+    /// request header which caused the error.",
+    ///          "type": "string"
+    ///        }
+    ///      }
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub enum ApiErrorSource {
+        ///A JSON Pointer [RFC6901] to the value in the request document that
+        /// caused the error.
+        #[serde(rename = "pointer")]
+        Pointer(::std::string::String),
+        ///A string indicating which URI query parameter caused the error.
+        #[serde(rename = "parameter")]
+        Parameter(::std::string::String),
+        ///A string indicating the name of a single request header which caused
+        /// the error.
+        #[serde(rename = "header")]
+        Header(::std::string::String),
+    }
+
+    impl ::std::convert::From<&ApiErrorSource> for ApiErrorSource {
+        fn from(value: &ApiErrorSource) -> Self {
+            value.clone()
+        }
+    }
+
+    ///BnaPipeline
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -47,7 +237,10 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "required": [
-    ///    "state_machine_id"
+    ///    "start_time",
+    ///    "state_machine_id",
+    ///    "status",
+    ///    "step"
     ///  ],
     ///  "properties": {
     ///    "cost": {
@@ -58,11 +251,10 @@ pub mod types {
     ///      "type": [
     ///        "string",
     ///        "null"
-    ///      ],
-    ///      "format": "decimal"
+    ///      ]
     ///    },
     ///    "end_time": {
-    ///      "description": "Date and time",
+    ///      "description": "End time",
     ///      "type": [
     ///        "string",
     ///        "null"
@@ -70,35 +262,27 @@ pub mod types {
     ///      "format": "date-time"
     ///    },
     ///    "fargate_price_id": {
-    ///      "description": "Fargate price identifier",
-    ///      "examples": [
-    ///        1
-    ///      ],
+    ///      "description": "Fargate price identifier used to compute the cost",
     ///      "type": [
     ///        "integer",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "int32"
     ///    },
     ///    "fargate_task_arn": {
-    ///      "description": "The ARN of the Fargate task that performed the
+    ///      "description": "ARN of the Fargate task that performed the
     /// analysis",
     ///      "examples": [
     ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0\n"
+    /// 29f979fc9fca402d94b014aa23d2f6e0"
     ///      ],
     ///      "type": [
     ///        "string",
     ///        "null"
     ///      ]
     ///    },
-    ///    "results_posted": {
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
-    ///    },
     ///    "s3_bucket": {
-    ///      "description": "the path of the S3 bucket where the results were
+    ///      "description": "Path of the S3 bucket where the results were
     /// stored",
     ///      "examples": [
     ///        "united states/new mexico/santa rosa/24.05.4"
@@ -112,8 +296,12 @@ pub mod types {
     ///      "description": "Copy of the JSON message that was sent for
     /// processing",
     ///      "examples": [
-    ///        "{\"country\":\"United States\",\"city\":\"santa
-    /// rosa\",\"region\":\"new mexico\", \"fips_code\":\"3570670\"}"
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
     ///      ],
     ///      "type": [
     ///        "string",
@@ -121,241 +309,93 @@ pub mod types {
     ///      ]
     ///    },
     ///    "start_time": {
-    ///      "description": "Date and time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
+    ///      "description": "Start time",
+    ///      "type": "string",
     ///      "format": "date-time"
     ///    },
     ///    "state_machine_id": {
-    ///      "$ref": "#/components/schemas/state_machine_id"
+    ///      "description": "Pipeline identifier\nThis is the ID of the AWS
+    /// state machine that was used to run the pipeline",
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    },
     ///    "status": {
-    ///      "$ref": "#/components/schemas/analysis_status"
+    ///      "$ref": "#/components/schemas/PipelineStatus"
     ///    },
     ///    "step": {
-    ///      "$ref": "#/components/schemas/step"
-    ///    },
-    ///    "torn_down": {
-    ///      "description": "Flag indicating wether the resources were torn down
-    /// or not at the end of the analysis\n",
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
+    ///      "$ref": "#/components/schemas/BnaPipelineStep"
     ///    }
     ///  }
     ///}
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Analysis {
+    pub struct BnaPipeline {
         ///Cost of an analysis in USD
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub cost: ::std::option::Option<::std::string::String>,
-        ///Date and time
+        ///End time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        ///Fargate price identifier
+        ///Fargate price identifier used to compute the cost
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fargate_price_id: ::std::option::Option<i64>,
-        ///The ARN of the Fargate task that performed the analysis
+        pub fargate_price_id: ::std::option::Option<i32>,
+        ///ARN of the Fargate task that performed the analysis
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_task_arn: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub results_posted: ::std::option::Option<bool>,
-        ///the path of the S3 bucket where the results were stored
+        ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<::std::string::String>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        pub state_machine_id: StateMachineId,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<AnalysisStatus>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub step: ::std::option::Option<Step>,
-        ///Flag indicating wether the resources were torn down or not at the
-        /// end of the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub torn_down: ::std::option::Option<bool>,
+        ///Start time
+        pub start_time: chrono::DateTime<chrono::offset::Utc>,
+        ///Pipeline identifier
+        ///This is the ID of the AWS state machine that was used to run the
+        /// pipeline
+        pub state_machine_id: uuid::Uuid,
+        pub status: PipelineStatus,
+        pub step: BnaPipelineStep,
     }
 
-    impl From<&Analysis> for Analysis {
-        fn from(value: &Analysis) -> Self {
+    impl ::std::convert::From<&BnaPipeline> for BnaPipeline {
+        fn from(value: &BnaPipeline) -> Self {
             value.clone()
         }
     }
 
-    impl Analysis {
-        pub fn builder() -> builder::Analysis {
+    impl BnaPipeline {
+        pub fn builder() -> builder::BnaPipeline {
             Default::default()
         }
     }
 
-    ///AnalysisPatch
+    ///BnaPipelinePatch
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "start_time",
+    ///    "status",
+    ///    "step"
+    ///  ],
     ///  "properties": {
     ///    "cost": {
     ///      "description": "Cost of an analysis in USD",
     ///      "examples": [
-    ///        6.8941
+    ///        "6.8941"
     ///      ],
     ///      "type": [
-    ///        "number",
+    ///        "string",
     ///        "null"
-    ///      ],
-    ///      "format": "double"
+    ///      ]
     ///    },
     ///    "end_time": {
-    ///      "description": "Date and time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "fargate_task_arn": {
-    ///      "description": "The ARN of the Fargate task that performed the
-    /// analysis",
-    ///      "examples": [
-    ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0\n"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "results_posted": {
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "s3_bucket": {
-    ///      "description": "the path of the S3 bucket where the results were
-    /// stored",
-    ///      "examples": [
-    ///        "united states/new mexico/santa rosa/24.05.4"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "sqs_message": {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
-    ///        "{\"country\":\"United States\",\"city\":\"santa
-    /// rosa\",\"region\":\"new mexico\", \"fips_code\":\"3570670\"}"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "start_time": {
-    ///      "description": "Date and time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "status": {
-    ///      "$ref": "#/components/schemas/analysis_status"
-    ///    },
-    ///    "step": {
-    ///      "$ref": "#/components/schemas/step"
-    ///    },
-    ///    "torn_down": {
-    ///      "description": "Flag indicating wether the resources were torn down
-    /// or not at the end of the analysis\n",
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct AnalysisPatch {
-        ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub cost: ::std::option::Option<f64>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        ///The ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fargate_task_arn: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub results_posted: ::std::option::Option<bool>,
-        ///the path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub s3_bucket: ::std::option::Option<::std::string::String>,
-        ///Copy of the JSON message that was sent for processing
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<AnalysisStatus>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub step: ::std::option::Option<Step>,
-        ///Flag indicating wether the resources were torn down or not at the
-        /// end of the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub torn_down: ::std::option::Option<bool>,
-    }
-
-    impl From<&AnalysisPatch> for AnalysisPatch {
-        fn from(value: &AnalysisPatch) -> Self {
-            value.clone()
-        }
-    }
-
-    impl AnalysisPatch {
-        pub fn builder() -> builder::AnalysisPatch {
-            Default::default()
-        }
-    }
-
-    ///AnalysisPost
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "cost": {
-    ///      "description": "Cost of an analysis in USD",
-    ///      "examples": [
-    ///        6.8941
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "end_time": {
-    ///      "description": "Date and time",
+    ///      "description": "End time",
     ///      "type": [
     ///        "string",
     ///        "null"
@@ -363,30 +403,27 @@ pub mod types {
     ///      "format": "date-time"
     ///    },
     ///    "fargate_price_id": {
-    ///      "description": "Identifier of the Fargate Price rate used to
-    /// compute the cost of the pipeline run.\n",
-    ///      "type": "number"
+    ///      "description": "Fargate price identifier used to compute the cost",
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
     ///    },
     ///    "fargate_task_arn": {
-    ///      "description": "The ARN of the Fargate task that performed the
+    ///      "description": "ARN of the Fargate task that performed the
     /// analysis",
     ///      "examples": [
     ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0\n"
+    /// 29f979fc9fca402d94b014aa23d2f6e0"
     ///      ],
     ///      "type": [
     ///        "string",
     ///        "null"
     ///      ]
     ///    },
-    ///    "result_posted": {
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
-    ///    },
     ///    "s3_bucket": {
-    ///      "description": "the path of the S3 bucket where the results were
+    ///      "description": "Path of the S3 bucket where the results were
     /// stored",
     ///      "examples": [
     ///        "united states/new mexico/santa rosa/24.05.4"
@@ -400,8 +437,12 @@ pub mod types {
     ///      "description": "Copy of the JSON message that was sent for
     /// processing",
     ///      "examples": [
-    ///        "{\"country\":\"United States\",\"city\":\"santa
-    /// rosa\",\"region\":\"new mexico\", \"fips_code\":\"3570670\"}"
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
     ///      ],
     ///      "type": [
     ///        "string",
@@ -409,97 +450,188 @@ pub mod types {
     ///      ]
     ///    },
     ///    "start_time": {
-    ///      "description": "Date and time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
+    ///      "description": "Start time",
+    ///      "type": "string",
     ///      "format": "date-time"
     ///    },
-    ///    "state_machine_id": {
-    ///      "$ref": "#/components/schemas/state_machine_id"
-    ///    },
     ///    "status": {
-    ///      "$ref": "#/components/schemas/analysis_status"
+    ///      "$ref": "#/components/schemas/PipelineStatus"
     ///    },
     ///    "step": {
-    ///      "$ref": "#/components/schemas/step"
-    ///    },
-    ///    "torn_down": {
-    ///      "description": "Flag indicating wether the resources were torn down
-    /// or not at the end of the analysis\n",
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
+    ///      "$ref": "#/components/schemas/BnaPipelineStep"
     ///    }
     ///  }
     ///}
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct AnalysisPost {
+    pub struct BnaPipelinePatch {
         ///Cost of an analysis in USD
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub cost: ::std::option::Option<f64>,
-        ///Date and time
+        pub cost: ::std::option::Option<::std::string::String>,
+        ///End time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        ///Fargate price identifier used to compute the cost
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fargate_price_id: ::std::option::Option<f64>,
-        ///The ARN of the Fargate task that performed the analysis
+        pub fargate_price_id: ::std::option::Option<i32>,
+        ///ARN of the Fargate task that performed the analysis
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_task_arn: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub result_posted: ::std::option::Option<bool>,
-        ///the path of the S3 bucket where the results were stored
+        ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<::std::string::String>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state_machine_id: ::std::option::Option<StateMachineId>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<AnalysisStatus>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub step: ::std::option::Option<Step>,
-        ///Flag indicating wether the resources were torn down or not at the
-        /// end of the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub torn_down: ::std::option::Option<bool>,
+        ///Start time
+        pub start_time: chrono::DateTime<chrono::offset::Utc>,
+        pub status: PipelineStatus,
+        pub step: BnaPipelineStep,
     }
 
-    impl From<&AnalysisPost> for AnalysisPost {
-        fn from(value: &AnalysisPost) -> Self {
+    impl ::std::convert::From<&BnaPipelinePatch> for BnaPipelinePatch {
+        fn from(value: &BnaPipelinePatch) -> Self {
             value.clone()
         }
     }
 
-    impl AnalysisPost {
-        pub fn builder() -> builder::AnalysisPost {
+    impl BnaPipelinePatch {
+        pub fn builder() -> builder::BnaPipelinePatch {
             Default::default()
         }
     }
 
-    ///BNA Pipeline status
+    ///BnaPipelinePost
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "BNA Pipeline status",
-    ///  "examples": [
-    ///    "Pending"
+    ///  "type": "object",
+    ///  "required": [
+    ///    "step"
     ///  ],
+    ///  "properties": {
+    ///    "cost": {
+    ///      "description": "Cost of an analysis in USD",
+    ///      "examples": [
+    ///        "6.8941"
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    "end_time": {
+    ///      "description": "End time",
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ],
+    ///      "format": "date-time"
+    ///    },
+    ///    "fargate_price_id": {
+    ///      "description": "Fargate price identifier used to compute the cost",
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
+    ///    },
+    ///    "fargate_task_arn": {
+    ///      "description": "ARN of the Fargate task that performed the
+    /// analysis",
+    ///      "examples": [
+    ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
+    /// 29f979fc9fca402d94b014aa23d2f6e0"
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    "s3_bucket": {
+    ///      "description": "Path of the S3 bucket where the results were
+    /// stored",
+    ///      "examples": [
+    ///        "united states/new mexico/santa rosa/24.05.4"
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    "sqs_message": {
+    ///      "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///      "examples": [
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    "step": {
+    ///      "$ref": "#/components/schemas/BnaPipelineStep"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct BnaPipelinePost {
+        ///Cost of an analysis in USD
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub cost: ::std::option::Option<::std::string::String>,
+        ///End time
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        ///Fargate price identifier used to compute the cost
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_price_id: ::std::option::Option<i32>,
+        ///ARN of the Fargate task that performed the analysis
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fargate_task_arn: ::std::option::Option<::std::string::String>,
+        ///Path of the S3 bucket where the results were stored
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub s3_bucket: ::std::option::Option<::std::string::String>,
+        ///Copy of the JSON message that was sent for processing
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub step: BnaPipelineStep,
+    }
+
+    impl ::std::convert::From<&BnaPipelinePost> for BnaPipelinePost {
+        fn from(value: &BnaPipelinePost) -> Self {
+            value.clone()
+        }
+    }
+
+    impl BnaPipelinePost {
+        pub fn builder() -> builder::BnaPipelinePost {
+            Default::default()
+        }
+    }
+
+    ///BnaPipelineStep
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
     ///  "type": "string",
     ///  "enum": [
-    ///    "Completed",
-    ///    "Pending",
-    ///    "Processing"
+    ///    "SqsMessage",
+    ///    "Setup",
+    ///    "Analysis",
+    ///    "Cleanup"
     ///  ]
     ///}
     /// ```
@@ -516,48 +648,51 @@ pub mod types {
         PartialEq,
         PartialOrd,
     )]
-    pub enum AnalysisStatus {
-        Completed,
-        Pending,
-        Processing,
+    pub enum BnaPipelineStep {
+        SqsMessage,
+        Setup,
+        Analysis,
+        Cleanup,
     }
 
-    impl From<&AnalysisStatus> for AnalysisStatus {
-        fn from(value: &AnalysisStatus) -> Self {
+    impl ::std::convert::From<&BnaPipelineStep> for BnaPipelineStep {
+        fn from(value: &BnaPipelineStep) -> Self {
             value.clone()
         }
     }
 
-    impl ::std::fmt::Display for AnalysisStatus {
+    impl ::std::fmt::Display for BnaPipelineStep {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Completed => write!(f, "Completed"),
-                Self::Pending => write!(f, "Pending"),
-                Self::Processing => write!(f, "Processing"),
+                Self::SqsMessage => write!(f, "SqsMessage"),
+                Self::Setup => write!(f, "Setup"),
+                Self::Analysis => write!(f, "Analysis"),
+                Self::Cleanup => write!(f, "Cleanup"),
             }
         }
     }
 
-    impl std::str::FromStr for AnalysisStatus {
+    impl ::std::str::FromStr for BnaPipelineStep {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "Completed" => Ok(Self::Completed),
-                "Pending" => Ok(Self::Pending),
-                "Processing" => Ok(Self::Processing),
+                "SqsMessage" => Ok(Self::SqsMessage),
+                "Setup" => Ok(Self::Setup),
+                "Analysis" => Ok(Self::Analysis),
+                "Cleanup" => Ok(Self::Cleanup),
                 _ => Err("invalid value".into()),
             }
         }
     }
 
-    impl std::convert::TryFrom<&str> for AnalysisStatus {
+    impl ::std::convert::TryFrom<&str> for BnaPipelineStep {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&::std::string::String> for AnalysisStatus {
+    impl ::std::convert::TryFrom<&::std::string::String> for BnaPipelineStep {
         type Error = self::error::ConversionError;
         fn try_from(
             value: &::std::string::String,
@@ -566,7 +701,7 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<::std::string::String> for AnalysisStatus {
+    impl ::std::convert::TryFrom<::std::string::String> for BnaPipelineStep {
         type Error = self::error::ConversionError;
         fn try_from(
             value: ::std::string::String,
@@ -575,579 +710,7 @@ pub mod types {
         }
     }
 
-    ///API Gateway ID associated with the request
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "API Gateway ID associated with the request ",
-    ///  "examples": [
-    ///    "blfwkg8nvHcEJnQ="
-    ///  ],
-    ///  "type": "string"
-    ///}
-    /// ```
-    /// </details>
-    #[derive(
-        :: serde :: Deserialize,
-        :: serde :: Serialize,
-        Clone,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd,
-    )]
-    pub struct ApiGatewayId(pub ::std::string::String);
-    impl ::std::ops::Deref for ApiGatewayId {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-
-    impl From<ApiGatewayId> for ::std::string::String {
-        fn from(value: ApiGatewayId) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&ApiGatewayId> for ApiGatewayId {
-        fn from(value: &ApiGatewayId) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<::std::string::String> for ApiGatewayId {
-        fn from(value: ::std::string::String) -> Self {
-            Self(value)
-        }
-    }
-
-    impl ::std::str::FromStr for ApiGatewayId {
-        type Err = ::std::convert::Infallible;
-        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
-            Ok(Self(value.to_string()))
-        }
-    }
-
-    impl ::std::fmt::Display for ApiGatewayId {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            self.0.fmt(f)
-        }
-    }
-
-    ///Bna
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "id",
-    ///    "score",
-    ///    "version"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "examples": [
-    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "community_centers": {
-    ///      "description": "BNA category subscore for access to community
-    /// centers",
-    ///      "examples": [
-    ///        70.7
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "coreservices_score": {
-    ///      "description": "BNA category score for access to core services",
-    ///      "examples": [
-    ///        78.15
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "dentists": {
-    ///      "description": "BNA category subscore for access to dentists",
-    ///      "examples": [
-    ///        68.69
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "doctors": {
-    ///      "description": "BNA category subscore for access to doctors",
-    ///      "examples": [
-    ///        73.51
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "employment": {
-    ///      "description": "BNA category subscore for access to job location
-    /// areas",
-    ///      "examples": [
-    ///        0.0
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "grocery": {
-    ///      "description": "BNA category subscore for access to grocery
-    /// stores",
-    ///      "examples": [
-    ///        83.02
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "high_stress_miles": {
-    ///      "description": "Total miles of high-stress streets in the measured
-    /// area",
-    ///      "examples": [
-    ///        437.8
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "higher_education": {
-    ///      "description": "BNA category subscore for access to universities
-    /// and colleges",
-    ///      "examples": [
-    ///        84.76
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "hospitals": {
-    ///      "description": "BNA category subscore for access to hospitals",
-    ///      "examples": [
-    ///        82.43
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "id": {
-    ///      "description": "Analysis identifier",
-    ///      "examples": [
-    ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "k12_education": {
-    ///      "description": "BNA category subscore for access to k12 schools",
-    ///      "examples": [
-    ///        6.63
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "low_stress_miles": {
-    ///      "description": "Total miles of low-stress streets and paths in the
-    /// measured area",
-    ///      "examples": [
-    ///        1862.2
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "opportunity_score": {
-    ///      "description": "BNA category score for access to education and
-    /// jobs\"\"",
-    ///      "examples": [
-    ///        79.91
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "parks": {
-    ///      "description": "BNA category subscore for access to parks",
-    ///      "examples": [
-    ///        78.49
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "people": {
-    ///      "description": "BNA category score for access to residential
-    /// areas",
-    ///      "examples": [
-    ///        75.81
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "pharmacies": {
-    ///      "description": "BNA category subscore for access to pharmacies",
-    ///      "examples": [
-    ///        76.62
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "recreation_score": {
-    ///      "description": "BNA category score for access to recreational
-    /// facilities",
-    ///      "examples": [
-    ///        82.13
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "recreation_trails": {
-    ///      "description": "BNA category subscore for access to bikeable
-    /// trails",
-    ///      "examples": [
-    ///        94.45
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "retail": {
-    ///      "description": "BNA category score for access to major retail
-    /// centers",
-    ///      "examples": [
-    ///        73.71
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA total score",
-    ///      "examples": [
-    ///        77.0
-    ///      ],
-    ///      "type": "number"
-    ///    },
-    ///    "social_services": {
-    ///      "description": "BNA category subscore for access to social
-    /// services",
-    ///      "examples": [
-    ///        77.82
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "technical_vocational_college": {
-    ///      "description": "BNA category subscore for access to technical and
-    /// vocational colleges",
-    ///      "examples": [
-    ///        81.67
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "transit": {
-    ///      "description": "BNA category score for access to major transit
-    /// stops",
-    ///      "examples": [
-    ///        71.59
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "version": {
-    ///      "description": "Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.\n",
-    ///      "examples": [
-    ///        "23.02"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Bna {
-        ///City identifier
-        pub city_id: uuid::Uuid,
-        ///BNA category subscore for access to community centers
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub community_centers: ::std::option::Option<f64>,
-        ///BNA category score for access to core services
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub coreservices_score: ::std::option::Option<f64>,
-        ///BNA category subscore for access to dentists
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub dentists: ::std::option::Option<f64>,
-        ///BNA category subscore for access to doctors
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub doctors: ::std::option::Option<f64>,
-        ///BNA category subscore for access to job location areas
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub employment: ::std::option::Option<f64>,
-        ///BNA category subscore for access to grocery stores
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub grocery: ::std::option::Option<f64>,
-        ///Total miles of high-stress streets in the measured area
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub high_stress_miles: ::std::option::Option<f64>,
-        ///BNA category subscore for access to universities and colleges
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub higher_education: ::std::option::Option<f64>,
-        ///BNA category subscore for access to hospitals
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub hospitals: ::std::option::Option<f64>,
-        ///Analysis identifier
-        pub id: uuid::Uuid,
-        ///BNA category subscore for access to k12 schools
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub k12_education: ::std::option::Option<f64>,
-        ///Total miles of low-stress streets and paths in the measured area
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub low_stress_miles: ::std::option::Option<f64>,
-        ///BNA category score for access to education and jobs""
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub opportunity_score: ::std::option::Option<f64>,
-        ///BNA category subscore for access to parks
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub parks: ::std::option::Option<f64>,
-        ///BNA category score for access to residential areas
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub people: ::std::option::Option<f64>,
-        ///BNA category subscore for access to pharmacies
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub pharmacies: ::std::option::Option<f64>,
-        ///BNA category score for access to recreational facilities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub recreation_score: ::std::option::Option<f64>,
-        ///BNA category subscore for access to bikeable trails
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub recreation_trails: ::std::option::Option<f64>,
-        ///BNA category score for access to major retail centers
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub retail: ::std::option::Option<f64>,
-        pub score: f64,
-        ///BNA category subscore for access to social services
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub social_services: ::std::option::Option<f64>,
-        ///BNA category subscore for access to technical and vocational
-        /// colleges
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub technical_vocational_college: ::std::option::Option<f64>,
-        ///BNA category score for access to major transit stops
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub transit: ::std::option::Option<f64>,
-        ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: ::std::string::String,
-    }
-
-    impl From<&Bna> for Bna {
-        fn from(value: &Bna) -> Self {
-            value.clone()
-        }
-    }
-
-    impl Bna {
-        pub fn builder() -> builder::Bna {
-            Default::default()
-        }
-    }
-
-    ///BnaPost
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "core_services",
-    ///    "infrastructure",
-    ///    "opportunity",
-    ///    "people",
-    ///    "recreation",
-    ///    "retail",
-    ///    "summary",
-    ///    "transit"
-    ///  ],
-    ///  "properties": {
-    ///    "core_services": {
-    ///      "$ref": "#/components/schemas/core_services"
-    ///    },
-    ///    "infrastructure": {
-    ///      "$ref": "#/components/schemas/infrastructure"
-    ///    },
-    ///    "opportunity": {
-    ///      "$ref": "#/components/schemas/opportunity"
-    ///    },
-    ///    "people": {
-    ///      "$ref": "#/components/schemas/people"
-    ///    },
-    ///    "recreation": {
-    ///      "$ref": "#/components/schemas/recreation"
-    ///    },
-    ///    "retail": {
-    ///      "$ref": "#/components/schemas/retail"
-    ///    },
-    ///    "summary": {
-    ///      "$ref": "#/components/schemas/bna_summary"
-    ///    },
-    ///    "transit": {
-    ///      "$ref": "#/components/schemas/transit"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct BnaPost {
-        pub core_services: CoreServices,
-        pub infrastructure: Infrastructure,
-        pub opportunity: Opportunity,
-        pub people: People,
-        pub recreation: Recreation,
-        pub retail: Retail,
-        pub summary: BnaSummary,
-        pub transit: Transit,
-    }
-
-    impl From<&BnaPost> for BnaPost {
-        fn from(value: &BnaPost) -> Self {
-            value.clone()
-        }
-    }
-
-    impl BnaPost {
-        pub fn builder() -> builder::BnaPost {
-            Default::default()
-        }
-    }
-
-    ///BnaSummary
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "rating_id",
-    ///    "score",
-    ///    "version"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "examples": [
-    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "created_at": {
-    ///      "description": "Date and time",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "rating_id": {
-    ///      "description": "Analysis identifier",
-    ///      "examples": [
-    ///        "1a759b85-cd87-4bb1-9efa-5789e38e9982"
-    ///      ],
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA score",
-    ///      "examples": [
-    ///        77.0
-    ///      ],
-    ///      "type": "number"
-    ///    },
-    ///    "version": {
-    ///      "description": "Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.\n",
-    ///      "examples": [
-    ///        "23.02"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct BnaSummary {
-        ///City identifier
-        pub city_id: uuid::Uuid,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        ///Analysis identifier
-        pub rating_id: uuid::Uuid,
-        pub score: f64,
-        ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: ::std::string::String,
-    }
-
-    impl From<&BnaSummary> for BnaSummary {
-        fn from(value: &BnaSummary) -> Self {
-            value.clone()
-        }
-    }
-
-    impl BnaSummary {
-        pub fn builder() -> builder::BnaSummary {
-            Default::default()
-        }
-    }
-
-    ///BnaSummaryWithCity
+    ///BnaPipelines
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1155,165 +718,94 @@ pub mod types {
     ///{
     ///  "type": "array",
     ///  "items": {
-    ///    "allOf": [
-    ///      {
-    ///        "$ref": "#/components/schemas/bna_summary"
-    ///      },
-    ///      {
-    ///        "$ref": "#/components/schemas/city"
-    ///      }
-    ///    ]
+    ///    "$ref": "#/components/schemas/BnaPipeline"
     ///  }
     ///}
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct BnaSummaryWithCity(pub ::std::vec::Vec<BnaSummaryWithCityItem>);
-    impl ::std::ops::Deref for BnaSummaryWithCity {
-        type Target = ::std::vec::Vec<BnaSummaryWithCityItem>;
-        fn deref(&self) -> &::std::vec::Vec<BnaSummaryWithCityItem> {
+    pub struct BnaPipelines(pub ::std::vec::Vec<BnaPipeline>);
+    impl ::std::ops::Deref for BnaPipelines {
+        type Target = ::std::vec::Vec<BnaPipeline>;
+        fn deref(&self) -> &::std::vec::Vec<BnaPipeline> {
             &self.0
         }
     }
 
-    impl From<BnaSummaryWithCity> for ::std::vec::Vec<BnaSummaryWithCityItem> {
-        fn from(value: BnaSummaryWithCity) -> Self {
+    impl ::std::convert::From<BnaPipelines> for ::std::vec::Vec<BnaPipeline> {
+        fn from(value: BnaPipelines) -> Self {
             value.0
         }
     }
 
-    impl From<&BnaSummaryWithCity> for BnaSummaryWithCity {
-        fn from(value: &BnaSummaryWithCity) -> Self {
+    impl ::std::convert::From<&BnaPipelines> for BnaPipelines {
+        fn from(value: &BnaPipelines) -> Self {
             value.clone()
         }
     }
 
-    impl From<::std::vec::Vec<BnaSummaryWithCityItem>> for BnaSummaryWithCity {
-        fn from(value: ::std::vec::Vec<BnaSummaryWithCityItem>) -> Self {
+    impl ::std::convert::From<::std::vec::Vec<BnaPipeline>> for BnaPipelines {
+        fn from(value: ::std::vec::Vec<BnaPipeline>) -> Self {
             Self(value)
         }
     }
 
-    ///BnaSummaryWithCityItem
+    ///Census information of a city
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "allOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/bna_summary"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/city"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct BnaSummaryWithCityItem {
-        ///City identifier
-        pub city_id: uuid::Uuid,
-        pub country: Country,
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
-        ///City identifier
-        pub id: uuid::Uuid,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub latitude: ::std::option::Option<f64>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub longitude: ::std::option::Option<f64>,
-        ///City name
-        pub name: ::std::string::String,
-        ///Analysis identifier
-        pub rating_id: uuid::Uuid,
-        ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
-        /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub region: ::std::option::Option<::std::string::String>,
-        pub score: f64,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub speed_limit: ::std::option::Option<f64>,
-        ///State name
-        pub state: ::std::string::String,
-        ///A short version of the state name, usually 2 or 3 character long.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state_abbrev: ::std::option::Option<::std::string::String>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        ///Analysis version. The format follows the [calver](https://calver.org) specification with the YY.0M[.Minor] scheme.
-        pub version: ::std::string::String,
-    }
-
-    impl From<&BnaSummaryWithCityItem> for BnaSummaryWithCityItem {
-        fn from(value: &BnaSummaryWithCityItem) -> Self {
-            value.clone()
-        }
-    }
-
-    impl BnaSummaryWithCityItem {
-        pub fn builder() -> builder::BnaSummaryWithCityItem {
-            Default::default()
-        }
-    }
-
-    ///Census information
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Census information",
+    ///  "description": "Census information of a city",
     ///  "type": "object",
+    ///  "required": [
+    ///    "city_id",
+    ///    "created_at",
+    ///    "fips_code",
+    ///    "id",
+    ///    "pop_size",
+    ///    "population"
+    ///  ],
     ///  "properties": {
-    ///    "census_id": {
-    ///      "examples": [
-    ///        788
-    ///      ],
-    ///      "type": "integer"
-    ///    },
     ///    "city_id": {
     ///      "description": "City identifier",
-    ///      "examples": [
-    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
-    ///      ],
     ///      "type": "string",
     ///      "format": "uuid"
     ///    },
     ///    "created_at": {
-    ///      "description": "Date and time",
+    ///      "description": "Creation date",
     ///      "type": "string",
     ///      "format": "date-time"
     ///    },
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
+    /// or 0 for non-US cities",
     ///      "examples": [
     ///        "4805000"
     ///      ],
     ///      "type": "string"
     ///    },
+    ///    "id": {
+    ///      "description": "Census identifier",
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    },
     ///    "pop_size": {
     ///      "description": "City population size category (small (0), medium
-    /// (1), large (2))\n",
+    /// (1), large (2))",
     ///      "examples": [
-    ///        2
+    ///        "1"
     ///      ],
     ///      "type": "integer",
-    ///      "enum": [
-    ///        0,
-    ///        1,
-    ///        2
-    ///      ]
+    ///      "format": "int32"
     ///    },
     ///    "population": {
     ///      "description": "City population",
     ///      "examples": [
-    ///        907779
+    ///        "907779"
     ///      ],
-    ///      "type": "integer"
+    ///      "type": "integer",
+    ///      "format": "int32"
     ///    }
     ///  }
     ///}
@@ -1321,27 +813,22 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Census {
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub census_id: ::std::option::Option<i64>,
         ///City identifier
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city_id: ::std::option::Option<uuid::Uuid>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub city_id: uuid::Uuid,
+        ///Creation date
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
+        pub fips_code: ::std::string::String,
+        ///Census identifier
+        pub id: i32,
         ///City population size category (small (0), medium (1), large (2))
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub pop_size: ::std::option::Option<CensusPopSize>,
+        pub pop_size: i32,
         ///City population
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub population: ::std::option::Option<i64>,
+        pub population: i32,
     }
 
-    impl From<&Census> for Census {
+    impl ::std::convert::From<&Census> for Census {
         fn from(value: &Census) -> Self {
             value.clone()
         }
@@ -1353,68 +840,6 @@ pub mod types {
         }
     }
 
-    ///City population size category (small (0), medium (1), large (2))
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "City population size category (small (0), medium (1),
-    /// large (2))\n",
-    ///  "examples": [
-    ///    2
-    ///  ],
-    ///  "type": "integer",
-    ///  "enum": [
-    ///    0,
-    ///    1,
-    ///    2
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Serialize, Clone, Debug)]
-    pub struct CensusPopSize(i64);
-    impl ::std::ops::Deref for CensusPopSize {
-        type Target = i64;
-        fn deref(&self) -> &i64 {
-            &self.0
-        }
-    }
-
-    impl From<CensusPopSize> for i64 {
-        fn from(value: CensusPopSize) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&CensusPopSize> for CensusPopSize {
-        fn from(value: &CensusPopSize) -> Self {
-            value.clone()
-        }
-    }
-
-    impl ::std::convert::TryFrom<i64> for CensusPopSize {
-        type Error = self::error::ConversionError;
-        fn try_from(value: i64) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if ![0_i64, 1_i64, 2_i64].contains(&value) {
-                Err("invalid value".into())
-            } else {
-                Ok(Self(value))
-            }
-        }
-    }
-
-    impl<'de> ::serde::Deserialize<'de> for CensusPopSize {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            Self::try_from(<i64>::deserialize(deserializer)?)
-                .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-
     ///CensusPost
     ///
     /// <details><summary>JSON schema</summary>
@@ -1422,10 +847,15 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "fips_code",
+    ///    "pop_size",
+    ///    "population"
+    ///  ],
     ///  "properties": {
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
+    /// or 0 for non-US cities",
     ///      "examples": [
     ///        "4805000"
     ///      ],
@@ -1433,23 +863,20 @@ pub mod types {
     ///    },
     ///    "pop_size": {
     ///      "description": "City population size category (small (0), medium
-    /// (1), large (2))\n",
+    /// (1), large (2))",
     ///      "examples": [
-    ///        2
+    ///        "1"
     ///      ],
     ///      "type": "integer",
-    ///      "enum": [
-    ///        0,
-    ///        1,
-    ///        2
-    ///      ]
+    ///      "format": "int32"
     ///    },
     ///    "population": {
     ///      "description": "City population",
     ///      "examples": [
-    ///        907779
+    ///        "907779"
     ///      ],
-    ///      "type": "integer"
+    ///      "type": "integer",
+    ///      "format": "int32"
     ///    }
     ///  }
     ///}
@@ -1459,17 +886,14 @@ pub mod types {
     pub struct CensusPost {
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
+        pub fips_code: ::std::string::String,
         ///City population size category (small (0), medium (1), large (2))
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub pop_size: ::std::option::Option<CensusPostPopSize>,
+        pub pop_size: i32,
         ///City population
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub population: ::std::option::Option<i64>,
+        pub population: i32,
     }
 
-    impl From<&CensusPost> for CensusPost {
+    impl ::std::convert::From<&CensusPost> for CensusPost {
         fn from(value: &CensusPost) -> Self {
             value.clone()
         }
@@ -1481,74 +905,53 @@ pub mod types {
         }
     }
 
-    ///City population size category (small (0), medium (1), large (2))
+    ///Cities
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "City population size category (small (0), medium (1),
-    /// large (2))\n",
-    ///  "examples": [
-    ///    2
-    ///  ],
-    ///  "type": "integer",
-    ///  "enum": [
-    ///    0,
-    ///    1,
-    ///    2
-    ///  ]
+    ///  "type": "array",
+    ///  "items": {
+    ///    "$ref": "#/components/schemas/City"
+    ///  }
     ///}
     /// ```
     /// </details>
-    #[derive(:: serde :: Serialize, Clone, Debug)]
-    pub struct CensusPostPopSize(i64);
-    impl ::std::ops::Deref for CensusPostPopSize {
-        type Target = i64;
-        fn deref(&self) -> &i64 {
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Cities(pub ::std::vec::Vec<City>);
+    impl ::std::ops::Deref for Cities {
+        type Target = ::std::vec::Vec<City>;
+        fn deref(&self) -> &::std::vec::Vec<City> {
             &self.0
         }
     }
 
-    impl From<CensusPostPopSize> for i64 {
-        fn from(value: CensusPostPopSize) -> Self {
+    impl ::std::convert::From<Cities> for ::std::vec::Vec<City> {
+        fn from(value: Cities) -> Self {
             value.0
         }
     }
 
-    impl From<&CensusPostPopSize> for CensusPostPopSize {
-        fn from(value: &CensusPostPopSize) -> Self {
+    impl ::std::convert::From<&Cities> for Cities {
+        fn from(value: &Cities) -> Self {
             value.clone()
         }
     }
 
-    impl ::std::convert::TryFrom<i64> for CensusPostPopSize {
-        type Error = self::error::ConversionError;
-        fn try_from(value: i64) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if ![0_i64, 1_i64, 2_i64].contains(&value) {
-                Err("invalid value".into())
-            } else {
-                Ok(Self(value))
-            }
+    impl ::std::convert::From<::std::vec::Vec<City>> for Cities {
+        fn from(value: ::std::vec::Vec<City>) -> Self {
+            Self(value)
         }
     }
 
-    impl<'de> ::serde::Deserialize<'de> for CensusPostPopSize {
-        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
-        where
-            D: ::serde::Deserializer<'de>,
-        {
-            Self::try_from(<i64>::deserialize(deserializer)?)
-                .map_err(|e| <D::Error as ::serde::de::Error>::custom(e.to_string()))
-        }
-    }
-
-    ///City
+    ///Detailed information of a city
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
+    ///  "description": "Detailed information of a city",
     ///  "type": "object",
     ///  "required": [
     ///    "country",
@@ -1559,36 +962,41 @@ pub mod types {
     ///  ],
     ///  "properties": {
     ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
+    ///      "$ref": "#/components/schemas/Country"
     ///    },
     ///    "created_at": {
-    ///      "description": "Date and time",
+    ///      "description": "Creation date",
     ///      "type": "string",
     ///      "format": "date-time"
     ///    },
     ///    "id": {
     ///      "description": "City identifier",
-    ///      "examples": [
-    ///        "6d1927b4-3474-4ce0-9b2e-2a1f5a7d91bd"
-    ///      ],
     ///      "type": "string",
     ///      "format": "uuid"
     ///    },
     ///    "latitude": {
     ///      "description": "Geographic coordinate that specifies the
-    /// north-south position of a point on the surface of the Earth.\n",
+    /// north-south position of a point\non the surface of the Earth.",
     ///      "examples": [
-    ///        51.2194
+    ///        "51.260197"
     ///      ],
-    ///      "type": "number"
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "longitude": {
     ///      "description": "Geographic coordinate that specifies the east–west
-    /// position of a point on the surface of the Earth.\n",
+    /// position of a point\non the surface of the Earth.",
     ///      "examples": [
-    ///        4.4025
+    ///        "4.402771"
     ///      ],
-    ///      "type": "number"
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "name": {
     ///      "description": "City name",
@@ -1599,19 +1007,26 @@ pub mod types {
     ///    },
     ///    "region": {
     ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
+    /// community, or\nsomething similar depending on the country. If a country
+    /// does not have\nthis concept, then the country name is used.",
     ///      "examples": [
-    ///        "Belgium"
+    ///        "Antwerp"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "speed_limit": {
     ///      "description": "Speed limit in kilometer per hour (km/h).",
     ///      "examples": [
-    ///        50
+    ///        "50"
     ///      ],
-    ///      "type": "number"
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
     ///    },
     ///    "state": {
     ///      "description": "State name",
@@ -1622,15 +1037,21 @@ pub mod types {
     ///    },
     ///    "state_abbrev": {
     ///      "description": "A short version of the state name, usually 2 or 3
-    /// character long.",
+    /// character long",
     ///      "examples": [
     ///        "VAN"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "updated_at": {
-    ///      "description": "Date and time",
-    ///      "type": "string",
+    ///      "description": "Update date",
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ],
     ///      "format": "date-time"
     ///    }
     ///  }
@@ -1640,34 +1061,39 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct City {
         pub country: Country,
-        ///Date and time
+        ///Creation date
         pub created_at: chrono::DateTime<chrono::offset::Utc>,
         ///City identifier
         pub id: uuid::Uuid,
+        ///Geographic coordinate that specifies the north-south position of a
+        /// point on the surface of the Earth.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub latitude: ::std::option::Option<f64>,
+        ///Geographic coordinate that specifies the east–west position of a
+        /// point on the surface of the Earth.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
         pub name: ::std::string::String,
         ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
+        ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
+        ///Speed limit in kilometer per hour (km/h).
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub speed_limit: ::std::option::Option<f64>,
+        pub speed_limit: ::std::option::Option<i32>,
         ///State name
         pub state: ::std::string::String,
-        ///A short version of the state name, usually 2 or 3 character long.
+        ///A short version of the state name, usually 2 or 3 character long
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub state_abbrev: ::std::option::Option<::std::string::String>,
-        ///Date and time
+        ///Update date
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
     }
 
-    impl From<&City> for City {
+    impl ::std::convert::From<&City> for City {
         fn from(value: &City) -> Self {
             value.clone()
         }
@@ -1675,6 +1101,49 @@ pub mod types {
 
     impl City {
         pub fn builder() -> builder::City {
+            Default::default()
+        }
+    }
+
+    ///CityCensuses
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "censuses",
+    ///    "city"
+    ///  ],
+    ///  "properties": {
+    ///    "censuses": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/Census"
+    ///      }
+    ///    },
+    ///    "city": {
+    ///      "$ref": "#/components/schemas/City"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct CityCensuses {
+        pub censuses: ::std::vec::Vec<Census>,
+        pub city: City,
+    }
+
+    impl ::std::convert::From<&CityCensuses> for CityCensuses {
+        fn from(value: &CityCensuses) -> Self {
+            value.clone()
+        }
+    }
+
+    impl CityCensuses {
+        pub fn builder() -> builder::CityCensuses {
             Default::default()
         }
     }
@@ -1688,33 +1157,36 @@ pub mod types {
     ///  "type": "object",
     ///  "required": [
     ///    "country",
-    ///    "name"
+    ///    "name",
+    ///    "state"
     ///  ],
     ///  "properties": {
     ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
+    ///      "$ref": "#/components/schemas/Country"
     ///    },
     ///    "latitude": {
     ///      "description": "Geographic coordinate that specifies the
-    /// north-south position of a point on the surface of the Earth.\n",
+    /// north-south position of a point\non the surface of the Earth.",
     ///      "examples": [
-    ///        51.2194
+    ///        "51.260197"
     ///      ],
     ///      "type": [
     ///        "number",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "longitude": {
     ///      "description": "Geographic coordinate that specifies the east–west
-    /// position of a point on the surface of the Earth.\n",
+    /// position of a point\non the surface of the Earth.",
     ///      "examples": [
-    ///        4.4025
+    ///        "4.402771"
     ///      ],
     ///      "type": [
     ///        "number",
     ///        "null"
-    ///      ]
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "name": {
     ///      "description": "City name",
@@ -1723,30 +1195,47 @@ pub mod types {
     ///      ],
     ///      "type": "string"
     ///    },
-    ///    "speed_limit": {
-    ///      "description": "Speed limit in kilometer per hour (km/h).",
+    ///    "region": {
+    ///      "description": "Region name. A region can be a state, a province, a
+    /// community, or\nsomething similar depending on the country. If a country
+    /// does not have\nthis concept, then the country name is used.",
     ///      "examples": [
-    ///        50
+    ///        "Antwerp"
     ///      ],
     ///      "type": [
-    ///        "number",
+    ///        "string",
     ///        "null"
     ///      ]
     ///    },
-    ///    "state": {
-    ///      "description": "State name",
+    ///    "speed_limit": {
+    ///      "description": "Speed limit in kilometer per hour (km/h).",
     ///      "examples": [
-    ///        "Antwerp"
+    ///        "50"
+    ///      ],
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
+    ///    },
+    ///    "state": {
+    ///      "description": "A short version of the state name, usually 2 or 3
+    /// character long",
+    ///      "examples": [
+    ///        "VAN"
     ///      ],
     ///      "type": "string"
     ///    },
     ///    "state_abbrev": {
     ///      "description": "A short version of the state name, usually 2 or 3
-    /// character long.",
+    /// character long",
     ///      "examples": [
     ///        "VAN"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    }
     ///  }
     ///}
@@ -1765,18 +1254,22 @@ pub mod types {
         pub longitude: ::std::option::Option<f64>,
         ///City name
         pub name: ::std::string::String,
+        ///Region name. A region can be a state, a province, a community, or
+        ///something similar depending on the country. If a country does not
+        /// have this concept, then the country name is used.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub region: ::std::option::Option<::std::string::String>,
         ///Speed limit in kilometer per hour (km/h).
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub speed_limit: ::std::option::Option<f64>,
-        ///State name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub state: ::std::option::Option<::std::string::String>,
-        ///A short version of the state name, usually 2 or 3 character long.
+        pub speed_limit: ::std::option::Option<i32>,
+        ///A short version of the state name, usually 2 or 3 character long
+        pub state: ::std::string::String,
+        ///A short version of the state name, usually 2 or 3 character long
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub state_abbrev: ::std::option::Option<::std::string::String>,
     }
 
-    impl From<&CityPost> for CityPost {
+    impl ::std::convert::From<&CityPost> for CityPost {
         fn from(value: &CityPost) -> Self {
             value.clone()
         }
@@ -1784,6 +1277,49 @@ pub mod types {
 
     impl CityPost {
         pub fn builder() -> builder::CityPost {
+            Default::default()
+        }
+    }
+
+    ///CityRatings
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city",
+    ///    "ratings"
+    ///  ],
+    ///  "properties": {
+    ///    "city": {
+    ///      "$ref": "#/components/schemas/City"
+    ///    },
+    ///    "ratings": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/RatingSummary"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct CityRatings {
+        pub city: City,
+        pub ratings: ::std::vec::Vec<RatingSummary>,
+    }
+
+    impl ::std::convert::From<&CityRatings> for CityRatings {
+        fn from(value: &CityRatings) -> Self {
+            value.clone()
+        }
+    }
+
+    impl CityRatings {
+        pub fn builder() -> builder::CityRatings {
             Default::default()
         }
     }
@@ -1797,55 +1333,76 @@ pub mod types {
     ///  "type": "object",
     ///  "properties": {
     ///    "dentists": {
-    ///      "description": "BNA category subscore for access to dentists",
-    ///      "examples": [
-    ///        68.69
+    ///      "description": "BNA category subscore for access to dentists.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "doctors": {
-    ///      "description": "BNA category subscore for access to doctors",
-    ///      "examples": [
-    ///        73.51
+    ///      "description": "BNA category subscore for access to doctors.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "grocery": {
     ///      "description": "BNA category subscore for access to grocery
-    /// stores",
-    ///      "examples": [
-    ///        83.02
+    /// stores.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "hospitals": {
-    ///      "description": "BNA category subscore for access to hospitals",
-    ///      "examples": [
-    ///        82.43
+    ///      "description": "BNA category subscore for access to hospitals.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "pharmacies": {
-    ///      "description": "BNA category subscore for access to pharmacies",
-    ///      "examples": [
-    ///        76.62
+    ///      "description": "BNA category subscore for access to pharmacies.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "score": {
-    ///      "description": "BNA total score",
-    ///      "examples": [
-    ///        77.0
+    ///      "description": "BNA category score for access to core services.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "social_services": {
     ///      "description": "BNA category subscore for access to social
-    /// services",
-    ///      "examples": [
-    ///        77.82
+    /// services.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -1853,25 +1410,46 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CoreServices {
+        ///BNA category subscore for access to dentists.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub dentists: ::std::option::Option<f64>,
+        ///BNA category subscore for access to doctors.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub doctors: ::std::option::Option<f64>,
+        ///BNA category subscore for access to grocery stores.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub grocery: ::std::option::Option<f64>,
+        ///BNA category subscore for access to hospitals.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub hospitals: ::std::option::Option<f64>,
+        ///BNA category subscore for access to pharmacies.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub pharmacies: ::std::option::Option<f64>,
+        ///BNA category score for access to core services.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
+        ///BNA category subscore for access to social services.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub social_services: ::std::option::Option<f64>,
     }
 
-    impl From<&CoreServices> for CoreServices {
+    impl ::std::convert::From<&CoreServices> for CoreServices {
         fn from(value: &CoreServices) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for CoreServices {
+        fn default() -> Self {
+            Self {
+                dentists: Default::default(),
+                doctors: Default::default(),
+                grocery: Default::default(),
+                hospitals: Default::default(),
+                pharmacies: Default::default(),
+                score: Default::default(),
+                social_services: Default::default(),
+            }
         }
     }
 
@@ -1965,7 +1543,7 @@ pub mod types {
         Wales,
     }
 
-    impl From<&Country> for Country {
+    impl ::std::convert::From<&Country> for Country {
         fn from(value: &Country) -> Self {
             value.clone()
         }
@@ -2005,7 +1583,7 @@ pub mod types {
         }
     }
 
-    impl std::str::FromStr for Country {
+    impl ::std::str::FromStr for Country {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
@@ -2041,14 +1619,14 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<&str> for Country {
+    impl ::std::convert::TryFrom<&str> for Country {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
         }
     }
 
-    impl std::convert::TryFrom<&::std::string::String> for Country {
+    impl ::std::convert::TryFrom<&::std::string::String> for Country {
         type Error = self::error::ConversionError;
         fn try_from(
             value: &::std::string::String,
@@ -2057,7 +1635,7 @@ pub mod types {
         }
     }
 
-    impl std::convert::TryFrom<::std::string::String> for Country {
+    impl ::std::convert::TryFrom<::std::string::String> for Country {
         type Error = self::error::ConversionError;
         fn try_from(
             value: ::std::string::String,
@@ -2066,283 +1644,41 @@ pub mod types {
         }
     }
 
-    ///Enqueue
+    ///A Fargate price used to estimate the cost of an analysis
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
+    ///  "description": "A Fargate price used to estimate the cost of an
+    /// analysis",
     ///  "type": "object",
-    ///  "properties": {
-    ///    "city": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
-    ///      "examples": [
-    ///        "Belgium"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Enqueue {
-        ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
-        ///Numerical city identifier given by the U.S. census, or 0 for non-US
-        /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
-        ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
-        /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub region: ::std::option::Option<::std::string::String>,
-    }
-
-    impl From<&Enqueue> for Enqueue {
-        fn from(value: &Enqueue) -> Self {
-            value.clone()
-        }
-    }
-
-    impl Enqueue {
-        pub fn builder() -> builder::Enqueue {
-            Default::default()
-        }
-    }
-
-    ///EnqueuePost
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "city": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
-    ///      "examples": [
-    ///        "Belgium"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct EnqueuePost {
-        ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
-        ///Numerical city identifier given by the U.S. census, or 0 for non-US
-        /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
-        ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
-        /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub region: ::std::option::Option<::std::string::String>,
-    }
-
-    impl From<&EnqueuePost> for EnqueuePost {
-        fn from(value: &EnqueuePost) -> Self {
-            value.clone()
-        }
-    }
-
-    impl EnqueuePost {
-        pub fn builder() -> builder::EnqueuePost {
-            Default::default()
-        }
-    }
-
-    ///API Error object as described in <https://jsonapi.org/format/#error-objects>
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "API Error object as described in <https://jsonapi.org/format/#error-objects>\n",
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "details": {
-    ///      "description": "detailed error message",
-    ///      "examples": [
-    ///        "the entry was not found"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "id": {
-    ///      "$ref": "#/components/schemas/api_gateway_id"
-    ///    },
-    ///    "source": {
-    ///      "$ref": "#/components/schemas/source"
-    ///    },
-    ///    "status": {
-    ///      "description": "HTTP status associated with the error",
-    ///      "examples": [
-    ///        404
-    ///      ],
-    ///      "type": "integer",
-    ///      "minimum": 400.0
-    ///    },
-    ///    "title": {
-    ///      "description": "Error title",
-    ///      "examples": [
-    ///        "Item Not Found"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Error {
-        ///detailed error message
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub details: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub id: ::std::option::Option<ApiGatewayId>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub source: ::std::option::Option<Source>,
-        ///HTTP status associated with the error
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub status: ::std::option::Option<i64>,
-        ///Error title
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub title: ::std::option::Option<::std::string::String>,
-    }
-
-    impl From<&Error> for Error {
-        fn from(value: &Error) -> Self {
-            value.clone()
-        }
-    }
-
-    impl Error {
-        pub fn builder() -> builder::Error {
-            Default::default()
-        }
-    }
-
-    ///A collection of errors
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "A collection of errors",
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/error"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Errors(pub ::std::vec::Vec<Error>);
-    impl ::std::ops::Deref for Errors {
-        type Target = ::std::vec::Vec<Error>;
-        fn deref(&self) -> &::std::vec::Vec<Error> {
-            &self.0
-        }
-    }
-
-    impl From<Errors> for ::std::vec::Vec<Error> {
-        fn from(value: Errors) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&Errors> for Errors {
-        fn from(value: &Errors) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<::std::vec::Vec<Error>> for Errors {
-        fn from(value: ::std::vec::Vec<Error>) -> Self {
-            Self(value)
-        }
-    }
-
-    ///FargatePrice
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
+    ///  "required": [
+    ///    "created_at",
+    ///    "id",
+    ///    "per_second"
+    ///  ],
     ///  "properties": {
     ///    "created_at": {
-    ///      "description": "Date and time",
+    ///      "description": "Creation date",
     ///      "type": "string",
     ///      "format": "date-time"
     ///    },
-    ///    "fargate_price_id": {
+    ///    "id": {
     ///      "description": "Identifier of the Fargate Price rate used to
-    /// compute the cost of the pipeline run.\n",
+    /// compute the cost of the pipeline run",
     ///      "examples": [
-    ///        1
+    ///        "1"
     ///      ],
-    ///      "type": "number"
+    ///      "type": "integer",
+    ///      "format": "int32"
     ///    },
     ///    "per_second": {
     ///      "description": "Cost to run Fargate for 1 second",
     ///      "examples": [
     ///        "0.0023"
     ///      ],
-    ///      "type": "string",
-    ///      "format": "decimal"
+    ///      "type": "string"
     ///    }
     ///  }
     ///}
@@ -2350,17 +1686,16 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct FargatePrice {
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fargate_price_id: ::std::option::Option<f64>,
+        ///Creation date
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        ///Identifier of the Fargate Price rate used to compute the cost of the
+        /// pipeline run
+        pub id: i32,
         ///Cost to run Fargate for 1 second
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub per_second: ::std::option::Option<::std::string::String>,
+        pub per_second: ::std::string::String,
     }
 
-    impl From<&FargatePrice> for FargatePrice {
+    impl ::std::convert::From<&FargatePrice> for FargatePrice {
         fn from(value: &FargatePrice) -> Self {
             value.clone()
         }
@@ -2372,307 +1707,454 @@ pub mod types {
         }
     }
 
-    ///GetCityCensusResponseItem
+    ///A collection of Fargate prices.
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "anyOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/city"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/census"
-    ///    }
-    ///  ]
+    ///  "description": "A collection of Fargate prices.",
+    ///  "type": "array",
+    ///  "items": {
+    ///    "$ref": "#/components/schemas/FargatePrice"
+    ///  }
     ///}
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    #[serde(untagged)]
-    pub enum GetCityCensusResponseItem {
-        City(City),
-        Census(Census),
-    }
-
-    impl From<&GetCityCensusResponseItem> for GetCityCensusResponseItem {
-        fn from(value: &GetCityCensusResponseItem) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<City> for GetCityCensusResponseItem {
-        fn from(value: City) -> Self {
-            Self::City(value)
-        }
-    }
-
-    impl From<Census> for GetCityCensusResponseItem {
-        fn from(value: Census) -> Self {
-            Self::Census(value)
-        }
-    }
-
-    ///GetCityRatingsResponseItem
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "anyOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/city"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/bna_summary"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    #[serde(untagged)]
-    pub enum GetCityRatingsResponseItem {
-        City(City),
-        BnaSummary(BnaSummary),
-    }
-
-    impl From<&GetCityRatingsResponseItem> for GetCityRatingsResponseItem {
-        fn from(value: &GetCityRatingsResponseItem) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<City> for GetCityRatingsResponseItem {
-        fn from(value: City) -> Self {
-            Self::City(value)
-        }
-    }
-
-    impl From<BnaSummary> for GetCityRatingsResponseItem {
-        fn from(value: BnaSummary) -> Self {
-            Self::BnaSummary(value)
-        }
-    }
-
-    ///GetRatingCityResponseItem
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "anyOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/bna_summary_with_city"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/city"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    #[serde(untagged)]
-    pub enum GetRatingCityResponseItem {
-        BnaSummaryWithCity(BnaSummaryWithCity),
-        City(City),
-    }
-
-    impl From<&GetRatingCityResponseItem> for GetRatingCityResponseItem {
-        fn from(value: &GetRatingCityResponseItem) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<BnaSummaryWithCity> for GetRatingCityResponseItem {
-        fn from(value: BnaSummaryWithCity) -> Self {
-            Self::BnaSummaryWithCity(value)
-        }
-    }
-
-    impl From<City> for GetRatingCityResponseItem {
-        fn from(value: City) -> Self {
-            Self::City(value)
-        }
-    }
-
-    ///GetRatingComponent
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "examples": [
-    ///    "All"
-    ///  ],
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "All",
-    ///    "CoreServices",
-    ///    "Infratructure",
-    ///    "Opportunity",
-    ///    "People",
-    ///    "Recreation",
-    ///    "Retail",
-    ///    "Summary",
-    ///    "Transit"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(
-        :: serde :: Deserialize,
-        :: serde :: Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd,
-    )]
-    pub enum GetRatingComponent {
-        All,
-        CoreServices,
-        Infratructure,
-        Opportunity,
-        People,
-        Recreation,
-        Retail,
-        Summary,
-        Transit,
-    }
-
-    impl From<&GetRatingComponent> for GetRatingComponent {
-        fn from(value: &GetRatingComponent) -> Self {
-            value.clone()
-        }
-    }
-
-    impl ::std::fmt::Display for GetRatingComponent {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::All => write!(f, "All"),
-                Self::CoreServices => write!(f, "CoreServices"),
-                Self::Infratructure => write!(f, "Infratructure"),
-                Self::Opportunity => write!(f, "Opportunity"),
-                Self::People => write!(f, "People"),
-                Self::Recreation => write!(f, "Recreation"),
-                Self::Retail => write!(f, "Retail"),
-                Self::Summary => write!(f, "Summary"),
-                Self::Transit => write!(f, "Transit"),
-            }
-        }
-    }
-
-    impl std::str::FromStr for GetRatingComponent {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "All" => Ok(Self::All),
-                "CoreServices" => Ok(Self::CoreServices),
-                "Infratructure" => Ok(Self::Infratructure),
-                "Opportunity" => Ok(Self::Opportunity),
-                "People" => Ok(Self::People),
-                "Recreation" => Ok(Self::Recreation),
-                "Retail" => Ok(Self::Retail),
-                "Summary" => Ok(Self::Summary),
-                "Transit" => Ok(Self::Transit),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-
-    impl std::convert::TryFrom<&str> for GetRatingComponent {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<&::std::string::String> for GetRatingComponent {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<::std::string::String> for GetRatingComponent {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    ///The name of a single request header which caused the error
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "The name of a single request header which caused the
-    /// error",
-    ///  "examples": [
-    ///    "Authorization"
-    ///  ],
-    ///  "type": "string"
-    ///}
-    /// ```
-    /// </details>
-    #[derive(
-        :: serde :: Deserialize,
-        :: serde :: Serialize,
-        Clone,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd,
-    )]
-    pub struct Header(pub ::std::string::String);
-    impl ::std::ops::Deref for Header {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
+    pub struct FargatePrices(pub ::std::vec::Vec<FargatePrice>);
+    impl ::std::ops::Deref for FargatePrices {
+        type Target = ::std::vec::Vec<FargatePrice>;
+        fn deref(&self) -> &::std::vec::Vec<FargatePrice> {
             &self.0
         }
     }
 
-    impl From<Header> for ::std::string::String {
-        fn from(value: Header) -> Self {
+    impl ::std::convert::From<FargatePrices> for ::std::vec::Vec<FargatePrice> {
+        fn from(value: FargatePrices) -> Self {
             value.0
         }
     }
 
-    impl From<&Header> for Header {
-        fn from(value: &Header) -> Self {
+    impl ::std::convert::From<&FargatePrices> for FargatePrices {
+        fn from(value: &FargatePrices) -> Self {
             value.clone()
         }
     }
 
-    impl From<::std::string::String> for Header {
-        fn from(value: ::std::string::String) -> Self {
+    impl ::std::convert::From<::std::vec::Vec<FargatePrice>> for FargatePrices {
+        fn from(value: ::std::vec::Vec<FargatePrice>) -> Self {
             Self(value)
         }
     }
 
-    impl ::std::str::FromStr for Header {
-        type Err = ::std::convert::Infallible;
-        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
-            Ok(Self(value.to_string()))
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetCitiesSubmissionResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetCitiesSubmissionResponse> for GetCitiesSubmissionResponse {
+        fn from(value: &GetCitiesSubmissionResponse) -> Self {
+            value.clone()
         }
     }
 
-    impl ::std::fmt::Display for Header {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            self.0.fmt(f)
+    impl GetCitiesSubmissionResponse {
+        pub fn builder() -> builder::GetCitiesSubmissionResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetCitiesSubmissionsResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetCitiesSubmissionsResponse> for GetCitiesSubmissionsResponse {
+        fn from(value: &GetCitiesSubmissionsResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetCitiesSubmissionsResponse {
+        pub fn builder() -> builder::GetCitiesSubmissionsResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetCityCensusesResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetCityCensusesResponse> for GetCityCensusesResponse {
+        fn from(value: &GetCityCensusesResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetCityCensusesResponse {
+        pub fn builder() -> builder::GetCityCensusesResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetCityRatingsResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetCityRatingsResponse> for GetCityRatingsResponse {
+        fn from(value: &GetCityRatingsResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetCityRatingsResponse {
+        pub fn builder() -> builder::GetCityRatingsResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetCityResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetCityResponse> for GetCityResponse {
+        fn from(value: &GetCityResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetCityResponse {
+        pub fn builder() -> builder::GetCityResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetPipelinesBnaResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetPipelinesBnaResponse> for GetPipelinesBnaResponse {
+        fn from(value: &GetPipelinesBnaResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetPipelinesBnaResponse {
+        pub fn builder() -> builder::GetPipelinesBnaResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetPipelinesBnasResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetPipelinesBnasResponse> for GetPipelinesBnasResponse {
+        fn from(value: &GetPipelinesBnasResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetPipelinesBnasResponse {
+        pub fn builder() -> builder::GetPipelinesBnasResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetPriceFargateResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetPriceFargateResponse> for GetPriceFargateResponse {
+        fn from(value: &GetPriceFargateResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetPriceFargateResponse {
+        pub fn builder() -> builder::GetPriceFargateResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetRatingResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetRatingResponse> for GetRatingResponse {
+        fn from(value: &GetRatingResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetRatingResponse {
+        pub fn builder() -> builder::GetRatingResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct GetRatingsCityResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&GetRatingsCityResponse> for GetRatingsCityResponse {
+        fn from(value: &GetRatingsCityResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl GetRatingsCityResponse {
+        pub fn builder() -> builder::GetRatingsCityResponse {
+            Default::default()
         }
     }
 
@@ -2686,19 +2168,27 @@ pub mod types {
     ///  "properties": {
     ///    "high_stress_miles": {
     ///      "description": "Total miles of high-stress streets in the measured
-    /// area",
+    /// area.",
     ///      "examples": [
-    ///        437.8
+    ///        253
     ///      ],
-    ///      "type": "number"
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
     ///    },
     ///    "low_stress_miles": {
     ///      "description": "Total miles of low-stress streets and paths in the
-    /// measured area",
+    /// measured area.",
     ///      "examples": [
-    ///        1862.2
+    ///        127
     ///      ],
-    ///      "type": "number"
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
     ///    }
     ///  }
     ///}
@@ -2706,15 +2196,26 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Infrastructure {
+        ///Total miles of high-stress streets in the measured area.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub high_stress_miles: ::std::option::Option<f64>,
+        ///Total miles of low-stress streets and paths in the measured area.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub low_stress_miles: ::std::option::Option<f64>,
     }
 
-    impl From<&Infrastructure> for Infrastructure {
+    impl ::std::convert::From<&Infrastructure> for Infrastructure {
         fn from(value: &Infrastructure) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Infrastructure {
+        fn default() -> Self {
+            Self {
+                high_stress_miles: Default::default(),
+                low_stress_miles: Default::default(),
+            }
         }
     }
 
@@ -2734,42 +2235,57 @@ pub mod types {
     ///  "properties": {
     ///    "employment": {
     ///      "description": "BNA category subscore for access to job location
-    /// areas",
-    ///      "examples": [
-    ///        0.0
+    /// areas.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "higher_education": {
     ///      "description": "BNA category subscore for access to universities
-    /// and colleges",
-    ///      "examples": [
-    ///        84.76
+    /// and colleges.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "k12_education": {
     ///      "description": "BNA category subscore for access to k12 schools",
-    ///      "examples": [
-    ///        6.63
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "score": {
     ///      "description": "BNA category score for access to education and
-    /// jobs\"\"",
-    ///      "examples": [
-    ///        79.91
+    /// jobs.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "technical_vocational_college": {
     ///      "description": "BNA category subscore for access to technical and
-    /// vocational colleges",
-    ///      "examples": [
-    ///        81.67
+    /// vocational colleges.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -2777,21 +2293,39 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Opportunity {
+        ///BNA category subscore for access to job location areas.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub employment: ::std::option::Option<f64>,
+        ///BNA category subscore for access to universities and colleges.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub higher_education: ::std::option::Option<f64>,
+        ///BNA category subscore for access to k12 schools
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub k12_education: ::std::option::Option<f64>,
+        ///BNA category score for access to education and jobs.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
+        ///BNA category subscore for access to technical and vocational
+        /// colleges.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub technical_vocational_college: ::std::option::Option<f64>,
     }
 
-    impl From<&Opportunity> for Opportunity {
+    impl ::std::convert::From<&Opportunity> for Opportunity {
         fn from(value: &Opportunity) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Opportunity {
+        fn default() -> Self {
+            Self {
+                employment: Default::default(),
+                higher_education: Default::default(),
+                k12_education: Default::default(),
+                score: Default::default(),
+                technical_vocational_college: Default::default(),
+            }
         }
     }
 
@@ -2801,109 +2335,85 @@ pub mod types {
         }
     }
 
-    ///The URI query parameter caused the error
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "The URI query parameter caused the error",
-    ///  "examples": [
-    ///    "/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221?"
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
     ///  ],
-    ///  "type": "string"
-    ///}
-    /// ```
-    /// </details>
-    #[derive(
-        :: serde :: Deserialize,
-        :: serde :: Serialize,
-        Clone,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd,
-    )]
-    pub struct Parameter(pub ::std::string::String);
-    impl ::std::ops::Deref for Parameter {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
-    }
-
-    impl From<Parameter> for ::std::string::String {
-        fn from(value: Parameter) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&Parameter> for Parameter {
-        fn from(value: &Parameter) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<::std::string::String> for Parameter {
-        fn from(value: ::std::string::String) -> Self {
-            Self(value)
-        }
-    }
-
-    impl ::std::str::FromStr for Parameter {
-        type Err = ::std::convert::Infallible;
-        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
-            Ok(Self(value.to_string()))
-        }
-    }
-
-    impl ::std::fmt::Display for Parameter {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            self.0.fmt(f)
-        }
-    }
-
-    ///PatchCityCensusResponseItem
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "anyOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/city"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/census"
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
     ///    }
-    ///  ]
+    ///  }
     ///}
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    #[serde(untagged)]
-    pub enum PatchCityCensusResponseItem {
-        City(City),
-        Census(Census),
+    pub struct PatchCitiesSubmissionResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
     }
 
-    impl From<&PatchCityCensusResponseItem> for PatchCityCensusResponseItem {
-        fn from(value: &PatchCityCensusResponseItem) -> Self {
+    impl ::std::convert::From<&PatchCitiesSubmissionResponse> for PatchCitiesSubmissionResponse {
+        fn from(value: &PatchCitiesSubmissionResponse) -> Self {
             value.clone()
         }
     }
 
-    impl From<City> for PatchCityCensusResponseItem {
-        fn from(value: City) -> Self {
-            Self::City(value)
+    impl PatchCitiesSubmissionResponse {
+        pub fn builder() -> builder::PatchCitiesSubmissionResponse {
+            Default::default()
         }
     }
 
-    impl From<Census> for PatchCityCensusResponseItem {
-        fn from(value: Census) -> Self {
-            Self::Census(value)
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PatchPipelinesBnaResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PatchPipelinesBnaResponse> for PatchPipelinesBnaResponse {
+        fn from(value: &PatchPipelinesBnaResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PatchPipelinesBnaResponse {
+        pub fn builder() -> builder::PatchPipelinesBnaResponse {
+            Default::default()
         }
     }
 
@@ -2915,8 +2425,16 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "properties": {
-    ///    "score": {
-    ///      "type": "number"
+    ///    "people": {
+    ///      "description": "BNA category score for access to residential
+    /// areas.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -2924,13 +2442,22 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct People {
+        ///BNA category score for access to residential areas.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub score: ::std::option::Option<f64>,
+        pub people: ::std::option::Option<f64>,
     }
 
-    impl From<&People> for People {
+    impl ::std::convert::From<&People> for People {
         fn from(value: &People) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for People {
+        fn default() -> Self {
+            Self {
+                people: Default::default(),
+            }
         }
     }
 
@@ -2940,17 +2467,18 @@ pub mod types {
         }
     }
 
-    ///A JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the value in the request document that caused the error [e.g. "/data" for a primary data object, or "/data/attributes/title" for a specific attribute].
+    ///PipelineStatus
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "A JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the value in the request document that caused the error [e.g. \"/data\" for a primary data object, or \"/data/attributes/title\" for a specific attribute].\n",
-    ///  "examples": [
-    ///    "/data"
-    ///  ],
-    ///  "type": "string"
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Completed",
+    ///    "Pending",
+    ///    "Processing"
+    ///  ]
     ///}
     /// ```
     /// </details>
@@ -2958,6 +2486,7 @@ pub mod types {
         :: serde :: Deserialize,
         :: serde :: Serialize,
         Clone,
+        Copy,
         Debug,
         Eq,
         Hash,
@@ -2965,42 +2494,603 @@ pub mod types {
         PartialEq,
         PartialOrd,
     )]
-    pub struct Pointer(pub ::std::string::String);
-    impl ::std::ops::Deref for Pointer {
-        type Target = ::std::string::String;
-        fn deref(&self) -> &::std::string::String {
-            &self.0
-        }
+    pub enum PipelineStatus {
+        Completed,
+        Pending,
+        Processing,
     }
 
-    impl From<Pointer> for ::std::string::String {
-        fn from(value: Pointer) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&Pointer> for Pointer {
-        fn from(value: &Pointer) -> Self {
+    impl ::std::convert::From<&PipelineStatus> for PipelineStatus {
+        fn from(value: &PipelineStatus) -> Self {
             value.clone()
         }
     }
 
-    impl From<::std::string::String> for Pointer {
-        fn from(value: ::std::string::String) -> Self {
-            Self(value)
-        }
-    }
-
-    impl ::std::str::FromStr for Pointer {
-        type Err = ::std::convert::Infallible;
-        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
-            Ok(Self(value.to_string()))
-        }
-    }
-
-    impl ::std::fmt::Display for Pointer {
+    impl ::std::fmt::Display for PipelineStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            self.0.fmt(f)
+            match *self {
+                Self::Completed => write!(f, "Completed"),
+                Self::Pending => write!(f, "Pending"),
+                Self::Processing => write!(f, "Processing"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for PipelineStatus {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Completed" => Ok(Self::Completed),
+                "Pending" => Ok(Self::Pending),
+                "Processing" => Ok(Self::Processing),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for PipelineStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for PipelineStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for PipelineStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PostCitiesSubmissionResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PostCitiesSubmissionResponse> for PostCitiesSubmissionResponse {
+        fn from(value: &PostCitiesSubmissionResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PostCitiesSubmissionResponse {
+        pub fn builder() -> builder::PostCitiesSubmissionResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PostCityCensusResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PostCityCensusResponse> for PostCityCensusResponse {
+        fn from(value: &PostCityCensusResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PostCityCensusResponse {
+        pub fn builder() -> builder::PostCityCensusResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PostCityResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PostCityResponse> for PostCityResponse {
+        fn from(value: &PostCityResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PostCityResponse {
+        pub fn builder() -> builder::PostCityResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PostPipelinesBnaResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PostPipelinesBnaResponse> for PostPipelinesBnaResponse {
+        fn from(value: &PostPipelinesBnaResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PostPipelinesBnaResponse {
+        pub fn builder() -> builder::PostPipelinesBnaResponse {
+            Default::default()
+        }
+    }
+
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct PostRatingResponse {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&PostRatingResponse> for PostRatingResponse {
+        fn from(value: &PostRatingResponse) -> Self {
+            value.clone()
+        }
+    }
+
+    impl PostRatingResponse {
+        pub fn builder() -> builder::PostRatingResponse {
+            Default::default()
+        }
+    }
+
+    ///Rating
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city_id",
+    ///    "core_services",
+    ///    "id",
+    ///    "infrastructure",
+    ///    "opportunity",
+    ///    "people",
+    ///    "recreation",
+    ///    "retail",
+    ///    "score",
+    ///    "transit",
+    ///    "version"
+    ///  ],
+    ///  "properties": {
+    ///    "city_id": {
+    ///      "description": "City identifier",
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
+    ///    "core_services": {
+    ///      "$ref": "#/components/schemas/CoreServices"
+    ///    },
+    ///    "id": {
+    ///      "description": "Rating identifier",
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
+    ///    "infrastructure": {
+    ///      "$ref": "#/components/schemas/Infrastructure"
+    ///    },
+    ///    "opportunity": {
+    ///      "$ref": "#/components/schemas/Opportunity"
+    ///    },
+    ///    "people": {
+    ///      "$ref": "#/components/schemas/People"
+    ///    },
+    ///    "recreation": {
+    ///      "$ref": "#/components/schemas/Recreation"
+    ///    },
+    ///    "retail": {
+    ///      "$ref": "#/components/schemas/Retail"
+    ///    },
+    ///    "score": {
+    ///      "description": "Total rating score",
+    ///      "type": "number",
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
+    ///    },
+    ///    "transit": {
+    ///      "$ref": "#/components/schemas/Transit"
+    ///    },
+    ///    "version": {
+    ///      "description": "Rating version\nThe format follows the [calver](https://calver.org) specification with\nthe YY.0M[.Minor] scheme.",
+    ///      "type": "string"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Rating {
+        ///City identifier
+        pub city_id: uuid::Uuid,
+        pub core_services: CoreServices,
+        ///Rating identifier
+        pub id: uuid::Uuid,
+        pub infrastructure: Infrastructure,
+        pub opportunity: Opportunity,
+        pub people: People,
+        pub recreation: Recreation,
+        pub retail: Retail,
+        pub score: f64,
+        pub transit: Transit,
+        ///Rating version
+        ///The format follows the [calver](https://calver.org) specification with
+        ///the YY.0M[.Minor] scheme.
+        pub version: ::std::string::String,
+    }
+
+    impl ::std::convert::From<&Rating> for Rating {
+        fn from(value: &Rating) -> Self {
+            value.clone()
+        }
+    }
+
+    impl Rating {
+        pub fn builder() -> builder::Rating {
+            Default::default()
+        }
+    }
+
+    ///RatingPost
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city_id",
+    ///    "core_services",
+    ///    "infrastructure",
+    ///    "opportunity",
+    ///    "people",
+    ///    "recreation",
+    ///    "retail",
+    ///    "transit",
+    ///    "version"
+    ///  ],
+    ///  "properties": {
+    ///    "city_id": {
+    ///      "description": "City identifier",
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
+    ///    "core_services": {
+    ///      "$ref": "#/components/schemas/CoreServices"
+    ///    },
+    ///    "infrastructure": {
+    ///      "$ref": "#/components/schemas/Infrastructure"
+    ///    },
+    ///    "opportunity": {
+    ///      "$ref": "#/components/schemas/Opportunity"
+    ///    },
+    ///    "people": {
+    ///      "$ref": "#/components/schemas/People"
+    ///    },
+    ///    "recreation": {
+    ///      "$ref": "#/components/schemas/Recreation"
+    ///    },
+    ///    "retail": {
+    ///      "$ref": "#/components/schemas/Retail"
+    ///    },
+    ///    "transit": {
+    ///      "$ref": "#/components/schemas/Transit"
+    ///    },
+    ///    "version": {
+    ///      "description": "Rating version\nThe format follows the [calver](https://calver.org) specification with\nthe YY.0M[.Minor] scheme.",
+    ///      "type": "string"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct RatingPost {
+        ///City identifier
+        pub city_id: uuid::Uuid,
+        pub core_services: CoreServices,
+        pub infrastructure: Infrastructure,
+        pub opportunity: Opportunity,
+        pub people: People,
+        pub recreation: Recreation,
+        pub retail: Retail,
+        pub transit: Transit,
+        ///Rating version
+        ///The format follows the [calver](https://calver.org) specification with
+        ///the YY.0M[.Minor] scheme.
+        pub version: ::std::string::String,
+    }
+
+    impl ::std::convert::From<&RatingPost> for RatingPost {
+        fn from(value: &RatingPost) -> Self {
+            value.clone()
+        }
+    }
+
+    impl RatingPost {
+        pub fn builder() -> builder::RatingPost {
+            Default::default()
+        }
+    }
+
+    ///RatingSummary
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city_id",
+    ///    "created_at",
+    ///    "id",
+    ///    "score",
+    ///    "version"
+    ///  ],
+    ///  "properties": {
+    ///    "city_id": {
+    ///      "description": "City identifier",
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
+    ///    "created_at": {
+    ///      "description": "Creation date",
+    ///      "type": "string",
+    ///      "format": "date-time"
+    ///    },
+    ///    "id": {
+    ///      "description": "Analysis identifier",
+    ///      "type": "string",
+    ///      "format": "uuid"
+    ///    },
+    ///    "score": {
+    ///      "description": "BNA score",
+    ///      "examples": [
+    ///        "77.0"
+    ///      ],
+    ///      "type": "number",
+    ///      "format": "double"
+    ///    },
+    ///    "version": {
+    ///      "description": "Analysis version. The format follows the [calver](https://calver.org)\nspecification with the YY.0M[.Minor] scheme.",
+    ///      "examples": [
+    ///        "23.12"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct RatingSummary {
+        ///City identifier
+        pub city_id: uuid::Uuid,
+        ///Creation date
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        ///Analysis identifier
+        pub id: uuid::Uuid,
+        pub score: f64,
+        ///Analysis version. The format follows the [calver](https://calver.org)
+        ///specification with the YY.0M[.Minor] scheme.
+        pub version: ::std::string::String,
+    }
+
+    impl ::std::convert::From<&RatingSummary> for RatingSummary {
+        fn from(value: &RatingSummary) -> Self {
+            value.clone()
+        }
+    }
+
+    impl RatingSummary {
+        pub fn builder() -> builder::RatingSummary {
+            Default::default()
+        }
+    }
+
+    ///RatingWithCity
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city",
+    ///    "rating"
+    ///  ],
+    ///  "properties": {
+    ///    "city": {
+    ///      "$ref": "#/components/schemas/City"
+    ///    },
+    ///    "rating": {
+    ///      "$ref": "#/components/schemas/Rating"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct RatingWithCity {
+        pub city: City,
+        pub rating: Rating,
+    }
+
+    impl ::std::convert::From<&RatingWithCity> for RatingWithCity {
+        fn from(value: &RatingWithCity) -> Self {
+            value.clone()
+        }
+    }
+
+    impl RatingWithCity {
+        pub fn builder() -> builder::RatingWithCity {
+            Default::default()
+        }
+    }
+
+    ///Ratings
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "array",
+    ///  "items": {
+    ///    "$ref": "#/components/schemas/Rating"
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Ratings(pub ::std::vec::Vec<Rating>);
+    impl ::std::ops::Deref for Ratings {
+        type Target = ::std::vec::Vec<Rating>;
+        fn deref(&self) -> &::std::vec::Vec<Rating> {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<Ratings> for ::std::vec::Vec<Rating> {
+        fn from(value: Ratings) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::convert::From<&Ratings> for Ratings {
+        fn from(value: &Ratings) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ::std::convert::From<::std::vec::Vec<Rating>> for Ratings {
+        fn from(value: ::std::vec::Vec<Rating>) -> Self {
+            Self(value)
         }
     }
 
@@ -3014,33 +3104,46 @@ pub mod types {
     ///  "properties": {
     ///    "community_centers": {
     ///      "description": "BNA category subscore for access to community
-    /// centers",
-    ///      "examples": [
-    ///        70.7
+    /// centers.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "parks": {
-    ///      "description": "BNA category subscore for access to parks",
-    ///      "examples": [
-    ///        78.49
+    ///      "description": "BNA category subscore for access to parks.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
-    ///    },
-    ///    "recreation_trails": {
-    ///      "description": "BNA category subscore for access to bikeable
-    /// trails",
-    ///      "examples": [
-    ///        94.45
-    ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    },
     ///    "score": {
-    ///      "description": "BNA total score",
-    ///      "examples": [
-    ///        77.0
+    ///      "description": "BNA category score for access to recreational
+    /// facilities.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
     ///      ],
-    ///      "type": "number"
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
+    ///    },
+    ///    "trails": {
+    ///      "description": "BNA category subscore for access to bikeable
+    /// trails.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -3048,19 +3151,34 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Recreation {
+        ///BNA category subscore for access to community centers.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub community_centers: ::std::option::Option<f64>,
+        ///BNA category subscore for access to parks.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub parks: ::std::option::Option<f64>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub recreation_trails: ::std::option::Option<f64>,
+        ///BNA category score for access to recreational facilities.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
+        ///BNA category subscore for access to bikeable trails.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub trails: ::std::option::Option<f64>,
     }
 
-    impl From<&Recreation> for Recreation {
+    impl ::std::convert::From<&Recreation> for Recreation {
         fn from(value: &Recreation) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Recreation {
+        fn default() -> Self {
+            Self {
+                community_centers: Default::default(),
+                parks: Default::default(),
+                score: Default::default(),
+                trails: Default::default(),
+            }
         }
     }
 
@@ -3078,8 +3196,16 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "properties": {
-    ///    "score": {
-    ///      "type": "number"
+    ///    "retail": {
+    ///      "description": "BNA category score for access to major retail
+    /// centers.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -3087,302 +3213,28 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Retail {
+        ///BNA category score for access to major retail centers.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub score: ::std::option::Option<f64>,
+        pub retail: ::std::option::Option<f64>,
     }
 
-    impl From<&Retail> for Retail {
+    impl ::std::convert::From<&Retail> for Retail {
         fn from(value: &Retail) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Retail {
+        fn default() -> Self {
+            Self {
+                retail: Default::default(),
+            }
         }
     }
 
     impl Retail {
         pub fn builder() -> builder::Retail {
             Default::default()
-        }
-    }
-
-    ///An object containing references to the primary source of the error.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "An object containing references to the primary source
-    /// of the error.",
-    ///  "examples": [
-    ///    {
-    ///      "source": "Parameter
-    /// \"/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221?\""
-    ///    }
-    ///  ],
-    ///  "type": "object",
-    ///  "oneOf": [
-    ///    {
-    ///      "$ref": "#/components/schemas/parameter"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/pointer"
-    ///    },
-    ///    {
-    ///      "$ref": "#/components/schemas/header"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    #[serde(untagged)]
-    pub enum Source {
-        Parameter(Parameter),
-        Pointer(Pointer),
-        Header(Header),
-    }
-
-    impl From<&Source> for Source {
-        fn from(value: &Source) -> Self {
-            value.clone()
-        }
-    }
-
-    impl std::str::FromStr for Source {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if let Ok(v) = value.parse() {
-                Ok(Self::Parameter(v))
-            } else if let Ok(v) = value.parse() {
-                Ok(Self::Pointer(v))
-            } else if let Ok(v) = value.parse() {
-                Ok(Self::Header(v))
-            } else {
-                Err("string conversion failed for all variants".into())
-            }
-        }
-    }
-
-    impl std::convert::TryFrom<&str> for Source {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<&::std::string::String> for Source {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<::std::string::String> for Source {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl ::std::fmt::Display for Source {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match self {
-                Self::Parameter(x) => x.fmt(f),
-                Self::Pointer(x) => x.fmt(f),
-                Self::Header(x) => x.fmt(f),
-            }
-        }
-    }
-
-    impl From<Parameter> for Source {
-        fn from(value: Parameter) -> Self {
-            Self::Parameter(value)
-        }
-    }
-
-    impl From<Pointer> for Source {
-        fn from(value: Pointer) -> Self {
-            Self::Pointer(value)
-        }
-    }
-
-    impl From<Header> for Source {
-        fn from(value: Header) -> Self {
-            Self::Header(value)
-        }
-    }
-
-    ///ID of the AWS state machine that was used to run the pipeline
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "ID of the AWS state machine that was used to run the
-    /// pipeline",
-    ///  "examples": [
-    ///    "38f4f54e-98d6-4048-8c0f-99cde05a7e76"
-    ///  ],
-    ///  "type": "string",
-    ///  "format": "uuid"
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct StateMachineId(pub uuid::Uuid);
-    impl ::std::ops::Deref for StateMachineId {
-        type Target = uuid::Uuid;
-        fn deref(&self) -> &uuid::Uuid {
-            &self.0
-        }
-    }
-
-    impl From<StateMachineId> for uuid::Uuid {
-        fn from(value: StateMachineId) -> Self {
-            value.0
-        }
-    }
-
-    impl From<&StateMachineId> for StateMachineId {
-        fn from(value: &StateMachineId) -> Self {
-            value.clone()
-        }
-    }
-
-    impl From<uuid::Uuid> for StateMachineId {
-        fn from(value: uuid::Uuid) -> Self {
-            Self(value)
-        }
-    }
-
-    impl std::str::FromStr for StateMachineId {
-        type Err = <uuid::Uuid as ::std::str::FromStr>::Err;
-        fn from_str(value: &str) -> ::std::result::Result<Self, Self::Err> {
-            Ok(Self(value.parse()?))
-        }
-    }
-
-    impl std::convert::TryFrom<&str> for StateMachineId {
-        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
-        fn try_from(value: &str) -> ::std::result::Result<Self, Self::Error> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<&String> for StateMachineId {
-        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
-        fn try_from(value: &String) -> ::std::result::Result<Self, Self::Error> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<String> for StateMachineId {
-        type Error = <uuid::Uuid as ::std::str::FromStr>::Err;
-        fn try_from(value: String) -> ::std::result::Result<Self, Self::Error> {
-            value.parse()
-        }
-    }
-
-    impl ::std::fmt::Display for StateMachineId {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            self.0.fmt(f)
-        }
-    }
-
-    ///Indicate the last step of the pipeline that completed successfully
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Indicate the last step of the pipeline that completed
-    /// successfully",
-    ///  "examples": [
-    ///    "Cleanup"
-    ///  ],
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "SqsMessage",
-    ///    "Setup",
-    ///    "Analysis",
-    ///    "Cleanup"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
-    #[derive(
-        :: serde :: Deserialize,
-        :: serde :: Serialize,
-        Clone,
-        Copy,
-        Debug,
-        Eq,
-        Hash,
-        Ord,
-        PartialEq,
-        PartialOrd,
-    )]
-    pub enum Step {
-        SqsMessage,
-        Setup,
-        Analysis,
-        Cleanup,
-    }
-
-    impl From<&Step> for Step {
-        fn from(value: &Step) -> Self {
-            value.clone()
-        }
-    }
-
-    impl ::std::fmt::Display for Step {
-        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-            match *self {
-                Self::SqsMessage => write!(f, "SqsMessage"),
-                Self::Setup => write!(f, "Setup"),
-                Self::Analysis => write!(f, "Analysis"),
-                Self::Cleanup => write!(f, "Cleanup"),
-            }
-        }
-    }
-
-    impl std::str::FromStr for Step {
-        type Err = self::error::ConversionError;
-        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            match value {
-                "SqsMessage" => Ok(Self::SqsMessage),
-                "Setup" => Ok(Self::Setup),
-                "Analysis" => Ok(Self::Analysis),
-                "Cleanup" => Ok(Self::Cleanup),
-                _ => Err("invalid value".into()),
-            }
-        }
-    }
-
-    impl std::convert::TryFrom<&str> for Step {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<&::std::string::String> for Step {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
-    impl std::convert::TryFrom<::std::string::String> for Step {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: ::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
         }
     }
 
@@ -3393,6 +3245,18 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "city",
+    ///    "consent",
+    ///    "country",
+    ///    "created_at",
+    ///    "email",
+    ///    "fips_code",
+    ///    "first_name",
+    ///    "id",
+    ///    "last_name",
+    ///    "status"
+    ///  ],
     ///  "properties": {
     ///    "city": {
     ///      "description": "City name",
@@ -3404,23 +3268,20 @@ pub mod types {
     ///    "consent": {
     ///      "description": "Consent status",
     ///      "examples": [
-    ///        true
+    ///        "true"
     ///      ],
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
+    ///      "type": "boolean"
     ///    },
     ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
+    ///      "$ref": "#/components/schemas/Country"
     ///    },
     ///    "created_at": {
-    ///      "description": "Date and time",
+    ///      "description": "Creation date",
     ///      "type": "string",
     ///      "format": "date-time"
     ///    },
     ///    "email": {
-    ///      "description": "Email address",
+    ///      "description": "email address",
     ///      "examples": [
     ///        "jane.doe@orgllc.com"
     ///      ],
@@ -3428,7 +3289,7 @@ pub mod types {
     ///    },
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
+    /// or 0 for non-US cities",
     ///      "examples": [
     ///        "4805000"
     ///      ],
@@ -3443,16 +3304,11 @@ pub mod types {
     ///    },
     ///    "id": {
     ///      "description": "Submission identifier",
-    ///      "examples": [
-    ///        1
-    ///      ],
-    ///      "type": "integer"
+    ///      "type": "integer",
+    ///      "format": "int32"
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3460,26 +3316,35 @@ pub mod types {
     ///      "examples": [
     ///        "CTO"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "organization": {
-    ///      "description": "Name of the organization",
+    ///      "description": "Organization or company",
     ///      "examples": [
     ///        "Organization LLC"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "region": {
     ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
+    /// community, or\nsomething similar depending on the country. If a country
+    /// does not have\nthis concept, then the country name is used.",
     ///      "examples": [
-    ///        "Belgium"
+    ///        "Antwerp"
     ///      ],
-    ///      "type": "string"
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
-    ///    "submission_status": {
-    ///      "description": "The current status of the submission",
+    ///    "status": {
+    ///      "description": "Submission status, e.g. \"Pending\"",
     ///      "examples": [
     ///        "Pending"
     ///      ],
@@ -3492,49 +3357,39 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Submission {
         ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city: ::std::option::Option<::std::string::String>,
+        pub city: ::std::string::String,
         ///Consent status
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub consent: ::std::option::Option<bool>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
-        ///Date and time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub created_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-        ///Email address
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub email: ::std::option::Option<::std::string::String>,
+        pub consent: bool,
+        pub country: Country,
+        ///Creation date
+        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        ///email address
+        pub email: ::std::string::String,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
+        pub fips_code: ::std::string::String,
         ///First name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub first_name: ::std::option::Option<::std::string::String>,
+        pub first_name: ::std::string::String,
         ///Submission identifier
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub id: ::std::option::Option<i64>,
+        pub id: i32,
         ///Last name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub last_name: ::std::option::Option<::std::string::String>,
+        pub last_name: ::std::string::String,
         ///Job title or position
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
-        ///Name of the organization
+        ///Organization or company
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
+        ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///The current status of the submission
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub submission_status: ::std::option::Option<::std::string::String>,
+        ///Submission status, e.g. "Pending"
+        pub status: ::std::string::String,
     }
 
-    impl From<&Submission> for Submission {
+    impl ::std::convert::From<&Submission> for Submission {
         fn from(value: &Submission) -> Self {
             value.clone()
         }
@@ -3553,70 +3408,59 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
+    ///  "required": [
+    ///    "city",
+    ///    "consent",
+    ///    "country",
+    ///    "email",
+    ///    "fips_code",
+    ///    "first_name",
+    ///    "last_name",
+    ///    "status"
+    ///  ],
     ///  "properties": {
     ///    "city": {
     ///      "description": "City name",
     ///      "examples": [
     ///        "Antwerp"
     ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    },
     ///    "consent": {
     ///      "description": "Consent status",
     ///      "examples": [
-    ///        true
+    ///        "true"
     ///      ],
-    ///      "type": [
-    ///        "boolean",
-    ///        "null"
-    ///      ]
+    ///      "type": "boolean"
     ///    },
     ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
+    ///      "$ref": "#/components/schemas/Country"
     ///    },
     ///    "email": {
-    ///      "description": "Email address",
+    ///      "description": "email address",
     ///      "examples": [
     ///        "jane.doe@orgllc.com"
     ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    },
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
+    /// or 0 for non-US cities",
     ///      "examples": [
     ///        "4805000"
     ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    },
     ///    "first_name": {
     ///      "description": "First name",
     ///      "examples": [
     ///        "Jane"
     ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    },
     ///    "occupation": {
     ///      "description": "Job title or position",
@@ -3629,7 +3473,7 @@ pub mod types {
     ///      ]
     ///    },
     ///    "organization": {
-    ///      "description": "Name of the organization",
+    ///      "description": "Organization or company",
     ///      "examples": [
     ///        "Organization LLC"
     ///      ],
@@ -3640,25 +3484,22 @@ pub mod types {
     ///    },
     ///    "region": {
     ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
+    /// community, or\nsomething similar depending on the country. If a country
+    /// does not have\nthis concept, then the country name is used.",
     ///      "examples": [
-    ///        "Belgium"
+    ///        "Antwerp"
     ///      ],
     ///      "type": [
     ///        "string",
     ///        "null"
     ///      ]
     ///    },
-    ///    "submission_status": {
-    ///      "description": "The current status of the submission",
+    ///    "status": {
+    ///      "description": "Submission status, e.g. \"Pending\"",
     ///      "examples": [
     ///        "Pending"
     ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
+    ///      "type": "string"
     ///    }
     ///  }
     ///}
@@ -3667,43 +3508,35 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPatch {
         ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub city: ::std::option::Option<::std::string::String>,
+        pub city: ::std::string::String,
         ///Consent status
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub consent: ::std::option::Option<bool>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub country: ::std::option::Option<Country>,
-        ///Email address
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub email: ::std::option::Option<::std::string::String>,
+        pub consent: bool,
+        pub country: Country,
+        ///email address
+        pub email: ::std::string::String,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub fips_code: ::std::option::Option<::std::string::String>,
+        pub fips_code: ::std::string::String,
         ///First name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub first_name: ::std::option::Option<::std::string::String>,
+        pub first_name: ::std::string::String,
         ///Last name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub last_name: ::std::option::Option<::std::string::String>,
+        pub last_name: ::std::string::String,
         ///Job title or position
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
-        ///Name of the organization
+        ///Organization or company
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
+        ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///The current status of the submission
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub submission_status: ::std::option::Option<::std::string::String>,
+        ///Submission status, e.g. "Pending"
+        pub status: ::std::string::String,
     }
 
-    impl From<&SubmissionPatch> for SubmissionPatch {
+    impl ::std::convert::From<&SubmissionPatch> for SubmissionPatch {
         fn from(value: &SubmissionPatch) -> Self {
             value.clone()
         }
@@ -3729,7 +3562,8 @@ pub mod types {
     ///    "email",
     ///    "fips_code",
     ///    "first_name",
-    ///    "last_name"
+    ///    "last_name",
+    ///    "status"
     ///  ],
     ///  "properties": {
     ///    "city": {
@@ -3742,15 +3576,15 @@ pub mod types {
     ///    "consent": {
     ///      "description": "Consent status",
     ///      "examples": [
-    ///        true
+    ///        "true"
     ///      ],
     ///      "type": "boolean"
     ///    },
     ///    "country": {
-    ///      "$ref": "#/components/schemas/country"
+    ///      "$ref": "#/components/schemas/Country"
     ///    },
     ///    "email": {
-    ///      "description": "Email address",
+    ///      "description": "email address",
     ///      "examples": [
     ///        "jane.doe@orgllc.com"
     ///      ],
@@ -3758,7 +3592,7 @@ pub mod types {
     ///    },
     ///    "fips_code": {
     ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities\n",
+    /// or 0 for non-US cities",
     ///      "examples": [
     ///        "4805000"
     ///      ],
@@ -3773,9 +3607,6 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3789,7 +3620,7 @@ pub mod types {
     ///      ]
     ///    },
     ///    "organization": {
-    ///      "description": "Name of the organization",
+    ///      "description": "Organization or company",
     ///      "examples": [
     ///        "Organization LLC"
     ///      ],
@@ -3800,18 +3631,18 @@ pub mod types {
     ///    },
     ///    "region": {
     ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or something similar depending on the country. If a country
-    /// does not have this concept, then the country name is used.\n",
+    /// community, or\nsomething similar depending on the country. If a country
+    /// does not have\nthis concept, then the country name is used.",
     ///      "examples": [
-    ///        "Belgium"
+    ///        "Antwerp"
     ///      ],
     ///      "type": [
     ///        "string",
     ///        "null"
     ///      ]
     ///    },
-    ///    "submission_status": {
-    ///      "description": "The current status of the submission",
+    ///    "status": {
+    ///      "description": "Submission status, e.g. \"Pending\"",
     ///      "examples": [
     ///        "Pending"
     ///      ],
@@ -3828,7 +3659,7 @@ pub mod types {
         ///Consent status
         pub consent: bool,
         pub country: Country,
-        ///Email address
+        ///email address
         pub email: ::std::string::String,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
@@ -3840,20 +3671,19 @@ pub mod types {
         ///Job title or position
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
-        ///Name of the organization
+        ///Organization or company
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
-        /// something similar depending on the country. If a country does not
+        ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///The current status of the submission
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub submission_status: ::std::option::Option<::std::string::String>,
+        ///Submission status, e.g. "Pending"
+        pub status: ::std::string::String,
     }
 
-    impl From<&SubmissionPost> for SubmissionPost {
+    impl ::std::convert::From<&SubmissionPost> for SubmissionPost {
         fn from(value: &SubmissionPost) -> Self {
             value.clone()
         }
@@ -3865,16 +3695,15 @@ pub mod types {
         }
     }
 
-    ///A collection of submissions
+    ///Submissions
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
-    ///  "description": "A collection of submissions",
     ///  "type": "array",
     ///  "items": {
-    ///    "$ref": "#/components/schemas/submission"
+    ///    "$ref": "#/components/schemas/Submission"
     ///  }
     ///}
     /// ```
@@ -3888,19 +3717,19 @@ pub mod types {
         }
     }
 
-    impl From<Submissions> for ::std::vec::Vec<Submission> {
+    impl ::std::convert::From<Submissions> for ::std::vec::Vec<Submission> {
         fn from(value: Submissions) -> Self {
             value.0
         }
     }
 
-    impl From<&Submissions> for Submissions {
+    impl ::std::convert::From<&Submissions> for Submissions {
         fn from(value: &Submissions) -> Self {
             value.clone()
         }
     }
 
-    impl From<::std::vec::Vec<Submission>> for Submissions {
+    impl ::std::convert::From<::std::vec::Vec<Submission>> for Submissions {
         fn from(value: ::std::vec::Vec<Submission>) -> Self {
             Self(value)
         }
@@ -3914,8 +3743,16 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "properties": {
-    ///    "score": {
-    ///      "type": "number"
+    ///    "transit": {
+    ///      "description": "BNA category score for access to major transit
+    /// stops.",
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double",
+    ///      "maximum": 100.0,
+    ///      "minimum": 0.0
     ///    }
     ///  }
     ///}
@@ -3923,13 +3760,22 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Transit {
+        ///BNA category score for access to major transit stops.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub score: ::std::option::Option<f64>,
+        pub transit: ::std::option::Option<f64>,
     }
 
-    impl From<&Transit> for Transit {
+    impl ::std::convert::From<&Transit> for Transit {
         fn from(value: &Transit) -> Self {
             value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Transit {
+        fn default() -> Self {
+            Self {
+                transit: Default::default(),
+            }
         }
     }
 
@@ -3942,7 +3788,111 @@ pub mod types {
     /// Types for composing complex structures.
     pub mod builder {
         #[derive(Clone, Debug)]
-        pub struct Analysis {
+        pub struct ApiError {
+            details: ::std::result::Result<::std::string::String, ::std::string::String>,
+            id: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            source: ::std::result::Result<super::ApiErrorSource, ::std::string::String>,
+            status: ::std::result::Result<::std::string::String, ::std::string::String>,
+            title: ::std::result::Result<::std::string::String, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for ApiError {
+            fn default() -> Self {
+                Self {
+                    details: Err("no value supplied for details".to_string()),
+                    id: Ok(Default::default()),
+                    source: Err("no value supplied for source".to_string()),
+                    status: Err("no value supplied for status".to_string()),
+                    title: Err("no value supplied for title".to_string()),
+                }
+            }
+        }
+
+        impl ApiError {
+            pub fn details<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.details = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for details: {}", e));
+                self
+            }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
+                self
+            }
+            pub fn source<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::ApiErrorSource>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.source = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for source: {}", e));
+                self
+            }
+            pub fn status<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
+                self
+            }
+            pub fn title<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.title = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for title: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<ApiError> for super::ApiError {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: ApiError,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    details: value.details?,
+                    id: value.id?,
+                    source: value.source?,
+                    status: value.status?,
+                    title: value.title?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::ApiError> for ApiError {
+            fn from(value: super::ApiError) -> Self {
+                Self {
+                    details: Ok(value.details),
+                    id: Ok(value.id),
+                    source: Ok(value.source),
+                    status: Ok(value.status),
+                    title: Ok(value.title),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct BnaPipeline {
             cost: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -3952,13 +3902,11 @@ pub mod types {
                 ::std::string::String,
             >,
             fargate_price_id:
-                ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             fargate_task_arn: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            results_posted:
-                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
             s3_bucket: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -3967,43 +3915,35 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            start_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            state_machine_id: ::std::result::Result<super::StateMachineId, ::std::string::String>,
-            status: ::std::result::Result<
-                ::std::option::Option<super::AnalysisStatus>,
-                ::std::string::String,
-            >,
-            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
-            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            start_time:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            state_machine_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
+            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
         }
 
-        impl Default for Analysis {
+        impl ::std::default::Default for BnaPipeline {
             fn default() -> Self {
                 Self {
                     cost: Ok(Default::default()),
                     end_time: Ok(Default::default()),
                     fargate_price_id: Ok(Default::default()),
                     fargate_task_arn: Ok(Default::default()),
-                    results_posted: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
-                    start_time: Ok(Default::default()),
+                    start_time: Err("no value supplied for start_time".to_string()),
                     state_machine_id: Err("no value supplied for state_machine_id".to_string()),
-                    status: Ok(Default::default()),
-                    step: Ok(Default::default()),
-                    torn_down: Ok(Default::default()),
+                    status: Err("no value supplied for status".to_string()),
+                    step: Err("no value supplied for step".to_string()),
                 }
             }
         }
 
-        impl Analysis {
+        impl BnaPipeline {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.cost = value
                     .try_into()
@@ -4012,10 +3952,10 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
+                T: ::std::convert::TryInto<
                     ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 >,
-                T::Error: std::fmt::Display,
+                T::Error: ::std::fmt::Display,
             {
                 self.end_time = value
                     .try_into()
@@ -4024,8 +3964,8 @@ pub mod types {
             }
             pub fn fargate_price_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fargate_price_id = value.try_into().map_err(|e| {
                     format!(
@@ -4037,8 +3977,8 @@ pub mod types {
             }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fargate_task_arn = value.try_into().map_err(|e| {
                     format!(
@@ -4048,20 +3988,10 @@ pub mod types {
                 });
                 self
             }
-            pub fn results_posted<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.results_posted = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for results_posted: {}", e)
-                });
-                self
-            }
             pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.s3_bucket = value
                     .try_into()
@@ -4070,8 +4000,8 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
                     .try_into()
@@ -4080,10 +4010,8 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.start_time = value
                     .try_into()
@@ -4092,8 +4020,8 @@ pub mod types {
             }
             pub fn state_machine_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::StateMachineId>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
             {
                 self.state_machine_id = value.try_into().map_err(|e| {
                     format!(
@@ -4105,8 +4033,8 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::PipelineStatus>,
+                T::Error: ::std::fmt::Display,
             {
                 self.status = value
                     .try_into()
@@ -4115,279 +4043,69 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Step>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T::Error: ::std::fmt::Display,
             {
                 self.step = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for step: {}", e));
                 self
             }
-            pub fn torn_down<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.torn_down = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for torn_down: {}", e));
-                self
-            }
         }
 
-        impl ::std::convert::TryFrom<Analysis> for super::Analysis {
+        impl ::std::convert::TryFrom<BnaPipeline> for super::BnaPipeline {
             type Error = super::error::ConversionError;
             fn try_from(
-                value: Analysis,
+                value: BnaPipeline,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
                     fargate_price_id: value.fargate_price_id?,
                     fargate_task_arn: value.fargate_task_arn?,
-                    results_posted: value.results_posted?,
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
                     start_time: value.start_time?,
                     state_machine_id: value.state_machine_id?,
                     status: value.status?,
                     step: value.step?,
-                    torn_down: value.torn_down?,
                 })
             }
         }
 
-        impl From<super::Analysis> for Analysis {
-            fn from(value: super::Analysis) -> Self {
+        impl ::std::convert::From<super::BnaPipeline> for BnaPipeline {
+            fn from(value: super::BnaPipeline) -> Self {
                 Self {
                     cost: Ok(value.cost),
                     end_time: Ok(value.end_time),
                     fargate_price_id: Ok(value.fargate_price_id),
                     fargate_task_arn: Ok(value.fargate_task_arn),
-                    results_posted: Ok(value.results_posted),
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
                     start_time: Ok(value.start_time),
                     state_machine_id: Ok(value.state_machine_id),
                     status: Ok(value.status),
                     step: Ok(value.step),
-                    torn_down: Ok(value.torn_down),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
-        pub struct AnalysisPatch {
-            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            end_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            fargate_task_arn: ::std::result::Result<
+        pub struct BnaPipelinePatch {
+            cost: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            results_posted:
-                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
-            s3_bucket: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            start_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            status: ::std::result::Result<
-                ::std::option::Option<super::AnalysisStatus>,
-                ::std::string::String,
-            >,
-            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
-            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
-        }
-
-        impl Default for AnalysisPatch {
-            fn default() -> Self {
-                Self {
-                    cost: Ok(Default::default()),
-                    end_time: Ok(Default::default()),
-                    fargate_task_arn: Ok(Default::default()),
-                    results_posted: Ok(Default::default()),
-                    s3_bucket: Ok(Default::default()),
-                    sqs_message: Ok(Default::default()),
-                    start_time: Ok(Default::default()),
-                    status: Ok(Default::default()),
-                    step: Ok(Default::default()),
-                    torn_down: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl AnalysisPatch {
-            pub fn cost<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.cost = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for cost: {}", e));
-                self
-            }
-            pub fn end_time<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
-            {
-                self.end_time = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for end_time: {}", e));
-                self
-            }
-            pub fn fargate_task_arn<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.fargate_task_arn = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for fargate_task_arn: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn results_posted<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.results_posted = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for results_posted: {}", e)
-                });
-                self
-            }
-            pub fn s3_bucket<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.s3_bucket = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for s3_bucket: {}", e));
-                self
-            }
-            pub fn sqs_message<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.sqs_message = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for sqs_message: {}", e));
-                self
-            }
-            pub fn start_time<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
-            {
-                self.start_time = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for start_time: {}", e));
-                self
-            }
-            pub fn status<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
-                T::Error: std::fmt::Display,
-            {
-                self.status = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for status: {}", e));
-                self
-            }
-            pub fn step<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Step>>,
-                T::Error: std::fmt::Display,
-            {
-                self.step = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for step: {}", e));
-                self
-            }
-            pub fn torn_down<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.torn_down = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for torn_down: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<AnalysisPatch> for super::AnalysisPatch {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: AnalysisPatch,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    cost: value.cost?,
-                    end_time: value.end_time?,
-                    fargate_task_arn: value.fargate_task_arn?,
-                    results_posted: value.results_posted?,
-                    s3_bucket: value.s3_bucket?,
-                    sqs_message: value.sqs_message?,
-                    start_time: value.start_time?,
-                    status: value.status?,
-                    step: value.step?,
-                    torn_down: value.torn_down?,
-                })
-            }
-        }
-
-        impl From<super::AnalysisPatch> for AnalysisPatch {
-            fn from(value: super::AnalysisPatch) -> Self {
-                Self {
-                    cost: Ok(value.cost),
-                    end_time: Ok(value.end_time),
-                    fargate_task_arn: Ok(value.fargate_task_arn),
-                    results_posted: Ok(value.results_posted),
-                    s3_bucket: Ok(value.s3_bucket),
-                    sqs_message: Ok(value.sqs_message),
-                    start_time: Ok(value.start_time),
-                    status: Ok(value.status),
-                    step: Ok(value.step),
-                    torn_down: Ok(value.torn_down),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct AnalysisPost {
-            cost: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             end_time: ::std::result::Result<
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
             >,
             fargate_price_id:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             fargate_task_arn: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            result_posted:
-                ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
             s3_bucket: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -4396,46 +4114,33 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            start_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            state_machine_id: ::std::result::Result<
-                ::std::option::Option<super::StateMachineId>,
-                ::std::string::String,
-            >,
-            status: ::std::result::Result<
-                ::std::option::Option<super::AnalysisStatus>,
-                ::std::string::String,
-            >,
-            step: ::std::result::Result<::std::option::Option<super::Step>, ::std::string::String>,
-            torn_down: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            start_time:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
+            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
         }
 
-        impl Default for AnalysisPost {
+        impl ::std::default::Default for BnaPipelinePatch {
             fn default() -> Self {
                 Self {
                     cost: Ok(Default::default()),
                     end_time: Ok(Default::default()),
                     fargate_price_id: Ok(Default::default()),
                     fargate_task_arn: Ok(Default::default()),
-                    result_posted: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
-                    start_time: Ok(Default::default()),
-                    state_machine_id: Ok(Default::default()),
-                    status: Ok(Default::default()),
-                    step: Ok(Default::default()),
-                    torn_down: Ok(Default::default()),
+                    start_time: Err("no value supplied for start_time".to_string()),
+                    status: Err("no value supplied for status".to_string()),
+                    step: Err("no value supplied for step".to_string()),
                 }
             }
         }
 
-        impl AnalysisPost {
+        impl BnaPipelinePatch {
             pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.cost = value
                     .try_into()
@@ -4444,10 +4149,10 @@ pub mod types {
             }
             pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
+                T: ::std::convert::TryInto<
                     ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 >,
-                T::Error: std::fmt::Display,
+                T::Error: ::std::fmt::Display,
             {
                 self.end_time = value
                     .try_into()
@@ -4456,8 +4161,8 @@ pub mod types {
             }
             pub fn fargate_price_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fargate_price_id = value.try_into().map_err(|e| {
                     format!(
@@ -4469,8 +4174,8 @@ pub mod types {
             }
             pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fargate_task_arn = value.try_into().map_err(|e| {
                     format!(
@@ -4480,20 +4185,10 @@ pub mod types {
                 });
                 self
             }
-            pub fn result_posted<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.result_posted = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for result_posted: {}", e)
-                });
-                self
-            }
             pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.s3_bucket = value
                     .try_into()
@@ -4502,8 +4197,8 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
                     .try_into()
@@ -4512,33 +4207,18 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.start_time = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for start_time: {}", e));
                 self
             }
-            pub fn state_machine_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::StateMachineId>>,
-                T::Error: std::fmt::Display,
-            {
-                self.state_machine_id = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for state_machine_id: {}",
-                        e
-                    )
-                });
-                self
-            }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::AnalysisStatus>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::PipelineStatus>,
+                T::Error: ::std::fmt::Display,
             {
                 self.status = value
                     .try_into()
@@ -4547,1033 +4227,233 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Step>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T::Error: ::std::fmt::Display,
             {
                 self.step = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for step: {}", e));
                 self
             }
-            pub fn torn_down<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
-            {
-                self.torn_down = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for torn_down: {}", e));
-                self
-            }
         }
 
-        impl ::std::convert::TryFrom<AnalysisPost> for super::AnalysisPost {
+        impl ::std::convert::TryFrom<BnaPipelinePatch> for super::BnaPipelinePatch {
             type Error = super::error::ConversionError;
             fn try_from(
-                value: AnalysisPost,
+                value: BnaPipelinePatch,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     cost: value.cost?,
                     end_time: value.end_time?,
                     fargate_price_id: value.fargate_price_id?,
                     fargate_task_arn: value.fargate_task_arn?,
-                    result_posted: value.result_posted?,
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
                     start_time: value.start_time?,
-                    state_machine_id: value.state_machine_id?,
                     status: value.status?,
                     step: value.step?,
-                    torn_down: value.torn_down?,
                 })
             }
         }
 
-        impl From<super::AnalysisPost> for AnalysisPost {
-            fn from(value: super::AnalysisPost) -> Self {
+        impl ::std::convert::From<super::BnaPipelinePatch> for BnaPipelinePatch {
+            fn from(value: super::BnaPipelinePatch) -> Self {
                 Self {
                     cost: Ok(value.cost),
                     end_time: Ok(value.end_time),
                     fargate_price_id: Ok(value.fargate_price_id),
                     fargate_task_arn: Ok(value.fargate_task_arn),
-                    result_posted: Ok(value.result_posted),
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
                     start_time: Ok(value.start_time),
-                    state_machine_id: Ok(value.state_machine_id),
                     status: Ok(value.status),
                     step: Ok(value.step),
-                    torn_down: Ok(value.torn_down),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
-        pub struct Bna {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            community_centers:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            coreservices_score:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            dentists: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            doctors: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            employment: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            grocery: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            high_stress_miles:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            higher_education:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            hospitals: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            k12_education: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            low_stress_miles:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            opportunity_score:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            parks: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            pharmacies: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            recreation_score:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            recreation_trails:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            retail: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            score: ::std::result::Result<f64, ::std::string::String>,
-            social_services:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            technical_vocational_college:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            transit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            version: ::std::result::Result<::std::string::String, ::std::string::String>,
-        }
-
-        impl Default for Bna {
-            fn default() -> Self {
-                Self {
-                    city_id: Err("no value supplied for city_id".to_string()),
-                    community_centers: Ok(Default::default()),
-                    coreservices_score: Ok(Default::default()),
-                    dentists: Ok(Default::default()),
-                    doctors: Ok(Default::default()),
-                    employment: Ok(Default::default()),
-                    grocery: Ok(Default::default()),
-                    high_stress_miles: Ok(Default::default()),
-                    higher_education: Ok(Default::default()),
-                    hospitals: Ok(Default::default()),
-                    id: Err("no value supplied for id".to_string()),
-                    k12_education: Ok(Default::default()),
-                    low_stress_miles: Ok(Default::default()),
-                    opportunity_score: Ok(Default::default()),
-                    parks: Ok(Default::default()),
-                    people: Ok(Default::default()),
-                    pharmacies: Ok(Default::default()),
-                    recreation_score: Ok(Default::default()),
-                    recreation_trails: Ok(Default::default()),
-                    retail: Ok(Default::default()),
-                    score: Err("no value supplied for score".to_string()),
-                    social_services: Ok(Default::default()),
-                    technical_vocational_college: Ok(Default::default()),
-                    transit: Ok(Default::default()),
-                    version: Err("no value supplied for version".to_string()),
-                }
-            }
-        }
-
-        impl Bna {
-            pub fn city_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.city_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
-                self
-            }
-            pub fn community_centers<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.community_centers = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for community_centers: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn coreservices_score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.coreservices_score = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for coreservices_score: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn dentists<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.dentists = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for dentists: {}", e));
-                self
-            }
-            pub fn doctors<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.doctors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for doctors: {}", e));
-                self
-            }
-            pub fn employment<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.employment = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for employment: {}", e));
-                self
-            }
-            pub fn grocery<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.grocery = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for grocery: {}", e));
-                self
-            }
-            pub fn high_stress_miles<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.high_stress_miles = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for high_stress_miles: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn higher_education<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.higher_education = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for higher_education: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn hospitals<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.hospitals = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for hospitals: {}", e));
-                self
-            }
-            pub fn id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for id: {}", e));
-                self
-            }
-            pub fn k12_education<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.k12_education = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for k12_education: {}", e)
-                });
-                self
-            }
-            pub fn low_stress_miles<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.low_stress_miles = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for low_stress_miles: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn opportunity_score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.opportunity_score = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for opportunity_score: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn parks<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.parks = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for parks: {}", e));
-                self
-            }
-            pub fn people<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.people = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for people: {}", e));
-                self
-            }
-            pub fn pharmacies<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.pharmacies = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for pharmacies: {}", e));
-                self
-            }
-            pub fn recreation_score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.recreation_score = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for recreation_score: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn recreation_trails<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.recreation_trails = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for recreation_trails: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn retail<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.retail = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
-                self
-            }
-            pub fn score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<f64>,
-                T::Error: std::fmt::Display,
-            {
-                self.score = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
-                self
-            }
-            pub fn social_services<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.social_services = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for social_services: {}", e)
-                });
-                self
-            }
-            pub fn technical_vocational_college<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.technical_vocational_college = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for technical_vocational_college: {}",
-                        e
-                    )
-                });
-                self
-            }
-            pub fn transit<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.transit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
-                self
-            }
-            pub fn version<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
-            {
-                self.version = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for version: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<Bna> for super::Bna {
-            type Error = super::error::ConversionError;
-            fn try_from(value: Bna) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    city_id: value.city_id?,
-                    community_centers: value.community_centers?,
-                    coreservices_score: value.coreservices_score?,
-                    dentists: value.dentists?,
-                    doctors: value.doctors?,
-                    employment: value.employment?,
-                    grocery: value.grocery?,
-                    high_stress_miles: value.high_stress_miles?,
-                    higher_education: value.higher_education?,
-                    hospitals: value.hospitals?,
-                    id: value.id?,
-                    k12_education: value.k12_education?,
-                    low_stress_miles: value.low_stress_miles?,
-                    opportunity_score: value.opportunity_score?,
-                    parks: value.parks?,
-                    people: value.people?,
-                    pharmacies: value.pharmacies?,
-                    recreation_score: value.recreation_score?,
-                    recreation_trails: value.recreation_trails?,
-                    retail: value.retail?,
-                    score: value.score?,
-                    social_services: value.social_services?,
-                    technical_vocational_college: value.technical_vocational_college?,
-                    transit: value.transit?,
-                    version: value.version?,
-                })
-            }
-        }
-
-        impl From<super::Bna> for Bna {
-            fn from(value: super::Bna) -> Self {
-                Self {
-                    city_id: Ok(value.city_id),
-                    community_centers: Ok(value.community_centers),
-                    coreservices_score: Ok(value.coreservices_score),
-                    dentists: Ok(value.dentists),
-                    doctors: Ok(value.doctors),
-                    employment: Ok(value.employment),
-                    grocery: Ok(value.grocery),
-                    high_stress_miles: Ok(value.high_stress_miles),
-                    higher_education: Ok(value.higher_education),
-                    hospitals: Ok(value.hospitals),
-                    id: Ok(value.id),
-                    k12_education: Ok(value.k12_education),
-                    low_stress_miles: Ok(value.low_stress_miles),
-                    opportunity_score: Ok(value.opportunity_score),
-                    parks: Ok(value.parks),
-                    people: Ok(value.people),
-                    pharmacies: Ok(value.pharmacies),
-                    recreation_score: Ok(value.recreation_score),
-                    recreation_trails: Ok(value.recreation_trails),
-                    retail: Ok(value.retail),
-                    score: Ok(value.score),
-                    social_services: Ok(value.social_services),
-                    technical_vocational_college: Ok(value.technical_vocational_college),
-                    transit: Ok(value.transit),
-                    version: Ok(value.version),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct BnaPost {
-            core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
-            infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
-            opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
-            people: ::std::result::Result<super::People, ::std::string::String>,
-            recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
-            retail: ::std::result::Result<super::Retail, ::std::string::String>,
-            summary: ::std::result::Result<super::BnaSummary, ::std::string::String>,
-            transit: ::std::result::Result<super::Transit, ::std::string::String>,
-        }
-
-        impl Default for BnaPost {
-            fn default() -> Self {
-                Self {
-                    core_services: Err("no value supplied for core_services".to_string()),
-                    infrastructure: Err("no value supplied for infrastructure".to_string()),
-                    opportunity: Err("no value supplied for opportunity".to_string()),
-                    people: Err("no value supplied for people".to_string()),
-                    recreation: Err("no value supplied for recreation".to_string()),
-                    retail: Err("no value supplied for retail".to_string()),
-                    summary: Err("no value supplied for summary".to_string()),
-                    transit: Err("no value supplied for transit".to_string()),
-                }
-            }
-        }
-
-        impl BnaPost {
-            pub fn core_services<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::CoreServices>,
-                T::Error: std::fmt::Display,
-            {
-                self.core_services = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for core_services: {}", e)
-                });
-                self
-            }
-            pub fn infrastructure<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::Infrastructure>,
-                T::Error: std::fmt::Display,
-            {
-                self.infrastructure = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for infrastructure: {}", e)
-                });
-                self
-            }
-            pub fn opportunity<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::Opportunity>,
-                T::Error: std::fmt::Display,
-            {
-                self.opportunity = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for opportunity: {}", e));
-                self
-            }
-            pub fn people<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::People>,
-                T::Error: std::fmt::Display,
-            {
-                self.people = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for people: {}", e));
-                self
-            }
-            pub fn recreation<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::Recreation>,
-                T::Error: std::fmt::Display,
-            {
-                self.recreation = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for recreation: {}", e));
-                self
-            }
-            pub fn retail<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::Retail>,
-                T::Error: std::fmt::Display,
-            {
-                self.retail = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
-                self
-            }
-            pub fn summary<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::BnaSummary>,
-                T::Error: std::fmt::Display,
-            {
-                self.summary = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for summary: {}", e));
-                self
-            }
-            pub fn transit<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<super::Transit>,
-                T::Error: std::fmt::Display,
-            {
-                self.transit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<BnaPost> for super::BnaPost {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: BnaPost,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    core_services: value.core_services?,
-                    infrastructure: value.infrastructure?,
-                    opportunity: value.opportunity?,
-                    people: value.people?,
-                    recreation: value.recreation?,
-                    retail: value.retail?,
-                    summary: value.summary?,
-                    transit: value.transit?,
-                })
-            }
-        }
-
-        impl From<super::BnaPost> for BnaPost {
-            fn from(value: super::BnaPost) -> Self {
-                Self {
-                    core_services: Ok(value.core_services),
-                    infrastructure: Ok(value.infrastructure),
-                    opportunity: Ok(value.opportunity),
-                    people: Ok(value.people),
-                    recreation: Ok(value.recreation),
-                    retail: Ok(value.retail),
-                    summary: Ok(value.summary),
-                    transit: Ok(value.transit),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct BnaSummary {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            score: ::std::result::Result<f64, ::std::string::String>,
-            version: ::std::result::Result<::std::string::String, ::std::string::String>,
-        }
-
-        impl Default for BnaSummary {
-            fn default() -> Self {
-                Self {
-                    city_id: Err("no value supplied for city_id".to_string()),
-                    created_at: Ok(Default::default()),
-                    rating_id: Err("no value supplied for rating_id".to_string()),
-                    score: Err("no value supplied for score".to_string()),
-                    version: Err("no value supplied for version".to_string()),
-                }
-            }
-        }
-
-        impl BnaSummary {
-            pub fn city_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.city_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
-                self
-            }
-            pub fn created_at<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
-            {
-                self.created_at = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for created_at: {}", e));
-                self
-            }
-            pub fn rating_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.rating_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for rating_id: {}", e));
-                self
-            }
-            pub fn score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<f64>,
-                T::Error: std::fmt::Display,
-            {
-                self.score = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
-                self
-            }
-            pub fn version<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
-            {
-                self.version = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for version: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<BnaSummary> for super::BnaSummary {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: BnaSummary,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    city_id: value.city_id?,
-                    created_at: value.created_at?,
-                    rating_id: value.rating_id?,
-                    score: value.score?,
-                    version: value.version?,
-                })
-            }
-        }
-
-        impl From<super::BnaSummary> for BnaSummary {
-            fn from(value: super::BnaSummary) -> Self {
-                Self {
-                    city_id: Ok(value.city_id),
-                    created_at: Ok(value.created_at),
-                    rating_id: Ok(value.rating_id),
-                    score: Ok(value.score),
-                    version: Ok(value.version),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct BnaSummaryWithCityItem {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            country: ::std::result::Result<super::Country, ::std::string::String>,
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
-            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            name: ::std::result::Result<::std::string::String, ::std::string::String>,
-            rating_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            region: ::std::result::Result<
+        pub struct BnaPipelinePost {
+            cost: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            score: ::std::result::Result<f64, ::std::string::String>,
-            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            state: ::std::result::Result<::std::string::String, ::std::string::String>,
-            state_abbrev: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            updated_at: ::std::result::Result<
+            end_time: ::std::result::Result<
                 ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 ::std::string::String,
             >,
-            version: ::std::result::Result<::std::string::String, ::std::string::String>,
+            fargate_price_id:
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
+            fargate_task_arn: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            s3_bucket: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            sqs_message: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
         }
 
-        impl Default for BnaSummaryWithCityItem {
+        impl ::std::default::Default for BnaPipelinePost {
             fn default() -> Self {
                 Self {
-                    city_id: Err("no value supplied for city_id".to_string()),
-                    country: Err("no value supplied for country".to_string()),
-                    created_at: Err("no value supplied for created_at".to_string()),
-                    id: Err("no value supplied for id".to_string()),
-                    latitude: Ok(Default::default()),
-                    longitude: Ok(Default::default()),
-                    name: Err("no value supplied for name".to_string()),
-                    rating_id: Err("no value supplied for rating_id".to_string()),
-                    region: Ok(Default::default()),
-                    score: Err("no value supplied for score".to_string()),
-                    speed_limit: Ok(Default::default()),
-                    state: Err("no value supplied for state".to_string()),
-                    state_abbrev: Ok(Default::default()),
-                    updated_at: Ok(Default::default()),
-                    version: Err("no value supplied for version".to_string()),
+                    cost: Ok(Default::default()),
+                    end_time: Ok(Default::default()),
+                    fargate_price_id: Ok(Default::default()),
+                    fargate_task_arn: Ok(Default::default()),
+                    s3_bucket: Ok(Default::default()),
+                    sqs_message: Ok(Default::default()),
+                    step: Err("no value supplied for step".to_string()),
                 }
             }
         }
 
-        impl BnaSummaryWithCityItem {
-            pub fn city_id<T>(mut self, value: T) -> Self
+        impl BnaPipelinePost {
+            pub fn cost<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.city_id = value
+                self.cost = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
+                    .map_err(|e| format!("error converting supplied value for cost: {}", e));
                 self
             }
-            pub fn country<T>(mut self, value: T) -> Self
+            pub fn end_time<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::Country>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
+                T::Error: ::std::fmt::Display,
             {
-                self.country = value
+                self.end_time = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for country: {}", e));
+                    .map_err(|e| format!("error converting supplied value for end_time: {}", e));
                 self
             }
-            pub fn created_at<T>(mut self, value: T) -> Self
+            pub fn fargate_price_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.created_at = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for created_at: {}", e));
-                self
-            }
-            pub fn id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for id: {}", e));
-                self
-            }
-            pub fn latitude<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.latitude = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for latitude: {}", e));
-                self
-            }
-            pub fn longitude<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.longitude = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for longitude: {}", e));
-                self
-            }
-            pub fn name<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
-            {
-                self.name = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for name: {}", e));
-                self
-            }
-            pub fn rating_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
-            {
-                self.rating_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for rating_id: {}", e));
-                self
-            }
-            pub fn region<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.region = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for region: {}", e));
-                self
-            }
-            pub fn score<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<f64>,
-                T::Error: std::fmt::Display,
-            {
-                self.score = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
-                self
-            }
-            pub fn speed_limit<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.speed_limit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for speed_limit: {}", e));
-                self
-            }
-            pub fn state<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
-            {
-                self.state = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for state: {}", e));
-                self
-            }
-            pub fn state_abbrev<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.state_abbrev = value.try_into().map_err(|e| {
-                    format!("error converting supplied value for state_abbrev: {}", e)
+                self.fargate_price_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for fargate_price_id: {}",
+                        e
+                    )
                 });
                 self
             }
-            pub fn updated_at<T>(mut self, value: T) -> Self
+            pub fn fargate_task_arn<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.updated_at = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for updated_at: {}", e));
+                self.fargate_task_arn = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for fargate_task_arn: {}",
+                        e
+                    )
+                });
                 self
             }
-            pub fn version<T>(mut self, value: T) -> Self
+            pub fn s3_bucket<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.version = value
+                self.s3_bucket = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for version: {}", e));
+                    .map_err(|e| format!("error converting supplied value for s3_bucket: {}", e));
+                self
+            }
+            pub fn sqs_message<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.sqs_message = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for sqs_message: {}", e));
+                self
+            }
+            pub fn step<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.step = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for step: {}", e));
                 self
             }
         }
 
-        impl ::std::convert::TryFrom<BnaSummaryWithCityItem> for super::BnaSummaryWithCityItem {
+        impl ::std::convert::TryFrom<BnaPipelinePost> for super::BnaPipelinePost {
             type Error = super::error::ConversionError;
             fn try_from(
-                value: BnaSummaryWithCityItem,
+                value: BnaPipelinePost,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    city_id: value.city_id?,
-                    country: value.country?,
-                    created_at: value.created_at?,
-                    id: value.id?,
-                    latitude: value.latitude?,
-                    longitude: value.longitude?,
-                    name: value.name?,
-                    rating_id: value.rating_id?,
-                    region: value.region?,
-                    score: value.score?,
-                    speed_limit: value.speed_limit?,
-                    state: value.state?,
-                    state_abbrev: value.state_abbrev?,
-                    updated_at: value.updated_at?,
-                    version: value.version?,
+                    cost: value.cost?,
+                    end_time: value.end_time?,
+                    fargate_price_id: value.fargate_price_id?,
+                    fargate_task_arn: value.fargate_task_arn?,
+                    s3_bucket: value.s3_bucket?,
+                    sqs_message: value.sqs_message?,
+                    step: value.step?,
                 })
             }
         }
 
-        impl From<super::BnaSummaryWithCityItem> for BnaSummaryWithCityItem {
-            fn from(value: super::BnaSummaryWithCityItem) -> Self {
+        impl ::std::convert::From<super::BnaPipelinePost> for BnaPipelinePost {
+            fn from(value: super::BnaPipelinePost) -> Self {
                 Self {
-                    city_id: Ok(value.city_id),
-                    country: Ok(value.country),
-                    created_at: Ok(value.created_at),
-                    id: Ok(value.id),
-                    latitude: Ok(value.latitude),
-                    longitude: Ok(value.longitude),
-                    name: Ok(value.name),
-                    rating_id: Ok(value.rating_id),
-                    region: Ok(value.region),
-                    score: Ok(value.score),
-                    speed_limit: Ok(value.speed_limit),
-                    state: Ok(value.state),
-                    state_abbrev: Ok(value.state_abbrev),
-                    updated_at: Ok(value.updated_at),
-                    version: Ok(value.version),
+                    cost: Ok(value.cost),
+                    end_time: Ok(value.end_time),
+                    fargate_price_id: Ok(value.fargate_price_id),
+                    fargate_task_arn: Ok(value.fargate_task_arn),
+                    s3_bucket: Ok(value.s3_bucket),
+                    sqs_message: Ok(value.sqs_message),
+                    step: Ok(value.step),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct Census {
-            census_id: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
-            city_id:
-                ::std::result::Result<::std::option::Option<uuid::Uuid>, ::std::string::String>,
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            pop_size: ::std::result::Result<
-                ::std::option::Option<super::CensusPopSize>,
-                ::std::string::String,
-            >,
-            population: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
+            id: ::std::result::Result<i32, ::std::string::String>,
+            pop_size: ::std::result::Result<i32, ::std::string::String>,
+            population: ::std::result::Result<i32, ::std::string::String>,
         }
 
-        impl Default for Census {
+        impl ::std::default::Default for Census {
             fn default() -> Self {
                 Self {
-                    census_id: Ok(Default::default()),
-                    city_id: Ok(Default::default()),
-                    created_at: Ok(Default::default()),
-                    fips_code: Ok(Default::default()),
-                    pop_size: Ok(Default::default()),
-                    population: Ok(Default::default()),
+                    city_id: Err("no value supplied for city_id".to_string()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    fips_code: Err("no value supplied for fips_code".to_string()),
+                    id: Err("no value supplied for id".to_string()),
+                    pop_size: Err("no value supplied for pop_size".to_string()),
+                    population: Err("no value supplied for population".to_string()),
                 }
             }
         }
 
         impl Census {
-            pub fn census_id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.census_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for census_id: {}", e));
-                self
-            }
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<uuid::Uuid>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
             {
                 self.city_id = value
                     .try_into()
@@ -5582,10 +4462,8 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
@@ -5594,18 +4472,28 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
                 self
             }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
+                self
+            }
             pub fn pop_size<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::CensusPopSize>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
                 self.pop_size = value
                     .try_into()
@@ -5614,8 +4502,8 @@ pub mod types {
             }
             pub fn population<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
                 self.population = value
                     .try_into()
@@ -5630,23 +4518,23 @@ pub mod types {
                 value: Census,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    census_id: value.census_id?,
                     city_id: value.city_id?,
                     created_at: value.created_at?,
                     fips_code: value.fips_code?,
+                    id: value.id?,
                     pop_size: value.pop_size?,
                     population: value.population?,
                 })
             }
         }
 
-        impl From<super::Census> for Census {
+        impl ::std::convert::From<super::Census> for Census {
             fn from(value: super::Census) -> Self {
                 Self {
-                    census_id: Ok(value.census_id),
                     city_id: Ok(value.city_id),
                     created_at: Ok(value.created_at),
                     fips_code: Ok(value.fips_code),
+                    id: Ok(value.id),
                     pop_size: Ok(value.pop_size),
                     population: Ok(value.population),
                 }
@@ -5655,23 +4543,17 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct CensusPost {
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            pop_size: ::std::result::Result<
-                ::std::option::Option<super::CensusPostPopSize>,
-                ::std::string::String,
-            >,
-            population: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
+            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
+            pop_size: ::std::result::Result<i32, ::std::string::String>,
+            population: ::std::result::Result<i32, ::std::string::String>,
         }
 
-        impl Default for CensusPost {
+        impl ::std::default::Default for CensusPost {
             fn default() -> Self {
                 Self {
-                    fips_code: Ok(Default::default()),
-                    pop_size: Ok(Default::default()),
-                    population: Ok(Default::default()),
+                    fips_code: Err("no value supplied for fips_code".to_string()),
+                    pop_size: Err("no value supplied for pop_size".to_string()),
+                    population: Err("no value supplied for population".to_string()),
                 }
             }
         }
@@ -5679,8 +4561,8 @@ pub mod types {
         impl CensusPost {
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
                     .try_into()
@@ -5689,8 +4571,8 @@ pub mod types {
             }
             pub fn pop_size<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::CensusPostPopSize>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
                 self.pop_size = value
                     .try_into()
@@ -5699,8 +4581,8 @@ pub mod types {
             }
             pub fn population<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
                 self.population = value
                     .try_into()
@@ -5722,7 +4604,7 @@ pub mod types {
             }
         }
 
-        impl From<super::CensusPost> for CensusPost {
+        impl ::std::convert::From<super::CensusPost> for CensusPost {
             fn from(value: super::CensusPost) -> Self {
                 Self {
                     fips_code: Ok(value.fips_code),
@@ -5745,7 +4627,7 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            speed_limit: ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             state: ::std::result::Result<::std::string::String, ::std::string::String>,
             state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
@@ -5757,7 +4639,7 @@ pub mod types {
             >,
         }
 
-        impl Default for City {
+        impl ::std::default::Default for City {
             fn default() -> Self {
                 Self {
                     country: Err("no value supplied for country".to_string()),
@@ -5778,8 +4660,8 @@ pub mod types {
         impl City {
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::Country>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::Country>,
+                T::Error: ::std::fmt::Display,
             {
                 self.country = value
                     .try_into()
@@ -5788,8 +4670,8 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
@@ -5798,8 +4680,8 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<uuid::Uuid>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
             {
                 self.id = value
                     .try_into()
@@ -5808,8 +4690,8 @@ pub mod types {
             }
             pub fn latitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.latitude = value
                     .try_into()
@@ -5818,8 +4700,8 @@ pub mod types {
             }
             pub fn longitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.longitude = value
                     .try_into()
@@ -5828,8 +4710,8 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.name = value
                     .try_into()
@@ -5838,8 +4720,8 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.region = value
                     .try_into()
@@ -5848,8 +4730,8 @@ pub mod types {
             }
             pub fn speed_limit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.speed_limit = value
                     .try_into()
@@ -5858,8 +4740,8 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.state = value
                     .try_into()
@@ -5868,8 +4750,8 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
                     format!("error converting supplied value for state_abbrev: {}", e)
@@ -5878,10 +4760,10 @@ pub mod types {
             }
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
+                T: ::std::convert::TryInto<
                     ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
                 >,
-                T::Error: std::fmt::Display,
+                T::Error: ::std::fmt::Display,
             {
                 self.updated_at = value
                     .try_into()
@@ -5909,7 +4791,7 @@ pub mod types {
             }
         }
 
-        impl From<super::City> for City {
+        impl ::std::convert::From<super::City> for City {
             fn from(value: super::City) -> Self {
                 Self {
                     country: Ok(value.country),
@@ -5928,31 +4810,92 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct CityCensuses {
+            censuses: ::std::result::Result<::std::vec::Vec<super::Census>, ::std::string::String>,
+            city: ::std::result::Result<super::City, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for CityCensuses {
+            fn default() -> Self {
+                Self {
+                    censuses: Err("no value supplied for censuses".to_string()),
+                    city: Err("no value supplied for city".to_string()),
+                }
+            }
+        }
+
+        impl CityCensuses {
+            pub fn censuses<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::Census>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.censuses = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for censuses: {}", e));
+                self
+            }
+            pub fn city<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::City>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<CityCensuses> for super::CityCensuses {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: CityCensuses,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    censuses: value.censuses?,
+                    city: value.city?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::CityCensuses> for CityCensuses {
+            fn from(value: super::CityCensuses) -> Self {
+                Self {
+                    censuses: Ok(value.censuses),
+                    city: Ok(value.city),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct CityPost {
             country: ::std::result::Result<super::Country, ::std::string::String>,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             name: ::std::result::Result<::std::string::String, ::std::string::String>,
-            speed_limit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            state: ::std::result::Result<
+            region: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
+            speed_limit: ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
+            state: ::std::result::Result<::std::string::String, ::std::string::String>,
             state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
         }
 
-        impl Default for CityPost {
+        impl ::std::default::Default for CityPost {
             fn default() -> Self {
                 Self {
                     country: Err("no value supplied for country".to_string()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
                     name: Err("no value supplied for name".to_string()),
+                    region: Ok(Default::default()),
                     speed_limit: Ok(Default::default()),
-                    state: Ok(Default::default()),
+                    state: Err("no value supplied for state".to_string()),
                     state_abbrev: Ok(Default::default()),
                 }
             }
@@ -5961,8 +4904,8 @@ pub mod types {
         impl CityPost {
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::Country>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::Country>,
+                T::Error: ::std::fmt::Display,
             {
                 self.country = value
                     .try_into()
@@ -5971,8 +4914,8 @@ pub mod types {
             }
             pub fn latitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.latitude = value
                     .try_into()
@@ -5981,8 +4924,8 @@ pub mod types {
             }
             pub fn longitude<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.longitude = value
                     .try_into()
@@ -5991,18 +4934,28 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.name = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for name: {}", e));
                 self
             }
+            pub fn region<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.region = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for region: {}", e));
+                self
+            }
             pub fn speed_limit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.speed_limit = value
                     .try_into()
@@ -6011,8 +4964,8 @@ pub mod types {
             }
             pub fn state<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.state = value
                     .try_into()
@@ -6021,8 +4974,8 @@ pub mod types {
             }
             pub fn state_abbrev<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.state_abbrev = value.try_into().map_err(|e| {
                     format!("error converting supplied value for state_abbrev: {}", e)
@@ -6041,6 +4994,7 @@ pub mod types {
                     latitude: value.latitude?,
                     longitude: value.longitude?,
                     name: value.name?,
+                    region: value.region?,
                     speed_limit: value.speed_limit?,
                     state: value.state?,
                     state_abbrev: value.state_abbrev?,
@@ -6048,16 +5002,77 @@ pub mod types {
             }
         }
 
-        impl From<super::CityPost> for CityPost {
+        impl ::std::convert::From<super::CityPost> for CityPost {
             fn from(value: super::CityPost) -> Self {
                 Self {
                     country: Ok(value.country),
                     latitude: Ok(value.latitude),
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),
+                    region: Ok(value.region),
                     speed_limit: Ok(value.speed_limit),
                     state: Ok(value.state),
                     state_abbrev: Ok(value.state_abbrev),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct CityRatings {
+            city: ::std::result::Result<super::City, ::std::string::String>,
+            ratings:
+                ::std::result::Result<::std::vec::Vec<super::RatingSummary>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for CityRatings {
+            fn default() -> Self {
+                Self {
+                    city: Err("no value supplied for city".to_string()),
+                    ratings: Err("no value supplied for ratings".to_string()),
+                }
+            }
+        }
+
+        impl CityRatings {
+            pub fn city<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::City>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city: {}", e));
+                self
+            }
+            pub fn ratings<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::RatingSummary>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.ratings = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for ratings: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<CityRatings> for super::CityRatings {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: CityRatings,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city: value.city?,
+                    ratings: value.ratings?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::CityRatings> for CityRatings {
+            fn from(value: super::CityRatings) -> Self {
+                Self {
+                    city: Ok(value.city),
+                    ratings: Ok(value.ratings),
                 }
             }
         }
@@ -6074,7 +5089,7 @@ pub mod types {
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for CoreServices {
+        impl ::std::default::Default for CoreServices {
             fn default() -> Self {
                 Self {
                     dentists: Ok(Default::default()),
@@ -6091,8 +5106,8 @@ pub mod types {
         impl CoreServices {
             pub fn dentists<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.dentists = value
                     .try_into()
@@ -6101,8 +5116,8 @@ pub mod types {
             }
             pub fn doctors<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.doctors = value
                     .try_into()
@@ -6111,8 +5126,8 @@ pub mod types {
             }
             pub fn grocery<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.grocery = value
                     .try_into()
@@ -6121,8 +5136,8 @@ pub mod types {
             }
             pub fn hospitals<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.hospitals = value
                     .try_into()
@@ -6131,8 +5146,8 @@ pub mod types {
             }
             pub fn pharmacies<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.pharmacies = value
                     .try_into()
@@ -6141,8 +5156,8 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.score = value
                     .try_into()
@@ -6151,8 +5166,8 @@ pub mod types {
             }
             pub fn social_services<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.social_services = value.try_into().map_err(|e| {
                     format!("error converting supplied value for social_services: {}", e)
@@ -6178,7 +5193,7 @@ pub mod types {
             }
         }
 
-        impl From<super::CoreServices> for CoreServices {
+        impl ::std::convert::From<super::CoreServices> for CoreServices {
             fn from(value: super::CoreServices) -> Self {
                 Self {
                     dentists: Ok(value.dentists),
@@ -6193,330 +5208,19 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct Enqueue {
-            city: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            region: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-        }
-
-        impl Default for Enqueue {
-            fn default() -> Self {
-                Self {
-                    city: Ok(Default::default()),
-                    country: Ok(Default::default()),
-                    fips_code: Ok(Default::default()),
-                    region: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl Enqueue {
-            pub fn city<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.city = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city: {}", e));
-                self
-            }
-            pub fn country<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
-                T::Error: std::fmt::Display,
-            {
-                self.country = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for country: {}", e));
-                self
-            }
-            pub fn fips_code<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.fips_code = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
-                self
-            }
-            pub fn region<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.region = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for region: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<Enqueue> for super::Enqueue {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: Enqueue,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    city: value.city?,
-                    country: value.country?,
-                    fips_code: value.fips_code?,
-                    region: value.region?,
-                })
-            }
-        }
-
-        impl From<super::Enqueue> for Enqueue {
-            fn from(value: super::Enqueue) -> Self {
-                Self {
-                    city: Ok(value.city),
-                    country: Ok(value.country),
-                    fips_code: Ok(value.fips_code),
-                    region: Ok(value.region),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct EnqueuePost {
-            city: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            region: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-        }
-
-        impl Default for EnqueuePost {
-            fn default() -> Self {
-                Self {
-                    city: Ok(Default::default()),
-                    country: Ok(Default::default()),
-                    fips_code: Ok(Default::default()),
-                    region: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl EnqueuePost {
-            pub fn city<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.city = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city: {}", e));
-                self
-            }
-            pub fn country<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
-                T::Error: std::fmt::Display,
-            {
-                self.country = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for country: {}", e));
-                self
-            }
-            pub fn fips_code<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.fips_code = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
-                self
-            }
-            pub fn region<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.region = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for region: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<EnqueuePost> for super::EnqueuePost {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: EnqueuePost,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    city: value.city?,
-                    country: value.country?,
-                    fips_code: value.fips_code?,
-                    region: value.region?,
-                })
-            }
-        }
-
-        impl From<super::EnqueuePost> for EnqueuePost {
-            fn from(value: super::EnqueuePost) -> Self {
-                Self {
-                    city: Ok(value.city),
-                    country: Ok(value.country),
-                    fips_code: Ok(value.fips_code),
-                    region: Ok(value.region),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct Error {
-            details: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            id: ::std::result::Result<
-                ::std::option::Option<super::ApiGatewayId>,
-                ::std::string::String,
-            >,
-            source:
-                ::std::result::Result<::std::option::Option<super::Source>, ::std::string::String>,
-            status: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
-            title: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-        }
-
-        impl Default for Error {
-            fn default() -> Self {
-                Self {
-                    details: Ok(Default::default()),
-                    id: Ok(Default::default()),
-                    source: Ok(Default::default()),
-                    status: Ok(Default::default()),
-                    title: Ok(Default::default()),
-                }
-            }
-        }
-
-        impl Error {
-            pub fn details<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.details = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for details: {}", e));
-                self
-            }
-            pub fn id<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::ApiGatewayId>>,
-                T::Error: std::fmt::Display,
-            {
-                self.id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for id: {}", e));
-                self
-            }
-            pub fn source<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<super::Source>>,
-                T::Error: std::fmt::Display,
-            {
-                self.source = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for source: {}", e));
-                self
-            }
-            pub fn status<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.status = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for status: {}", e));
-                self
-            }
-            pub fn title<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
-            {
-                self.title = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for title: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<Error> for super::Error {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: Error,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    details: value.details?,
-                    id: value.id?,
-                    source: value.source?,
-                    status: value.status?,
-                    title: value.title?,
-                })
-            }
-        }
-
-        impl From<super::Error> for Error {
-            fn from(value: super::Error) -> Self {
-                Self {
-                    details: Ok(value.details),
-                    id: Ok(value.id),
-                    source: Ok(value.source),
-                    status: Ok(value.status),
-                    title: Ok(value.title),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct FargatePrice {
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            fargate_price_id:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            per_second: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            id: ::std::result::Result<i32, ::std::string::String>,
+            per_second: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
-        impl Default for FargatePrice {
+        impl ::std::default::Default for FargatePrice {
             fn default() -> Self {
                 Self {
-                    created_at: Ok(Default::default()),
-                    fargate_price_id: Ok(Default::default()),
-                    per_second: Ok(Default::default()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    id: Err("no value supplied for id".to_string()),
+                    per_second: Err("no value supplied for per_second".to_string()),
                 }
             }
         }
@@ -6524,33 +5228,28 @@ pub mod types {
         impl FargatePrice {
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for created_at: {}", e));
                 self
             }
-            pub fn fargate_price_id<T>(mut self, value: T) -> Self
+            pub fn id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
-                self.fargate_price_id = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for fargate_price_id: {}",
-                        e
-                    )
-                });
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
                 self
             }
             pub fn per_second<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.per_second = value
                     .try_into()
@@ -6566,18 +5265,468 @@ pub mod types {
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     created_at: value.created_at?,
-                    fargate_price_id: value.fargate_price_id?,
+                    id: value.id?,
                     per_second: value.per_second?,
                 })
             }
         }
 
-        impl From<super::FargatePrice> for FargatePrice {
+        impl ::std::convert::From<super::FargatePrice> for FargatePrice {
             fn from(value: super::FargatePrice) -> Self {
                 Self {
                     created_at: Ok(value.created_at),
-                    fargate_price_id: Ok(value.fargate_price_id),
+                    id: Ok(value.id),
                     per_second: Ok(value.per_second),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetCitiesSubmissionResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetCitiesSubmissionResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetCitiesSubmissionResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetCitiesSubmissionResponse> for super::GetCitiesSubmissionResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetCitiesSubmissionResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetCitiesSubmissionResponse> for GetCitiesSubmissionResponse {
+            fn from(value: super::GetCitiesSubmissionResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetCitiesSubmissionsResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetCitiesSubmissionsResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetCitiesSubmissionsResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetCitiesSubmissionsResponse> for super::GetCitiesSubmissionsResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetCitiesSubmissionsResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetCitiesSubmissionsResponse> for GetCitiesSubmissionsResponse {
+            fn from(value: super::GetCitiesSubmissionsResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetCityCensusesResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetCityCensusesResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetCityCensusesResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetCityCensusesResponse> for super::GetCityCensusesResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetCityCensusesResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetCityCensusesResponse> for GetCityCensusesResponse {
+            fn from(value: super::GetCityCensusesResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetCityRatingsResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetCityRatingsResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetCityRatingsResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetCityRatingsResponse> for super::GetCityRatingsResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetCityRatingsResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetCityRatingsResponse> for GetCityRatingsResponse {
+            fn from(value: super::GetCityRatingsResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetCityResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetCityResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetCityResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetCityResponse> for super::GetCityResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetCityResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetCityResponse> for GetCityResponse {
+            fn from(value: super::GetCityResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetPipelinesBnaResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetPipelinesBnaResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetPipelinesBnaResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetPipelinesBnaResponse> for super::GetPipelinesBnaResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetPipelinesBnaResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetPipelinesBnaResponse> for GetPipelinesBnaResponse {
+            fn from(value: super::GetPipelinesBnaResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetPipelinesBnasResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetPipelinesBnasResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetPipelinesBnasResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetPipelinesBnasResponse> for super::GetPipelinesBnasResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetPipelinesBnasResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetPipelinesBnasResponse> for GetPipelinesBnasResponse {
+            fn from(value: super::GetPipelinesBnasResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetPriceFargateResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetPriceFargateResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetPriceFargateResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetPriceFargateResponse> for super::GetPriceFargateResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetPriceFargateResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetPriceFargateResponse> for GetPriceFargateResponse {
+            fn from(value: super::GetPriceFargateResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetRatingResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetRatingResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetRatingResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetRatingResponse> for super::GetRatingResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetRatingResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetRatingResponse> for GetRatingResponse {
+            fn from(value: super::GetRatingResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct GetRatingsCityResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for GetRatingsCityResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl GetRatingsCityResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<GetRatingsCityResponse> for super::GetRatingsCityResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: GetRatingsCityResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::GetRatingsCityResponse> for GetRatingsCityResponse {
+            fn from(value: super::GetRatingsCityResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
                 }
             }
         }
@@ -6590,7 +5739,7 @@ pub mod types {
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for Infrastructure {
+        impl ::std::default::Default for Infrastructure {
             fn default() -> Self {
                 Self {
                     high_stress_miles: Ok(Default::default()),
@@ -6602,8 +5751,8 @@ pub mod types {
         impl Infrastructure {
             pub fn high_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.high_stress_miles = value.try_into().map_err(|e| {
                     format!(
@@ -6615,8 +5764,8 @@ pub mod types {
             }
             pub fn low_stress_miles<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.low_stress_miles = value.try_into().map_err(|e| {
                     format!(
@@ -6640,7 +5789,7 @@ pub mod types {
             }
         }
 
-        impl From<super::Infrastructure> for Infrastructure {
+        impl ::std::convert::From<super::Infrastructure> for Infrastructure {
             fn from(value: super::Infrastructure) -> Self {
                 Self {
                     high_stress_miles: Ok(value.high_stress_miles),
@@ -6660,7 +5809,7 @@ pub mod types {
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for Opportunity {
+        impl ::std::default::Default for Opportunity {
             fn default() -> Self {
                 Self {
                     employment: Ok(Default::default()),
@@ -6675,8 +5824,8 @@ pub mod types {
         impl Opportunity {
             pub fn employment<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.employment = value
                     .try_into()
@@ -6685,8 +5834,8 @@ pub mod types {
             }
             pub fn higher_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.higher_education = value.try_into().map_err(|e| {
                     format!(
@@ -6698,8 +5847,8 @@ pub mod types {
             }
             pub fn k12_education<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.k12_education = value.try_into().map_err(|e| {
                     format!("error converting supplied value for k12_education: {}", e)
@@ -6708,8 +5857,8 @@ pub mod types {
             }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.score = value
                     .try_into()
@@ -6718,8 +5867,8 @@ pub mod types {
             }
             pub fn technical_vocational_college<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.technical_vocational_college = value.try_into().map_err(|e| {
                     format!(
@@ -6746,7 +5895,7 @@ pub mod types {
             }
         }
 
-        impl From<super::Opportunity> for Opportunity {
+        impl ::std::convert::From<super::Opportunity> for Opportunity {
             fn from(value: super::Opportunity) -> Self {
                 Self {
                     employment: Ok(value.employment),
@@ -6759,27 +5908,119 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct People {
-            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+        pub struct PatchCitiesSubmissionResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
         }
 
-        impl Default for People {
+        impl ::std::default::Default for PatchCitiesSubmissionResponse {
             fn default() -> Self {
                 Self {
-                    score: Ok(Default::default()),
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PatchCitiesSubmissionResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PatchCitiesSubmissionResponse>
+            for super::PatchCitiesSubmissionResponse
+        {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PatchCitiesSubmissionResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PatchCitiesSubmissionResponse> for PatchCitiesSubmissionResponse {
+            fn from(value: super::PatchCitiesSubmissionResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PatchPipelinesBnaResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PatchPipelinesBnaResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PatchPipelinesBnaResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PatchPipelinesBnaResponse> for super::PatchPipelinesBnaResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PatchPipelinesBnaResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PatchPipelinesBnaResponse> for PatchPipelinesBnaResponse {
+            fn from(value: super::PatchPipelinesBnaResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct People {
+            people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for People {
+            fn default() -> Self {
+                Self {
+                    people: Ok(Default::default()),
                 }
             }
         }
 
         impl People {
-            pub fn score<T>(mut self, value: T) -> Self
+            pub fn people<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.score = value
+                self.people = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                    .map_err(|e| format!("error converting supplied value for people: {}", e));
                 self
             }
         }
@@ -6790,15 +6031,743 @@ pub mod types {
                 value: People,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    score: value.score?,
+                    people: value.people?,
                 })
             }
         }
 
-        impl From<super::People> for People {
+        impl ::std::convert::From<super::People> for People {
             fn from(value: super::People) -> Self {
                 Self {
+                    people: Ok(value.people),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PostCitiesSubmissionResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PostCitiesSubmissionResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PostCitiesSubmissionResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PostCitiesSubmissionResponse> for super::PostCitiesSubmissionResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PostCitiesSubmissionResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PostCitiesSubmissionResponse> for PostCitiesSubmissionResponse {
+            fn from(value: super::PostCitiesSubmissionResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PostCityCensusResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PostCityCensusResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PostCityCensusResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PostCityCensusResponse> for super::PostCityCensusResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PostCityCensusResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PostCityCensusResponse> for PostCityCensusResponse {
+            fn from(value: super::PostCityCensusResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PostCityResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PostCityResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PostCityResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PostCityResponse> for super::PostCityResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PostCityResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PostCityResponse> for PostCityResponse {
+            fn from(value: super::PostCityResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PostPipelinesBnaResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PostPipelinesBnaResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PostPipelinesBnaResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PostPipelinesBnaResponse> for super::PostPipelinesBnaResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PostPipelinesBnaResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PostPipelinesBnaResponse> for PostPipelinesBnaResponse {
+            fn from(value: super::PostPipelinesBnaResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct PostRatingResponse {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for PostRatingResponse {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl PostRatingResponse {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<PostRatingResponse> for super::PostRatingResponse {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: PostRatingResponse,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::PostRatingResponse> for PostRatingResponse {
+            fn from(value: super::PostRatingResponse) -> Self {
+                Self {
+                    errors: Ok(value.errors),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct Rating {
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
+            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
+            opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
+            people: ::std::result::Result<super::People, ::std::string::String>,
+            recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
+            retail: ::std::result::Result<super::Retail, ::std::string::String>,
+            score: ::std::result::Result<f64, ::std::string::String>,
+            transit: ::std::result::Result<super::Transit, ::std::string::String>,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for Rating {
+            fn default() -> Self {
+                Self {
+                    city_id: Err("no value supplied for city_id".to_string()),
+                    core_services: Err("no value supplied for core_services".to_string()),
+                    id: Err("no value supplied for id".to_string()),
+                    infrastructure: Err("no value supplied for infrastructure".to_string()),
+                    opportunity: Err("no value supplied for opportunity".to_string()),
+                    people: Err("no value supplied for people".to_string()),
+                    recreation: Err("no value supplied for recreation".to_string()),
+                    retail: Err("no value supplied for retail".to_string()),
+                    score: Err("no value supplied for score".to_string()),
+                    transit: Err("no value supplied for transit".to_string()),
+                    version: Err("no value supplied for version".to_string()),
+                }
+            }
+        }
+
+        impl Rating {
+            pub fn city_id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city_id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
+                self
+            }
+            pub fn core_services<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::CoreServices>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.core_services = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for core_services: {}", e)
+                });
+                self
+            }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
+                self
+            }
+            pub fn infrastructure<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Infrastructure>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.infrastructure = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for infrastructure: {}", e)
+                });
+                self
+            }
+            pub fn opportunity<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Opportunity>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.opportunity = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for opportunity: {}", e));
+                self
+            }
+            pub fn people<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::People>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.people = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for people: {}", e));
+                self
+            }
+            pub fn recreation<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Recreation>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.recreation = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for recreation: {}", e));
+                self
+            }
+            pub fn retail<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Retail>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.retail = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
+                self
+            }
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<f64>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+            pub fn transit<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Transit>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.transit = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
+                self
+            }
+            pub fn version<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.version = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for version: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<Rating> for super::Rating {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: Rating,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city_id: value.city_id?,
+                    core_services: value.core_services?,
+                    id: value.id?,
+                    infrastructure: value.infrastructure?,
+                    opportunity: value.opportunity?,
+                    people: value.people?,
+                    recreation: value.recreation?,
+                    retail: value.retail?,
+                    score: value.score?,
+                    transit: value.transit?,
+                    version: value.version?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::Rating> for Rating {
+            fn from(value: super::Rating) -> Self {
+                Self {
+                    city_id: Ok(value.city_id),
+                    core_services: Ok(value.core_services),
+                    id: Ok(value.id),
+                    infrastructure: Ok(value.infrastructure),
+                    opportunity: Ok(value.opportunity),
+                    people: Ok(value.people),
+                    recreation: Ok(value.recreation),
+                    retail: Ok(value.retail),
                     score: Ok(value.score),
+                    transit: Ok(value.transit),
+                    version: Ok(value.version),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct RatingPost {
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
+            infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
+            opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
+            people: ::std::result::Result<super::People, ::std::string::String>,
+            recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
+            retail: ::std::result::Result<super::Retail, ::std::string::String>,
+            transit: ::std::result::Result<super::Transit, ::std::string::String>,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for RatingPost {
+            fn default() -> Self {
+                Self {
+                    city_id: Err("no value supplied for city_id".to_string()),
+                    core_services: Err("no value supplied for core_services".to_string()),
+                    infrastructure: Err("no value supplied for infrastructure".to_string()),
+                    opportunity: Err("no value supplied for opportunity".to_string()),
+                    people: Err("no value supplied for people".to_string()),
+                    recreation: Err("no value supplied for recreation".to_string()),
+                    retail: Err("no value supplied for retail".to_string()),
+                    transit: Err("no value supplied for transit".to_string()),
+                    version: Err("no value supplied for version".to_string()),
+                }
+            }
+        }
+
+        impl RatingPost {
+            pub fn city_id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city_id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
+                self
+            }
+            pub fn core_services<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::CoreServices>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.core_services = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for core_services: {}", e)
+                });
+                self
+            }
+            pub fn infrastructure<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Infrastructure>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.infrastructure = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for infrastructure: {}", e)
+                });
+                self
+            }
+            pub fn opportunity<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Opportunity>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.opportunity = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for opportunity: {}", e));
+                self
+            }
+            pub fn people<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::People>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.people = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for people: {}", e));
+                self
+            }
+            pub fn recreation<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Recreation>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.recreation = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for recreation: {}", e));
+                self
+            }
+            pub fn retail<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Retail>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.retail = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
+                self
+            }
+            pub fn transit<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Transit>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.transit = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
+                self
+            }
+            pub fn version<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.version = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for version: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<RatingPost> for super::RatingPost {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: RatingPost,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city_id: value.city_id?,
+                    core_services: value.core_services?,
+                    infrastructure: value.infrastructure?,
+                    opportunity: value.opportunity?,
+                    people: value.people?,
+                    recreation: value.recreation?,
+                    retail: value.retail?,
+                    transit: value.transit?,
+                    version: value.version?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::RatingPost> for RatingPost {
+            fn from(value: super::RatingPost) -> Self {
+                Self {
+                    city_id: Ok(value.city_id),
+                    core_services: Ok(value.core_services),
+                    infrastructure: Ok(value.infrastructure),
+                    opportunity: Ok(value.opportunity),
+                    people: Ok(value.people),
+                    recreation: Ok(value.recreation),
+                    retail: Ok(value.retail),
+                    transit: Ok(value.transit),
+                    version: Ok(value.version),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct RatingSummary {
+            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            score: ::std::result::Result<f64, ::std::string::String>,
+            version: ::std::result::Result<::std::string::String, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for RatingSummary {
+            fn default() -> Self {
+                Self {
+                    city_id: Err("no value supplied for city_id".to_string()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    id: Err("no value supplied for id".to_string()),
+                    score: Err("no value supplied for score".to_string()),
+                    version: Err("no value supplied for version".to_string()),
+                }
+            }
+        }
+
+        impl RatingSummary {
+            pub fn city_id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city_id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
+                self
+            }
+            pub fn created_at<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.created_at = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for created_at: {}", e));
+                self
+            }
+            pub fn id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.id = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for id: {}", e));
+                self
+            }
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<f64>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+            pub fn version<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.version = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for version: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<RatingSummary> for super::RatingSummary {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: RatingSummary,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city_id: value.city_id?,
+                    created_at: value.created_at?,
+                    id: value.id?,
+                    score: value.score?,
+                    version: value.version?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::RatingSummary> for RatingSummary {
+            fn from(value: super::RatingSummary) -> Self {
+                Self {
+                    city_id: Ok(value.city_id),
+                    created_at: Ok(value.created_at),
+                    id: Ok(value.id),
+                    score: Ok(value.score),
+                    version: Ok(value.version),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct RatingWithCity {
+            city: ::std::result::Result<super::City, ::std::string::String>,
+            rating: ::std::result::Result<super::Rating, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for RatingWithCity {
+            fn default() -> Self {
+                Self {
+                    city: Err("no value supplied for city".to_string()),
+                    rating: Err("no value supplied for rating".to_string()),
+                }
+            }
+        }
+
+        impl RatingWithCity {
+            pub fn city<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::City>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city: {}", e));
+                self
+            }
+            pub fn rating<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Rating>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.rating = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for rating: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<RatingWithCity> for super::RatingWithCity {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: RatingWithCity,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city: value.city?,
+                    rating: value.rating?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::RatingWithCity> for RatingWithCity {
+            fn from(value: super::RatingWithCity) -> Self {
+                Self {
+                    city: Ok(value.city),
+                    rating: Ok(value.rating),
                 }
             }
         }
@@ -6808,18 +6777,17 @@ pub mod types {
             community_centers:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             parks: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            recreation_trails:
-                ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            trails: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for Recreation {
+        impl ::std::default::Default for Recreation {
             fn default() -> Self {
                 Self {
                     community_centers: Ok(Default::default()),
                     parks: Ok(Default::default()),
-                    recreation_trails: Ok(Default::default()),
                     score: Ok(Default::default()),
+                    trails: Ok(Default::default()),
                 }
             }
         }
@@ -6827,8 +6795,8 @@ pub mod types {
         impl Recreation {
             pub fn community_centers<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.community_centers = value.try_into().map_err(|e| {
                     format!(
@@ -6840,35 +6808,32 @@ pub mod types {
             }
             pub fn parks<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.parks = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for parks: {}", e));
                 self
             }
-            pub fn recreation_trails<T>(mut self, value: T) -> Self
-            where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
-            {
-                self.recreation_trails = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for recreation_trails: {}",
-                        e
-                    )
-                });
-                self
-            }
             pub fn score<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.score = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+            pub fn trails<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.trails = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for trails: {}", e));
                 self
             }
         }
@@ -6881,45 +6846,45 @@ pub mod types {
                 Ok(Self {
                     community_centers: value.community_centers?,
                     parks: value.parks?,
-                    recreation_trails: value.recreation_trails?,
                     score: value.score?,
+                    trails: value.trails?,
                 })
             }
         }
 
-        impl From<super::Recreation> for Recreation {
+        impl ::std::convert::From<super::Recreation> for Recreation {
             fn from(value: super::Recreation) -> Self {
                 Self {
                     community_centers: Ok(value.community_centers),
                     parks: Ok(value.parks),
-                    recreation_trails: Ok(value.recreation_trails),
                     score: Ok(value.score),
+                    trails: Ok(value.trails),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct Retail {
-            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            retail: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for Retail {
+        impl ::std::default::Default for Retail {
             fn default() -> Self {
                 Self {
-                    score: Ok(Default::default()),
+                    retail: Ok(Default::default()),
                 }
             }
         }
 
         impl Retail {
-            pub fn score<T>(mut self, value: T) -> Self
+            pub fn retail<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.score = value
+                self.retail = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                    .map_err(|e| format!("error converting supplied value for retail: {}", e));
                 self
             }
         }
@@ -6930,49 +6895,31 @@ pub mod types {
                 value: Retail,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    score: value.score?,
+                    retail: value.retail?,
                 })
             }
         }
 
-        impl From<super::Retail> for Retail {
+        impl ::std::convert::From<super::Retail> for Retail {
             fn from(value: super::Retail) -> Self {
                 Self {
-                    score: Ok(value.score),
+                    retail: Ok(value.retail),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct Submission {
-            city: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            created_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                ::std::string::String,
-            >,
-            email: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            first_name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            id: ::std::result::Result<::std::option::Option<i64>, ::std::string::String>,
-            last_name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            city: ::std::result::Result<::std::string::String, ::std::string::String>,
+            consent: ::std::result::Result<bool, ::std::string::String>,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            created_at:
+                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            email: ::std::result::Result<::std::string::String, ::std::string::String>,
+            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
+            first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            id: ::std::result::Result<i32, ::std::string::String>,
+            last_name: ::std::result::Result<::std::string::String, ::std::string::String>,
             occupation: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -6985,28 +6932,25 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            submission_status: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            status: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
-        impl Default for Submission {
+        impl ::std::default::Default for Submission {
             fn default() -> Self {
                 Self {
-                    city: Ok(Default::default()),
-                    consent: Ok(Default::default()),
-                    country: Ok(Default::default()),
-                    created_at: Ok(Default::default()),
-                    email: Ok(Default::default()),
-                    fips_code: Ok(Default::default()),
-                    first_name: Ok(Default::default()),
-                    id: Ok(Default::default()),
-                    last_name: Ok(Default::default()),
+                    city: Err("no value supplied for city".to_string()),
+                    consent: Err("no value supplied for consent".to_string()),
+                    country: Err("no value supplied for country".to_string()),
+                    created_at: Err("no value supplied for created_at".to_string()),
+                    email: Err("no value supplied for email".to_string()),
+                    fips_code: Err("no value supplied for fips_code".to_string()),
+                    first_name: Err("no value supplied for first_name".to_string()),
+                    id: Err("no value supplied for id".to_string()),
+                    last_name: Err("no value supplied for last_name".to_string()),
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    submission_status: Ok(Default::default()),
+                    status: Err("no value supplied for status".to_string()),
                 }
             }
         }
@@ -7014,8 +6958,8 @@ pub mod types {
         impl Submission {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.city = value
                     .try_into()
@@ -7024,8 +6968,8 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<bool>,
+                T::Error: ::std::fmt::Display,
             {
                 self.consent = value
                     .try_into()
@@ -7034,8 +6978,8 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::Country>,
+                T::Error: ::std::fmt::Display,
             {
                 self.country = value
                     .try_into()
@@ -7044,10 +6988,8 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
-                >,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
                     .try_into()
@@ -7056,8 +6998,8 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.email = value
                     .try_into()
@@ -7066,8 +7008,8 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
                     .try_into()
@@ -7076,8 +7018,8 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.first_name = value
                     .try_into()
@@ -7086,8 +7028,8 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<i64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
             {
                 self.id = value
                     .try_into()
@@ -7096,8 +7038,8 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.last_name = value
                     .try_into()
@@ -7106,8 +7048,8 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.occupation = value
                     .try_into()
@@ -7116,8 +7058,8 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
                     format!("error converting supplied value for organization: {}", e)
@@ -7126,25 +7068,22 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.region = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for region: {}", e));
                 self
             }
-            pub fn submission_status<T>(mut self, value: T) -> Self
+            pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
-                self.submission_status = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for submission_status: {}",
-                        e
-                    )
-                });
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
                 self
             }
         }
@@ -7167,12 +7106,12 @@ pub mod types {
                     occupation: value.occupation?,
                     organization: value.organization?,
                     region: value.region?,
-                    submission_status: value.submission_status?,
+                    status: value.status?,
                 })
             }
         }
 
-        impl From<super::Submission> for Submission {
+        impl ::std::convert::From<super::Submission> for Submission {
             fn from(value: super::Submission) -> Self {
                 Self {
                     city: Ok(value.city),
@@ -7187,36 +7126,20 @@ pub mod types {
                     occupation: Ok(value.occupation),
                     organization: Ok(value.organization),
                     region: Ok(value.region),
-                    submission_status: Ok(value.submission_status),
+                    status: Ok(value.status),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct SubmissionPatch {
-            city: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
-            country:
-                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
-            email: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            fips_code: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            first_name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
-            last_name: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            city: ::std::result::Result<::std::string::String, ::std::string::String>,
+            consent: ::std::result::Result<bool, ::std::string::String>,
+            country: ::std::result::Result<super::Country, ::std::string::String>,
+            email: ::std::result::Result<::std::string::String, ::std::string::String>,
+            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
+            first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            last_name: ::std::result::Result<::std::string::String, ::std::string::String>,
             occupation: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -7229,26 +7152,23 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            submission_status: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            status: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
-        impl Default for SubmissionPatch {
+        impl ::std::default::Default for SubmissionPatch {
             fn default() -> Self {
                 Self {
-                    city: Ok(Default::default()),
-                    consent: Ok(Default::default()),
-                    country: Ok(Default::default()),
-                    email: Ok(Default::default()),
-                    fips_code: Ok(Default::default()),
-                    first_name: Ok(Default::default()),
-                    last_name: Ok(Default::default()),
+                    city: Err("no value supplied for city".to_string()),
+                    consent: Err("no value supplied for consent".to_string()),
+                    country: Err("no value supplied for country".to_string()),
+                    email: Err("no value supplied for email".to_string()),
+                    fips_code: Err("no value supplied for fips_code".to_string()),
+                    first_name: Err("no value supplied for first_name".to_string()),
+                    last_name: Err("no value supplied for last_name".to_string()),
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    submission_status: Ok(Default::default()),
+                    status: Err("no value supplied for status".to_string()),
                 }
             }
         }
@@ -7256,8 +7176,8 @@ pub mod types {
         impl SubmissionPatch {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.city = value
                     .try_into()
@@ -7266,8 +7186,8 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<bool>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<bool>,
+                T::Error: ::std::fmt::Display,
             {
                 self.consent = value
                     .try_into()
@@ -7276,8 +7196,8 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<super::Country>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::Country>,
+                T::Error: ::std::fmt::Display,
             {
                 self.country = value
                     .try_into()
@@ -7286,8 +7206,8 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.email = value
                     .try_into()
@@ -7296,8 +7216,8 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
                     .try_into()
@@ -7306,8 +7226,8 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.first_name = value
                     .try_into()
@@ -7316,8 +7236,8 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.last_name = value
                     .try_into()
@@ -7326,8 +7246,8 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.occupation = value
                     .try_into()
@@ -7336,8 +7256,8 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
                     format!("error converting supplied value for organization: {}", e)
@@ -7346,25 +7266,22 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.region = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for region: {}", e));
                 self
             }
-            pub fn submission_status<T>(mut self, value: T) -> Self
+            pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
-                self.submission_status = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for submission_status: {}",
-                        e
-                    )
-                });
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
                 self
             }
         }
@@ -7385,12 +7302,12 @@ pub mod types {
                     occupation: value.occupation?,
                     organization: value.organization?,
                     region: value.region?,
-                    submission_status: value.submission_status?,
+                    status: value.status?,
                 })
             }
         }
 
-        impl From<super::SubmissionPatch> for SubmissionPatch {
+        impl ::std::convert::From<super::SubmissionPatch> for SubmissionPatch {
             fn from(value: super::SubmissionPatch) -> Self {
                 Self {
                     city: Ok(value.city),
@@ -7403,7 +7320,7 @@ pub mod types {
                     occupation: Ok(value.occupation),
                     organization: Ok(value.organization),
                     region: Ok(value.region),
-                    submission_status: Ok(value.submission_status),
+                    status: Ok(value.status),
                 }
             }
         }
@@ -7429,13 +7346,10 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            submission_status: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
-                ::std::string::String,
-            >,
+            status: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
-        impl Default for SubmissionPost {
+        impl ::std::default::Default for SubmissionPost {
             fn default() -> Self {
                 Self {
                     city: Err("no value supplied for city".to_string()),
@@ -7448,7 +7362,7 @@ pub mod types {
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    submission_status: Ok(Default::default()),
+                    status: Err("no value supplied for status".to_string()),
                 }
             }
         }
@@ -7456,8 +7370,8 @@ pub mod types {
         impl SubmissionPost {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.city = value
                     .try_into()
@@ -7466,8 +7380,8 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<bool>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<bool>,
+                T::Error: ::std::fmt::Display,
             {
                 self.consent = value
                     .try_into()
@@ -7476,8 +7390,8 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<super::Country>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<super::Country>,
+                T::Error: ::std::fmt::Display,
             {
                 self.country = value
                     .try_into()
@@ -7486,8 +7400,8 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.email = value
                     .try_into()
@@ -7496,8 +7410,8 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
                     .try_into()
@@ -7506,8 +7420,8 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.first_name = value
                     .try_into()
@@ -7516,8 +7430,8 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::string::String>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
                 self.last_name = value
                     .try_into()
@@ -7526,8 +7440,8 @@ pub mod types {
             }
             pub fn occupation<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.occupation = value
                     .try_into()
@@ -7536,8 +7450,8 @@ pub mod types {
             }
             pub fn organization<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.organization = value.try_into().map_err(|e| {
                     format!("error converting supplied value for organization: {}", e)
@@ -7546,25 +7460,22 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
             {
                 self.region = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for region: {}", e));
                 self
             }
-            pub fn submission_status<T>(mut self, value: T) -> Self
+            pub fn status<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<::std::string::String>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
             {
-                self.submission_status = value.try_into().map_err(|e| {
-                    format!(
-                        "error converting supplied value for submission_status: {}",
-                        e
-                    )
-                });
+                self.status = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for status: {}", e));
                 self
             }
         }
@@ -7585,12 +7496,12 @@ pub mod types {
                     occupation: value.occupation?,
                     organization: value.organization?,
                     region: value.region?,
-                    submission_status: value.submission_status?,
+                    status: value.status?,
                 })
             }
         }
 
-        impl From<super::SubmissionPost> for SubmissionPost {
+        impl ::std::convert::From<super::SubmissionPost> for SubmissionPost {
             fn from(value: super::SubmissionPost) -> Self {
                 Self {
                     city: Ok(value.city),
@@ -7603,33 +7514,33 @@ pub mod types {
                     occupation: Ok(value.occupation),
                     organization: Ok(value.organization),
                     region: Ok(value.region),
-                    submission_status: Ok(value.submission_status),
+                    status: Ok(value.status),
                 }
             }
         }
 
         #[derive(Clone, Debug)]
         pub struct Transit {
-            score: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            transit: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
 
-        impl Default for Transit {
+        impl ::std::default::Default for Transit {
             fn default() -> Self {
                 Self {
-                    score: Ok(Default::default()),
+                    transit: Ok(Default::default()),
                 }
             }
         }
 
         impl Transit {
-            pub fn score<T>(mut self, value: T) -> Self
+            pub fn transit<T>(mut self, value: T) -> Self
             where
-                T: std::convert::TryInto<::std::option::Option<f64>>,
-                T::Error: std::fmt::Display,
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
             {
-                self.score = value
+                self.transit = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                    .map_err(|e| format!("error converting supplied value for transit: {}", e));
                 self
             }
         }
@@ -7640,15 +7551,15 @@ pub mod types {
                 value: Transit,
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
-                    score: value.score?,
+                    transit: value.transit?,
                 })
             }
         }
 
-        impl From<super::Transit> for Transit {
+        impl ::std::convert::From<super::Transit> for Transit {
             fn from(value: super::Transit) -> Self {
                 Self {
-                    score: Ok(value.score),
+                    transit: Ok(value.transit),
                 }
             }
         }
@@ -7718,169 +7629,13 @@ impl Client {
 }
 
 impl Client {
-    ///Get city rating summaries
-    ///
-    ///Get city rating summaries.
-    ///
-    ///Sends a `GET` request to `/ratings`
-    ///
-    ///Arguments:
-    /// - `page`: Page index (starting at 0)
-    /// - `page_size`: The number of items to be returned per page (1..50)
-    ///```ignore
-    /// let response = client.get_ratings()
-    ///    .page(page)
-    ///    .page_size(page_size)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_ratings(&self) -> builder::GetRatings {
-        builder::GetRatings::new(self)
-    }
-
-    ///Create new city rating
-    ///
-    ///Create a new city rating
-    ///
-    ///Sends a `POST` request to `/ratings`
-    ///
-    ///Arguments:
-    /// - `body`: Create bna
-    ///```ignore
-    /// let response = client.post_ratings()
-    ///    .body(body)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn post_ratings(&self) -> builder::PostRatings {
-        builder::PostRatings::new(self)
-    }
-
-    ///Get the city rating analys details
-    ///
-    ///Get the city rating analys details
-    ///
-    ///Sends a `GET` request to `/ratings/analyses`
-    ///
-    ///Arguments:
-    /// - `page`: Page index (starting at 0)
-    /// - `page_size`: The number of items to be returned per page (1..50)
-    ///```ignore
-    /// let response = client.get_ratings_analyses()
-    ///    .page(page)
-    ///    .page_size(page_size)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_ratings_analyses(&self) -> builder::GetRatingsAnalyses {
-        builder::GetRatingsAnalyses::new(self)
-    }
-
-    ///Submit a new city to analyze
-    ///
-    ///Submit a new city to analyze
-    ///
-    ///Sends a `POST` request to `/ratings/analyses`
-    ///
-    ///Arguments:
-    /// - `body`: Create a new analysis performed by the brokenspoke-analyzer
-    ///```ignore
-    /// let response = client.post_ratings_analyses()
-    ///    .body(body)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn post_ratings_analyses(&self) -> builder::PostRatingsAnalyses {
-        builder::PostRatingsAnalyses::new(self)
-    }
-
-    ///Get the summary of a specific analysis
-    ///
-    ///Get the summary of a specific analysis .
-    ///
-    ///Sends a `GET` request to `/ratings/analyses/{analysis_id}`
-    ///
-    ///Arguments:
-    /// - `analysis_id`: State Machine Identifier
-    ///```ignore
-    /// let response = client.get_analysis()
-    ///    .analysis_id(analysis_id)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_analysis(&self) -> builder::GetAnalysis {
-        builder::GetAnalysis::new(self)
-    }
-
-    ///Update an analysis
-    ///
-    ///Update an analysis
-    ///
-    ///Sends a `PATCH` request to `/ratings/analyses/{analysis_id}`
-    ///
-    ///Arguments:
-    /// - `analysis_id`: State Machine Identifier
-    /// - `body`: Update a new analysis performed by the brokenspoke-analyzer
-    ///```ignore
-    /// let response = client.patch_analysis()
-    ///    .analysis_id(analysis_id)
-    ///    .body(body)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn patch_analysis(&self) -> builder::PatchAnalysis {
-        builder::PatchAnalysis::new(self)
-    }
-
-    ///Get a specific city rating summary
-    ///
-    ///Get a specific city rating summary.
-    ///
-    ///Sends a `GET` request to `/ratings/{rating_id}`
-    ///
-    ///Arguments:
-    /// - `rating_id`: Analysis identifier
-    /// - `component`: Select a component to retrieve alongside the BNA summary.
-    ///   If none is specified, all the components are returned.
-    ///
-    ///```ignore
-    /// let response = client.get_rating()
-    ///    .rating_id(rating_id)
-    ///    .component(component)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_rating(&self) -> builder::GetRating {
-        builder::GetRating::new(self)
-    }
-
-    ///Get a specific city rating summary and its associated city details
-    ///
-    ///Get a specific city rating summary and its associated city details.
-    ///
-    ///Sends a `GET` request to `/ratings/{rating_id}/city`
-    ///
-    ///Arguments:
-    /// - `rating_id`: Analysis identifier
-    ///```ignore
-    /// let response = client.get_rating_city()
-    ///    .rating_id(rating_id)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_rating_city(&self) -> builder::GetRatingCity {
-        builder::GetRatingCity::new(self)
-    }
-
-    ///Get city details
-    ///
     ///Get the details of all cities where an BNA analysis was performed.
     ///
     ///Sends a `GET` request to `/cities`
     ///
     ///Arguments:
-    /// - `page`: Page index (starting at 0)
-    /// - `page_size`: The number of items to be returned per page (1..50)
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_cities()
     ///    .page(page)
@@ -7892,20 +7647,12 @@ impl Client {
         builder::GetCities::new(self)
     }
 
-    ///Create a new city
-    ///
     ///Create a new city.
     ///
     ///Sends a `POST` request to `/cities`
     ///
-    ///Arguments:
-    /// - `page`: Page index (starting at 0)
-    /// - `page_size`: The number of items to be returned per page (1..50)
-    /// - `body`: Create a new city.
     ///```ignore
     /// let response = client.post_city()
-    ///    .page(page)
-    ///    .page_size(page_size)
     ///    .body(body)
     ///    .send()
     ///    .await;
@@ -7914,96 +7661,86 @@ impl Client {
         builder::PostCity::new(self)
     }
 
-    ///Get the cities that were submitted for analysis
-    ///
-    ///Get the cities that were submitted for analysis.
+    ///Get the submissions details.
     ///
     ///Sends a `GET` request to `/cities/submissions`
     ///
     ///Arguments:
-    /// - `page`: Page index (starting at 0)
-    /// - `page_size`: The number of items to be returned per page (1..50)
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
+    /// - `status`: Filter for the submission status
     ///```ignore
-    /// let response = client.get_city_submissions()
+    /// let response = client.get_cities_submissions()
     ///    .page(page)
     ///    .page_size(page_size)
+    ///    .status(status)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_city_submissions(&self) -> builder::GetCitySubmissions {
-        builder::GetCitySubmissions::new(self)
+    pub fn get_cities_submissions(&self) -> builder::GetCitiesSubmissions {
+        builder::GetCitiesSubmissions::new(self)
     }
 
-    ///Submit a new city for analysis
-    ///
-    ///Submit a new city for analysis.
+    ///Create a new city submission.
     ///
     ///Sends a `POST` request to `/cities/submissions`
     ///
-    ///Arguments:
-    /// - `body`: Create a new analysis to be performed by the
-    ///   brokenspoke-analyzer
     ///```ignore
-    /// let response = client.post_city_submission()
+    /// let response = client.post_cities_submission()
     ///    .body(body)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_city_submission(&self) -> builder::PostCitySubmission {
-        builder::PostCitySubmission::new(self)
+    pub fn post_cities_submission(&self) -> builder::PostCitiesSubmission {
+        builder::PostCitiesSubmission::new(self)
     }
 
-    ///Get the details of a specific sumission
-    ///
     ///Get the details of a specific sumission.
     ///
     ///Sends a `GET` request to `/cities/submissions/{submission_id}`
     ///
     ///Arguments:
     /// - `submission_id`: Submission identifier
+    /// - `status`: Filter for the submission status
     ///```ignore
-    /// let response = client.get_city_submission()
+    /// let response = client.get_cities_submission()
     ///    .submission_id(submission_id)
+    ///    .status(status)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_city_submission(&self) -> builder::GetCitySubmission {
-        builder::GetCitySubmission::new(self)
+    pub fn get_cities_submission(&self) -> builder::GetCitiesSubmission {
+        builder::GetCitiesSubmission::new(self)
     }
 
-    ///Update the details of a specific sumission
-    ///
-    ///Update the details of a specific sumission.
+    ///Update a city submission.
     ///
     ///Sends a `PATCH` request to `/cities/submissions/{submission_id}`
     ///
     ///Arguments:
     /// - `submission_id`: Submission identifier
-    /// - `body`: Update the details of a specific sumission.
+    /// - `body`
     ///```ignore
-    /// let response = client.patch_city_submissions()
+    /// let response = client.patch_cities_submission()
     ///    .submission_id(submission_id)
     ///    .body(body)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn patch_city_submissions(&self) -> builder::PatchCitySubmissions {
-        builder::PatchCitySubmissions::new(self)
+    pub fn patch_cities_submission(&self) -> builder::PatchCitiesSubmission {
+        builder::PatchCitiesSubmission::new(self)
     }
 
-    ///Get the details of specific city
-    ///
     ///Get the details of a specific city where an BNA analysis was computed.
-    ///
     ///
     ///Sends a `GET` request to `/cities/{country}/{region}/{name}`
     ///
     ///Arguments:
     /// - `country`: Country name
     /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or something similar depending on the country. If a country
-    ///   does not have this concept, then the country name is used.
-    ///
+    ///   community, or
+    ///something similar depending on the country. If a country does not have
+    ///this concept, then the country name is used.
     /// - `name`: City name
     ///```ignore
     /// let response = client.get_city()
@@ -8017,66 +7754,34 @@ impl Client {
         builder::GetCity::new(self)
     }
 
-    ///Get the details of a specific city with all the analysis that were
-    /// performed against it
-    ///
-    ///
-    ///Get the details of a specific city with all the analysis that were
-    /// performed against it.
-    ///
-    ///
-    ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
-    ///
-    ///Arguments:
-    /// - `country`: Country name
-    /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or something similar depending on the country. If a country
-    ///   does not have this concept, then the country name is used.
-    ///
-    /// - `name`: City name
-    ///```ignore
-    /// let response = client.get_city_ratings()
-    ///    .country(country)
-    ///    .region(region)
-    ///    .name(name)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_city_ratings(&self) -> builder::GetCityRatings {
-        builder::GetCityRatings::new(self)
-    }
-
     ///Get the details of a specific city with its associated census
     /// information.
-    ///
-    ///
-    ///Get the details of a specific city with its associated census
-    /// information.
-    ///
     ///
     ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
     ///
     ///Arguments:
     /// - `country`: Country name
     /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or something similar depending on the country. If a country
-    ///   does not have this concept, then the country name is used.
-    ///
+    ///   community, or
+    ///something similar depending on the country. If a country does not have
+    ///this concept, then the country name is used.
     /// - `name`: City name
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
     ///```ignore
-    /// let response = client.get_city_census()
+    /// let response = client.get_city_censuses()
     ///    .country(country)
     ///    .region(region)
     ///    .name(name)
+    ///    .page(page)
+    ///    .page_size(page_size)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_city_census(&self) -> builder::GetCityCensus {
-        builder::GetCityCensus::new(self)
+    pub fn get_city_censuses(&self) -> builder::GetCityCensuses {
+        builder::GetCityCensuses::new(self)
     }
 
-    ///Create census information for a specific city
-    ///
     ///Create census information for a specific city.
     ///
     ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
@@ -8084,13 +7789,13 @@ impl Client {
     ///Arguments:
     /// - `country`: Country name
     /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or something similar depending on the country. If a country
-    ///   does not have this concept, then the country name is used.
-    ///
+    ///   community, or
+    ///something similar depending on the country. If a country does not have
+    ///this concept, then the country name is used.
     /// - `name`: City name
-    /// - `body`: Create the census information for a specific city.
+    /// - `body`
     ///```ignore
-    /// let response = client.patch_city_census()
+    /// let response = client.post_city_census()
     ///    .country(country)
     ///    .region(region)
     ///    .name(name)
@@ -8098,36 +7803,115 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn patch_city_census(&self) -> builder::PatchCityCensus {
-        builder::PatchCityCensus::new(self)
+    pub fn post_city_census(&self) -> builder::PostCityCensus {
+        builder::PostCityCensus::new(self)
     }
 
-    ///Enqueue a city to process
+    ///Get the details of a specific city with all the analysis that were
+    /// performed against it.
     ///
-    ///Enqueue a city to process.
-    ///
-    ///Sends a `POST` request to `/ratings/enqueue`
+    ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
     ///
     ///Arguments:
-    /// - `body`: Create a new city to enqueue.
+    /// - `country`: Country name
+    /// - `region`: Region name. A region can be a state, a province, a
+    ///   community, or
+    ///something similar depending on the country. If a country does not have
+    ///this concept, then the country name is used.
+    /// - `name`: City name
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
     ///```ignore
-    /// let response = client.post_rating_enqueue()
+    /// let response = client.get_city_ratings()
+    ///    .country(country)
+    ///    .region(region)
+    ///    .name(name)
+    ///    .page(page)
+    ///    .page_size(page_size)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_city_ratings(&self) -> builder::GetCityRatings {
+        builder::GetCityRatings::new(self)
+    }
+
+    ///Get the details of all BNA pipelines
+    ///
+    ///Sends a `GET` request to `/pipelines/bna`
+    ///
+    ///Arguments:
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
+    ///```ignore
+    /// let response = client.get_pipelines_bnas()
+    ///    .page(page)
+    ///    .page_size(page_size)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_pipelines_bnas(&self) -> builder::GetPipelinesBnas {
+        builder::GetPipelinesBnas::new(self)
+    }
+
+    ///Create a new BNA pipeline
+    ///
+    ///Sends a `POST` request to `/pipelines/bna`
+    ///
+    ///```ignore
+    /// let response = client.post_pipelines_bna()
     ///    .body(body)
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_rating_enqueue(&self) -> builder::PostRatingEnqueue {
-        builder::PostRatingEnqueue::new(self)
+    pub fn post_pipelines_bna(&self) -> builder::PostPipelinesBna {
+        builder::PostPipelinesBna::new(self)
     }
 
-    ///Get all the AWS Fargate prices used to compute analysis costs
+    ///Get the details of a specific BNA pipeline
     ///
+    ///Sends a `GET` request to `/pipelines/bna/{pipeline_id}`
+    ///
+    ///Arguments:
+    /// - `pipeline_id`: Pipeline identifier
+    ///```ignore
+    /// let response = client.get_pipelines_bna()
+    ///    .pipeline_id(pipeline_id)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_pipelines_bna(&self) -> builder::GetPipelinesBna {
+        builder::GetPipelinesBna::new(self)
+    }
+
+    ///Update the details of a specific BNA pipeline
+    ///
+    ///Sends a `PATCH` request to `/pipelines/bna/{pipeline_id}`
+    ///
+    ///Arguments:
+    /// - `pipeline_id`: Pipeline identifier
+    /// - `body`
+    ///```ignore
+    /// let response = client.patch_pipelines_bna()
+    ///    .pipeline_id(pipeline_id)
+    ///    .body(body)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn patch_pipelines_bna(&self) -> builder::PatchPipelinesBna {
+        builder::PatchPipelinesBna::new(self)
+    }
+
     ///Get all the AWS Fargate prices used to compute analysis costs.
     ///
-    ///Sends a `GET` request to `/price/fargate`
+    ///Sends a `GET` request to `/prices/fargate`
     ///
+    ///Arguments:
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_prices_fargate()
+    ///    .page(page)
+    ///    .page_size(page_size)
     ///    .send()
     ///    .await;
     /// ```
@@ -8135,22 +7919,85 @@ impl Client {
         builder::GetPricesFargate::new(self)
     }
 
-    ///Get a AWS Fargate price used to compute the cost of an analysis
+    ///Get a specific AWS Fargate price used to compute the cost of analysis
+    /// cost.
     ///
-    ///Get a AWS Fargate price used to compute the cost of analysis cost.
-    ///
-    ///Sends a `GET` request to `/price/fargate/{fargate_price_id}`
+    ///Sends a `GET` request to `/prices/fargate/{price_id}`
     ///
     ///Arguments:
-    /// - `fargate_price_id`: Identifier of a Fargate price
+    /// - `price_id`: Identifier of a Fargate price
     ///```ignore
     /// let response = client.get_price_fargate()
-    ///    .fargate_price_id(fargate_price_id)
+    ///    .price_id(price_id)
     ///    .send()
     ///    .await;
     /// ```
     pub fn get_price_fargate(&self) -> builder::GetPriceFargate {
         builder::GetPriceFargate::new(self)
+    }
+
+    ///Get city ratings
+    ///
+    ///Sends a `GET` request to `/ratings`
+    ///
+    ///Arguments:
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
+    ///```ignore
+    /// let response = client.get_ratings()
+    ///    .page(page)
+    ///    .page_size(page_size)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_ratings(&self) -> builder::GetRatings {
+        builder::GetRatings::new(self)
+    }
+
+    ///Create a new city rating
+    ///
+    ///Sends a `POST` request to `/ratings`
+    ///
+    ///```ignore
+    /// let response = client.post_rating()
+    ///    .body(body)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn post_rating(&self) -> builder::PostRating {
+        builder::PostRating::new(self)
+    }
+
+    ///Get the details of a specific city rating
+    ///
+    ///Sends a `GET` request to `/ratings/{rating_id}`
+    ///
+    ///Arguments:
+    /// - `rating_id`: Rating identifier
+    ///```ignore
+    /// let response = client.get_rating()
+    ///    .rating_id(rating_id)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_rating(&self) -> builder::GetRating {
+        builder::GetRating::new(self)
+    }
+
+    ///Get a city rating and its associated city details
+    ///
+    ///Sends a `GET` request to `/ratings/{rating_id}/city`
+    ///
+    ///Arguments:
+    /// - `rating_id`: Rating identifier
+    ///```ignore
+    /// let response = client.get_ratings_city()
+    ///    .rating_id(rating_id)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_ratings_city(&self) -> builder::GetRatingsCity {
+        builder::GetRatingsCity::new(self)
     }
 }
 
@@ -8162,606 +8009,6 @@ pub mod builder {
     use super::{
         encode_path, ByteStream, Error, HeaderMap, HeaderValue, RequestBuilderExt, ResponseValue,
     };
-    ///Builder for [`Client::get_ratings`]
-    ///
-    ///[`Client::get_ratings`]: super::Client::get_ratings
-    #[derive(Debug, Clone)]
-    pub struct GetRatings<'a> {
-        client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
-    }
-
-    impl<'a> GetRatings<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                page: Ok(None),
-                page_size: Ok(None),
-            }
-        }
-
-        pub fn page<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
-            self
-        }
-
-        pub fn page_size<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/ratings`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<::std::vec::Vec<types::BnaSummary>>, Error<()>> {
-            let Self {
-                client,
-                page,
-                page_size,
-            } = self;
-            let page = page.map_err(Error::InvalidRequest)?;
-            let page_size = page_size.map_err(Error::InvalidRequest)?;
-            let url = format!("{}/ratings", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .query(&query)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::post_ratings`]
-    ///
-    ///[`Client::post_ratings`]: super::Client::post_ratings
-    #[derive(Debug, Clone)]
-    pub struct PostRatings<'a> {
-        client: &'a super::Client,
-        body: Result<types::builder::BnaPost, String>,
-    }
-
-    impl<'a> PostRatings<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                body: Ok(types::builder::BnaPost::default()),
-            }
-        }
-
-        pub fn body<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::BnaPost>,
-            <V as std::convert::TryInto<types::BnaPost>>::Error: std::fmt::Display,
-        {
-            self.body = value
-                .try_into()
-                .map(From::from)
-                .map_err(|s| format!("conversion to `BnaPost` for body failed: {}", s));
-            self
-        }
-
-        pub fn body_map<F>(mut self, f: F) -> Self
-        where
-            F: std::ops::FnOnce(types::builder::BnaPost) -> types::builder::BnaPost,
-        {
-            self.body = self.body.map(f);
-            self
-        }
-
-        ///Sends a `POST` request to `/ratings`
-        pub async fn send(self) -> Result<ResponseValue<types::Bna>, Error<types::Errors>> {
-            let Self { client, body } = self;
-            let body = body
-                .and_then(|v| types::BnaPost::try_from(v).map_err(|e| e.to_string()))
-                .map_err(Error::InvalidRequest)?;
-            let url = format!("{}/ratings", client.baseurl,);
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .post(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .json(&body)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                201u16 => ResponseValue::from_response(response).await,
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_ratings_analyses`]
-    ///
-    ///[`Client::get_ratings_analyses`]: super::Client::get_ratings_analyses
-    #[derive(Debug, Clone)]
-    pub struct GetRatingsAnalyses<'a> {
-        client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
-    }
-
-    impl<'a> GetRatingsAnalyses<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                page: Ok(None),
-                page_size: Ok(None),
-            }
-        }
-
-        pub fn page<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
-            self
-        }
-
-        pub fn page_size<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/ratings/analyses`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<::std::vec::Vec<types::Analysis>>, Error<types::Errors>> {
-            let Self {
-                client,
-                page,
-                page_size,
-            } = self;
-            let page = page.map_err(Error::InvalidRequest)?;
-            let page_size = page_size.map_err(Error::InvalidRequest)?;
-            let url = format!("{}/ratings/analyses", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .query(&query)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::post_ratings_analyses`]
-    ///
-    ///[`Client::post_ratings_analyses`]: super::Client::post_ratings_analyses
-    #[derive(Debug, Clone)]
-    pub struct PostRatingsAnalyses<'a> {
-        client: &'a super::Client,
-        body: Result<types::builder::AnalysisPost, String>,
-    }
-
-    impl<'a> PostRatingsAnalyses<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                body: Ok(types::builder::AnalysisPost::default()),
-            }
-        }
-
-        pub fn body<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::AnalysisPost>,
-            <V as std::convert::TryInto<types::AnalysisPost>>::Error: std::fmt::Display,
-        {
-            self.body = value
-                .try_into()
-                .map(From::from)
-                .map_err(|s| format!("conversion to `AnalysisPost` for body failed: {}", s));
-            self
-        }
-
-        pub fn body_map<F>(mut self, f: F) -> Self
-        where
-            F: std::ops::FnOnce(types::builder::AnalysisPost) -> types::builder::AnalysisPost,
-        {
-            self.body = self.body.map(f);
-            self
-        }
-
-        ///Sends a `POST` request to `/ratings/analyses`
-        pub async fn send(self) -> Result<ResponseValue<types::Analysis>, Error<types::Errors>> {
-            let Self { client, body } = self;
-            let body = body
-                .and_then(|v| types::AnalysisPost::try_from(v).map_err(|e| e.to_string()))
-                .map_err(Error::InvalidRequest)?;
-            let url = format!("{}/ratings/analyses", client.baseurl,);
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .post(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .json(&body)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                201u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_analysis`]
-    ///
-    ///[`Client::get_analysis`]: super::Client::get_analysis
-    #[derive(Debug, Clone)]
-    pub struct GetAnalysis<'a> {
-        client: &'a super::Client,
-        analysis_id: Result<types::StateMachineId, String>,
-    }
-
-    impl<'a> GetAnalysis<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                analysis_id: Err("analysis_id was not initialized".to_string()),
-            }
-        }
-
-        pub fn analysis_id<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::StateMachineId>,
-        {
-            self.analysis_id = value
-                .try_into()
-                .map_err(|_| "conversion to `StateMachineId` for analysis_id failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/ratings/analyses/{analysis_id}`
-        pub async fn send(self) -> Result<ResponseValue<types::Analysis>, Error<types::Errors>> {
-            let Self {
-                client,
-                analysis_id,
-            } = self;
-            let analysis_id = analysis_id.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/ratings/analyses/{}",
-                client.baseurl,
-                encode_path(&analysis_id.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::patch_analysis`]
-    ///
-    ///[`Client::patch_analysis`]: super::Client::patch_analysis
-    #[derive(Debug, Clone)]
-    pub struct PatchAnalysis<'a> {
-        client: &'a super::Client,
-        analysis_id: Result<types::StateMachineId, String>,
-        body: Result<types::builder::AnalysisPatch, String>,
-    }
-
-    impl<'a> PatchAnalysis<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                analysis_id: Err("analysis_id was not initialized".to_string()),
-                body: Ok(types::builder::AnalysisPatch::default()),
-            }
-        }
-
-        pub fn analysis_id<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::StateMachineId>,
-        {
-            self.analysis_id = value
-                .try_into()
-                .map_err(|_| "conversion to `StateMachineId` for analysis_id failed".to_string());
-            self
-        }
-
-        pub fn body<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::AnalysisPatch>,
-            <V as std::convert::TryInto<types::AnalysisPatch>>::Error: std::fmt::Display,
-        {
-            self.body = value
-                .try_into()
-                .map(From::from)
-                .map_err(|s| format!("conversion to `AnalysisPatch` for body failed: {}", s));
-            self
-        }
-
-        pub fn body_map<F>(mut self, f: F) -> Self
-        where
-            F: std::ops::FnOnce(types::builder::AnalysisPatch) -> types::builder::AnalysisPatch,
-        {
-            self.body = self.body.map(f);
-            self
-        }
-
-        ///Sends a `PATCH` request to `/ratings/analyses/{analysis_id}`
-        pub async fn send(self) -> Result<ResponseValue<types::Analysis>, Error<types::Errors>> {
-            let Self {
-                client,
-                analysis_id,
-                body,
-            } = self;
-            let analysis_id = analysis_id.map_err(Error::InvalidRequest)?;
-            let body = body
-                .and_then(|v| types::AnalysisPatch::try_from(v).map_err(|e| e.to_string()))
-                .map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/ratings/analyses/{}",
-                client.baseurl,
-                encode_path(&analysis_id.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .patch(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .json(&body)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_rating`]
-    ///
-    ///[`Client::get_rating`]: super::Client::get_rating
-    #[derive(Debug, Clone)]
-    pub struct GetRating<'a> {
-        client: &'a super::Client,
-        rating_id: Result<uuid::Uuid, String>,
-        component: Result<Option<types::GetRatingComponent>, String>,
-    }
-
-    impl<'a> GetRating<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                rating_id: Err("rating_id was not initialized".to_string()),
-                component: Ok(None),
-            }
-        }
-
-        pub fn rating_id<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<uuid::Uuid>,
-        {
-            self.rating_id = value
-                .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
-            self
-        }
-
-        pub fn component<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::GetRatingComponent>,
-        {
-            self.component = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `GetRatingComponent` for component failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/ratings/{rating_id}`
-        pub async fn send(self) -> Result<ResponseValue<types::Bna>, Error<types::Errors>> {
-            let Self {
-                client,
-                rating_id,
-                component,
-            } = self;
-            let rating_id = rating_id.map_err(Error::InvalidRequest)?;
-            let component = component.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/ratings/{}",
-                client.baseurl,
-                encode_path(&rating_id.to_string()),
-            );
-            let mut query = Vec::with_capacity(1usize);
-            if let Some(v) = &component {
-                query.push(("component", v.to_string()));
-            }
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .query(&query)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_rating_city`]
-    ///
-    ///[`Client::get_rating_city`]: super::Client::get_rating_city
-    #[derive(Debug, Clone)]
-    pub struct GetRatingCity<'a> {
-        client: &'a super::Client,
-        rating_id: Result<uuid::Uuid, String>,
-    }
-
-    impl<'a> GetRatingCity<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                rating_id: Err("rating_id was not initialized".to_string()),
-            }
-        }
-
-        pub fn rating_id<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<uuid::Uuid>,
-        {
-            self.rating_id = value
-                .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/ratings/{rating_id}/city`
-        pub async fn send(
-            self,
-        ) -> Result<
-            ResponseValue<::std::vec::Vec<types::GetRatingCityResponseItem>>,
-            Error<types::Errors>,
-        > {
-            let Self { client, rating_id } = self;
-            let rating_id = rating_id.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/ratings/{}/city",
-                client.baseurl,
-                encode_path(&rating_id.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
     ///Builder for [`Client::get_cities`]
     ///
     ///[`Client::get_cities`]: super::Client::get_cities
@@ -8804,7 +8051,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities`
-        pub async fn send(self) -> Result<ResponseValue<::std::vec::Vec<types::City>>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<()>> {
             let Self {
                 client,
                 page,
@@ -8845,8 +8092,6 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct PostCity<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
         body: Result<types::builder::CityPost, String>,
     }
 
@@ -8854,32 +8099,8 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                page: Ok(None),
-                page_size: Ok(None),
                 body: Ok(types::builder::CityPost::default()),
             }
-        }
-
-        pub fn page<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
-            self
-        }
-
-        pub fn page_size<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
-            self
         }
 
         pub fn body<V>(mut self, value: V) -> Self
@@ -8903,26 +8124,14 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/cities`
-        pub async fn send(self) -> Result<ResponseValue<types::City>, Error<types::Errors>> {
-            let Self {
-                client,
-                page,
-                page_size,
-                body,
-            } = self;
-            let page = page.map_err(Error::InvalidRequest)?;
-            let page_size = page_size.map_err(Error::InvalidRequest)?;
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::City>, Error<types::PostCityResponse>> {
+            let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::CityPost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -8932,7 +8141,6 @@ pub mod builder {
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
-                .query(&query)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -8941,27 +8149,38 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
     }
 
-    ///Builder for [`Client::get_city_submissions`]
+    ///Builder for [`Client::get_cities_submissions`]
     ///
-    ///[`Client::get_city_submissions`]: super::Client::get_city_submissions
+    ///[`Client::get_cities_submissions`]: super::Client::get_cities_submissions
     #[derive(Debug, Clone)]
-    pub struct GetCitySubmissions<'a> {
+    pub struct GetCitiesSubmissions<'a> {
         client: &'a super::Client,
         page: Result<Option<i64>, String>,
         page_size: Result<Option<i64>, String>,
+        status: Result<Option<::std::string::String>, String>,
     }
 
-    impl<'a> GetCitySubmissions<'a> {
+    impl<'a> GetCitiesSubmissions<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
                 page: Ok(None),
                 page_size: Ok(None),
+                status: Ok(None),
             }
         }
 
@@ -8987,24 +8206,40 @@ pub mod builder {
             self
         }
 
+        pub fn status<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.status = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: string :: String` for status failed".to_string()
+            });
+            self
+        }
+
         ///Sends a `GET` request to `/cities/submissions`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<::std::vec::Vec<types::Submission>>, Error<()>> {
+        ) -> Result<ResponseValue<types::Submissions>, Error<types::GetCitiesSubmissionsResponse>>
+        {
             let Self {
                 client,
                 page,
                 page_size,
+                status,
             } = self;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let status = status.map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities/submissions", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
+            let mut query = Vec::with_capacity(3usize);
             if let Some(v) = &page {
                 query.push(("page", v.to_string()));
             }
             if let Some(v) = &page_size {
                 query.push(("page_size", v.to_string()));
+            }
+            if let Some(v) = &status {
+                query.push(("status", v.to_string()));
             }
             #[allow(unused_mut)]
             let mut request = client
@@ -9020,21 +8255,33 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
     }
 
-    ///Builder for [`Client::post_city_submission`]
+    ///Builder for [`Client::post_cities_submission`]
     ///
-    ///[`Client::post_city_submission`]: super::Client::post_city_submission
+    ///[`Client::post_cities_submission`]: super::Client::post_cities_submission
     #[derive(Debug, Clone)]
-    pub struct PostCitySubmission<'a> {
+    pub struct PostCitiesSubmission<'a> {
         client: &'a super::Client,
         body: Result<types::builder::SubmissionPost, String>,
     }
 
-    impl<'a> PostCitySubmission<'a> {
+    impl<'a> PostCitiesSubmission<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
@@ -9063,7 +8310,10 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/cities/submissions`
-        pub async fn send(self) -> Result<ResponseValue<types::Submission>, Error<types::Errors>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::Submission>, Error<types::PostCitiesSubmissionResponse>>
+        {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::SubmissionPost::try_from(v).map_err(|e| e.to_string()))
@@ -9086,64 +8336,10 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_city_submission`]
-    ///
-    ///[`Client::get_city_submission`]: super::Client::get_city_submission
-    #[derive(Debug, Clone)]
-    pub struct GetCitySubmission<'a> {
-        client: &'a super::Client,
-        submission_id: Result<i64, String>,
-    }
-
-    impl<'a> GetCitySubmission<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                submission_id: Err("submission_id was not initialized".to_string()),
-            }
-        }
-
-        pub fn submission_id<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.submission_id = value
-                .try_into()
-                .map_err(|_| "conversion to `i64` for submission_id failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/cities/submissions/{submission_id}`
-        pub async fn send(self) -> Result<ResponseValue<types::Submission>, Error<types::Errors>> {
-            let Self {
-                client,
-                submission_id,
-            } = self;
-            let submission_id = submission_id.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/cities/submissions/{}",
-                client.baseurl,
-                encode_path(&submission_id.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -9154,17 +8350,108 @@ pub mod builder {
         }
     }
 
-    ///Builder for [`Client::patch_city_submissions`]
+    ///Builder for [`Client::get_cities_submission`]
     ///
-    ///[`Client::patch_city_submissions`]: super::Client::patch_city_submissions
+    ///[`Client::get_cities_submission`]: super::Client::get_cities_submission
     #[derive(Debug, Clone)]
-    pub struct PatchCitySubmissions<'a> {
+    pub struct GetCitiesSubmission<'a> {
         client: &'a super::Client,
-        submission_id: Result<i64, String>,
+        submission_id: Result<i32, String>,
+        status: Result<Option<::std::string::String>, String>,
+    }
+
+    impl<'a> GetCitiesSubmission<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                submission_id: Err("submission_id was not initialized".to_string()),
+                status: Ok(None),
+            }
+        }
+
+        pub fn submission_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i32>,
+        {
+            self.submission_id = value
+                .try_into()
+                .map_err(|_| "conversion to `i32` for submission_id failed".to_string());
+            self
+        }
+
+        pub fn status<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.status = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: string :: String` for status failed".to_string()
+            });
+            self
+        }
+
+        ///Sends a `GET` request to `/cities/submissions/{submission_id}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::Submission>, Error<types::GetCitiesSubmissionResponse>>
+        {
+            let Self {
+                client,
+                submission_id,
+                status,
+            } = self;
+            let submission_id = submission_id.map_err(Error::InvalidRequest)?;
+            let status = status.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/cities/submissions/{}",
+                client.baseurl,
+                encode_path(&submission_id.to_string()),
+            );
+            let mut query = Vec::with_capacity(1usize);
+            if let Some(v) = &status {
+                query.push(("status", v.to_string()));
+            }
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&query)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::patch_cities_submission`]
+    ///
+    ///[`Client::patch_cities_submission`]: super::Client::patch_cities_submission
+    #[derive(Debug, Clone)]
+    pub struct PatchCitiesSubmission<'a> {
+        client: &'a super::Client,
+        submission_id: Result<i32, String>,
         body: Result<types::builder::SubmissionPatch, String>,
     }
 
-    impl<'a> PatchCitySubmissions<'a> {
+    impl<'a> PatchCitiesSubmission<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
@@ -9175,11 +8462,11 @@ pub mod builder {
 
         pub fn submission_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<i32>,
         {
             self.submission_id = value
                 .try_into()
-                .map_err(|_| "conversion to `i64` for submission_id failed".to_string());
+                .map_err(|_| "conversion to `i32` for submission_id failed".to_string());
             self
         }
 
@@ -9204,7 +8491,10 @@ pub mod builder {
         }
 
         ///Sends a `PATCH` request to `/cities/submissions/{submission_id}`
-        pub async fn send(self) -> Result<ResponseValue<types::Submission>, Error<types::Errors>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::Submission>, Error<types::PatchCitiesSubmissionResponse>>
+        {
             let Self {
                 client,
                 submission_id,
@@ -9234,6 +8524,9 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 403u16 => Err(Error::ErrorResponse(
@@ -9299,7 +8592,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}`
-        pub async fn send(self) -> Result<ResponseValue<types::City>, Error<types::Errors>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::City>, Error<types::GetCityResponse>> {
             let Self {
                 client,
                 country,
@@ -9332,6 +8627,12 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
@@ -9340,24 +8641,28 @@ pub mod builder {
         }
     }
 
-    ///Builder for [`Client::get_city_ratings`]
+    ///Builder for [`Client::get_city_censuses`]
     ///
-    ///[`Client::get_city_ratings`]: super::Client::get_city_ratings
+    ///[`Client::get_city_censuses`]: super::Client::get_city_censuses
     #[derive(Debug, Clone)]
-    pub struct GetCityRatings<'a> {
+    pub struct GetCityCensuses<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
         region: Result<::std::string::String, String>,
         name: Result<::std::string::String, String>,
+        page: Result<Option<i64>, String>,
+        page_size: Result<Option<i64>, String>,
     }
 
-    impl<'a> GetCityRatings<'a> {
+    impl<'a> GetCityCensuses<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
                 country: Err("country was not initialized".to_string()),
                 region: Err("region was not initialized".to_string()),
                 name: Err("name was not initialized".to_string()),
+                page: Ok(None),
+                page_size: Ok(None),
             }
         }
 
@@ -9391,120 +8696,46 @@ pub mod builder {
             self
         }
 
-        ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
-        pub async fn send(
-            self,
-        ) -> Result<
-            ResponseValue<::std::vec::Vec<types::GetCityRatingsResponseItem>>,
-            Error<types::Errors>,
-        > {
-            let Self {
-                client,
-                country,
-                region,
-                name,
-            } = self;
-            let country = country.map_err(Error::InvalidRequest)?;
-            let region = region.map_err(Error::InvalidRequest)?;
-            let name = name.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/cities/{}/{}/{}/ratings",
-                client.baseurl,
-                encode_path(&country.to_string()),
-                encode_path(&region.to_string()),
-                encode_path(&name.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_city_census`]
-    ///
-    ///[`Client::get_city_census`]: super::Client::get_city_census
-    #[derive(Debug, Clone)]
-    pub struct GetCityCensus<'a> {
-        client: &'a super::Client,
-        country: Result<types::Country, String>,
-        region: Result<::std::string::String, String>,
-        name: Result<::std::string::String, String>,
-    }
-
-    impl<'a> GetCityCensus<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                country: Err("country was not initialized".to_string()),
-                region: Err("region was not initialized".to_string()),
-                name: Err("name was not initialized".to_string()),
-            }
-        }
-
-        pub fn country<V>(mut self, value: V) -> Self
+        pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::Country>,
+            V: std::convert::TryInto<i64>,
         {
-            self.country = value
+            self.page = value
                 .try_into()
-                .map_err(|_| "conversion to `Country` for country failed".to_string());
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page failed".to_string());
             self
         }
 
-        pub fn region<V>(mut self, value: V) -> Self
+        pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<i64>,
         {
-            self.region = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for region failed".to_string()
-            });
-            self
-        }
-
-        pub fn name<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<::std::string::String>,
-        {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
+            self.page_size = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
             self
         }
 
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
         pub async fn send(
             self,
-        ) -> Result<
-            ResponseValue<::std::vec::Vec<types::GetCityCensusResponseItem>>,
-            Error<types::Errors>,
-        > {
+        ) -> Result<ResponseValue<types::CityCensuses>, Error<types::GetCityCensusesResponse>>
+        {
             let Self {
                 client,
                 country,
                 region,
                 name,
+                page,
+                page_size,
             } = self;
             let country = country.map_err(Error::InvalidRequest)?;
             let region = region.map_err(Error::InvalidRequest)?;
             let name = name.map_err(Error::InvalidRequest)?;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!(
                 "{}/cities/{}/{}/{}/census",
                 client.baseurl,
@@ -9512,6 +8743,13 @@ pub mod builder {
                 encode_path(&region.to_string()),
                 encode_path(&name.to_string()),
             );
+            let mut query = Vec::with_capacity(2usize);
+            if let Some(v) = &page {
+                query.push(("page", v.to_string()));
+            }
+            if let Some(v) = &page_size {
+                query.push(("page_size", v.to_string()));
+            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -9520,12 +8758,19 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .query(&query)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -9536,11 +8781,11 @@ pub mod builder {
         }
     }
 
-    ///Builder for [`Client::patch_city_census`]
+    ///Builder for [`Client::post_city_census`]
     ///
-    ///[`Client::patch_city_census`]: super::Client::patch_city_census
+    ///[`Client::post_city_census`]: super::Client::post_city_census
     #[derive(Debug, Clone)]
-    pub struct PatchCityCensus<'a> {
+    pub struct PostCityCensus<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
         region: Result<::std::string::String, String>,
@@ -9548,7 +8793,7 @@ pub mod builder {
         body: Result<types::builder::CensusPost, String>,
     }
 
-    impl<'a> PatchCityCensus<'a> {
+    impl<'a> PostCityCensus<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
@@ -9612,10 +8857,7 @@ pub mod builder {
         ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
         pub async fn send(
             self,
-        ) -> Result<
-            ResponseValue<::std::vec::Vec<types::PatchCityCensusResponseItem>>,
-            Error<types::Errors>,
-        > {
+        ) -> Result<ResponseValue<types::Census>, Error<types::PostCityCensusResponse>> {
             let Self {
                 client,
                 country,
@@ -9653,6 +8895,12 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
@@ -9661,50 +8909,285 @@ pub mod builder {
         }
     }
 
-    ///Builder for [`Client::post_rating_enqueue`]
+    ///Builder for [`Client::get_city_ratings`]
     ///
-    ///[`Client::post_rating_enqueue`]: super::Client::post_rating_enqueue
+    ///[`Client::get_city_ratings`]: super::Client::get_city_ratings
     #[derive(Debug, Clone)]
-    pub struct PostRatingEnqueue<'a> {
+    pub struct GetCityRatings<'a> {
         client: &'a super::Client,
-        body: Result<types::builder::EnqueuePost, String>,
+        country: Result<types::Country, String>,
+        region: Result<::std::string::String, String>,
+        name: Result<::std::string::String, String>,
+        page: Result<Option<i64>, String>,
+        page_size: Result<Option<i64>, String>,
     }
 
-    impl<'a> PostRatingEnqueue<'a> {
+    impl<'a> GetCityRatings<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                body: Ok(types::builder::EnqueuePost::default()),
+                country: Err("country was not initialized".to_string()),
+                region: Err("region was not initialized".to_string()),
+                name: Err("name was not initialized".to_string()),
+                page: Ok(None),
+                page_size: Ok(None),
+            }
+        }
+
+        pub fn country<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::Country>,
+        {
+            self.country = value
+                .try_into()
+                .map_err(|_| "conversion to `Country` for country failed".to_string());
+            self
+        }
+
+        pub fn region<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.region = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for region failed".to_string()
+            });
+            self
+        }
+
+        pub fn name<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
+            self
+        }
+
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page_size = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::CityRatings>, Error<types::GetCityRatingsResponse>>
+        {
+            let Self {
+                client,
+                country,
+                region,
+                name,
+                page,
+                page_size,
+            } = self;
+            let country = country.map_err(Error::InvalidRequest)?;
+            let region = region.map_err(Error::InvalidRequest)?;
+            let name = name.map_err(Error::InvalidRequest)?;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/cities/{}/{}/{}/ratings",
+                client.baseurl,
+                encode_path(&country.to_string()),
+                encode_path(&region.to_string()),
+                encode_path(&name.to_string()),
+            );
+            let mut query = Vec::with_capacity(2usize);
+            if let Some(v) = &page {
+                query.push(("page", v.to_string()));
+            }
+            if let Some(v) = &page_size {
+                query.push(("page_size", v.to_string()));
+            }
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&query)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_pipelines_bnas`]
+    ///
+    ///[`Client::get_pipelines_bnas`]: super::Client::get_pipelines_bnas
+    #[derive(Debug, Clone)]
+    pub struct GetPipelinesBnas<'a> {
+        client: &'a super::Client,
+        page: Result<Option<i64>, String>,
+        page_size: Result<Option<i64>, String>,
+    }
+
+    impl<'a> GetPipelinesBnas<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                page: Ok(None),
+                page_size: Ok(None),
+            }
+        }
+
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page_size = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/pipelines/bna`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::BnaPipelines>, Error<types::GetPipelinesBnasResponse>>
+        {
+            let Self {
+                client,
+                page,
+                page_size,
+            } = self;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let url = format!("{}/pipelines/bna", client.baseurl,);
+            let mut query = Vec::with_capacity(2usize);
+            if let Some(v) = &page {
+                query.push(("page", v.to_string()));
+            }
+            if let Some(v) = &page_size {
+                query.push(("page_size", v.to_string()));
+            }
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&query)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::post_pipelines_bna`]
+    ///
+    ///[`Client::post_pipelines_bna`]: super::Client::post_pipelines_bna
+    #[derive(Debug, Clone)]
+    pub struct PostPipelinesBna<'a> {
+        client: &'a super::Client,
+        body: Result<types::builder::BnaPipelinePost, String>,
+    }
+
+    impl<'a> PostPipelinesBna<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                body: Ok(types::builder::BnaPipelinePost::default()),
             }
         }
 
         pub fn body<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<types::EnqueuePost>,
-            <V as std::convert::TryInto<types::EnqueuePost>>::Error: std::fmt::Display,
+            V: std::convert::TryInto<types::BnaPipelinePost>,
+            <V as std::convert::TryInto<types::BnaPipelinePost>>::Error: std::fmt::Display,
         {
             self.body = value
                 .try_into()
                 .map(From::from)
-                .map_err(|s| format!("conversion to `EnqueuePost` for body failed: {}", s));
+                .map_err(|s| format!("conversion to `BnaPipelinePost` for body failed: {}", s));
             self
         }
 
         pub fn body_map<F>(mut self, f: F) -> Self
         where
-            F: std::ops::FnOnce(types::builder::EnqueuePost) -> types::builder::EnqueuePost,
+            F: std::ops::FnOnce(types::builder::BnaPipelinePost) -> types::builder::BnaPipelinePost,
         {
             self.body = self.body.map(f);
             self
         }
 
-        ///Sends a `POST` request to `/ratings/enqueue`
-        pub async fn send(self) -> Result<ResponseValue<types::Enqueue>, Error<types::Errors>> {
+        ///Sends a `POST` request to `/pipelines/bna`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::PostPipelinesBnaResponse>>
+        {
             let Self { client, body } = self;
             let body = body
-                .and_then(|v| types::EnqueuePost::try_from(v).map_err(|e| e.to_string()))
+                .and_then(|v| types::BnaPipelinePost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
-            let url = format!("{}/ratings/enqueue", client.baseurl,);
+            let url = format!("{}/pipelines/bna", client.baseurl,);
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -9722,7 +9205,186 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_pipelines_bna`]
+    ///
+    ///[`Client::get_pipelines_bna`]: super::Client::get_pipelines_bna
+    #[derive(Debug, Clone)]
+    pub struct GetPipelinesBna<'a> {
+        client: &'a super::Client,
+        pipeline_id: Result<uuid::Uuid, String>,
+    }
+
+    impl<'a> GetPipelinesBna<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                pipeline_id: Err("pipeline_id was not initialized".to_string()),
+            }
+        }
+
+        pub fn pipeline_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<uuid::Uuid>,
+        {
+            self.pipeline_id = value
+                .try_into()
+                .map_err(|_| "conversion to `uuid :: Uuid` for pipeline_id failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/pipelines/bna/{pipeline_id}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::GetPipelinesBnaResponse>>
+        {
+            let Self {
+                client,
+                pipeline_id,
+            } = self;
+            let pipeline_id = pipeline_id.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/pipelines/bna/{}",
+                client.baseurl,
+                encode_path(&pipeline_id.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::patch_pipelines_bna`]
+    ///
+    ///[`Client::patch_pipelines_bna`]: super::Client::patch_pipelines_bna
+    #[derive(Debug, Clone)]
+    pub struct PatchPipelinesBna<'a> {
+        client: &'a super::Client,
+        pipeline_id: Result<uuid::Uuid, String>,
+        body: Result<types::builder::BnaPipelinePatch, String>,
+    }
+
+    impl<'a> PatchPipelinesBna<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                pipeline_id: Err("pipeline_id was not initialized".to_string()),
+                body: Ok(types::builder::BnaPipelinePatch::default()),
+            }
+        }
+
+        pub fn pipeline_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<uuid::Uuid>,
+        {
+            self.pipeline_id = value
+                .try_into()
+                .map_err(|_| "conversion to `uuid :: Uuid` for pipeline_id failed".to_string());
+            self
+        }
+
+        pub fn body<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::BnaPipelinePatch>,
+            <V as std::convert::TryInto<types::BnaPipelinePatch>>::Error: std::fmt::Display,
+        {
+            self.body = value
+                .try_into()
+                .map(From::from)
+                .map_err(|s| format!("conversion to `BnaPipelinePatch` for body failed: {}", s));
+            self
+        }
+
+        pub fn body_map<F>(mut self, f: F) -> Self
+        where
+            F: std::ops::FnOnce(
+                types::builder::BnaPipelinePatch,
+            ) -> types::builder::BnaPipelinePatch,
+        {
+            self.body = self.body.map(f);
+            self
+        }
+
+        ///Sends a `PATCH` request to `/pipelines/bna/{pipeline_id}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::PatchPipelinesBnaResponse>>
+        {
+            let Self {
+                client,
+                pipeline_id,
+                body,
+            } = self;
+            let pipeline_id = pipeline_id.map_err(Error::InvalidRequest)?;
+            let body = body
+                .and_then(|v| types::BnaPipelinePatch::try_from(v).map_err(|e| e.to_string()))
+                .map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/pipelines/bna/{}",
+                client.baseurl,
+                encode_path(&pipeline_id.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .patch(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .json(&body)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -9736,19 +9398,58 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPricesFargate<'a> {
         client: &'a super::Client,
+        page: Result<Option<i64>, String>,
+        page_size: Result<Option<i64>, String>,
     }
 
     impl<'a> GetPricesFargate<'a> {
         pub fn new(client: &'a super::Client) -> Self {
-            Self { client: client }
+            Self {
+                client: client,
+                page: Ok(None),
+                page_size: Ok(None),
+            }
         }
 
-        ///Sends a `GET` request to `/price/fargate`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<::std::vec::Vec<types::FargatePrice>>, Error<()>> {
-            let Self { client } = self;
-            let url = format!("{}/price/fargate", client.baseurl,);
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page_size = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/prices/fargate`
+        pub async fn send(self) -> Result<ResponseValue<types::FargatePrices>, Error<()>> {
+            let Self {
+                client,
+                page,
+                page_size,
+            } = self;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let url = format!("{}/prices/fargate", client.baseurl,);
+            let mut query = Vec::with_capacity(2usize);
+            if let Some(v) = &page {
+                query.push(("page", v.to_string()));
+            }
+            if let Some(v) = &page_size {
+                query.push(("page_size", v.to_string()));
+            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -9757,6 +9458,7 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .query(&query)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -9773,40 +9475,38 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPriceFargate<'a> {
         client: &'a super::Client,
-        fargate_price_id: Result<i64, String>,
+        price_id: Result<i32, String>,
     }
 
     impl<'a> GetPriceFargate<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                fargate_price_id: Err("fargate_price_id was not initialized".to_string()),
+                price_id: Err("price_id was not initialized".to_string()),
             }
         }
 
-        pub fn fargate_price_id<V>(mut self, value: V) -> Self
+        pub fn price_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<i32>,
         {
-            self.fargate_price_id = value
+            self.price_id = value
                 .try_into()
-                .map_err(|_| "conversion to `i64` for fargate_price_id failed".to_string());
+                .map_err(|_| "conversion to `i32` for price_id failed".to_string());
             self
         }
 
-        ///Sends a `GET` request to `/price/fargate/{fargate_price_id}`
+        ///Sends a `GET` request to `/prices/fargate/{price_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::FargatePrice>, Error<types::Errors>> {
-            let Self {
-                client,
-                fargate_price_id,
-            } = self;
-            let fargate_price_id = fargate_price_id.map_err(Error::InvalidRequest)?;
+        ) -> Result<ResponseValue<types::FargatePrice>, Error<types::GetPriceFargateResponse>>
+        {
+            let Self { client, price_id } = self;
+            let price_id = price_id.map_err(Error::InvalidRequest)?;
             let url = format!(
-                "{}/price/fargate/{}",
+                "{}/prices/fargate/{}",
                 client.baseurl,
-                encode_path(&fargate_price_id.to_string()),
+                encode_path(&price_id.to_string()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -9821,6 +9521,306 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_ratings`]
+    ///
+    ///[`Client::get_ratings`]: super::Client::get_ratings
+    #[derive(Debug, Clone)]
+    pub struct GetRatings<'a> {
+        client: &'a super::Client,
+        page: Result<Option<i64>, String>,
+        page_size: Result<Option<i64>, String>,
+    }
+
+    impl<'a> GetRatings<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                page: Ok(None),
+                page_size: Ok(None),
+            }
+        }
+
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.page_size = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/ratings`
+        pub async fn send(self) -> Result<ResponseValue<types::Ratings>, Error<()>> {
+            let Self {
+                client,
+                page,
+                page_size,
+            } = self;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let url = format!("{}/ratings", client.baseurl,);
+            let mut query = Vec::with_capacity(2usize);
+            if let Some(v) = &page {
+                query.push(("page", v.to_string()));
+            }
+            if let Some(v) = &page_size {
+                query.push(("page_size", v.to_string()));
+            }
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&query)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::post_rating`]
+    ///
+    ///[`Client::post_rating`]: super::Client::post_rating
+    #[derive(Debug, Clone)]
+    pub struct PostRating<'a> {
+        client: &'a super::Client,
+        body: Result<types::builder::RatingPost, String>,
+    }
+
+    impl<'a> PostRating<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                body: Ok(types::builder::RatingPost::default()),
+            }
+        }
+
+        pub fn body<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::RatingPost>,
+            <V as std::convert::TryInto<types::RatingPost>>::Error: std::fmt::Display,
+        {
+            self.body = value
+                .try_into()
+                .map(From::from)
+                .map_err(|s| format!("conversion to `RatingPost` for body failed: {}", s));
+            self
+        }
+
+        pub fn body_map<F>(mut self, f: F) -> Self
+        where
+            F: std::ops::FnOnce(types::builder::RatingPost) -> types::builder::RatingPost,
+        {
+            self.body = self.body.map(f);
+            self
+        }
+
+        ///Sends a `POST` request to `/ratings`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::Rating>, Error<types::PostRatingResponse>> {
+            let Self { client, body } = self;
+            let body = body
+                .and_then(|v| types::RatingPost::try_from(v).map_err(|e| e.to_string()))
+                .map_err(Error::InvalidRequest)?;
+            let url = format!("{}/ratings", client.baseurl,);
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .post(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .json(&body)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                201u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_rating`]
+    ///
+    ///[`Client::get_rating`]: super::Client::get_rating
+    #[derive(Debug, Clone)]
+    pub struct GetRating<'a> {
+        client: &'a super::Client,
+        rating_id: Result<uuid::Uuid, String>,
+    }
+
+    impl<'a> GetRating<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                rating_id: Err("rating_id was not initialized".to_string()),
+            }
+        }
+
+        pub fn rating_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<uuid::Uuid>,
+        {
+            self.rating_id = value
+                .try_into()
+                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/ratings/{rating_id}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::Rating>, Error<types::GetRatingResponse>> {
+            let Self { client, rating_id } = self;
+            let rating_id = rating_id.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/ratings/{}",
+                client.baseurl,
+                encode_path(&rating_id.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_ratings_city`]
+    ///
+    ///[`Client::get_ratings_city`]: super::Client::get_ratings_city
+    #[derive(Debug, Clone)]
+    pub struct GetRatingsCity<'a> {
+        client: &'a super::Client,
+        rating_id: Result<uuid::Uuid, String>,
+    }
+
+    impl<'a> GetRatingsCity<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                rating_id: Err("rating_id was not initialized".to_string()),
+            }
+        }
+
+        pub fn rating_id<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<uuid::Uuid>,
+        {
+            self.rating_id = value
+                .try_into()
+                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/ratings/{rating_id}/city`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::RatingWithCity>, Error<types::GetRatingsCityResponse>>
+        {
+            let Self { client, rating_id } = self;
+            let rating_id = rating_id.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/ratings/{}/city",
+                client.baseurl,
+                encode_path(&rating_id.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    reqwest::header::ACCEPT,
+                    reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),

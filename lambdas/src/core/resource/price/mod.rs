@@ -9,6 +9,7 @@ use query_map::QueryMap;
 pub mod adaptor;
 mod db;
 pub mod endpoint;
+mod schema;
 
 pub struct PriceParameters {
     sort: Option<Sort>,

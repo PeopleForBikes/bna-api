@@ -217,26 +217,35 @@ impl Paginatron {
 }
 
 #[derive(Serialize)]
-pub struct PageFlow {
+pub struct PageFlow<T>
+where
+    T: Serialize,
+{
     paginatron: Paginatron,
-    payload: Value,
+    payload: T,
 }
 
-impl PageFlow {
-    pub fn new(paginatron: Paginatron, payload: Value) -> Self {
+impl<T> PageFlow<T>
+where
+    T: Serialize,
+{
+    pub fn new(paginatron: Paginatron, payload: T) -> Self {
         Self {
             paginatron,
             payload,
         }
     }
 
-    pub fn payload(&self) -> Value {
-        self.payload.clone()
+    pub fn payload(&self) -> &T {
+        &self.payload
     }
 }
 
-impl From<PageFlow> for Response<Body> {
-    fn from(value: PageFlow) -> Self {
+impl<T> From<PageFlow<T>> for Response<Body>
+where
+    T: Serialize,
+{
+    fn from(value: PageFlow<T>) -> Self {
         let nav = value.paginatron.navigation();
         Response::builder()
             .header(
@@ -250,12 +259,17 @@ impl From<PageFlow> for Response<Body> {
             .header("x-total", value.paginatron.total_items)
             .header("x-total-pages", nav.last())
             .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(value.payload.to_string()))
+            .body(Body::from(
+                serde_json::to_string(&value.payload).expect("payload must serialize"),
+            ))
             .expect("failed to build response")
     }
 }
 
-impl IntoResponse for PageFlow {
+impl<T> IntoResponse for PageFlow<T>
+where
+    T: Serialize,
+{
     fn into_response(self) -> axum::response::Response {
         let nav = self.paginatron.navigation();
         let r: Response<axum::body::Body> = axum::response::Response::builder()
@@ -267,7 +281,9 @@ impl IntoResponse for PageFlow {
             .header("x-total", self.paginatron.total_items)
             .header("x-total-pages", nav.last())
             .header(header::CONTENT_TYPE, "application/json")
-            .body(axum::body::Body::from(self.payload.to_string()))
+            .body(axum::body::Body::from(
+                serde_json::to_string(&self.payload).expect("payload must serialize"),
+            ))
             .expect("failed to build response");
         r
     }
