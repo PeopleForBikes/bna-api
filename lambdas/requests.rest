@@ -158,7 +158,7 @@ Authorization: Bearer {{cognito_access}}
 @state_machine_id=e6aade5a-b343-120b-dbaa-bd916cd99221
 
 ### Create a new BNA analysis performed by the Brokenspoke-analyzer pipeline.
-POST {{host}}/ratings/analyses
+POST {{host}}/pipelines/bna
 content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
