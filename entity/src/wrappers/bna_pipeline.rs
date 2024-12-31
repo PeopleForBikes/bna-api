@@ -1,6 +1,7 @@
 use crate::entities::bna_pipeline;
 use sea_orm::{
     prelude::{DateTimeWithTimeZone, Decimal, Json, Uuid},
+    sqlx::types::chrono::{FixedOffset, Utc},
     ActiveValue, IntoActiveModel,
 };
 use serde::{Deserialize, Serialize};
@@ -14,7 +15,7 @@ pub struct BNAPipelinePost {
     pub result_posted: Option<bool>,
     pub s3_bucket: Option<String>,
     pub sqs_message: Option<Json>,
-    pub start_time: DateTimeWithTimeZone,
+    pub start_time: Option<DateTimeWithTimeZone>,
     pub state_machine_id: Uuid,
 }
 
@@ -27,10 +28,14 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
             fargate_task_arn: ActiveValue::Set(self.fargate_task_arn),
             s3_bucket: ActiveValue::Set(self.s3_bucket),
             sqs_message: ActiveValue::Set(self.sqs_message),
-            start_time: ActiveValue::Set(self.start_time),
+            start_time: ActiveValue::Set(
+                self.start_time.unwrap_or_else(|| {
+                    Utc::now().with_timezone(&FixedOffset::east_opt(0).unwrap())
+                }),
+            ),
             state_machine_id: ActiveValue::Set(self.state_machine_id),
             status: ActiveValue::Set("Pending".to_string()),
-            step: ActiveValue::Set("SqsMessage".to_string()),
+            step: ActiveValue::Set("Setup".to_string()),
         }
     }
 }
