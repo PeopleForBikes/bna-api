@@ -229,6 +229,47 @@ pub mod types {
         }
     }
 
+    ///Error objects MUST be returned as an array keyed by errors in the top
+    /// level of a JSON:API document.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Error objects MUST be returned as an array keyed by
+    /// errors in the top level of a\nJSON:API document.",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "errors"
+    ///  ],
+    ///  "properties": {
+    ///    "errors": {
+    ///      "type": "array",
+    ///      "items": {
+    ///        "$ref": "#/components/schemas/APIError"
+    ///      }
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct ApiErrors {
+        pub errors: ::std::vec::Vec<ApiError>,
+    }
+
+    impl ::std::convert::From<&ApiErrors> for ApiErrors {
+        fn from(value: &ApiErrors) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ApiErrors {
+        pub fn builder() -> builder::ApiErrors {
+            Default::default()
+        }
+    }
+
     ///BnaPipeline
     ///
     /// <details><summary>JSON schema</summary>
@@ -1768,416 +1809,6 @@ pub mod types {
         }
     }
 
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCitiesSubmissionResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetCitiesSubmissionResponse> for GetCitiesSubmissionResponse {
-        fn from(value: &GetCitiesSubmissionResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetCitiesSubmissionResponse {
-        pub fn builder() -> builder::GetCitiesSubmissionResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCitiesSubmissionsResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetCitiesSubmissionsResponse> for GetCitiesSubmissionsResponse {
-        fn from(value: &GetCitiesSubmissionsResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetCitiesSubmissionsResponse {
-        pub fn builder() -> builder::GetCitiesSubmissionsResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCityCensusesResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetCityCensusesResponse> for GetCityCensusesResponse {
-        fn from(value: &GetCityCensusesResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetCityCensusesResponse {
-        pub fn builder() -> builder::GetCityCensusesResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCityRatingsResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetCityRatingsResponse> for GetCityRatingsResponse {
-        fn from(value: &GetCityRatingsResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetCityRatingsResponse {
-        pub fn builder() -> builder::GetCityRatingsResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetCityResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetCityResponse> for GetCityResponse {
-        fn from(value: &GetCityResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetCityResponse {
-        pub fn builder() -> builder::GetCityResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetPipelinesBnaResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetPipelinesBnaResponse> for GetPipelinesBnaResponse {
-        fn from(value: &GetPipelinesBnaResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetPipelinesBnaResponse {
-        pub fn builder() -> builder::GetPipelinesBnaResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetPipelinesBnasResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetPipelinesBnasResponse> for GetPipelinesBnasResponse {
-        fn from(value: &GetPipelinesBnasResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetPipelinesBnasResponse {
-        pub fn builder() -> builder::GetPipelinesBnasResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetPriceFargateResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetPriceFargateResponse> for GetPriceFargateResponse {
-        fn from(value: &GetPriceFargateResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetPriceFargateResponse {
-        pub fn builder() -> builder::GetPriceFargateResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetRatingResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetRatingResponse> for GetRatingResponse {
-        fn from(value: &GetRatingResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetRatingResponse {
-        pub fn builder() -> builder::GetRatingResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct GetRatingsCityResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&GetRatingsCityResponse> for GetRatingsCityResponse {
-        fn from(value: &GetRatingsCityResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl GetRatingsCityResponse {
-        pub fn builder() -> builder::GetRatingsCityResponse {
-            Default::default()
-        }
-    }
-
     ///Infrastructure
     ///
     /// <details><summary>JSON schema</summary>
@@ -2355,88 +1986,6 @@ pub mod types {
         }
     }
 
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PatchCitiesSubmissionResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PatchCitiesSubmissionResponse> for PatchCitiesSubmissionResponse {
-        fn from(value: &PatchCitiesSubmissionResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PatchCitiesSubmissionResponse {
-        pub fn builder() -> builder::PatchCitiesSubmissionResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PatchPipelinesBnaResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PatchPipelinesBnaResponse> for PatchPipelinesBnaResponse {
-        fn from(value: &PatchPipelinesBnaResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PatchPipelinesBnaResponse {
-        pub fn builder() -> builder::PatchPipelinesBnaResponse {
-            Default::default()
-        }
-    }
-
     ///People
     ///
     /// <details><summary>JSON schema</summary>
@@ -2570,211 +2119,6 @@ pub mod types {
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PostCitiesSubmissionResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PostCitiesSubmissionResponse> for PostCitiesSubmissionResponse {
-        fn from(value: &PostCitiesSubmissionResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PostCitiesSubmissionResponse {
-        pub fn builder() -> builder::PostCitiesSubmissionResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PostCityCensusResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PostCityCensusResponse> for PostCityCensusResponse {
-        fn from(value: &PostCityCensusResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PostCityCensusResponse {
-        pub fn builder() -> builder::PostCityCensusResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PostCityResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PostCityResponse> for PostCityResponse {
-        fn from(value: &PostCityResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PostCityResponse {
-        pub fn builder() -> builder::PostCityResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PostPipelinesBnaResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PostPipelinesBnaResponse> for PostPipelinesBnaResponse {
-        fn from(value: &PostPipelinesBnaResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PostPipelinesBnaResponse {
-        pub fn builder() -> builder::PostPipelinesBnaResponse {
-            Default::default()
-        }
-    }
-
-    ///Error objects MUST be returned as an array keyed by errors in the top
-    /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct PostRatingResponse {
-        pub errors: ::std::vec::Vec<ApiError>,
-    }
-
-    impl ::std::convert::From<&PostRatingResponse> for PostRatingResponse {
-        fn from(value: &PostRatingResponse) -> Self {
-            value.clone()
-        }
-    }
-
-    impl PostRatingResponse {
-        pub fn builder() -> builder::PostRatingResponse {
-            Default::default()
         }
     }
 
@@ -3907,6 +3251,51 @@ pub mod types {
                     source: Ok(value.source),
                     status: Ok(value.status),
                     title: Ok(value.title),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
+        pub struct ApiErrors {
+            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for ApiErrors {
+            fn default() -> Self {
+                Self {
+                    errors: Err("no value supplied for errors".to_string()),
+                }
+            }
+        }
+
+        impl ApiErrors {
+            pub fn errors<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.errors = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<ApiErrors> for super::ApiErrors {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: ApiErrors,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    errors: value.errors?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::ApiErrors> for ApiErrors {
+            fn from(value: super::ApiErrors) -> Self {
+                Self {
+                    errors: Ok(value.errors),
                 }
             }
         }
@@ -5328,456 +4717,6 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct GetCitiesSubmissionResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetCitiesSubmissionResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetCitiesSubmissionResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCitiesSubmissionResponse> for super::GetCitiesSubmissionResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCitiesSubmissionResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetCitiesSubmissionResponse> for GetCitiesSubmissionResponse {
-            fn from(value: super::GetCitiesSubmissionResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetCitiesSubmissionsResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetCitiesSubmissionsResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetCitiesSubmissionsResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCitiesSubmissionsResponse> for super::GetCitiesSubmissionsResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCitiesSubmissionsResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetCitiesSubmissionsResponse> for GetCitiesSubmissionsResponse {
-            fn from(value: super::GetCitiesSubmissionsResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetCityCensusesResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetCityCensusesResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetCityCensusesResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCityCensusesResponse> for super::GetCityCensusesResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCityCensusesResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetCityCensusesResponse> for GetCityCensusesResponse {
-            fn from(value: super::GetCityCensusesResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetCityRatingsResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetCityRatingsResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetCityRatingsResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCityRatingsResponse> for super::GetCityRatingsResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCityRatingsResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetCityRatingsResponse> for GetCityRatingsResponse {
-            fn from(value: super::GetCityRatingsResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetCityResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetCityResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetCityResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetCityResponse> for super::GetCityResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetCityResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetCityResponse> for GetCityResponse {
-            fn from(value: super::GetCityResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetPipelinesBnaResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetPipelinesBnaResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetPipelinesBnaResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetPipelinesBnaResponse> for super::GetPipelinesBnaResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetPipelinesBnaResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetPipelinesBnaResponse> for GetPipelinesBnaResponse {
-            fn from(value: super::GetPipelinesBnaResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetPipelinesBnasResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetPipelinesBnasResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetPipelinesBnasResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetPipelinesBnasResponse> for super::GetPipelinesBnasResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetPipelinesBnasResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetPipelinesBnasResponse> for GetPipelinesBnasResponse {
-            fn from(value: super::GetPipelinesBnasResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetPriceFargateResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetPriceFargateResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetPriceFargateResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetPriceFargateResponse> for super::GetPriceFargateResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetPriceFargateResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetPriceFargateResponse> for GetPriceFargateResponse {
-            fn from(value: super::GetPriceFargateResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetRatingResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetRatingResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetRatingResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetRatingResponse> for super::GetRatingResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetRatingResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetRatingResponse> for GetRatingResponse {
-            fn from(value: super::GetRatingResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct GetRatingsCityResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for GetRatingsCityResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl GetRatingsCityResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<GetRatingsCityResponse> for super::GetRatingsCityResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: GetRatingsCityResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::GetRatingsCityResponse> for GetRatingsCityResponse {
-            fn from(value: super::GetRatingsCityResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct Infrastructure {
             high_stress_miles:
                 ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
@@ -5954,98 +4893,6 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct PatchCitiesSubmissionResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PatchCitiesSubmissionResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PatchCitiesSubmissionResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PatchCitiesSubmissionResponse>
-            for super::PatchCitiesSubmissionResponse
-        {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PatchCitiesSubmissionResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PatchCitiesSubmissionResponse> for PatchCitiesSubmissionResponse {
-            fn from(value: super::PatchCitiesSubmissionResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PatchPipelinesBnaResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PatchPipelinesBnaResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PatchPipelinesBnaResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PatchPipelinesBnaResponse> for super::PatchPipelinesBnaResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PatchPipelinesBnaResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PatchPipelinesBnaResponse> for PatchPipelinesBnaResponse {
-            fn from(value: super::PatchPipelinesBnaResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct People {
             people: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
         }
@@ -6086,231 +4933,6 @@ pub mod types {
             fn from(value: super::People) -> Self {
                 Self {
                     people: Ok(value.people),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PostCitiesSubmissionResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PostCitiesSubmissionResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PostCitiesSubmissionResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PostCitiesSubmissionResponse> for super::PostCitiesSubmissionResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PostCitiesSubmissionResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PostCitiesSubmissionResponse> for PostCitiesSubmissionResponse {
-            fn from(value: super::PostCitiesSubmissionResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PostCityCensusResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PostCityCensusResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PostCityCensusResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PostCityCensusResponse> for super::PostCityCensusResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PostCityCensusResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PostCityCensusResponse> for PostCityCensusResponse {
-            fn from(value: super::PostCityCensusResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PostCityResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PostCityResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PostCityResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PostCityResponse> for super::PostCityResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PostCityResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PostCityResponse> for PostCityResponse {
-            fn from(value: super::PostCityResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PostPipelinesBnaResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PostPipelinesBnaResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PostPipelinesBnaResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PostPipelinesBnaResponse> for super::PostPipelinesBnaResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PostPipelinesBnaResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PostPipelinesBnaResponse> for PostPipelinesBnaResponse {
-            fn from(value: super::PostPipelinesBnaResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct PostRatingResponse {
-            errors: ::std::result::Result<::std::vec::Vec<super::ApiError>, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for PostRatingResponse {
-            fn default() -> Self {
-                Self {
-                    errors: Err("no value supplied for errors".to_string()),
-                }
-            }
-        }
-
-        impl PostRatingResponse {
-            pub fn errors<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::ApiError>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.errors = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for errors: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<PostRatingResponse> for super::PostRatingResponse {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: PostRatingResponse,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    errors: value.errors?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::PostRatingResponse> for PostRatingResponse {
-            fn from(value: super::PostRatingResponse) -> Self {
-                Self {
-                    errors: Ok(value.errors),
                 }
             }
         }
@@ -8170,9 +6792,7 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/cities`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::City>, Error<types::PostCityResponse>> {
+        pub async fn send(self) -> Result<ResponseValue<types::City>, Error<types::ApiErrors>> {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::CityPost::try_from(v).map_err(|e| e.to_string()))
@@ -8265,8 +6885,7 @@ pub mod builder {
         ///Sends a `GET` request to `/cities/submissions`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::Submissions>, Error<types::GetCitiesSubmissionsResponse>>
-        {
+        ) -> Result<ResponseValue<types::Submissions>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -8358,8 +6977,7 @@ pub mod builder {
         ///Sends a `POST` request to `/cities/submissions`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::Submission>, Error<types::PostCitiesSubmissionResponse>>
-        {
+        ) -> Result<ResponseValue<types::Submission>, Error<types::ApiErrors>> {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::SubmissionPost::try_from(v).map_err(|e| e.to_string()))
@@ -8438,8 +7056,7 @@ pub mod builder {
         ///Sends a `GET` request to `/cities/submissions/{submission_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::Submission>, Error<types::GetCitiesSubmissionResponse>>
-        {
+        ) -> Result<ResponseValue<types::Submission>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 submission_id,
@@ -8539,8 +7156,7 @@ pub mod builder {
         ///Sends a `PATCH` request to `/cities/submissions/{submission_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::Submission>, Error<types::PatchCitiesSubmissionResponse>>
-        {
+        ) -> Result<ResponseValue<types::Submission>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 submission_id,
@@ -8638,9 +7254,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::City>, Error<types::GetCityResponse>> {
+        pub async fn send(self) -> Result<ResponseValue<types::City>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 country,
@@ -8767,8 +7381,7 @@ pub mod builder {
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::CityCensuses>, Error<types::GetCityCensusesResponse>>
-        {
+        ) -> Result<ResponseValue<types::CityCensuses>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 country,
@@ -8901,9 +7514,7 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::Census>, Error<types::PostCityCensusResponse>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Census>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 country,
@@ -9035,8 +7646,7 @@ pub mod builder {
         ///Sends a `GET` request to `/cities/{country}/{region}/{name}/ratings`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::CityRatings>, Error<types::GetCityRatingsResponse>>
-        {
+        ) -> Result<ResponseValue<types::CityRatings>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 country,
@@ -9139,8 +7749,7 @@ pub mod builder {
         ///Sends a `GET` request to `/pipelines/bna`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::BnaPipelines>, Error<types::GetPipelinesBnasResponse>>
-        {
+        ) -> Result<ResponseValue<types::BnaPipelines>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -9227,8 +7836,7 @@ pub mod builder {
         ///Sends a `POST` request to `/pipelines/bna`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::PostPipelinesBnaResponse>>
-        {
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::ApiErrors>> {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::BnaPipelinePost::try_from(v).map_err(|e| e.to_string()))
@@ -9295,8 +7903,7 @@ pub mod builder {
         ///Sends a `GET` request to `/pipelines/bna/{pipeline_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::GetPipelinesBnaResponse>>
-        {
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 pipeline_id,
@@ -9391,8 +7998,7 @@ pub mod builder {
         ///Sends a `PATCH` request to `/pipelines/bna/{pipeline_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::PatchPipelinesBnaResponse>>
-        {
+        ) -> Result<ResponseValue<types::BnaPipeline>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 pipeline_id,
@@ -9545,8 +8151,7 @@ pub mod builder {
         ///Sends a `GET` request to `/prices/fargate/{price_id}`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::FargatePrice>, Error<types::GetPriceFargateResponse>>
-        {
+        ) -> Result<ResponseValue<types::FargatePrice>, Error<types::ApiErrors>> {
             let Self { client, price_id } = self;
             let price_id = price_id.map_err(Error::InvalidRequest)?;
             let url = format!(
@@ -9699,9 +8304,7 @@ pub mod builder {
         }
 
         ///Sends a `POST` request to `/ratings`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::Rating>, Error<types::PostRatingResponse>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Rating>, Error<types::ApiErrors>> {
             let Self { client, body } = self;
             let body = body
                 .and_then(|v| types::RatingPost::try_from(v).map_err(|e| e.to_string()))
@@ -9766,9 +8369,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/ratings/{rating_id}`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::Rating>, Error<types::GetRatingResponse>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Rating>, Error<types::ApiErrors>> {
             let Self { client, rating_id } = self;
             let rating_id = rating_id.map_err(Error::InvalidRequest)?;
             let url = format!(
@@ -9836,8 +8437,7 @@ pub mod builder {
         ///Sends a `GET` request to `/ratings/{rating_id}/city`
         pub async fn send(
             self,
-        ) -> Result<ResponseValue<types::RatingWithCity>, Error<types::GetRatingsCityResponse>>
-        {
+        ) -> Result<ResponseValue<types::RatingWithCity>, Error<types::ApiErrors>> {
             let Self { client, rating_id } = self;
             let rating_id = rating_id.map_err(Error::InvalidRequest)?;
             let url = format!(

@@ -69,93 +69,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /cities/submissions:
     get:
       tags:
@@ -202,93 +166,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
     post:
       tags:
       - city
@@ -312,93 +240,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /cities/submissions/{submission_id}:
     get:
       tags:
@@ -433,93 +325,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
     patch:
       tags:
       - city
@@ -552,93 +408,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /cities/{country}/{region}/{name}:
     get:
       tags:
@@ -682,93 +502,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /cities/{country}/{region}/{name}/census:
     get:
       tags:
@@ -832,93 +616,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
     post:
       tags:
       - city
@@ -967,93 +715,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /cities/{country}/{region}/{name}/ratings:
     get:
       tags:
@@ -1117,93 +829,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /pipelines/bna:
     get:
       tags:
@@ -1243,93 +919,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
     post:
       tags:
       - pipeline
@@ -1353,93 +993,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /pipelines/bna/{pipeline_id}:
     get:
       tags:
@@ -1466,93 +1070,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
     patch:
       tags:
       - pipeline
@@ -1584,93 +1152,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /prices/fargate:
     get:
       tags:
@@ -1731,93 +1263,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /ratings:
     get:
       tags:
@@ -1875,93 +1371,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /ratings/{rating_id}:
     get:
       tags:
@@ -1988,93 +1448,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
   /ratings/{rating_id}/city:
     get:
       tags:
@@ -2101,93 +1525,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the request was formatted incorrectly or missing required parameters
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  parameter: status
-                status: '400'
-                title: Bad Request
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
         '401':
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: invalid authentication credentials to access the specified resource
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '401'
-                title: Unauthorized
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
         '403':
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: access to the requested resource is forbidden
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '403'
-                title: Forbidden
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                type: object
-                description: |-
-                  Error objects MUST be returned as an array keyed by errors in the top level of a
-                  JSON:API document.
-                required:
-                - errors
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/APIError'
+                $ref: '#/components/schemas/APIErrors'
               example:
-              - details: the resource was not found
-                id: blfwkg8nvHcEJnQ=
-                source:
-                  pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                status: '404'
-                title: Item Not Found
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
 components:
   schemas:
     APIError:
@@ -2274,6 +1662,18 @@ components:
           - parameter: a string indicating which URI query parameter caused the error.
           - header: a string indicating the name of a single request header which caused the
             error.
+    APIErrors:
+      type: object
+      description: |-
+        Error objects MUST be returned as an array keyed by errors in the top level of a
+        JSON:API document.
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/APIError'
     BnaPipeline:
       type: object
       required:
