@@ -379,7 +379,6 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "required": [
-    ///    "start_time",
     ///    "status",
     ///    "step"
     ///  ],
@@ -451,7 +450,10 @@ pub mod types {
     ///    },
     ///    "start_time": {
     ///      "description": "Start time",
-    ///      "type": "string",
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ],
     ///      "format": "date-time"
     ///    },
     ///    "status": {
@@ -485,7 +487,8 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Start time
-        pub start_time: chrono::DateTime<chrono::offset::Utc>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
         pub status: PipelineStatus,
         pub step: BnaPipelineStep,
     }
@@ -510,7 +513,7 @@ pub mod types {
     ///{
     ///  "type": "object",
     ///  "required": [
-    ///    "step"
+    ///    "state_machine_id"
     ///  ],
     ///  "properties": {
     ///    "cost": {
@@ -578,8 +581,19 @@ pub mod types {
     ///        "null"
     ///      ]
     ///    },
-    ///    "step": {
-    ///      "$ref": "#/components/schemas/BnaPipelineStep"
+    ///    "start_time": {
+    ///      "description": "Start time",
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ],
+    ///      "format": "date-time"
+    ///    },
+    ///    "state_machine_id": {
+    ///      "description": "Pipeline identifier\nThis is the ID of the AWS
+    /// state machine that was used to run the pipeline",
+    ///      "type": "string",
+    ///      "format": "uuid"
     ///    }
     ///  }
     ///}
@@ -605,7 +619,13 @@ pub mod types {
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<::std::string::String>,
-        pub step: BnaPipelineStep,
+        ///Start time
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        ///Pipeline identifier
+        ///This is the ID of the AWS state machine that was used to run the
+        /// pipeline
+        pub state_machine_id: uuid::Uuid,
     }
 
     impl ::std::convert::From<&BnaPipelinePost> for BnaPipelinePost {
@@ -4114,8 +4134,10 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            start_time:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            start_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
             status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
             step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
         }
@@ -4129,7 +4151,7 @@ pub mod types {
                     fargate_task_arn: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
-                    start_time: Err("no value supplied for start_time".to_string()),
+                    start_time: Ok(Default::default()),
                     status: Err("no value supplied for status".to_string()),
                     step: Err("no value supplied for step".to_string()),
                 }
@@ -4207,7 +4229,9 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.start_time = value
@@ -4296,7 +4320,11 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
+            start_time: ::std::result::Result<
+                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::string::String,
+            >,
+            state_machine_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
         }
 
         impl ::std::default::Default for BnaPipelinePost {
@@ -4308,7 +4336,8 @@ pub mod types {
                     fargate_task_arn: Ok(Default::default()),
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
-                    step: Err("no value supplied for step".to_string()),
+                    start_time: Ok(Default::default()),
+                    state_machine_id: Err("no value supplied for state_machine_id".to_string()),
                 }
             }
         }
@@ -4382,14 +4411,29 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for sqs_message: {}", e));
                 self
             }
-            pub fn step<T>(mut self, value: T) -> Self
+            pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
-                self.step = value
+                self.start_time = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for step: {}", e));
+                    .map_err(|e| format!("error converting supplied value for start_time: {}", e));
+                self
+            }
+            pub fn state_machine_id<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<uuid::Uuid>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.state_machine_id = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for state_machine_id: {}",
+                        e
+                    )
+                });
                 self
             }
         }
@@ -4406,7 +4450,8 @@ pub mod types {
                     fargate_task_arn: value.fargate_task_arn?,
                     s3_bucket: value.s3_bucket?,
                     sqs_message: value.sqs_message?,
-                    step: value.step?,
+                    start_time: value.start_time?,
+                    state_machine_id: value.state_machine_id?,
                 })
             }
         }
@@ -4420,7 +4465,8 @@ pub mod types {
                     fargate_task_arn: Ok(value.fargate_task_arn),
                     s3_bucket: Ok(value.s3_bucket),
                     sqs_message: Ok(value.sqs_message),
-                    step: Ok(value.step),
+                    start_time: Ok(value.start_time),
+                    state_machine_id: Ok(value.state_machine_id),
                 }
             }
         }

@@ -100,8 +100,11 @@ pub(crate) struct BnaPipelinePost {
     /// Copy of the JSON message that was sent for processing
     #[schema(examples(json!({"country":"United States","city":"santa rosa","region":"new mexico","fips_code":"3570670"})))]
     sqs_message: Option<String>,
-    /// Last pipeline step that was completed
-    step: BnaPipelineStep,
+    /// Start time
+    start_time: Option<DateTime<chrono::FixedOffset>>,
+    /// Pipeline identifier
+    /// This is the ID of the AWS state machine that was used to run the pipeline
+    state_machine_id: Uuid,
 }
 
 #[allow(dead_code)]
@@ -126,7 +129,7 @@ pub(crate) struct BnaPipelinePatch {
     #[schema(examples(json!({"country":"United States","city":"santa rosa","region":"new mexico","fips_code":"3570670"})))]
     sqs_message: Option<String>,
     /// Start time
-    start_time: DateTime<chrono::FixedOffset>,
+    start_time: Option<DateTime<chrono::FixedOffset>>,
     /// Pipeline status
     status: PipelineStatus,
     /// Last pipeline step that was completed

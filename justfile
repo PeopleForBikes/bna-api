@@ -124,3 +124,8 @@ generate-oas-30:
 
 # Regenerate the OpenAPI specifications and the client.
 regenerate-all: generate-oas-31 generate-oas-30 generate-client
+
+
+# Regenerate the OpenAPI specifications and the client without updating Cargo.toml.
+regenerate-all-no-cargo: regenerate-all
+  git restore bnaclient/Cargo.toml

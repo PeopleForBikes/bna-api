@@ -2697,7 +2697,6 @@ components:
     BnaPipelinePatch:
       type: object
       required:
-        - start_time
         - status
         - step
       properties:
@@ -2740,6 +2739,7 @@ components:
           type: string
           format: date-time
           description: Start time
+          nullable: true
         status:
           $ref: '#/components/schemas/PipelineStatus'
         step:
@@ -2747,7 +2747,7 @@ components:
     BnaPipelinePost:
       type: object
       required:
-        - step
+        - state_machine_id
       properties:
         cost:
           type: string
@@ -2784,8 +2784,19 @@ components:
             fips_code: '3570670'
             region: new mexico
           nullable: true
-        step:
-          $ref: '#/components/schemas/BnaPipelineStep'
+        start_time:
+          type: string
+          format: date-time
+          description: Start time
+          nullable: true
+        state_machine_id:
+          type: string
+          format: uuid
+          description: >-
+            Pipeline identifier
+
+            This is the ID of the AWS state machine that was used to run the
+            pipeline
     BnaPipelineStep:
       type: string
       enum:

@@ -16,8 +16,6 @@ pub struct BNAPipelinePost {
     pub sqs_message: Option<Json>,
     pub start_time: DateTimeWithTimeZone,
     pub state_machine_id: Uuid,
-    pub step: String,
-    pub torn_down: Option<bool>,
 }
 
 impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
@@ -32,7 +30,7 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
             start_time: ActiveValue::Set(self.start_time),
             state_machine_id: ActiveValue::Set(self.state_machine_id),
             status: ActiveValue::Set("Pending".to_string()),
-            step: ActiveValue::Set(self.step),
+            step: ActiveValue::Set("SqsMessage".to_string()),
         }
     }
 }
