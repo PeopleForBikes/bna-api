@@ -172,7 +172,7 @@ pub struct APIError {
 /// Error objects MUST be returned as an array keyed by errors in the top level of a
 /// JSON:API document.
 #[derive(Deserialize, Serialize, ToSchema)]
-pub(crate) struct APIErrors {
+pub struct APIErrors {
     pub errors: Vec<APIError>,
 }
 
@@ -183,54 +183,66 @@ pub(crate) enum ErrorResponses {
     #[response(
         status = 400,
         description = "The request was formatted incorrectly or missing required parameters.",
-        example = json!([{
-          "details": "the request was formatted incorrectly or missing required parameters",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"parameter": "status"},
-          "status": "400",
-          "title": "Bad Request"
-        }])
+        example = json!({
+          "errors": [
+          {
+            "details": "the request was formatted incorrectly or missing required parameters",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"parameter": "status"},
+            "status": "400",
+            "title": "Bad Request"
+          }
+        ]})
     )]
-    BadRequest(#[to_schema] APIErrors),
+    BadRequest(APIErrors),
     /// Unauthorized
     #[response(
       status = 401,
       description = "The request has not been fulfilled because it lacks valid authentication credentials for the target resource.",
-      example = json!([{
-        "details": "invalid authentication credentials to access the specified resource",
-        "id": "blfwkg8nvHcEJnQ=",
-        "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-        "status": "401",
-        "title": "Unauthorized"
-      }])
+      example = json!({
+        "errors": [
+        {
+          "details": "invalid authentication credentials to access the specified resource",
+          "id": "blfwkg8nvHcEJnQ=",
+          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
+          "status": "401",
+          "title": "Unauthorized"
+        }
+      ]})
   )]
-    Unauthorized(#[to_schema] APIErrors),
+    Unauthorized(APIErrors),
     /// Forbidden
     #[response(
       status = 403,
       description = "Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.",
-      example = json!([{
-        "details": "access to the requested resource is forbidden",
-        "id": "blfwkg8nvHcEJnQ=",
-        "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-        "status": "403",
-        "title": "Forbidden"
-      }])
+      example = json!({
+        "errors": [
+        {
+          "details": "access to the requested resource is forbidden",
+          "id": "blfwkg8nvHcEJnQ=",
+          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
+          "status": "403",
+          "title": "Forbidden"
+        }
+      ]})
   )]
-    Forbidden(#[to_schema] APIErrors),
+    Forbidden(APIErrors),
     /// Item Not Found
     #[response(
         status = 404,
         description = "The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.",
-        example = json!([{
-          "details": "the resource was not found",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-          "status": "404",
-          "title": "Item Not Found"
-        }])
+        example = json!({
+          "errors": [
+            {
+              "details": "the resource was not found",
+              "id": "blfwkg8nvHcEJnQ=",
+              "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
+              "status": "404",
+              "title": "Item Not Found"
+            }
+          ]})
     )]
-    NotFound(#[to_schema] APIErrors),
+    NotFound(APIErrors),
 }
 
 #[allow(dead_code)]

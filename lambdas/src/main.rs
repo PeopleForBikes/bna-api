@@ -2,7 +2,7 @@ use ::tracing::{debug, info};
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities, pipelines, price, ratings,
-    schema::{APIError, APIErrorSource},
+    schema::{APIError, APIErrorSource, APIErrors},
 };
 use std::{
     env::{self, set_var},
@@ -104,6 +104,13 @@ async fn main() -> Result<(), Error> {
                     schema!(
                         #[inline]
                         APIErrorSource
+                    ),
+                )
+                .schema(
+                    "APIErrors",
+                    schema!(
+                        #[inline]
+                        APIErrors
                     ),
                 )
                 .build(),
