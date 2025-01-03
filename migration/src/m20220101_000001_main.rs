@@ -351,6 +351,15 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(Census::Table)
+                    .col(Census::CityId)
+                    .col((Census::CreatedAt, IndexOrder::Desc))
+                    .to_owned(),
+            )
+            .await?;
 
         // Create the speed limit table.
         manager
@@ -389,6 +398,15 @@ impl MigrationTrait for Migration {
                     .to_owned(),
             )
             .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(SpeedLimit::Table)
+                    .col(SpeedLimit::CityId)
+                    .col((SpeedLimit::CreatedAt, IndexOrder::Desc))
+                    .to_owned(),
+            )
+            .await?;
 
         // Create the Summary table.
         manager
@@ -410,6 +428,16 @@ impl MigrationTrait for Migration {
                             .to(City::Table, City::Id)
                             .on_delete(ForeignKeyAction::Cascade),
                     )
+                    .to_owned(),
+            )
+            .await?;
+        manager
+            .create_index(
+                Index::create()
+                    .table(Summary::Table)
+                    .col(Summary::CityId)
+                    .col((Summary::CreatedAt, IndexOrder::Desc))
+                    .col((Summary::Version, IndexOrder::Desc))
                     .to_owned(),
             )
             .await?;
