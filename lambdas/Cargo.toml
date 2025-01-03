@@ -6,6 +6,7 @@ edition = "2021"
 [dependencies]
 axum = { workspace = true, features = ["macros", "original-uri", "query"] }
 axum-extra = { workspace = true, features = ["query"] }
+axum-streams = { workspace = true, features = ["csv"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
 aws-sdk-sqs = { workspace = true }
@@ -15,6 +16,7 @@ chrono = { workspace = true }
 dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
+futures = { workspace = true }
 http-serde = { workspace = true }
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }

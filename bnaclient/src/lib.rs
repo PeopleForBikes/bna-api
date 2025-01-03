@@ -6667,6 +6667,35 @@ impl Client {
     pub fn get_ratings_city(&self) -> builder::GetRatingsCity {
         builder::GetRatingsCity::new(self)
     }
+
+    ///Retrieve all rating reports.
+    ///
+    ///Sends a `GET` request to `/reports`
+    ///
+    ///```ignore
+    /// let response = client.get_reports()
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_reports(&self) -> builder::GetReports {
+        builder::GetReports::new(self)
+    }
+
+    ///Retrieve the latest rating reports for a specific year.
+    ///
+    ///Sends a `GET` request to `/reports/{year}`
+    ///
+    ///Arguments:
+    /// - `year`: Year to retrieve the reports for
+    ///```ignore
+    /// let response = client.get_reports_year()
+    ///    .year(year)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_reports_year(&self) -> builder::GetReportsYear {
+        builder::GetReportsYear::new(self)
+    }
 }
 
 /// Types for composing operation parameters.
@@ -8470,6 +8499,81 @@ pub mod builder {
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_reports`]
+    ///
+    ///[`Client::get_reports`]: super::Client::get_reports
+    #[derive(Debug, Clone)]
+    pub struct GetReports<'a> {
+        client: &'a super::Client,
+    }
+
+    impl<'a> GetReports<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self { client: client }
+        }
+
+        ///Sends a `GET` request to `/reports`
+        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
+            let Self { client } = self;
+            let url = format!("{}/reports", client.baseurl,);
+            #[allow(unused_mut)]
+            let mut request = client.client.get(url).build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => Ok(ResponseValue::stream(response)),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_reports_year`]
+    ///
+    ///[`Client::get_reports_year`]: super::Client::get_reports_year
+    #[derive(Debug, Clone)]
+    pub struct GetReportsYear<'a> {
+        client: &'a super::Client,
+        year: Result<i64, String>,
+    }
+
+    impl<'a> GetReportsYear<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                year: Err("year was not initialized".to_string()),
+            }
+        }
+
+        pub fn year<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i64>,
+        {
+            self.year = value
+                .try_into()
+                .map_err(|_| "conversion to `i64` for year failed".to_string());
+            self
+        }
+
+        ///Sends a `GET` request to `/reports/{year}`
+        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
+            let Self { client, year } = self;
+            let year = year.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/reports/{}",
+                client.baseurl,
+                encode_path(&year.to_string()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client.client.get(url).build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => Ok(ResponseValue::stream(response)),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
