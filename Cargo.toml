@@ -14,7 +14,7 @@ aws-config = "1.5.9"
 aws-sdk-s3 = "1.59.0"
 aws-sdk-sqs = "1.48.0"
 axum = "0.7.7"
-axum-extra = "0.9.4"
+axum-extra = "0.10.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "c20ec31" }
 bon = "3.0.1"
 chrono = "0.4.24"
@@ -24,7 +24,7 @@ dotenv = "0.15.0"
 entity = { path = "entity" }
 futures = "0.3.31"
 http-serde = "2.0.0"
-itertools = "0.13.0"
+itertools = "0.14.0"
 lambda_http = "0.14.0"
 lambda_runtime = "0.13.0"
 migration = { path = "migration" }
