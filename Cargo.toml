@@ -24,7 +24,7 @@ dotenv = "0.15.0"
 entity = { path = "entity" }
 futures = "0.3.31"
 http-serde = "2.0.0"
-itertools = "0.13.0"
+itertools = "0.14.0"
 lambda_http = "0.14.0"
 lambda_runtime = "0.13.0"
 migration = { path = "migration" }
