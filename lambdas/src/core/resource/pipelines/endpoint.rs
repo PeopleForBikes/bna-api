@@ -64,10 +64,9 @@ async fn get_pipelines_bna(
     ErrorResponses,
   ))]
 async fn get_pipelines_bnas(
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
 ) -> Result<Json<Value>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
-    get_pipelines_bnas_adaptor(pagination.page, pagination.page_size())
+    get_pipelines_bnas_adaptor(pagination.page(), pagination.page_size())
         .await
         .map(|v| Json(json!(v.payload())))
 }

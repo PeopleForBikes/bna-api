@@ -1,7 +1,6 @@
 pub mod core;
 
 use axum::{
-    async_trait,
     extract::{FromRequest, OriginalUri},
     response::IntoResponse,
 };
@@ -399,7 +398,6 @@ pub struct Context {
     source: String,
 }
 
-#[async_trait]
 impl<S> FromRequest<S> for Context
 where
     S: Send + Sync,
