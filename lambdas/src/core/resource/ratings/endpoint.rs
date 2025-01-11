@@ -67,15 +67,14 @@ async fn get_rating(
     (status = OK, description = "Fetches the city ratings", body = Ratings),
   ))]
 async fn get_ratings(
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Ratings>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
     let (total_items, models) =
-        get_ratings_adaptor(pagination.page, pagination.page_size()).await?;
+        get_ratings_adaptor(pagination.page(), pagination.page_size()).await?;
 
     let payload: Ratings = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page, pagination.page_size()),
+        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }

@@ -37,19 +37,18 @@ pub fn routes() -> OpenApiRouter {
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
   ))]
 pub(crate) async fn get_prices_fargate(
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
     price_parameters: PriceParameters,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
     let (total_items, models) = get_prices_fargate_adaptor_model_(
         price_parameters,
-        pagination.page,
+        pagination.page(),
         pagination.page_size(),
     )
     .await?;
     let payload: FargatePrices = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page, pagination.page_size()),
+        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }
