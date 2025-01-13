@@ -1,7 +1,7 @@
 use ::tracing::{debug, info};
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
-    cities, pipelines, price, ratings,
+    cities, pipelines, price, ratings, reports,
     schema::{APIError, APIErrorSource, APIErrors},
 };
 use std::{
@@ -123,13 +123,14 @@ async fn main() -> Result<(), Error> {
         .merge(pipelines::endpoint::routes())
         .merge(price::endpoint::routes())
         .merge(ratings::endpoint::routes())
+        .merge(reports::endpoint::routes())
         .layer(TraceLayer::new_for_http())
         .split_for_parts();
 
     // Write the specification file to disk.
     if env::var("BNA_API_GENERATE_ONLY")
         .ok()
-        .map_or(false, |v| v == *"1")
+        .is_some_and(|v| v == *"1")
     {
         info!("Regenerating the OpenAPI specification file.");
         let _ = fs::write("./openapi-3.1.yaml", api.to_yaml().unwrap());
@@ -142,7 +143,7 @@ async fn main() -> Result<(), Error> {
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")
         .ok()
-        .map_or(false, |v| v == *"1");
+        .is_some_and(|v| v == *"1");
 
     // Start the server in standalone mode or in lambda_http mode.
     if standalone {

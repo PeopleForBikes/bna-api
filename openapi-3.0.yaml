@@ -1798,6 +1798,38 @@ paths:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+  /reports:
+    get:
+      tags:
+        - report
+      description: Retrieve all rating reports.
+      operationId: get_reports
+      responses:
+        '200':
+          description: Fetches all rating reports in csv format
+          content:
+            text/csv: {}
+  /reports/{year}:
+    get:
+      tags:
+        - report
+      description: Retrieve the latest rating reports for a specific year.
+      operationId: get_reports_year
+      parameters:
+        - name: year
+          in: path
+          description: Year to retrieve the reports for
+          required: true
+          schema:
+            type: integer
+            format: int32
+            maximum: 2029
+            minimum: 2017
+      responses:
+        '200':
+          description: Fetches the latest rating reports for a specific year in csv format
+          content:
+            text/csv: {}
 components:
   schemas:
     APIError:

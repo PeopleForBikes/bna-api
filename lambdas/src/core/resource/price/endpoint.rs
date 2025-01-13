@@ -60,7 +60,8 @@ pub(crate) async fn get_prices_fargate(
   description = "Get a specific AWS Fargate price used to compute the cost of analysis cost.",
   tag = TAG,
   params(
-    ("price_id" = i32, Path, description = "Identifier of a Fargate price")),
+    ("price_id" = i32, Path, description = "Identifier of a Fargate price")
+  ),
   responses(
     (status = OK, description = "Fetches a Fargate price used to estimate the cost of an analysis", body = FargatePrice),
     ErrorResponses,
