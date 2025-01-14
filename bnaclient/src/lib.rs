@@ -1,5 +1,3 @@
-mod progenitor_client;
-
 #[allow(unused_imports)]
 use progenitor_client::{encode_path, RequestBuilderExt};
 #[allow(unused_imports)]
@@ -223,7 +221,7 @@ pub mod types {
         Header(::std::string::String),
     }
 
-    impl ::std::convert::From<&ApiErrorSource> for ApiErrorSource {
+    impl ::std::convert::From<&Self> for ApiErrorSource {
         fn from(value: &ApiErrorSource) -> Self {
             value.clone()
         }
@@ -716,7 +714,7 @@ pub mod types {
         Cleanup,
     }
 
-    impl ::std::convert::From<&BnaPipelineStep> for BnaPipelineStep {
+    impl ::std::convert::From<&Self> for BnaPipelineStep {
         fn from(value: &BnaPipelineStep) -> Self {
             value.clone()
         }
@@ -785,6 +783,7 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
     pub struct BnaPipelines(pub ::std::vec::Vec<BnaPipeline>);
     impl ::std::ops::Deref for BnaPipelines {
         type Target = ::std::vec::Vec<BnaPipeline>;
@@ -980,6 +979,7 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
     pub struct Cities(pub ::std::vec::Vec<City>);
     impl ::std::ops::Deref for Cities {
         type Target = ::std::vec::Vec<City>;
@@ -1604,7 +1604,7 @@ pub mod types {
         Wales,
     }
 
-    impl ::std::convert::From<&Country> for Country {
+    impl ::std::convert::From<&Self> for Country {
         fn from(value: &Country) -> Self {
             value.clone()
         }
@@ -1783,6 +1783,7 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
     pub struct FargatePrices(pub ::std::vec::Vec<FargatePrice>);
     impl ::std::ops::Deref for FargatePrices {
         type Target = ::std::vec::Vec<FargatePrice>;
@@ -2069,7 +2070,7 @@ pub mod types {
         Processing,
     }
 
-    impl ::std::convert::From<&PipelineStatus> for PipelineStatus {
+    impl ::std::convert::From<&Self> for PipelineStatus {
         fn from(value: &PipelineStatus) -> Self {
             value.clone()
         }
@@ -2432,6 +2433,7 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
     pub struct Ratings(pub ::std::vec::Vec<Rating>);
     impl ::std::ops::Deref for Ratings {
         type Target = ::std::vec::Vec<Rating>;
@@ -3073,6 +3075,7 @@ pub mod types {
     /// ```
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
     pub struct Submissions(pub ::std::vec::Vec<Submission>);
     impl ::std::ops::Deref for Submissions {
         type Target = ::std::vec::Vec<Submission>;
@@ -6757,13 +6760,6 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -6772,7 +6768,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6796,7 +6793,7 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                body: Ok(types::builder::CityPost::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -6925,16 +6922,6 @@ pub mod builder {
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let status = status.map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities/submissions", client.baseurl,);
-            let mut query = Vec::with_capacity(3usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
-            if let Some(v) = &status {
-                query.push(("status", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -6943,7 +6930,9 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&progenitor_client::QueryParam::new("status", &status))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6979,7 +6968,7 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                body: Ok(types::builder::SubmissionPost::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -7098,10 +7087,6 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&submission_id.to_string()),
             );
-            let mut query = Vec::with_capacity(1usize);
-            if let Some(v) = &status {
-                query.push(("status", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -7110,7 +7095,7 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("status", &status))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7148,7 +7133,7 @@ pub mod builder {
             Self {
                 client: client,
                 submission_id: Err("submission_id was not initialized".to_string()),
-                body: Ok(types::builder::SubmissionPatch::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -7431,13 +7416,6 @@ pub mod builder {
                 encode_path(&region.to_string()),
                 encode_path(&name.to_string()),
             );
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -7446,7 +7424,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7488,7 +7467,7 @@ pub mod builder {
                 country: Err("country was not initialized".to_string()),
                 region: Err("region was not initialized".to_string()),
                 name: Err("name was not initialized".to_string()),
-                body: Ok(types::builder::CensusPost::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -7696,13 +7675,6 @@ pub mod builder {
                 encode_path(&region.to_string()),
                 encode_path(&name.to_string()),
             );
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -7711,7 +7683,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7787,13 +7760,6 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/pipelines/bna", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -7802,7 +7768,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7838,7 +7805,7 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                body: Ok(types::builder::BnaPipelinePost::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -7988,7 +7955,7 @@ pub mod builder {
             Self {
                 client: client,
                 pipeline_id: Err("pipeline_id was not initialized".to_string()),
-                body: Ok(types::builder::BnaPipelinePatch::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 
@@ -8124,13 +8091,6 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/prices/fargate", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -8139,7 +8099,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -8269,13 +8230,6 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/ratings", client.baseurl,);
-            let mut query = Vec::with_capacity(2usize);
-            if let Some(v) = &page {
-                query.push(("page", v.to_string()));
-            }
-            if let Some(v) = &page_size {
-                query.push(("page_size", v.to_string()));
-            }
             #[allow(unused_mut)]
             let mut request = client
                 .client
@@ -8284,7 +8238,8 @@ pub mod builder {
                     reqwest::header::ACCEPT,
                     reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&query)
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -8308,7 +8263,7 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                body: Ok(types::builder::RatingPost::default()),
+                body: Ok(::std::default::Default::default()),
             }
         }
 

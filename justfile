@@ -8,6 +8,7 @@ set dotenv-load := true
 dbml := "docs/database.dbml"
 entites := "entity/src/entities"
 sql_dump := "docs/database.sql"
+sql_dump_data := "docs/database-with-data.sql"
 
 # Meta task running ALL the CI tasks at onces.
 ci: lint
@@ -34,9 +35,13 @@ lint-md:
 lint-spellcheck:
     npx --yes cspell --no-progress --show-suggestions --show-context "**/*.md"
 
-# Dump database.
+# Dump database schema.
 db-dump:
   pg_dump -d $DATABASE_URL --schema-only > {{ sql_dump }}
+
+# Dump database with data.
+db-dump-with-data:
+  pg_dump -d $DATABASE_URL > {{ sql_dump_data }}
 
 # Dump database and convert it to dbml.
 db-to-dbml: db-dump dbml-from-sql dbml-svg
@@ -77,7 +82,7 @@ dbml-sql:
 
 # Convert PostgreSQL dump to dbml.
 dbml-from-sql:
-  sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
+  npx -y --package=@dbml/cli sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
 
 # Generate the SVG diagram from dbml.
 dbml-svg:
@@ -111,6 +116,7 @@ debug-axum:
   DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres \
   cargo watch -x \
     'run -p lambdas --bin axumed'
+
 # Generate the OAS 3.1.x from the Axum source code.
 generate-oas-31:
   BNA_API_GENERATE_ONLY=1 \
@@ -120,11 +126,10 @@ generate-oas-31:
 
 # Generate the OAS 3.0.x from the OAS 3.1.x.
 generate-oas-30:
-  openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
+  npx -y @apiture/openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
 
 # Regenerate the OpenAPI specifications and the client.
 regenerate-all: generate-oas-31 generate-oas-30 generate-client
-
 
 # Regenerate the OpenAPI specifications and the client without updating Cargo.toml.
 regenerate-all-no-cargo: regenerate-all
