@@ -76,3 +76,8 @@ GET {{host}}/prices/fargate?latest=true
 HTTP 200
 [Asserts]
 jsonpath "$" count == 1
+
+# Fetch 2024 city reports.
+GET {{host}}/reports/2024
+
+HTTP 200

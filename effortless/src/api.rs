@@ -195,16 +195,16 @@ pub const DEFAULT_PAGE_SIZE: u64 = 50;
 #[derive(Debug, Deserialize)]
 pub struct PaginationParameters {
     /// The number of items per page.
-    pub page_size: Option<u64>,
+    page_size: Option<u64>,
     /// The result page being returned.
-    pub page: u64,
+    page: Option<u64>,
 }
 
 impl Default for PaginationParameters {
     fn default() -> Self {
         Self {
             page_size: Some(DEFAULT_PAGE_SIZE),
-            page: 0,
+            page: Some(0),
         }
     }
 }
@@ -220,6 +220,10 @@ impl PaginationParameters {
             },
             None => DEFAULT_PAGE_SIZE,
         }
+    }
+
+    pub fn page(&self) -> u64 {
+        self.page.unwrap_or_default()
     }
 }
 
@@ -263,7 +267,7 @@ pub fn extract_pagination_parameters(
     let parameter = "page";
     if let Some(page) = event.query_string_parameters().first(parameter) {
         match page.parse::<u64>() {
-            Ok(page) => pagination.page = page,
+            Ok(page) => pagination.page = Some(page),
             Err(e) => {
                 let api_error = invalid_query_parameter(
                     event,
@@ -295,8 +299,8 @@ mod tests {
         let req = from_str(input).unwrap();
 
         let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size, Some(DEFAULT_PAGE_SIZE));
-        assert_eq!(actual.page, 0);
+        assert_eq!(actual.page_size(), DEFAULT_PAGE_SIZE);
+        assert_eq!(actual.page(), 0);
     }
 
     #[test]
@@ -313,8 +317,8 @@ mod tests {
         let req = result.with_query_string_parameters(data);
 
         let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size, Some(PAGE_SIZE));
-        assert_eq!(actual.page, PAGE);
+        assert_eq!(actual.page_size(), PAGE_SIZE);
+        assert_eq!(actual.page(), PAGE);
     }
 
     #[test]

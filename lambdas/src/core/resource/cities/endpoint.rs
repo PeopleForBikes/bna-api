@@ -68,6 +68,7 @@ async fn get_city(
         .map(Json)
 }
 
+#[axum::debug_handler]
 #[utoipa::path(
   get,
   path = "/cities",
@@ -80,12 +81,12 @@ async fn get_city(
     (status = OK, description = "Fetches cities", body = Cities),
   ))]
 async fn get_cities(
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
-    let payload = get_cities_adaptor(pagination.page, pagination.page_size()).await?;
+    // let Query(pagination) = pagination;
+    let payload = get_cities_adaptor(pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, pagination.page, pagination.page_size()),
+        Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
         payload.1.into(),
     ))
 }
@@ -105,14 +106,14 @@ async fn get_cities(
   ))]
 async fn get_city_censuses(
     Path(params): Path<CitiesPathParameters>,
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<CityCensuses>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
+    // let Query(pagination) = pagination.unwrap_or_default();
     let city_censuses = get_cities_censuses_adaptor(
         &params.country,
         &params.region,
         &params.name,
-        pagination.page,
+        pagination.page(),
         pagination.page_size(),
     )
     .await?;
@@ -132,7 +133,7 @@ async fn get_city_censuses(
         Paginatron::new(
             None,
             city_censuses.0,
-            pagination.page,
+            pagination.page(),
             pagination.page_size(),
         ),
         payload,
@@ -154,15 +155,14 @@ async fn get_city_censuses(
   ))]
 async fn get_city_ratings(
     Path(params): Path<CitiesPathParameters>,
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
     ctx: Context,
 ) -> Result<PageFlow<CityRatings>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
     let city_ratings = get_cities_ratings_adaptor(
         &params.country,
         &params.region,
         &params.name,
-        pagination.page,
+        pagination.page(),
         pagination.page_size(),
         ctx,
     )
@@ -182,7 +182,7 @@ async fn get_city_ratings(
         Paginatron::new(
             None,
             city_ratings.0,
-            pagination.page,
+            pagination.page(),
             pagination.page_size(),
         ),
         payload,
@@ -247,12 +247,11 @@ struct SubmissionParameters {
     ))]
 async fn get_cities_submissions(
     Query(submission_params): Query<SubmissionParameters>,
-    pagination: Option<Query<PaginationParameters>>,
+    Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
-    let Query(pagination) = pagination.unwrap_or_default();
     let cities_submissions = get_cities_submissions_adaptor(
         submission_params.status,
-        pagination.page,
+        pagination.page(),
         pagination.page_size(),
     )
     .await?;
@@ -267,7 +266,7 @@ async fn get_cities_submissions(
         Paginatron::new(
             None,
             cities_submissions.0,
-            pagination.page,
+            pagination.page(),
             pagination.page_size(),
         ),
         payload,

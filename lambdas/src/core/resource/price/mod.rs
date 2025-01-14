@@ -1,6 +1,5 @@
 use crate::Sort;
 use axum::{
-    async_trait,
     extract::FromRequestParts,
     http::{request::Parts, StatusCode},
 };
@@ -39,7 +38,6 @@ impl Default for PriceParameters {
     }
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for PriceParameters
 where
     S: Send + Sync,
