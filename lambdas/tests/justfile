@@ -5,10 +5,7 @@ top_dir := `git rev-parse --show-toplevel`
 
 # Setup the project.
 setup:
-    uv venv
-    uv pip install --upgrade pip setuptools
-    uv pip install -r requirements.txt
-    uv sync
+    uv sync --all-extras --dev
 
 # Export the OpenAPI specification.
 openapi-export:
