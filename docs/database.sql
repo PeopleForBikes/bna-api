@@ -3,11 +3,12 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 15.8 (Homebrew)
+-- Dumped by pg_dump version 17.2 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -37,7 +38,7 @@ ALTER TABLE public.approval_status OWNER TO postgres;
 
 CREATE TABLE public.bna_pipeline (
     state_machine_id uuid NOT NULL,
-    step character varying,
+    step character varying NOT NULL,
     sqs_message json,
     fargate_price_id integer,
     fargate_task_arn character varying,
@@ -45,8 +46,6 @@ CREATE TABLE public.bna_pipeline (
     status character varying DEFAULT 'Pending'::character varying NOT NULL,
     start_time timestamp with time zone NOT NULL,
     end_time timestamp with time zone,
-    torn_down boolean,
-    results_posted boolean,
     cost numeric
 );
 
@@ -115,7 +114,7 @@ CREATE SEQUENCE public.census_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.census_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.census_id_seq OWNER TO postgres;
 
 --
 -- Name: census_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -200,7 +199,7 @@ CREATE SEQUENCE public.fargate_price_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.fargate_price_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.fargate_price_id_seq OWNER TO postgres;
 
 --
 -- Name: fargate_price_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -316,7 +315,7 @@ CREATE SEQUENCE public.speed_limit_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.speed_limit_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.speed_limit_id_seq OWNER TO postgres;
 
 --
 -- Name: speed_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -373,7 +372,7 @@ CREATE SEQUENCE public.submission_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.submission_id_seq OWNER TO postgres;
+ALTER SEQUENCE public.submission_id_seq OWNER TO postgres;
 
 --
 -- Name: submission_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -652,6 +651,13 @@ ALTER TABLE ONLY public.us_state
 
 
 --
+-- Name: census_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX census_city_id_created_at_idx ON public.census USING btree (city_id, created_at DESC);
+
+
+--
 -- Name: census_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -670,6 +676,13 @@ CREATE INDEX census_id_idx ON public.census USING btree (id);
 --
 
 CREATE INDEX city_id_idx ON public.city USING btree (id);
+
+
+--
+-- Name: speed_limit_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX speed_limit_city_id_created_at_idx ON public.speed_limit USING btree (city_id, created_at DESC);
 
 
 --
@@ -698,6 +711,13 @@ CREATE INDEX state_region_crosswalk_region_idx ON public.state_region_crosswalk 
 --
 
 CREATE INDEX state_region_crosswalk_state_idx ON public.state_region_crosswalk USING btree (state);
+
+
+--
+-- Name: summary_city_id_created_at_version_idx; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX summary_city_id_created_at_version_idx ON public.summary USING btree (city_id, created_at DESC, version DESC);
 
 
 --

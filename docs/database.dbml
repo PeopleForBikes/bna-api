@@ -4,7 +4,7 @@ Table "approval_status" {
 
 Table "bna_pipeline" {
   "state_machine_id" uuid [pk, not null]
-  "step" "character varying"
+  "step" "character varying" [not null]
   "sqs_message" json
   "fargate_price_id" integer
   "fargate_task_arn" "character varying"
@@ -12,8 +12,6 @@ Table "bna_pipeline" {
   "status" "character varying" [not null, default: `'Pending'::charactervarying`]
   "start_time" timestamp [not null]
   "end_time" timestamp
-  "torn_down" boolean
-  "results_posted" boolean
   "cost" numeric
 }
 
@@ -38,6 +36,7 @@ Table "census" {
   "population" integer [not null]
 
   Indexes {
+    (city_id, created_at) [type: btree, name: "census_city_id_created_at_idx"]
     city_id [type: btree, name: "census_city_id_idx"]
     id [type: btree, name: "census_id_idx"]
   }
@@ -128,6 +127,7 @@ Table "speed_limit" {
   "residential" integer [not null]
 
   Indexes {
+    (city_id, created_at) [type: btree, name: "speed_limit_city_id_created_at_idx"]
     city_id [type: btree, name: "speed_limit_city_id_idx"]
     id [type: btree, name: "speed_limit_id_idx"]
   }
@@ -166,6 +166,10 @@ Table "summary" {
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "score" doubleprecision [not null]
   "version" "character varying" [not null]
+
+  Indexes {
+    (city_id, created_at, version) [type: btree, name: "summary_city_id_created_at_version_idx"]
+  }
 }
 
 Table "transit" {
