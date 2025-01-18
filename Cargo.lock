@@ -1004,7 +1004,7 @@ dependencies = [
  "bytes",
  "chrono",
  "futures-core",
- "percent-encoding",
+ "progenitor-client",
  "reqwest",
  "serde",
  "serde_json",
@@ -3368,6 +3368,21 @@ dependencies = [
  "syn 2.0.93",
  "version_check",
  "yansi",
+]
+
+[[package]]
+name = "progenitor-client"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fdae8df95f0b2a7d6159a9c43b7380016b8d3b0fc1ece46871ecd2e0087cfaf6"
+dependencies = [
+ "bytes",
+ "futures-core",
+ "percent-encoding",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
 ]
 
 [[package]]
