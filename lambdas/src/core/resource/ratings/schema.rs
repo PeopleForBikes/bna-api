@@ -1,11 +1,11 @@
 //! Describes the Ratings schemas.
 use super::db::Bna;
 use crate::core::resource::schema::City;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Rating {
     // BNA Summary
     /// Rating identifier
@@ -88,98 +88,98 @@ impl From<Bna> for Rating {
     }
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Infrastructure {
     /// Total miles of low-stress streets and paths in the measured area.
     #[schema(examples(127))]
-    low_stress_miles: Option<f64>,
+    pub(crate) low_stress_miles: Option<f64>,
     /// Total miles of high-stress streets in the measured area.
     #[schema(examples(253))]
-    high_stress_miles: Option<f64>,
+    pub(crate) high_stress_miles: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Recreation {
     /// BNA category subscore for access to community centers.
     #[schema(minimum = 0, maximum = 100)]
-    community_centers: Option<f64>,
+    pub(crate) community_centers: Option<f64>,
     /// BNA category subscore for access to parks.
     #[schema(minimum = 0, maximum = 100)]
-    parks: Option<f64>,
+    pub(crate) parks: Option<f64>,
     /// BNA category subscore for access to bikeable trails.
     #[schema(minimum = 0, maximum = 100)]
-    trails: Option<f64>,
+    pub(crate) trails: Option<f64>,
     /// BNA category score for access to recreational facilities.
     #[schema(minimum = 0, maximum = 100)]
-    score: Option<f64>,
+    pub(crate) score: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Opportunity {
     /// BNA category subscore for access to job location areas.
     #[schema(minimum = 0, maximum = 100)]
-    employment: Option<f64>,
+    pub(crate) employment: Option<f64>,
     /// BNA category subscore for access to universities and colleges.
     #[schema(minimum = 0, maximum = 100)]
-    higher_education: Option<f64>,
+    pub(crate) higher_education: Option<f64>,
     /// BNA category subscore for access to k12 schools
     #[schema(minimum = 0, maximum = 100)]
-    k12_education: Option<f64>,
+    pub(crate) k12_education: Option<f64>,
     /// BNA category score for access to education and jobs.
     #[schema(minimum = 0, maximum = 100)]
-    score: Option<f64>,
+    pub(crate) score: Option<f64>,
     /// BNA category subscore for access to technical and vocational colleges.
     #[schema(minimum = 0, maximum = 100)]
-    technical_vocational_college: Option<f64>,
+    pub(crate) technical_vocational_college: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct CoreServices {
     /// BNA category subscore for access to dentists.
     #[schema(minimum = 0, maximum = 100)]
-    dentists: Option<f64>,
+    pub(crate) dentists: Option<f64>,
     /// BNA category subscore for access to doctors.
     #[schema(minimum = 0, maximum = 100)]
-    doctors: Option<f64>,
+    pub(crate) doctors: Option<f64>,
     /// BNA category subscore for access to grocery stores.
     #[schema(minimum = 0, maximum = 100)]
-    grocery: Option<f64>,
+    pub(crate) grocery: Option<f64>,
     /// BNA category subscore for access to hospitals.
     #[schema(minimum = 0, maximum = 100)]
-    hospitals: Option<f64>,
+    pub(crate) hospitals: Option<f64>,
     /// BNA category subscore for access to pharmacies.
     #[schema(minimum = 0, maximum = 100)]
-    pharmacies: Option<f64>,
+    pub(crate) pharmacies: Option<f64>,
     /// BNA category score for access to core services.
     #[schema(minimum = 0, maximum = 100)]
-    score: Option<f64>,
+    pub(crate) score: Option<f64>,
     /// BNA category subscore for access to social services.
     #[schema(minimum = 0, maximum = 100)]
-    social_services: Option<f64>,
+    pub(crate) social_services: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct People {
     /// BNA category score for access to residential areas.
     #[schema(minimum = 0, maximum = 100)]
-    people: Option<f64>,
+    pub(crate) people: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Retail {
     /// BNA category score for access to major retail centers.
     #[schema(minimum = 0, maximum = 100)]
-    retail: Option<f64>,
+    pub(crate) retail: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Transit {
     /// BNA category score for access to major transit stops.
     #[schema(minimum = 0, maximum = 100)]
-    transit: Option<f64>,
+    pub(crate) transit: Option<f64>,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Ratings(Vec<Rating>);
 
 impl From<Vec<Bna>> for Ratings {
@@ -189,39 +189,41 @@ impl From<Vec<Bna>> for Ratings {
     }
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct RatingWithCity {
     pub(crate) rating: Rating,
     pub(crate) city: City,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct RatingPost {
     /// City identifier
-    city_id: Uuid,
+    pub(crate) city_id: Uuid,
     /// Rating version
     /// The format follows the [calver](https://calver.org) specification with
     /// the YY.0M[.Minor] scheme.
-    version: String,
+    pub(crate) version: String,
+    /// City rating score
+    pub(crate) score: f64,
 
     /// BNAInfrastructure
-    infrastructure: Infrastructure,
+    pub(crate) infrastructure: Infrastructure,
 
     /// BNA Recreation
-    recreation: Recreation,
+    pub(crate) recreation: Recreation,
 
     /// BNA Opportunity
-    opportunity: Opportunity,
+    pub(crate) opportunity: Opportunity,
 
     /// BNA Core Services
-    core_services: CoreServices,
+    pub(crate) core_services: CoreServices,
 
     /// BNA People
-    people: People,
+    pub(crate) people: People,
 
     /// BNA Retail
-    retail: Retail,
+    pub(crate) retail: Retail,
 
     /// BNA Transit
-    transit: Transit,
+    pub(crate) transit: Transit,
 }

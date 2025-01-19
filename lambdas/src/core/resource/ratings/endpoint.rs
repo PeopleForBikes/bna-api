@@ -14,7 +14,6 @@ use axum::{
     Json,
 };
 use effortless::api::PaginationParameters;
-use entity::wrappers::bna::BNAPost;
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -90,7 +89,7 @@ async fn get_ratings(
     ErrorResponses,
   ))]
 async fn post_rating(
-    Json(bna): Json<BNAPost>,
+    Json(bna): Json<RatingPost>,
 ) -> Result<(StatusCode, Json<Rating>), ExecutionError> {
     post_ratings_adaptor(bna)
         .await
