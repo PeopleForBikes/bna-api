@@ -2237,6 +2237,7 @@ pub mod types {
     ///    "people",
     ///    "recreation",
     ///    "retail",
+    ///    "score",
     ///    "transit",
     ///    "version"
     ///  ],
@@ -2264,6 +2265,11 @@ pub mod types {
     ///    "retail": {
     ///      "$ref": "#/components/schemas/Retail"
     ///    },
+    ///    "score": {
+    ///      "description": "City rating score",
+    ///      "type": "number",
+    ///      "format": "double"
+    ///    },
     ///    "transit": {
     ///      "$ref": "#/components/schemas/Transit"
     ///    },
@@ -2285,6 +2291,7 @@ pub mod types {
         pub people: People,
         pub recreation: Recreation,
         pub retail: Retail,
+        pub score: f64,
         pub transit: Transit,
         ///Rating version
         ///The format follows the [calver](https://calver.org) specification with
@@ -5134,6 +5141,7 @@ pub mod types {
             people: ::std::result::Result<super::People, ::std::string::String>,
             recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
             retail: ::std::result::Result<super::Retail, ::std::string::String>,
+            score: ::std::result::Result<f64, ::std::string::String>,
             transit: ::std::result::Result<super::Transit, ::std::string::String>,
             version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
@@ -5148,6 +5156,7 @@ pub mod types {
                     people: Err("no value supplied for people".to_string()),
                     recreation: Err("no value supplied for recreation".to_string()),
                     retail: Err("no value supplied for retail".to_string()),
+                    score: Err("no value supplied for score".to_string()),
                     transit: Err("no value supplied for transit".to_string()),
                     version: Err("no value supplied for version".to_string()),
                 }
@@ -5225,6 +5234,16 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for retail: {}", e));
                 self
             }
+            pub fn score<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<f64>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.score = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
             pub fn transit<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<super::Transit>,
@@ -5260,6 +5279,7 @@ pub mod types {
                     people: value.people?,
                     recreation: value.recreation?,
                     retail: value.retail?,
+                    score: value.score?,
                     transit: value.transit?,
                     version: value.version?,
                 })
@@ -5276,6 +5296,7 @@ pub mod types {
                     people: Ok(value.people),
                     recreation: Ok(value.recreation),
                     retail: Ok(value.retail),
+                    score: Ok(value.score),
                     transit: Ok(value.transit),
                     version: Ok(value.version),
                 }

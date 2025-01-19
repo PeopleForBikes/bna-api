@@ -25,8 +25,8 @@ test *env:
     endpoints/cities.hurl
 
 # Run the smoke tests against an environment [localhost, staging].
-test-smoke-readonly *env:
-  hurl --test --variables-file $1.vars smoke/public-readonly.hurl
+test-smoke-public *env:
+  hurl --test --variables-file $1.vars smoke/public.hurl
 
 # Run the schemathesis tests locally again the openapi schema.
 test-localhost-schemathesis:

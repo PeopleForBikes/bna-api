@@ -2568,6 +2568,7 @@ components:
       required:
         - city_id
         - version
+        - score
         - infrastructure
         - recreation
         - opportunity
@@ -2592,6 +2593,10 @@ components:
           $ref: '#/components/schemas/Recreation'
         retail:
           $ref: '#/components/schemas/Retail'
+        score:
+          type: number
+          format: double
+          description: City rating score
         transit:
           $ref: '#/components/schemas/Transit'
         version:

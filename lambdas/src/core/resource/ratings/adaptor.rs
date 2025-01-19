@@ -1,8 +1,10 @@
-use super::db::{fetch_rating, fetch_ratings, fetch_ratings_city, fetch_ratings_summaries, Bna};
+use super::{
+    db::{fetch_rating, fetch_ratings, fetch_ratings_city, fetch_ratings_summaries, Bna},
+    schema::RatingPost,
+};
 use crate::{database_connect, Context, ExecutionError};
 use entity::{
     core_services, infrastructure, opportunity, people, recreation, retail, summary, transit,
-    wrappers::bna::BNAPost,
 };
 use sea_orm::{ActiveModelTrait, ActiveValue};
 use tracing::info;
@@ -67,65 +69,80 @@ pub(crate) async fn get_ratings_city_adaptor(
     }
 }
 
-pub(crate) async fn post_ratings_adaptor(bna: BNAPost) -> Result<Bna, ExecutionError> {
+pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, ExecutionError> {
+    // Generate a rating id.
+    let rating_id = Uuid::new_v4();
+
     // Turn the model wrapper into active models.
     let summary = summary::ActiveModel {
-        id: ActiveValue::NotSet,
-        city_id: ActiveValue::Set(bna.summary.city_id),
+        id: ActiveValue::Set(rating_id),
+        city_id: ActiveValue::Set(rating.city_id),
         created_at: ActiveValue::NotSet,
-        score: ActiveValue::NotSet,
-        version: ActiveValue::Set(bna.summary.version),
+        score: ActiveValue::Set(rating.score),
+        version: ActiveValue::Set(rating.version),
     };
     info!("{:?}", summary);
     let core_services = core_services::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        dentists: ActiveValue::Set(bna.core_services.dentists),
-        doctors: ActiveValue::Set(bna.core_services.doctors),
-        grocery: ActiveValue::Set(bna.core_services.grocery),
-        hospitals: ActiveValue::Set(bna.core_services.hospitals),
-        pharmacies: ActiveValue::Set(bna.core_services.pharmacies),
-        score: ActiveValue::Set(bna.core_services.score),
-        social_services: ActiveValue::Set(bna.core_services.social_services),
+        id: ActiveValue::Set(rating_id),
+        dentists: ActiveValue::Set(rating.core_services.dentists),
+        doctors: ActiveValue::Set(rating.core_services.doctors),
+        grocery: ActiveValue::Set(rating.core_services.grocery),
+        hospitals: ActiveValue::Set(rating.core_services.hospitals),
+        pharmacies: ActiveValue::Set(rating.core_services.pharmacies),
+        score: ActiveValue::Set(rating.core_services.score),
+        social_services: ActiveValue::Set(rating.core_services.social_services),
     };
     info!("{:?}", core_services);
     let people = people::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        score: ActiveValue::Set(bna.people.score),
+        id: ActiveValue::Set(rating_id),
+        score: rating
+            .people
+            .people
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
     info!("{:?}", people);
     let retail = retail::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        score: ActiveValue::Set(bna.retail.score),
+        id: ActiveValue::Set(rating_id),
+        score: rating
+            .retail
+            .retail
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
     info!("{:?}", people);
     let transit = transit::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        score: ActiveValue::Set(bna.transit.score),
+        id: ActiveValue::Set(rating_id),
+        score: rating
+            .transit
+            .transit
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
     info!("{:?}", people);
     let infrastructure = infrastructure::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        low_stress_miles: ActiveValue::Set(bna.infrastructure.low_stress_miles),
-        high_stress_miles: ActiveValue::Set(bna.infrastructure.high_stress_miles),
+        id: ActiveValue::Set(rating_id),
+        low_stress_miles: ActiveValue::Set(rating.infrastructure.low_stress_miles),
+        high_stress_miles: ActiveValue::Set(rating.infrastructure.high_stress_miles),
     };
     info!("{:?}", infrastructure);
     let opportunity = opportunity::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        employment: ActiveValue::Set(bna.opportunity.employment),
-        higher_education: ActiveValue::Set(bna.opportunity.higher_education),
-        k12_education: ActiveValue::Set(bna.opportunity.k12_education),
-        score: ActiveValue::Set(bna.opportunity.score),
+        id: ActiveValue::Set(rating_id),
+        employment: ActiveValue::Set(rating.opportunity.employment),
+        higher_education: ActiveValue::Set(rating.opportunity.higher_education),
+        k12_education: ActiveValue::Set(rating.opportunity.k12_education),
+        score: ActiveValue::Set(rating.opportunity.score),
         technical_vocational_college: ActiveValue::Set(
-            bna.opportunity.technical_vocational_college,
+            rating.opportunity.technical_vocational_college,
         ),
     };
     info!("{:?}", opportunity);
     let recreation = recreation::ActiveModel {
-        id: ActiveValue::Set(bna.summary.rating_id),
-        community_centers: ActiveValue::Set(bna.recreation.community_centers),
-        parks: ActiveValue::Set(bna.recreation.parks),
-        recreation_trails: ActiveValue::Set(bna.recreation.recreation_trails),
-        score: ActiveValue::Set(bna.recreation.score),
+        id: ActiveValue::Set(rating_id),
+        community_centers: ActiveValue::Set(rating.recreation.community_centers),
+        parks: ActiveValue::Set(rating.recreation.parks),
+        recreation_trails: rating
+            .recreation
+            .trails
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+        score: ActiveValue::Set(rating.recreation.score),
     };
     info!("{:?}", recreation);
 

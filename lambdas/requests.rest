@@ -208,6 +208,7 @@ content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 {
+  "city_id": "09c049b6-213b-405c-bc4e-178346ff814d",
   "core_services": {
     "dentists": 0,
     "doctors": 0,
@@ -228,27 +229,24 @@ Authorization: Bearer {{cognito_access}}
     "technical_vocational_college": 0
   },
   "people": {
-    "score": 19.17
+    "people": 19.17
   },
   "recreation": {
     "community_centers": 0,
     "parks": 7.13,
-    "recreation_trails": 0,
-    "score": 7.13
+    "score": 7.13,
+    "trails": 0
   },
   "retail": {
-    "score": 0
-  },
-  "summary": {
-    "city_id": "aac22433-37d4-4cb7-b6b8-e7e77cbbcf41",
-    "rating_id": "7b80ac57-f32e-44db-8442-e9cbf449b306",
-    "score": 0,
-    "version": "24.12"
+    "retail": 0
   },
   "transit": {
-    "score": 0
-  }
+    "transit": 0
+  },
+  "version": "24.12",
+  "score": 8.93
 }
+
 ### Create a new city.
 POST {{host}}/cities/
 content-type: application/json

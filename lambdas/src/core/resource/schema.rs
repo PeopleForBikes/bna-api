@@ -61,7 +61,7 @@ impl Display for Country {
     }
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, Deserialize)]
 #[schema(description = "Detailed information of a city")]
 pub(crate) struct City {
     /// City identifier
