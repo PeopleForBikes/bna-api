@@ -80,6 +80,11 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
         created_at: ActiveValue::NotSet,
         score: ActiveValue::Set(rating.score),
         version: ActiveValue::Set(rating.version),
+        pop_size: ActiveValue::Set(rating.pop_size),
+        population: ActiveValue::Set(rating.population),
+        residential_speed_limit_override: rating
+            .speed_limit_override
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
     info!("{:?}", summary);
     let core_services = core_services::ActiveModel {
@@ -162,6 +167,8 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
     let bna = Bna {
         id: summary_model.id,
         city_id: summary_model.city_id,
+        pop_size: summary_model.pop_size,
+        population: summary_model.population,
         score: summary_model.score,
         version: summary_model.version,
         low_stress_miles: infrastructure_model.low_stress_miles,

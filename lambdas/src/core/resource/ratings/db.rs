@@ -12,6 +12,8 @@ pub(crate) struct Bna {
     pub(crate) id: Uuid,
     pub(crate) city_id: Uuid,
     pub(crate) score: f64,
+    pub(crate) pop_size: i32,
+    pub(crate) population: i32,
     pub(crate) version: String,
 
     // BNAInfrastructure

@@ -628,251 +628,6 @@ paths:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
-  /cities/{country}/{region}/{name}/census:
-    get:
-      tags:
-        - city
-      description: >-
-        Get the details of a specific city with its associated census
-        information.
-      operationId: get_city_censuses
-      parameters:
-        - name: country
-          in: path
-          description: Country name
-          required: true
-          schema:
-            $ref: '#/components/schemas/Country'
-          example: Belgium
-        - name: region
-          in: path
-          description: >-
-            Region name. A region can be a state, a province, a community, or
-
-            something similar depending on the country. If a country does not
-            have
-
-            this concept, then the country name is used.
-          required: true
-          schema:
-            type: string
-          example: Antwerp
-        - name: name
-          in: path
-          description: City name
-          required: true
-          schema:
-            type: string
-          example: Antwerp
-        - name: page_size
-          in: query
-          description: The number of items per page
-          required: false
-          schema:
-            type: integer
-            format: int64
-            maximum: 65536
-            minimum: 1
-          example: 25
-        - name: page
-          in: query
-          description: The result page being returned
-          required: false
-          schema:
-            type: integer
-            format: int64
-            maximum: 65536
-            minimum: 1
-          example: 5
-      responses:
-        '200':
-          description: Fetches city censuses
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CityCensuses'
-        '400':
-          description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      parameter: status
-                    status: '400'
-                    title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
-    post:
-      tags:
-        - city
-      description: Create census information for a specific city.
-      operationId: post_city_census
-      parameters:
-        - name: country
-          in: path
-          description: Country name
-          required: true
-          schema:
-            $ref: '#/components/schemas/Country'
-          example: Belgium
-        - name: region
-          in: path
-          description: >-
-            Region name. A region can be a state, a province, a community, or
-
-            something similar depending on the country. If a country does not
-            have
-
-            this concept, then the country name is used.
-          required: true
-          schema:
-            type: string
-          example: Antwerp
-        - name: name
-          in: path
-          description: City name
-          required: true
-          schema:
-            type: string
-          example: Antwerp
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CensusPost'
-        required: true
-      responses:
-        '201':
-          description: Creates a new census entry for a city
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Census'
-        '400':
-          description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      parameter: status
-                    status: '400'
-                    title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
   /cities/{country}/{region}/{name}/ratings:
     get:
       tags:
@@ -2106,68 +1861,6 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/BnaPipeline'
-    Census:
-      type: object
-      description: Census information of a city
-      required:
-        - id
-        - city_id
-        - created_at
-        - fips_code
-        - pop_size
-        - population
-      properties:
-        city_id:
-          type: string
-          format: uuid
-          description: City identifier
-        created_at:
-          type: string
-          format: date-time
-          description: Creation date
-        fips_code:
-          type: string
-          description: >-
-            Numerical city identifier given by the U.S. census, or 0 for non-US
-            cities
-          example: '4805000'
-        id:
-          type: integer
-          format: int32
-          description: Census identifier
-        pop_size:
-          type: integer
-          format: int32
-          description: City population size category (small (0), medium (1), large (2))
-          example: '1'
-        population:
-          type: integer
-          format: int32
-          description: City population
-          example: '907779'
-    CensusPost:
-      type: object
-      required:
-        - fips_code
-        - pop_size
-        - population
-      properties:
-        fips_code:
-          type: string
-          description: >-
-            Numerical city identifier given by the U.S. census, or 0 for non-US
-            cities
-          example: '4805000'
-        pop_size:
-          type: integer
-          format: int32
-          description: City population size category (small (0), medium (1), large (2))
-          example: '1'
-        population:
-          type: integer
-          format: int32
-          description: City population
-          example: '907779'
     Cities:
       type: array
       items:
@@ -2227,10 +1920,12 @@ components:
             this concept, then the country name is used.
           example: Antwerp
           nullable: true
-        speed_limit:
+        residential_speed_limit:
           type: integer
           format: int32
-          description: Speed limit in kilometer per hour (km/h).
+          description: |-
+            Residential speed limit in kilometer per hour (km/h).
+            Only use if different from the state speed limit.
           example: '50'
           nullable: true
         state:
@@ -2247,18 +1942,6 @@ components:
           format: date-time
           description: Update date
           nullable: true
-    CityCensuses:
-      type: object
-      required:
-        - city
-        - censuses
-      properties:
-        censuses:
-          type: array
-          items:
-            $ref: '#/components/schemas/Census'
-        city:
-          $ref: '#/components/schemas/City'
     CityPost:
       type: object
       required:
@@ -2569,6 +2252,8 @@ components:
         - city_id
         - version
         - score
+        - pop_size
+        - population
         - infrastructure
         - recreation
         - opportunity
@@ -2589,6 +2274,16 @@ components:
           $ref: '#/components/schemas/Opportunity'
         people:
           $ref: '#/components/schemas/People'
+        pop_size:
+          type: integer
+          format: int32
+          description: City population size category (small, medium, large).
+        population:
+          type: integer
+          format: int32
+          description: >-
+            City population based on the annual U.S. Census American Community
+            Survey.
         recreation:
           $ref: '#/components/schemas/Recreation'
         retail:
@@ -2597,6 +2292,11 @@ components:
           type: number
           format: double
           description: City rating score
+        speed_limit_override:
+          type: integer
+          format: int32
+          description: Residential speed limit, if any.
+          nullable: true
         transit:
           $ref: '#/components/schemas/Transit'
         version:

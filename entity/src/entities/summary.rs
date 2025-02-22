@@ -10,6 +10,9 @@ pub struct Model {
     pub id: Uuid,
     pub city_id: Uuid,
     pub created_at: DateTimeWithTimeZone,
+    pub pop_size: i32,
+    pub population: i32,
+    pub residential_speed_limit_override: Option<i32>,
     #[sea_orm(column_type = "Double")]
     pub score: f64,
     pub version: String,

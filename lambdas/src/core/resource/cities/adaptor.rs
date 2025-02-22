@@ -1,12 +1,11 @@
 use super::db::{
-    fetch_cities, fetch_cities_censuses, fetch_cities_ratings, fetch_cities_submission,
-    fetch_cities_submissions, fetch_city, fetch_country, fetch_state_region_crosswalk,
+    fetch_cities, fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions,
+    fetch_city, fetch_country, fetch_state_region_crosswalk,
 };
 use crate::{database_connect, Context, ExecutionError};
 use entity::{
-    census, city, summary,
+    city, summary,
     wrappers::{
-        census::CensusFromCityPost,
         city::CityPost,
         submission::{SubmissionPatch, SubmissionPost},
     },
@@ -52,59 +51,6 @@ pub async fn get_cities_adaptor(
 
     // Fetch a page of cities.
     Ok(fetch_cities(&db, page, page_size).await?)
-}
-
-pub async fn get_cities_censuses_adaptor(
-    country: &str,
-    region: &str,
-    name: &str,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<(city::Model, Option<census::Model>)>), ExecutionError> {
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Fetch a page of city censuses.
-    let res = fetch_cities_censuses(&db, country, region, name, page, page_size).await?;
-    if res.1.is_empty() {
-        Err(ExecutionError::NotFound(
-            Some(country.to_string()),
-            region.to_string(),
-            name.to_string(),
-        ))
-    } else {
-        Ok(res)
-    }
-}
-
-pub async fn post_cities_census_adaptor(
-    country: &str,
-    region: &str,
-    name: &str,
-    census: CensusFromCityPost,
-) -> Result<census::Model, ExecutionError> {
-    // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
-
-    // Fetch the city.
-    let city = fetch_city(&db, country, region, name).await?;
-    if let Some(city) = city {
-        // Turn the post model into an active model.
-        let mut active_model: entity::census::ActiveModel = census.into_active_model();
-
-        // Update the active model.
-        active_model.city_id = ActiveValue::Set(city.id);
-
-        // And insert a new entry.
-        let model = active_model.insert(&db).await?;
-        Ok(model)
-    } else {
-        Err(ExecutionError::NotFound(
-            Some(country.to_string()),
-            region.to_string(),
-            name.to_string(),
-        ))
-    }
 }
 
 pub async fn get_cities_ratings_adaptor(

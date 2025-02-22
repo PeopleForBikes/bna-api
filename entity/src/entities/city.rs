@@ -20,15 +20,14 @@ pub struct Model {
     pub longitude: Option<f64>,
     pub region: Option<String>,
     pub state_abbrev: Option<String>,
-    pub speed_limit: Option<i32>,
+    pub residential_speed_limit: Option<i32>,
     pub created_at: DateTimeWithTimeZone,
     pub updated_at: Option<DateTimeWithTimeZone>,
+    pub fips_code: Option<String>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::census::Entity")]
-    Census,
     #[sea_orm(
         belongs_to = "super::country::Entity",
         from = "Column::Country",
@@ -37,27 +36,13 @@ pub enum Relation {
         on_delete = "NoAction"
     )]
     Country,
-    #[sea_orm(has_many = "super::speed_limit::Entity")]
-    SpeedLimit,
     #[sea_orm(has_many = "super::summary::Entity")]
     Summary,
-}
-
-impl Related<super::census::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::Census.def()
-    }
 }
 
 impl Related<super::country::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Country.def()
-    }
-}
-
-impl Related<super::speed_limit::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::SpeedLimit.def()
     }
 }
 

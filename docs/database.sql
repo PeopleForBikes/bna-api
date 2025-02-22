@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 17.2 (Homebrew)
+-- Dumped by pg_dump version 17.4 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -86,44 +86,6 @@ CREATE TABLE public.bna_region (
 ALTER TABLE public.bna_region OWNER TO postgres;
 
 --
--- Name: census; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.census (
-    id integer NOT NULL,
-    city_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    fips_code character varying NOT NULL,
-    pop_size integer NOT NULL,
-    population integer NOT NULL
-);
-
-
-ALTER TABLE public.census OWNER TO postgres;
-
---
--- Name: census_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.census_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.census_id_seq OWNER TO postgres;
-
---
--- Name: census_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.census_id_seq OWNED BY public.census.id;
-
-
---
 -- Name: city; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -138,7 +100,8 @@ CREATE TABLE public.city (
     state_abbrev character varying,
     speed_limit integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp with time zone
+    updated_at timestamp with time zone,
+    fips_code character varying
 );
 
 
@@ -289,42 +252,6 @@ CREATE TABLE public.seaql_migrations (
 ALTER TABLE public.seaql_migrations OWNER TO postgres;
 
 --
--- Name: speed_limit; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.speed_limit (
-    id integer NOT NULL,
-    city_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    residential integer NOT NULL
-);
-
-
-ALTER TABLE public.speed_limit OWNER TO postgres;
-
---
--- Name: speed_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.speed_limit_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.speed_limit_id_seq OWNER TO postgres;
-
---
--- Name: speed_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.speed_limit_id_seq OWNED BY public.speed_limit.id;
-
-
---
 -- Name: state_region_crosswalk; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -389,6 +316,9 @@ CREATE TABLE public.summary (
     id uuid NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    pop_size integer NOT NULL,
+    population integer NOT NULL,
+    speed_limit_override integer,
     score double precision NOT NULL,
     version character varying NOT NULL
 );
@@ -423,24 +353,10 @@ CREATE TABLE public.us_state (
 ALTER TABLE public.us_state OWNER TO postgres;
 
 --
--- Name: census id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census ALTER COLUMN id SET DEFAULT nextval('public.census_id_seq'::regclass);
-
-
---
 -- Name: fargate_price id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.fargate_price ALTER COLUMN id SET DEFAULT nextval('public.fargate_price_id_seq'::regclass);
-
-
---
--- Name: speed_limit id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit ALTER COLUMN id SET DEFAULT nextval('public.speed_limit_id_seq'::regclass);
 
 
 --
@@ -488,14 +404,6 @@ ALTER TABLE ONLY public.bna_pipeline_step
 
 ALTER TABLE ONLY public.bna_region
     ADD CONSTRAINT bna_region_pkey PRIMARY KEY (name);
-
-
---
--- Name: census census_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_pkey PRIMARY KEY (id);
 
 
 --
@@ -587,14 +495,6 @@ ALTER TABLE ONLY public.seaql_migrations
 
 
 --
--- Name: speed_limit speed_limit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_pkey PRIMARY KEY (id);
-
-
---
 -- Name: state_region_crosswalk state_region_crosswalk_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -651,52 +551,10 @@ ALTER TABLE ONLY public.us_state
 
 
 --
--- Name: census_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_city_id_created_at_idx ON public.census USING btree (city_id, created_at DESC);
-
-
---
--- Name: census_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_city_id_idx ON public.census USING btree (city_id);
-
-
---
--- Name: census_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_id_idx ON public.census USING btree (id);
-
-
---
 -- Name: city_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX city_id_idx ON public.city USING btree (id);
-
-
---
--- Name: speed_limit_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_city_id_created_at_idx ON public.speed_limit USING btree (city_id, created_at DESC);
-
-
---
--- Name: speed_limit_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_city_id_idx ON public.speed_limit USING btree (city_id);
-
-
---
--- Name: speed_limit_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_id_idx ON public.speed_limit USING btree (id);
 
 
 --
@@ -759,14 +617,6 @@ ALTER TABLE ONLY public.bna_pipeline
 
 
 --
--- Name: census census_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
-
-
---
 -- Name: city city_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -820,14 +670,6 @@ ALTER TABLE ONLY public.recreation
 
 ALTER TABLE ONLY public.retail
     ADD CONSTRAINT retail_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
-
-
---
--- Name: speed_limit speed_limit_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
 
 
 --

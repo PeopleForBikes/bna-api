@@ -1,7 +1,7 @@
 use sea_orm_migration::{
     prelude::*,
     schema::{
-        double, double_null, integer, integer_null, pk_auto, string, string_null, string_uniq,
+        double, double_null, integer, integer_null, string, string_null, string_uniq,
         timestamp_with_time_zone, timestamp_with_time_zone_null, uuid, uuid_uniq,
     },
 };
@@ -287,12 +287,13 @@ impl MigrationTrait for Migration {
                     .col(double_null(City::Longitude))
                     .col(string_null(City::Region))
                     .col(string_null(City::StateAbbrev))
-                    .col(integer_null(City::SpeedLimit))
+                    .col(integer_null(City::ResidentialSpeedLimit))
                     .col(
                         timestamp_with_time_zone(City::CreatedAt)
                             .default(Expr::current_timestamp()),
                     )
                     .col(timestamp_with_time_zone_null(City::UpdatedAt))
+                    .col(string_null(City::FIPSCode))
                     .primary_key(
                         Index::create()
                             .col(City::Country)
@@ -311,103 +312,6 @@ impl MigrationTrait for Migration {
             .create_index(Index::create().table(City::Table).col(City::Id).to_owned())
             .await?;
 
-        // Create CensusPopulation table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(Census::Table)
-                    .if_not_exists()
-                    .col(pk_auto(Census::Id))
-                    .col(uuid(Census::CityId))
-                    .col(
-                        timestamp_with_time_zone(Census::CreatedAt)
-                            .default(Expr::current_timestamp()),
-                    )
-                    .col(string(Census::FIPSCode))
-                    .col(integer(Census::PopSize))
-                    .col(integer(Census::Population))
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from(Census::Table, Census::CityId)
-                            .to(City::Table, City::Id)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(Census::Table)
-                    .col(Census::Id)
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(Census::Table)
-                    .col(Census::CityId)
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(Census::Table)
-                    .col(Census::CityId)
-                    .col((Census::CreatedAt, IndexOrder::Desc))
-                    .to_owned(),
-            )
-            .await?;
-
-        // Create the speed limit table.
-        manager
-            .create_table(
-                Table::create()
-                    .table(SpeedLimit::Table)
-                    .col(pk_auto(SpeedLimit::Id))
-                    .col(uuid(SpeedLimit::CityId))
-                    .col(
-                        timestamp_with_time_zone(SpeedLimit::CreatedAt)
-                            .default(Expr::current_timestamp()),
-                    )
-                    .col(integer(SpeedLimit::Residential))
-                    .foreign_key(
-                        ForeignKey::create()
-                            .from(SpeedLimit::Table, SpeedLimit::CityId)
-                            .to(City::Table, City::Id)
-                            .on_delete(ForeignKeyAction::Cascade),
-                    )
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(SpeedLimit::Table)
-                    .col(SpeedLimit::Id)
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(SpeedLimit::Table)
-                    .col(SpeedLimit::CityId)
-                    .to_owned(),
-            )
-            .await?;
-        manager
-            .create_index(
-                Index::create()
-                    .table(SpeedLimit::Table)
-                    .col(SpeedLimit::CityId)
-                    .col((SpeedLimit::CreatedAt, IndexOrder::Desc))
-                    .to_owned(),
-            )
-            .await?;
-
         // Create the Summary table.
         manager
             .create_table(
@@ -419,6 +323,9 @@ impl MigrationTrait for Migration {
                         timestamp_with_time_zone(Summary::CreatedAt)
                             .default(Expr::current_timestamp()),
                     )
+                    .col(integer(Summary::PopSize))
+                    .col(integer(Summary::Population))
+                    .col(integer_null(Summary::ResidentialSpeedLimitOverride))
                     .col(double(Summary::Score))
                     .col(string(Summary::Version))
                     .primary_key(Index::create().col(Summary::Id))
@@ -587,12 +494,6 @@ impl MigrationTrait for Migration {
             .drop_table(Table::drop().table(City::Table).to_owned())
             .await?;
         manager
-            .drop_table(Table::drop().table(Census::Table).to_owned())
-            .await?;
-        manager
-            .drop_table(Table::drop().table(SpeedLimit::Table).to_owned())
-            .await?;
-        manager
             .drop_table(Table::drop().table(Summary::Table).to_owned())
             .await?;
         manager
@@ -642,6 +543,8 @@ enum City {
     Country,
     /// Creation date.
     CreatedAt,
+    /// Numerical city identifier given by the U.S. census.
+    FIPSCode,
     /// City latitude as defined in the U.S. census.
     Latitude,
     /// City longitude as defined in the U.S. census.
@@ -651,41 +554,13 @@ enum City {
     /// Assigned region.
     Region,
     /// City speed limit (if different from the state speed limit).
-    SpeedLimit,
+    ResidentialSpeedLimit,
     /// State name.
     State,
     /// Two-letter state abbreviation.
     StateAbbrev,
     /// Update date.
     UpdatedAt,
-}
-
-#[derive(Iden)]
-enum Census {
-    Table,
-    Id,
-    /// City identifier.
-    CityId,
-    /// Creation date.
-    CreatedAt,
-    /// Numerical city identifier given by the U.S. census.
-    FIPSCode,
-    /// City population size category (small, medium, large).
-    PopSize,
-    /// City population based on the annual U.S. Census American Community Survey.
-    Population,
-}
-
-#[derive(Iden)]
-enum SpeedLimit {
-    Table,
-    Id,
-    /// City identifier.
-    CityId,
-    /// Creation date.
-    CreatedAt,
-    /// Residential speed limit.
-    Residential,
 }
 
 #[derive(Iden)]
@@ -697,6 +572,12 @@ enum Summary {
     CityId,
     /// Creation date.
     CreatedAt,
+    /// City population size category (small, medium, large).
+    PopSize,
+    /// City population based on the annual U.S. Census American Community Survey.
+    Population,
+    /// Residential speed limit override.
+    ResidentialSpeedLimitOverride,
     /// BNA total score.
     Score,
     /// Analysis version in Calver format (YY.0M.[Micro])

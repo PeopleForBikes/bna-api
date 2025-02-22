@@ -8,8 +8,8 @@ use color_eyre::{eyre::Report, Result};
 use csv::Reader;
 use dotenv::dotenv;
 use entity::{
-    census, city, core_services, infrastructure, opportunity, people, prelude::*, recreation,
-    retail, speed_limit, summary, transit,
+    city, core_services, infrastructure, opportunity, people, prelude::*, recreation, retail,
+    summary, transit,
 };
 use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
 use serde::Deserialize;
@@ -32,8 +32,6 @@ async fn main() -> Result<(), Report> {
 
     // Populate entities.
     let mut cities: HashMap<Uuid, city::ActiveModel> = HashMap::new();
-    let mut census_populations: Vec<census::ActiveModel> = Vec::new();
-    let mut speed_limits: Vec<speed_limit::ActiveModel> = Vec::new();
     let mut summaries: Vec<summary::ActiveModel> = Vec::new();
     let mut bna_people: Vec<people::ActiveModel> = Vec::new();
     let mut bna_retail: Vec<retail::ActiveModel> = Vec::new();
@@ -106,10 +104,12 @@ async fn main() -> Result<(), Report> {
 
         // Populate the city model.
         if !has_newer {
+            let fips_code = scorecard.census_fips_code.unwrap_or_default().to_string();
             let city_speed_limit = match scorecard.census_fips_code {
                 Some(fips) => city_fips2limit.get(&fips).map(|x| *x as i32),
                 None => None,
             };
+
             let bna_region = state_regions
                 .get(&scorecard.state_full)
                 .map(|s| s.to_owned())
@@ -129,40 +129,13 @@ async fn main() -> Result<(), Report> {
                 region: ActiveValue::Set(Some(bna_region)),
                 state: ActiveValue::Set(scorecard.state_full),
                 state_abbrev: ActiveValue::Set(scorecard.state),
-                speed_limit: ActiveValue::Set(city_speed_limit),
+                residential_speed_limit: ActiveValue::Set(city_speed_limit),
                 created_at: ActiveValue::Set(created_at),
                 updated_at: ActiveValue::NotSet,
+                fips_code: ActiveValue::Set(Some(fips_code)),
             };
             cities.insert(city_uuid, city_model);
         }
-
-        // Populate the census population model.
-        let census_model = census::ActiveModel {
-            id: ActiveValue::NotSet,
-            city_id: ActiveValue::Set(city_uuid),
-            created_at: ActiveValue::Set(created_at),
-            fips_code: scorecard
-                .census_fips_code
-                .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(v.to_string())),
-            pop_size: match scorecard.pop_size.unwrap() {
-                bnacore::scorecard::Size::Small => ActiveValue::Set(0),
-                bnacore::scorecard::Size::Medium => ActiveValue::Set(1),
-                bnacore::scorecard::Size::Large => ActiveValue::Set(2),
-            },
-            population: ActiveValue::Set(scorecard.census_population.try_into().unwrap()),
-        };
-        census_populations.push(census_model);
-
-        // Populate the speed limit model.
-        let speed_limit_model = speed_limit::ActiveModel {
-            id: ActiveValue::NotSet,
-            city_id: ActiveValue::Set(city_uuid),
-            created_at: ActiveValue::Set(created_at),
-            residential: scorecard
-                .residential_speed_limit
-                .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(v.into())),
-        };
-        speed_limits.push(speed_limit_model);
 
         // Populate the summary model.
         let bna_uuid = Uuid::parse_str(scorecard.bna_uuid.as_str()).unwrap();
@@ -172,6 +145,13 @@ async fn main() -> Result<(), Report> {
             created_at: ActiveValue::Set(created_at),
             score: ActiveValue::Set(scorecard.bna_rounded_score.into()),
             version: ActiveValue::Set(version.to_ubuntu()),
+            pop_size: match scorecard.pop_size.unwrap() {
+                bnacore::scorecard::Size::Small => ActiveValue::Set(0),
+                bnacore::scorecard::Size::Medium => ActiveValue::Set(1),
+                bnacore::scorecard::Size::Large => ActiveValue::Set(2),
+            },
+            population: ActiveValue::Set(scorecard.census_population.try_into().unwrap()),
+            residential_speed_limit_override: ActiveValue::NotSet,
         };
         summaries.push(summary_model);
 
@@ -243,9 +223,9 @@ async fn main() -> Result<(), Report> {
 
     // Insert the entries.
     City::insert_many(cities.into_values()).exec(&db).await?;
-    Census::insert_many(census_populations).exec(&db).await?;
-    SpeedLimit::insert_many(speed_limits).exec(&db).await?;
-    Summary::insert_many(summaries).exec(&db).await?;
+    for chunk in summaries.chunks(CHUNK_SIZE) {
+        Summary::insert_many(chunk.to_vec()).exec(&db).await?;
+    }
     People::insert_many(bna_people).exec(&db).await?;
     Retail::insert_many(bna_retail).exec(&db).await?;
     Transit::insert_many(bna_transit).exec(&db).await?;
