@@ -1,4 +1,4 @@
-use entity::{census, city, country, state_region_crosswalk, submission, summary};
+use entity::{city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
     ColumnTrait, Condition, DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryFilter,
     QuerySelect,
@@ -28,26 +28,6 @@ pub async fn fetch_cities(
         .count(db)
         .await?;
     let models = select.paginate(db, page_size).fetch_page(page).await?;
-    Ok((count, models))
-}
-
-pub async fn fetch_cities_censuses(
-    db: &DatabaseConnection,
-    country: &str,
-    region: &str,
-    name: &str,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<(city::Model, Option<census::Model>)>), DbErr> {
-    let select =
-        city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
-            .find_also_related(census::Entity);
-    let models: Vec<(city::Model, Option<census::Model>)> = select
-        .clone()
-        .paginate(db, page_size)
-        .fetch_page(page)
-        .await?;
-    let count = select.count(db).await?;
     Ok((count, models))
 }
 

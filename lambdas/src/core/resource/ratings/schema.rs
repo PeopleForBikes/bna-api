@@ -205,6 +205,12 @@ pub(crate) struct RatingPost {
     pub(crate) version: String,
     /// City rating score
     pub(crate) score: f64,
+    /// City population size category (small, medium, large).
+    pub(crate) pop_size: i32,
+    /// City population based on the annual U.S. Census American Community Survey.
+    pub(crate) population: i32,
+    /// Residential speed limit, if any.
+    pub(crate) speed_limit_override: Option<i32>,
 
     /// BNAInfrastructure
     pub(crate) infrastructure: Infrastructure,

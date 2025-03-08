@@ -1,13 +1,12 @@
 use super::{
     adaptor::{
-        get_cities_adaptor, get_cities_censuses_adaptor, get_cities_ratings_adaptor,
-        get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
-        patch_cities_submission_adaptor, post_cities_adaptor, post_cities_census_adaptor,
-        post_cities_submission_adaptor,
+        get_cities_adaptor, get_cities_ratings_adaptor, get_cities_submission_adaptor,
+        get_cities_submissions_adaptor, get_city_adaptor, patch_cities_submission_adaptor,
+        post_cities_adaptor, post_cities_submission_adaptor,
     },
     schema::{
-        Census, CensusPost, Cities, CityCensuses, CityPost, CityRatings, RatingSummary, Submission,
-        SubmissionPatch, SubmissionPost, Submissions,
+        Cities, CityPost, CityRatings, RatingSummary, Submission, SubmissionPatch, SubmissionPost,
+        Submissions,
     },
 };
 use crate::{
@@ -24,10 +23,9 @@ use axum::{
 };
 use axum_extra::extract::OptionalQuery;
 use effortless::api::PaginationParameters;
-use entity::wrappers::{census::CensusFromCityPost, city, submission};
+use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
 use serde_json::Value;
-use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "city";
@@ -37,8 +35,6 @@ pub fn routes() -> OpenApiRouter {
         .routes(routes!(get_city))
         .routes(routes!(post_city))
         .routes(routes!(get_cities))
-        .routes(routes!(get_city_censuses))
-        .routes(routes!(post_city_census))
         .routes(routes!(get_city_ratings))
         .routes(routes!(get_cities_submission))
         .routes(routes!(post_cities_submission))
@@ -88,55 +84,6 @@ async fn get_cities(
     Ok(PageFlow::new(
         Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
         payload.1.into(),
-    ))
-}
-
-#[utoipa::path(
-  get,
-  path = "/cities/{country}/{region}/{name}/census",
-  description = "Get the details of a specific city with its associated census information.",
-  tag = TAG,
-  params(
-    CityParams,
-    PaginationParams,
-  ),
-  responses(
-    (status = OK, description = "Fetches city censuses", body = CityCensuses),
-    ErrorResponses,
-  ))]
-async fn get_city_censuses(
-    Path(params): Path<CitiesPathParameters>,
-    Query(pagination): Query<PaginationParameters>,
-) -> Result<PageFlow<CityCensuses>, ExecutionError> {
-    // let Query(pagination) = pagination.unwrap_or_default();
-    let city_censuses = get_cities_censuses_adaptor(
-        &params.country,
-        &params.region,
-        &params.name,
-        pagination.page(),
-        pagination.page_size(),
-    )
-    .await?;
-    debug!("{:#?}", city_censuses);
-    let city = city_censuses.1.first().unwrap().0.clone();
-    let censuses = city_censuses
-        .1
-        .iter()
-        .filter_map(|e| e.1.clone())
-        .map(Census::from)
-        .collect::<Vec<Census>>();
-    let payload = CityCensuses {
-        city: city.into(),
-        censuses,
-    };
-    Ok(PageFlow::new(
-        Paginatron::new(
-            None,
-            city_censuses.0,
-            pagination.page(),
-            pagination.page_size(),
-        ),
-        payload,
     ))
 }
 
@@ -313,29 +260,6 @@ async fn patch_cities_submission(
         .await
         .map(Submission::from)
         .map(Json)
-}
-
-#[utoipa::path(
-  post,
-  path = "/cities/{country}/{region}/{name}/census",
-  description = "Create census information for a specific city.",
-  tag = TAG,
-  params(
-    CityParams,
-  ),
-  request_body = CensusPost,
-  responses(
-    (status = CREATED, description = "Creates a new census entry for a city", body = Census),
-    ErrorResponses,
-  ))]
-async fn post_city_census(
-    Path(params): Path<CitiesPathParameters>,
-    Json(census): Json<CensusFromCityPost>,
-) -> Result<(StatusCode, Json<Census>), ExecutionError> {
-    post_cities_census_adaptor(&params.country, &params.region, &params.name, census)
-        .await
-        .map(Census::from)
-        .map(|v| (StatusCode::CREATED, Json(v)))
 }
 
 #[cfg(test)]

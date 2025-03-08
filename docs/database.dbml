@@ -27,21 +27,6 @@ Table "bna_region" {
   "name" "character varying" [pk, not null]
 }
 
-Table "census" {
-  "id" integer [pk, not null]
-  "city_id" uuid [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
-  "fips_code" "character varying" [not null]
-  "pop_size" integer [not null]
-  "population" integer [not null]
-
-  Indexes {
-    (city_id, created_at) [type: btree, name: "census_city_id_created_at_idx"]
-    city_id [type: btree, name: "census_city_id_idx"]
-    id [type: btree, name: "census_id_idx"]
-  }
-}
-
 Table "city" {
   "id" uuid [unique, not null]
   "country" "character varying" [not null]
@@ -54,6 +39,7 @@ Table "city" {
   "speed_limit" integer
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" timestamp
+  "fips_code" "character varying"
 
   Indexes {
     (country, state, name) [pk, name: "city_pkey"]
@@ -120,19 +106,6 @@ Table "seaql_migrations" {
   "applied_at" bigint [not null]
 }
 
-Table "speed_limit" {
-  "id" integer [pk, not null]
-  "city_id" uuid [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
-  "residential" integer [not null]
-
-  Indexes {
-    (city_id, created_at) [type: btree, name: "speed_limit_city_id_created_at_idx"]
-    city_id [type: btree, name: "speed_limit_city_id_idx"]
-    id [type: btree, name: "speed_limit_id_idx"]
-  }
-}
-
 Table "state_region_crosswalk" {
   "state" "character varying" [not null]
   "region" "character varying" [not null]
@@ -164,6 +137,9 @@ Table "summary" {
   "id" uuid [pk, not null]
   "city_id" uuid [not null]
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "pop_size" integer [not null]
+  "population" integer [not null]
+  "speed_limit_override" integer
   "score" doubleprecision [not null]
   "version" "character varying" [not null]
 
@@ -195,8 +171,6 @@ Ref "bna_pipeline_status_fkey":"bna_pipeline_status"."status" < "bna_pipeline"."
 
 Ref "bna_pipeline_step_fkey":"bna_pipeline_step"."step" < "bna_pipeline"."step"
 
-Ref "census_city_id_fkey":"city"."id" < "census"."city_id" [delete: cascade]
-
 Ref "city_country_fkey":"country"."name" < "city"."country"
 
 Ref "core_services_id_fkey":"summary"."id" < "core_services"."id" [delete: cascade]
@@ -210,8 +184,6 @@ Ref "people_id_fkey":"summary"."id" < "people"."id" [delete: cascade]
 Ref "recreation_id_fkey":"summary"."id" < "recreation"."id" [delete: cascade]
 
 Ref "retail_id_fkey":"summary"."id" < "retail"."id" [delete: cascade]
-
-Ref "speed_limit_city_id_fkey":"city"."id" < "speed_limit"."city_id" [delete: cascade]
 
 Ref "state_region_crosswalk_region_fkey":"bna_region"."name" < "state_region_crosswalk"."region"
 
