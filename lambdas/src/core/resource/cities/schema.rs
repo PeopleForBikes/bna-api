@@ -1,7 +1,7 @@
 //! Describes the Citi schemas.
 use crate::core::resource::schema::{City, Country};
 use chrono::DateTime;
-use entity::{census, submission, summary};
+use entity::{submission, summary};
 use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
@@ -49,39 +49,6 @@ pub(crate) struct CityPost {
     speed_limit: Option<i32>,
 }
 
-#[derive(ToSchema, Serialize)]
-#[schema(description = "Census information of a city")]
-pub(crate) struct Census {
-    /// Census identifier
-    id: i32,
-    /// City identifier
-    city_id: Uuid,
-    /// Creation date
-    created_at: DateTime<chrono::FixedOffset>,
-    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
-    #[schema(examples("4805000"))]
-    fips_code: String,
-    /// City population size category (small (0), medium (1), large (2))
-    #[schema(examples("1"))]
-    pop_size: i32,
-    /// City population
-    #[schema(examples("907779"))]
-    population: i32,
-}
-
-impl From<census::Model> for Census {
-    fn from(value: census::Model) -> Self {
-        Self {
-            id: value.id,
-            city_id: value.city_id,
-            created_at: value.created_at,
-            fips_code: value.fips_code,
-            pop_size: value.pop_size,
-            population: value.population,
-        }
-    }
-}
-
 #[allow(dead_code)]
 #[derive(ToSchema)]
 pub(crate) struct CensusPost {
@@ -94,18 +61,6 @@ pub(crate) struct CensusPost {
     /// City population
     #[schema(examples("907779"))]
     population: i32,
-}
-
-// This is the current version which does not seem to be valid OAS3.1
-// https://github.com/juhaku/utoipa/issues/901
-// https://github.com/juhaku/utoipa/pull/1103
-// https://json-schema.org/understanding-json-schema/reference/array#tupleValidation
-// struct CityCensuses(Vec<(City, Option<Census>)>);
-// So here is the new idea, which shounds more correct anyway
-#[derive(ToSchema, Serialize)]
-pub(crate) struct CityCensuses {
-    pub(crate) city: City,
-    pub(crate) censuses: Vec<Census>,
 }
 
 #[derive(ToSchema, Serialize)]

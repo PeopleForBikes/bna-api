@@ -91,9 +91,10 @@ pub(crate) struct City {
     /// A short version of the state name, usually 2 or 3 character long
     #[schema(examples("VAN"))]
     state_abbrev: Option<String>,
-    /// Speed limit in kilometer per hour (km/h).
+    /// Residential speed limit in kilometer per hour (km/h).
+    /// Only use if different from the state speed limit.
     #[schema(examples("50"))]
-    speed_limit: Option<i32>,
+    residential_speed_limit: Option<i32>,
     /// Creation date
     created_at: DateTime<chrono::FixedOffset>,
     /// Update date
@@ -111,7 +112,7 @@ impl From<entity::city::Model> for City {
             longitude: value.latitude,
             region: value.region,
             state_abbrev: value.state_abbrev,
-            speed_limit: value.speed_limit,
+            residential_speed_limit: value.residential_speed_limit,
             created_at: value.created_at,
             updated_at: value.updated_at,
         }

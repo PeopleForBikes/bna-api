@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 17.2 (Homebrew)
+-- Dumped by pg_dump version 17.4 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -86,44 +86,6 @@ CREATE TABLE public.bna_region (
 ALTER TABLE public.bna_region OWNER TO postgres;
 
 --
--- Name: census; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.census (
-    id integer NOT NULL,
-    city_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    fips_code character varying NOT NULL,
-    pop_size integer NOT NULL,
-    population integer NOT NULL
-);
-
-
-ALTER TABLE public.census OWNER TO postgres;
-
---
--- Name: census_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.census_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.census_id_seq OWNER TO postgres;
-
---
--- Name: census_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.census_id_seq OWNED BY public.census.id;
-
-
---
 -- Name: city; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -136,9 +98,10 @@ CREATE TABLE public.city (
     longitude double precision,
     region character varying,
     state_abbrev character varying,
-    speed_limit integer,
+    residential_speed_limit integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp with time zone
+    updated_at timestamp with time zone,
+    fips_code character varying
 );
 
 
@@ -289,42 +252,6 @@ CREATE TABLE public.seaql_migrations (
 ALTER TABLE public.seaql_migrations OWNER TO postgres;
 
 --
--- Name: speed_limit; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.speed_limit (
-    id integer NOT NULL,
-    city_id uuid NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    residential integer NOT NULL
-);
-
-
-ALTER TABLE public.speed_limit OWNER TO postgres;
-
---
--- Name: speed_limit_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.speed_limit_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.speed_limit_id_seq OWNER TO postgres;
-
---
--- Name: speed_limit_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.speed_limit_id_seq OWNED BY public.speed_limit.id;
-
-
---
 -- Name: state_region_crosswalk; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -389,6 +316,9 @@ CREATE TABLE public.summary (
     id uuid NOT NULL,
     city_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    pop_size integer NOT NULL,
+    population integer NOT NULL,
+    residential_speed_limit_override integer,
     score double precision NOT NULL,
     version character varying NOT NULL
 );
@@ -423,24 +353,10 @@ CREATE TABLE public.us_state (
 ALTER TABLE public.us_state OWNER TO postgres;
 
 --
--- Name: census id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census ALTER COLUMN id SET DEFAULT nextval('public.census_id_seq'::regclass);
-
-
---
 -- Name: fargate_price id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.fargate_price ALTER COLUMN id SET DEFAULT nextval('public.fargate_price_id_seq'::regclass);
-
-
---
--- Name: speed_limit id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit ALTER COLUMN id SET DEFAULT nextval('public.speed_limit_id_seq'::regclass);
 
 
 --
@@ -507,58 +423,30 @@ South
 
 
 --
--- Data for Name: census; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.census (id, city_id, created_at, fips_code, pop_size, population) FROM stdin;
-1	58f1f419-ac98-4f12-9f4d-d78939773041	2024-03-08 15:30:00+00	5527300	0	36513
-2	6ba8c886-419a-4880-a749-b7e4246bb78c	2024-03-05 17:23:00+00	623042	0	26519
-3	06b9181f-f879-40d5-b531-c239caa8ccd9	2023-08-23 13:59:00+00	3737680	0	24473
-4	09c049b6-213b-405c-bc4e-178346ff814d	2021-02-25 13:26:00+00	1734722	0	29596
-5	06118205-6e16-46da-bc9c-459860189e8f	2024-03-20 17:11:00+00	4233112	0	3490
-6	4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	2023-12-06 08:32:00+00	4714000	1	181288
-7	4febf356-c079-41c9-81b4-e930dcf2daac	2017-04-29 06:59:00+00	1782400	0	9543
-8	712846c3-d432-480b-b582-d47730cf90bf	2017-04-29 06:58:00+00	2053775	1	183775
-9	3fa975ec-55af-4a63-addf-a36b920fc9a7	2024-03-14 09:22:00+00	5471212	0	10753
-10	fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	2022-02-01 19:14:00+00	5335940	1	91656
-11	a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	2023-04-17 16:59:00+00	9900139	2	338577
-12	6ef16bd9-0759-447d-b7af-744888b824ca	2024-04-04 13:13:00+00	9900063	0	25599
-13	a6c14f18-ff74-42fb-9324-72f2c8d0fb66	2024-04-01 15:00:00+00	9900184	1	186434
-14	bbd47ea1-3ca9-41b6-803d-ab7c9505e768	2023-01-07 21:28:00+00	9900233	2	1476491
-15	daffa2db-4980-4ddd-8bf2-4bf79ef09e10	2024-04-03 16:47:00+00	9900003	0	37396
-16	f249b76f-3db0-4641-b2d7-b65aa69ee229	2023-04-12 16:18:00+00	9900080	1	63116
-17	8f11086a-b44a-44cf-a755-1fc9c257a48d	2021-03-24 12:30:00+00	9900076	1	85792
-18	bd1f74b3-bcc8-44c2-959f-f959accc3712	2024-04-12 10:49:00+00	9900051	2	446731
-19	3bd1329c-4f97-4278-beae-c025a6a1ea66	2023-04-18 09:34:00+00	9900234	1	214715
-20	bfdde387-2429-490a-95f0-4e719ef7aa78	2022-03-28 16:00:00+00	9900096	2	717961
-\.
-
-
---
 -- Data for Name: city; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.city (id, country, state, name, latitude, longitude, region, state_abbrev, speed_limit, created_at, updated_at) FROM stdin;
-6ef16bd9-0759-447d-b7af-744888b824ca	Canada	British Columbia	Courtenay	49.6841	-124.9904	Canada	BC	\N	2024-04-04 13:13:00+00	\N
-3bd1329c-4f97-4278-beae-c025a6a1ea66	Netherlands	Flevoland	Almere	52.3508	5.2647	Netherlands	FL	\N	2023-04-18 09:34:00+00	\N
-712846c3-d432-480b-b582-d47730cf90bf	United States	Kansas	Overland Park	38.889	-94.6906	Midwest	KS	25	2017-04-29 06:58:00+00	\N
-09c049b6-213b-405c-bc4e-178346ff814d	United States	Illinois	Highland Park	42.1824	-87.8108	Midwest	IL	25	2021-02-25 13:26:00+00	\N
-a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	Spain	Alicante	Alicante	38.346	-0.4907	Spain	A	\N	2023-04-17 16:59:00+00	\N
-3fa975ec-55af-4a63-addf-a36b920fc9a7	United States	West Virginia	St. Albans	38.3776	-81.8193	South	WV	\N	2024-03-14 09:22:00+00	\N
-bbd47ea1-3ca9-41b6-803d-ab7c9505e768	Mexico	Jalisco	Zapopan	20.7203	-103.3919	Mexico	JAL	\N	2023-01-07 21:28:00+00	\N
-06118205-6e16-46da-bc9c-459860189e8f	United States	Pennsylvania	Hatfield	40.2771	-75.2989	Mid-Atlantic	PA	\N	2024-03-20 17:11:00+00	\N
-bfdde387-2429-490a-95f0-4e719ef7aa78	Canada	Ontario	Mississauga	43.589	-79.6441	Canada	ON	\N	2022-03-28 16:00:00+00	\N
-06b9181f-f879-40d5-b531-c239caa8ccd9	United States	North Carolina	Leland	34.223	-78.0447	South	NC	\N	2023-08-23 13:59:00+00	\N
-4febf356-c079-41c9-81b4-e930dcf2daac	United States	Illinois	Winfield	41.8785	-88.1502	Midwest	IL	\N	2017-04-29 06:59:00+00	\N
-bd1f74b3-bcc8-44c2-959f-f959accc3712	Brazil	Rio de Janeiro	Belford Roxo	-22.7606	-43.4037	Brazil	RJ	\N	2024-04-12 10:49:00+00	\N
-fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	United States	Washington	Kirkland	47.6967	-122.2042	Pacific	WA	\N	2022-02-01 19:14:00+00	\N
-a6c14f18-ff74-42fb-9324-72f2c8d0fb66	England	Greater London	Lambeth	51.4581	-0.1237	England	\N	\N	2024-04-01 15:00:00+00	\N
-58f1f419-ac98-4f12-9f4d-d78939773041	United States	Wisconsin	Franklin	42.8839	-88.0115	Midwest	WI	\N	2024-03-08 15:30:00+00	\N
-6ba8c886-419a-4880-a749-b7e4246bb78c	United States	California	Eureka	40.7934	-124.1552	Pacific	CA	\N	2024-03-05 17:23:00+00	\N
-4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	United States	Tennessee	Chattanooga	35.066	-85.2484	South	TN	25	2023-12-06 08:32:00+00	\N
-daffa2db-4980-4ddd-8bf2-4bf79ef09e10	Australia	New South Wales	Bathurst	-33.4107	149.5783	Australia	NSW	\N	2024-04-03 16:47:00+00	\N
-8f11086a-b44a-44cf-a755-1fc9c257a48d	Canada	British Columbia	Victoria	48.4284	-123.3656	Canada	BC	\N	2021-03-24 12:30:00+00	\N
-f249b76f-3db0-4641-b2d7-b65aa69ee229	Canada	New Brunswick	Fredericton	45.9636	-66.6431	Canada	NB	\N	2023-04-12 16:18:00+00	\N
+COPY public.city (id, country, state, name, latitude, longitude, region, state_abbrev, residential_speed_limit, created_at, updated_at, fips_code) FROM stdin;
+09c049b6-213b-405c-bc4e-178346ff814d	United States	Illinois	Highland Park	42.1824	-87.8108	Midwest	IL	25	2021-02-25 13:26:00+00	\N	1734722
+3fa975ec-55af-4a63-addf-a36b920fc9a7	United States	West Virginia	St. Albans	38.3776	-81.8193	South	WV	\N	2024-03-14 09:22:00+00	\N	5471212
+a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	Spain	Alicante	Alicante	38.346	-0.4907	Spain	A	\N	2023-04-17 16:59:00+00	\N	9900139
+58f1f419-ac98-4f12-9f4d-d78939773041	United States	Wisconsin	Franklin	42.8839	-88.0115	Midwest	WI	\N	2024-03-08 15:30:00+00	\N	5527300
+6ba8c886-419a-4880-a749-b7e4246bb78c	United States	California	Eureka	40.7934	-124.1552	Pacific	CA	\N	2024-03-05 17:23:00+00	\N	623042
+6ef16bd9-0759-447d-b7af-744888b824ca	Canada	British Columbia	Courtenay	49.6841	-124.9904	Canada	BC	\N	2024-04-04 13:13:00+00	\N	9900063
+f249b76f-3db0-4641-b2d7-b65aa69ee229	Canada	New Brunswick	Fredericton	45.9636	-66.6431	Canada	NB	\N	2023-04-12 16:18:00+00	\N	9900080
+712846c3-d432-480b-b582-d47730cf90bf	United States	Kansas	Overland Park	38.889	-94.6906	Midwest	KS	25	2017-04-29 06:58:00+00	\N	2053775
+bbd47ea1-3ca9-41b6-803d-ab7c9505e768	Mexico	Jalisco	Zapopan	20.7203	-103.3919	Mexico	JAL	\N	2023-01-07 21:28:00+00	\N	9900233
+3bd1329c-4f97-4278-beae-c025a6a1ea66	Netherlands	Flevoland	Almere	52.3508	5.2647	Netherlands	FL	\N	2023-04-18 09:34:00+00	\N	9900234
+bfdde387-2429-490a-95f0-4e719ef7aa78	Canada	Ontario	Mississauga	43.589	-79.6441	Canada	ON	\N	2022-03-28 16:00:00+00	\N	9900096
+8f11086a-b44a-44cf-a755-1fc9c257a48d	Canada	British Columbia	Victoria	48.4284	-123.3656	Canada	BC	\N	2021-03-24 12:30:00+00	\N	9900076
+06b9181f-f879-40d5-b531-c239caa8ccd9	United States	North Carolina	Leland	34.223	-78.0447	South	NC	\N	2023-08-23 13:59:00+00	\N	3737680
+a6c14f18-ff74-42fb-9324-72f2c8d0fb66	England	Greater London	Lambeth	51.4581	-0.1237	England	\N	\N	2024-04-01 15:00:00+00	\N	9900184
+daffa2db-4980-4ddd-8bf2-4bf79ef09e10	Australia	New South Wales	Bathurst	-33.4107	149.5783	Australia	NSW	\N	2024-04-03 16:47:00+00	\N	9900003
+bd1f74b3-bcc8-44c2-959f-f959accc3712	Brazil	Rio de Janeiro	Belford Roxo	-22.7606	-43.4037	Brazil	RJ	\N	2024-04-12 10:49:00+00	\N	9900051
+4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	United States	Tennessee	Chattanooga	35.066	-85.2484	South	TN	25	2023-12-06 08:32:00+00	\N	4714000
+4febf356-c079-41c9-81b4-e930dcf2daac	United States	Illinois	Winfield	41.8785	-88.1502	Midwest	IL	\N	2017-04-29 06:59:00+00	\N	1782400
+fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	United States	Washington	Kirkland	47.6967	-122.2042	Pacific	WA	\N	2022-02-01 19:14:00+00	\N	5335940
+06118205-6e16-46da-bc9c-459860189e8f	United States	Pennsylvania	Hatfield	40.2771	-75.2989	Mid-Atlantic	PA	\N	2024-03-20 17:11:00+00	\N	4233112
 \.
 
 
@@ -630,7 +518,7 @@ Wales
 --
 
 COPY public.fargate_price (id, per_second, created_at) FROM stdin;
-1	0.000038	2025-01-14 21:29:23.95619+00
+1	0.000038	2025-03-07 14:35:36.317488+00
 \.
 
 
@@ -779,37 +667,9 @@ fff6c9d5-5828-4c71-8bb7-5c462ff5cf9e	65.13
 --
 
 COPY public.seaql_migrations (version, applied_at) FROM stdin;
-m20220101_000001_main	1736890164
-m20231010_232527_city_submission	1736890164
-m20240202_004130_brokenspoke_analyzer_pipeline	1736890164
-\.
-
-
---
--- Data for Name: speed_limit; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.speed_limit (id, city_id, created_at, residential) FROM stdin;
-1	58f1f419-ac98-4f12-9f4d-d78939773041	2024-03-08 15:30:00+00	25
-2	6ba8c886-419a-4880-a749-b7e4246bb78c	2024-03-05 17:23:00+00	25
-3	06b9181f-f879-40d5-b531-c239caa8ccd9	2023-08-23 13:59:00+00	35
-4	09c049b6-213b-405c-bc4e-178346ff814d	2021-02-25 13:26:00+00	25
-5	06118205-6e16-46da-bc9c-459860189e8f	2024-03-20 17:11:00+00	25
-6	4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	2023-12-06 08:32:00+00	25
-7	4febf356-c079-41c9-81b4-e930dcf2daac	2017-04-29 06:59:00+00	25
-8	712846c3-d432-480b-b582-d47730cf90bf	2017-04-29 06:58:00+00	25
-9	3fa975ec-55af-4a63-addf-a36b920fc9a7	2024-03-14 09:22:00+00	25
-10	fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	2022-02-01 19:14:00+00	25
-11	a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	2023-04-17 16:59:00+00	20
-12	6ef16bd9-0759-447d-b7af-744888b824ca	2024-04-04 13:13:00+00	30
-13	a6c14f18-ff74-42fb-9324-72f2c8d0fb66	2024-04-01 15:00:00+00	20
-14	bbd47ea1-3ca9-41b6-803d-ab7c9505e768	2023-01-07 21:28:00+00	25
-15	daffa2db-4980-4ddd-8bf2-4bf79ef09e10	2024-04-03 16:47:00+00	30
-16	f249b76f-3db0-4641-b2d7-b65aa69ee229	2023-04-12 16:18:00+00	31
-17	8f11086a-b44a-44cf-a755-1fc9c257a48d	2021-03-24 12:30:00+00	31
-18	bd1f74b3-bcc8-44c2-959f-f959accc3712	2024-04-12 10:49:00+00	25
-19	3bd1329c-4f97-4278-beae-c025a6a1ea66	2023-04-18 09:34:00+00	20
-20	bfdde387-2429-490a-95f0-4e719ef7aa78	2022-03-28 16:00:00+00	31
+m20220101_000001_main	1741358136
+m20231010_232527_city_submission	1741358136
+m20240202_004130_brokenspoke_analyzer_pipeline	1741358136
 \.
 
 
@@ -885,27 +745,27 @@ COPY public.submission (id, first_name, last_name, occupation, organization, ema
 -- Data for Name: summary; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.summary (id, city_id, created_at, score, version) FROM stdin;
-fc8f1d05-55e8-42cf-967e-002056ba050e	58f1f419-ac98-4f12-9f4d-d78939773041	2024-03-08 15:30:00+00	26	24.01
-f2058cdd-dea8-491b-80cf-11d08caceac8	6ba8c886-419a-4880-a749-b7e4246bb78c	2024-03-05 17:23:00+00	26	24.01
-da7327c5-34c9-44bc-bee4-31b6ad5bf1d2	06b9181f-f879-40d5-b531-c239caa8ccd9	2023-08-23 13:59:00+00	15	23.01
-aa8cf39e-93d7-4be0-99a4-424a4c7613b6	09c049b6-213b-405c-bc4e-178346ff814d	2021-02-25 13:26:00+00	20	21.01
-23fe492a-cef7-4e3b-997f-3116bd53c7aa	06118205-6e16-46da-bc9c-459860189e8f	2024-03-20 17:11:00+00	24	24.01
-8fd7642f-4a31-4a13-95c8-f1ea1aa263ba	4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	2023-12-06 08:32:00+00	20	23.03
-30597289-57c0-4f26-acc8-aa88b3859d0e	4febf356-c079-41c9-81b4-e930dcf2daac	2017-04-29 06:59:00+00	22	17.01
-9b3f28d6-ecf0-4046-abe3-3657d6ea30ae	712846c3-d432-480b-b582-d47730cf90bf	2017-04-29 06:58:00+00	37	17.01
-98d8327f-f0be-4486-93fd-fb238582889c	3fa975ec-55af-4a63-addf-a36b920fc9a7	2024-03-14 09:22:00+00	26	24.01
-723d90e9-a5e3-44cc-9957-f480f928cf02	fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	2022-02-01 19:14:00+00	26	22.01
-61d735fa-49d1-4b66-87d8-4a7e765aaf8b	a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	2023-04-17 16:59:00+00	67	23.01
-ec300bdb-6d8f-4ff4-b3a6-ce6d3c2fab54	6ef16bd9-0759-447d-b7af-744888b824ca	2024-04-04 13:13:00+00	44	24.01
-d65a350a-b918-4d35-8cf0-99c79af95269	a6c14f18-ff74-42fb-9324-72f2c8d0fb66	2024-04-01 15:00:00+00	75	24.01
-b1ef6021-c779-4373-9147-6f6e442bbdab	bbd47ea1-3ca9-41b6-803d-ab7c9505e768	2023-01-07 21:28:00+00	55	23.01
-8b9a93ea-63f0-4d01-8caa-2bbd3f0653e3	daffa2db-4980-4ddd-8bf2-4bf79ef09e10	2024-04-03 16:47:00+00	32	24.01
-a66fb30f-7d80-4b27-90c6-4f6b0723ab89	f249b76f-3db0-4641-b2d7-b65aa69ee229	2023-04-12 16:18:00+00	55	23.01
-5d224df6-262a-41b2-adb0-530f1909e896	8f11086a-b44a-44cf-a755-1fc9c257a48d	2021-03-24 12:30:00+00	24	21.01
-3bc70777-1f75-479f-9eb9-7b639881ba19	bd1f74b3-bcc8-44c2-959f-f959accc3712	2024-04-12 10:49:00+00	47	24.01
-36a29ed3-81c7-465b-a7f5-5e44a6a99cbf	3bd1329c-4f97-4278-beae-c025a6a1ea66	2023-04-18 09:34:00+00	85	23.01
-fff6c9d5-5828-4c71-8bb7-5c462ff5cf9e	bfdde387-2429-490a-95f0-4e719ef7aa78	2022-03-28 16:00:00+00	43	22.01
+COPY public.summary (id, city_id, created_at, pop_size, population, residential_speed_limit_override, score, version) FROM stdin;
+fc8f1d05-55e8-42cf-967e-002056ba050e	58f1f419-ac98-4f12-9f4d-d78939773041	2024-03-08 15:30:00+00	0	36513	\N	26	24.01
+f2058cdd-dea8-491b-80cf-11d08caceac8	6ba8c886-419a-4880-a749-b7e4246bb78c	2024-03-05 17:23:00+00	0	26519	\N	26	24.01
+da7327c5-34c9-44bc-bee4-31b6ad5bf1d2	06b9181f-f879-40d5-b531-c239caa8ccd9	2023-08-23 13:59:00+00	0	24473	\N	15	23.01
+aa8cf39e-93d7-4be0-99a4-424a4c7613b6	09c049b6-213b-405c-bc4e-178346ff814d	2021-02-25 13:26:00+00	0	29596	\N	20	21.01
+23fe492a-cef7-4e3b-997f-3116bd53c7aa	06118205-6e16-46da-bc9c-459860189e8f	2024-03-20 17:11:00+00	0	3490	\N	24	24.01
+8fd7642f-4a31-4a13-95c8-f1ea1aa263ba	4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	2023-12-06 08:32:00+00	1	181288	\N	20	23.03
+30597289-57c0-4f26-acc8-aa88b3859d0e	4febf356-c079-41c9-81b4-e930dcf2daac	2017-04-29 06:59:00+00	0	9543	\N	22	17.01
+9b3f28d6-ecf0-4046-abe3-3657d6ea30ae	712846c3-d432-480b-b582-d47730cf90bf	2017-04-29 06:58:00+00	1	183775	\N	37	17.01
+98d8327f-f0be-4486-93fd-fb238582889c	3fa975ec-55af-4a63-addf-a36b920fc9a7	2024-03-14 09:22:00+00	0	10753	\N	26	24.01
+723d90e9-a5e3-44cc-9957-f480f928cf02	fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	2022-02-01 19:14:00+00	1	91656	\N	26	22.01
+61d735fa-49d1-4b66-87d8-4a7e765aaf8b	a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	2023-04-17 16:59:00+00	2	338577	\N	67	23.01
+ec300bdb-6d8f-4ff4-b3a6-ce6d3c2fab54	6ef16bd9-0759-447d-b7af-744888b824ca	2024-04-04 13:13:00+00	0	25599	\N	44	24.01
+d65a350a-b918-4d35-8cf0-99c79af95269	a6c14f18-ff74-42fb-9324-72f2c8d0fb66	2024-04-01 15:00:00+00	1	186434	\N	75	24.01
+b1ef6021-c779-4373-9147-6f6e442bbdab	bbd47ea1-3ca9-41b6-803d-ab7c9505e768	2023-01-07 21:28:00+00	2	1476491	\N	55	23.01
+8b9a93ea-63f0-4d01-8caa-2bbd3f0653e3	daffa2db-4980-4ddd-8bf2-4bf79ef09e10	2024-04-03 16:47:00+00	0	37396	\N	32	24.01
+a66fb30f-7d80-4b27-90c6-4f6b0723ab89	f249b76f-3db0-4641-b2d7-b65aa69ee229	2023-04-12 16:18:00+00	1	63116	\N	55	23.01
+5d224df6-262a-41b2-adb0-530f1909e896	8f11086a-b44a-44cf-a755-1fc9c257a48d	2021-03-24 12:30:00+00	1	85792	\N	24	21.01
+3bc70777-1f75-479f-9eb9-7b639881ba19	bd1f74b3-bcc8-44c2-959f-f959accc3712	2024-04-12 10:49:00+00	2	446731	\N	47	24.01
+36a29ed3-81c7-465b-a7f5-5e44a6a99cbf	3bd1329c-4f97-4278-beae-c025a6a1ea66	2023-04-18 09:34:00+00	1	214715	\N	85	23.01
+fff6c9d5-5828-4c71-8bb7-5c462ff5cf9e	bfdde387-2429-490a-95f0-4e719ef7aa78	2022-03-28 16:00:00+00	2	717961	\N	43	22.01
 \.
 
 
@@ -998,24 +858,10 @@ Puerto Rico	PR	77	25
 
 
 --
--- Name: census_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.census_id_seq', 20, true);
-
-
---
 -- Name: fargate_price_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
 SELECT pg_catalog.setval('public.fargate_price_id_seq', 1, true);
-
-
---
--- Name: speed_limit_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.speed_limit_id_seq', 20, true);
 
 
 --
@@ -1063,14 +909,6 @@ ALTER TABLE ONLY public.bna_pipeline_step
 
 ALTER TABLE ONLY public.bna_region
     ADD CONSTRAINT bna_region_pkey PRIMARY KEY (name);
-
-
---
--- Name: census census_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_pkey PRIMARY KEY (id);
 
 
 --
@@ -1162,14 +1000,6 @@ ALTER TABLE ONLY public.seaql_migrations
 
 
 --
--- Name: speed_limit speed_limit_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_pkey PRIMARY KEY (id);
-
-
---
 -- Name: state_region_crosswalk state_region_crosswalk_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1226,52 +1056,10 @@ ALTER TABLE ONLY public.us_state
 
 
 --
--- Name: census_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_city_id_created_at_idx ON public.census USING btree (city_id, created_at DESC);
-
-
---
--- Name: census_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_city_id_idx ON public.census USING btree (city_id);
-
-
---
--- Name: census_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX census_id_idx ON public.census USING btree (id);
-
-
---
 -- Name: city_id_idx; Type: INDEX; Schema: public; Owner: postgres
 --
 
 CREATE INDEX city_id_idx ON public.city USING btree (id);
-
-
---
--- Name: speed_limit_city_id_created_at_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_city_id_created_at_idx ON public.speed_limit USING btree (city_id, created_at DESC);
-
-
---
--- Name: speed_limit_city_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_city_id_idx ON public.speed_limit USING btree (city_id);
-
-
---
--- Name: speed_limit_id_idx; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX speed_limit_id_idx ON public.speed_limit USING btree (id);
 
 
 --
@@ -1334,14 +1122,6 @@ ALTER TABLE ONLY public.bna_pipeline
 
 
 --
--- Name: census census_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.census
-    ADD CONSTRAINT census_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
-
-
---
 -- Name: city city_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1395,14 +1175,6 @@ ALTER TABLE ONLY public.recreation
 
 ALTER TABLE ONLY public.retail
     ADD CONSTRAINT retail_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
-
-
---
--- Name: speed_limit speed_limit_city_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.speed_limit
-    ADD CONSTRAINT speed_limit_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.city(id) ON DELETE CASCADE;
 
 
 --

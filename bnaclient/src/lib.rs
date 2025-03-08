@@ -810,161 +810,6 @@ pub mod types {
         }
     }
 
-    ///Census information of a city
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Census information of a city",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "created_at",
-    ///    "fips_code",
-    ///    "id",
-    ///    "pop_size",
-    ///    "population"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "created_at": {
-    ///      "description": "Creation date",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "id": {
-    ///      "description": "Census identifier",
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "pop_size": {
-    ///      "description": "City population size category (small (0), medium
-    /// (1), large (2))",
-    ///      "examples": [
-    ///        "1"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "population": {
-    ///      "description": "City population",
-    ///      "examples": [
-    ///        "907779"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct Census {
-        ///City identifier
-        pub city_id: uuid::Uuid,
-        ///Creation date
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
-        ///Numerical city identifier given by the U.S. census, or 0 for non-US
-        /// cities
-        pub fips_code: ::std::string::String,
-        ///Census identifier
-        pub id: i32,
-        ///City population size category (small (0), medium (1), large (2))
-        pub pop_size: i32,
-        ///City population
-        pub population: i32,
-    }
-
-    impl ::std::convert::From<&Census> for Census {
-        fn from(value: &Census) -> Self {
-            value.clone()
-        }
-    }
-
-    impl Census {
-        pub fn builder() -> builder::Census {
-            Default::default()
-        }
-    }
-
-    ///CensusPost
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "fips_code",
-    ///    "pop_size",
-    ///    "population"
-    ///  ],
-    ///  "properties": {
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "pop_size": {
-    ///      "description": "City population size category (small (0), medium
-    /// (1), large (2))",
-    ///      "examples": [
-    ///        "1"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "population": {
-    ///      "description": "City population",
-    ///      "examples": [
-    ///        "907779"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct CensusPost {
-        ///Numerical city identifier given by the U.S. census, or 0 for non-US
-        /// cities
-        pub fips_code: ::std::string::String,
-        ///City population size category (small (0), medium (1), large (2))
-        pub pop_size: i32,
-        ///City population
-        pub population: i32,
-    }
-
-    impl ::std::convert::From<&CensusPost> for CensusPost {
-        fn from(value: &CensusPost) -> Self {
-            value.clone()
-        }
-    }
-
-    impl CensusPost {
-        pub fn builder() -> builder::CensusPost {
-            Default::default()
-        }
-    }
-
     ///Cities
     ///
     /// <details><summary>JSON schema</summary>
@@ -1078,8 +923,9 @@ pub mod types {
     ///        "null"
     ///      ]
     ///    },
-    ///    "speed_limit": {
-    ///      "description": "Speed limit in kilometer per hour (km/h).",
+    ///    "residential_speed_limit": {
+    ///      "description": "Residential speed limit in kilometer per hour
+    /// (km/h).\nOnly use if different from the state speed limit.",
     ///      "examples": [
     ///        "50"
     ///      ],
@@ -1141,9 +987,10 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///Speed limit in kilometer per hour (km/h).
+        ///Residential speed limit in kilometer per hour (km/h).
+        ///Only use if different from the state speed limit.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub speed_limit: ::std::option::Option<i32>,
+        pub residential_speed_limit: ::std::option::Option<i32>,
         ///State name
         pub state: ::std::string::String,
         ///A short version of the state name, usually 2 or 3 character long
@@ -1162,49 +1009,6 @@ pub mod types {
 
     impl City {
         pub fn builder() -> builder::City {
-            Default::default()
-        }
-    }
-
-    ///CityCensuses
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "censuses",
-    ///    "city"
-    ///  ],
-    ///  "properties": {
-    ///    "censuses": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/Census"
-    ///      }
-    ///    },
-    ///    "city": {
-    ///      "$ref": "#/components/schemas/City"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
-    pub struct CityCensuses {
-        pub censuses: ::std::vec::Vec<Census>,
-        pub city: City,
-    }
-
-    impl ::std::convert::From<&CityCensuses> for CityCensuses {
-        fn from(value: &CityCensuses) -> Self {
-            value.clone()
-        }
-    }
-
-    impl CityCensuses {
-        pub fn builder() -> builder::CityCensuses {
             Default::default()
         }
     }
@@ -2235,6 +2039,8 @@ pub mod types {
     ///    "infrastructure",
     ///    "opportunity",
     ///    "people",
+    ///    "pop_size",
+    ///    "population",
     ///    "recreation",
     ///    "retail",
     ///    "score",
@@ -2259,6 +2065,18 @@ pub mod types {
     ///    "people": {
     ///      "$ref": "#/components/schemas/People"
     ///    },
+    ///    "pop_size": {
+    ///      "description": "City population size category (small, medium,
+    /// large).",
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    },
+    ///    "population": {
+    ///      "description": "City population based on the annual U.S. Census
+    /// American Community Survey.",
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    },
     ///    "recreation": {
     ///      "$ref": "#/components/schemas/Recreation"
     ///    },
@@ -2269,6 +2087,14 @@ pub mod types {
     ///      "description": "City rating score",
     ///      "type": "number",
     ///      "format": "double"
+    ///    },
+    ///    "speed_limit_override": {
+    ///      "description": "Residential speed limit, if any.",
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
     ///    },
     ///    "transit": {
     ///      "$ref": "#/components/schemas/Transit"
@@ -2289,9 +2115,17 @@ pub mod types {
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
         pub people: People,
+        ///City population size category (small, medium, large).
+        pub pop_size: i32,
+        ///City population based on the annual U.S. Census American Community
+        /// Survey.
+        pub population: i32,
         pub recreation: Recreation,
         pub retail: Retail,
         pub score: f64,
+        ///Residential speed limit, if any.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub speed_limit_override: ::std::option::Option<i32>,
         pub transit: Transit,
         ///Rating version
         ///The format follows the [calver](https://calver.org) specification with
@@ -3871,195 +3705,6 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
-        pub struct Census {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
-            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
-            id: ::std::result::Result<i32, ::std::string::String>,
-            pop_size: ::std::result::Result<i32, ::std::string::String>,
-            population: ::std::result::Result<i32, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for Census {
-            fn default() -> Self {
-                Self {
-                    city_id: Err("no value supplied for city_id".to_string()),
-                    created_at: Err("no value supplied for created_at".to_string()),
-                    fips_code: Err("no value supplied for fips_code".to_string()),
-                    id: Err("no value supplied for id".to_string()),
-                    pop_size: Err("no value supplied for pop_size".to_string()),
-                    population: Err("no value supplied for population".to_string()),
-                }
-            }
-        }
-
-        impl Census {
-            pub fn city_id<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<uuid::Uuid>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.city_id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city_id: {}", e));
-                self
-            }
-            pub fn created_at<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.created_at = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for created_at: {}", e));
-                self
-            }
-            pub fn fips_code<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::string::String>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.fips_code = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
-                self
-            }
-            pub fn id<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<i32>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.id = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for id: {}", e));
-                self
-            }
-            pub fn pop_size<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<i32>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.pop_size = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for pop_size: {}", e));
-                self
-            }
-            pub fn population<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<i32>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.population = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for population: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<Census> for super::Census {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: Census,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    city_id: value.city_id?,
-                    created_at: value.created_at?,
-                    fips_code: value.fips_code?,
-                    id: value.id?,
-                    pop_size: value.pop_size?,
-                    population: value.population?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::Census> for Census {
-            fn from(value: super::Census) -> Self {
-                Self {
-                    city_id: Ok(value.city_id),
-                    created_at: Ok(value.created_at),
-                    fips_code: Ok(value.fips_code),
-                    id: Ok(value.id),
-                    pop_size: Ok(value.pop_size),
-                    population: Ok(value.population),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct CensusPost {
-            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
-            pop_size: ::std::result::Result<i32, ::std::string::String>,
-            population: ::std::result::Result<i32, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for CensusPost {
-            fn default() -> Self {
-                Self {
-                    fips_code: Err("no value supplied for fips_code".to_string()),
-                    pop_size: Err("no value supplied for pop_size".to_string()),
-                    population: Err("no value supplied for population".to_string()),
-                }
-            }
-        }
-
-        impl CensusPost {
-            pub fn fips_code<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::string::String>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.fips_code = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for fips_code: {}", e));
-                self
-            }
-            pub fn pop_size<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<i32>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.pop_size = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for pop_size: {}", e));
-                self
-            }
-            pub fn population<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<i32>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.population = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for population: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<CensusPost> for super::CensusPost {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: CensusPost,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    fips_code: value.fips_code?,
-                    pop_size: value.pop_size?,
-                    population: value.population?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::CensusPost> for CensusPost {
-            fn from(value: super::CensusPost) -> Self {
-                Self {
-                    fips_code: Ok(value.fips_code),
-                    pop_size: Ok(value.pop_size),
-                    population: Ok(value.population),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
         pub struct City {
             country: ::std::result::Result<super::Country, ::std::string::String>,
             created_at:
@@ -4072,7 +3717,8 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            speed_limit: ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
+            residential_speed_limit:
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             state: ::std::result::Result<::std::string::String, ::std::string::String>,
             state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
@@ -4094,7 +3740,7 @@ pub mod types {
                     longitude: Ok(Default::default()),
                     name: Err("no value supplied for name".to_string()),
                     region: Ok(Default::default()),
-                    speed_limit: Ok(Default::default()),
+                    residential_speed_limit: Ok(Default::default()),
                     state: Err("no value supplied for state".to_string()),
                     state_abbrev: Ok(Default::default()),
                     updated_at: Ok(Default::default()),
@@ -4173,14 +3819,17 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for region: {}", e));
                 self
             }
-            pub fn speed_limit<T>(mut self, value: T) -> Self
+            pub fn residential_speed_limit<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<::std::option::Option<i32>>,
                 T::Error: ::std::fmt::Display,
             {
-                self.speed_limit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for speed_limit: {}", e));
+                self.residential_speed_limit = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for residential_speed_limit: {}",
+                        e
+                    )
+                });
                 self
             }
             pub fn state<T>(mut self, value: T) -> Self
@@ -4228,7 +3877,7 @@ pub mod types {
                     longitude: value.longitude?,
                     name: value.name?,
                     region: value.region?,
-                    speed_limit: value.speed_limit?,
+                    residential_speed_limit: value.residential_speed_limit?,
                     state: value.state?,
                     state_abbrev: value.state_abbrev?,
                     updated_at: value.updated_at?,
@@ -4246,69 +3895,10 @@ pub mod types {
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),
                     region: Ok(value.region),
-                    speed_limit: Ok(value.speed_limit),
+                    residential_speed_limit: Ok(value.residential_speed_limit),
                     state: Ok(value.state),
                     state_abbrev: Ok(value.state_abbrev),
                     updated_at: Ok(value.updated_at),
-                }
-            }
-        }
-
-        #[derive(Clone, Debug)]
-        pub struct CityCensuses {
-            censuses: ::std::result::Result<::std::vec::Vec<super::Census>, ::std::string::String>,
-            city: ::std::result::Result<super::City, ::std::string::String>,
-        }
-
-        impl ::std::default::Default for CityCensuses {
-            fn default() -> Self {
-                Self {
-                    censuses: Err("no value supplied for censuses".to_string()),
-                    city: Err("no value supplied for city".to_string()),
-                }
-            }
-        }
-
-        impl CityCensuses {
-            pub fn censuses<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::vec::Vec<super::Census>>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.censuses = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for censuses: {}", e));
-                self
-            }
-            pub fn city<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<super::City>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.city = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for city: {}", e));
-                self
-            }
-        }
-
-        impl ::std::convert::TryFrom<CityCensuses> for super::CityCensuses {
-            type Error = super::error::ConversionError;
-            fn try_from(
-                value: CityCensuses,
-            ) -> ::std::result::Result<Self, super::error::ConversionError> {
-                Ok(Self {
-                    censuses: value.censuses?,
-                    city: value.city?,
-                })
-            }
-        }
-
-        impl ::std::convert::From<super::CityCensuses> for CityCensuses {
-            fn from(value: super::CityCensuses) -> Self {
-                Self {
-                    censuses: Ok(value.censuses),
-                    city: Ok(value.city),
                 }
             }
         }
@@ -5139,9 +4729,13 @@ pub mod types {
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
             people: ::std::result::Result<super::People, ::std::string::String>,
+            pop_size: ::std::result::Result<i32, ::std::string::String>,
+            population: ::std::result::Result<i32, ::std::string::String>,
             recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
             retail: ::std::result::Result<super::Retail, ::std::string::String>,
             score: ::std::result::Result<f64, ::std::string::String>,
+            speed_limit_override:
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             transit: ::std::result::Result<super::Transit, ::std::string::String>,
             version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
@@ -5154,9 +4748,12 @@ pub mod types {
                     infrastructure: Err("no value supplied for infrastructure".to_string()),
                     opportunity: Err("no value supplied for opportunity".to_string()),
                     people: Err("no value supplied for people".to_string()),
+                    pop_size: Err("no value supplied for pop_size".to_string()),
+                    population: Err("no value supplied for population".to_string()),
                     recreation: Err("no value supplied for recreation".to_string()),
                     retail: Err("no value supplied for retail".to_string()),
                     score: Err("no value supplied for score".to_string()),
+                    speed_limit_override: Ok(Default::default()),
                     transit: Err("no value supplied for transit".to_string()),
                     version: Err("no value supplied for version".to_string()),
                 }
@@ -5214,6 +4811,26 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for people: {}", e));
                 self
             }
+            pub fn pop_size<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.pop_size = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for pop_size: {}", e));
+                self
+            }
+            pub fn population<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.population = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for population: {}", e));
+                self
+            }
             pub fn recreation<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<super::Recreation>,
@@ -5242,6 +4859,19 @@ pub mod types {
                 self.score = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for score: {}", e));
+                self
+            }
+            pub fn speed_limit_override<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.speed_limit_override = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for speed_limit_override: {}",
+                        e
+                    )
+                });
                 self
             }
             pub fn transit<T>(mut self, value: T) -> Self
@@ -5277,9 +4907,12 @@ pub mod types {
                     infrastructure: value.infrastructure?,
                     opportunity: value.opportunity?,
                     people: value.people?,
+                    pop_size: value.pop_size?,
+                    population: value.population?,
                     recreation: value.recreation?,
                     retail: value.retail?,
                     score: value.score?,
+                    speed_limit_override: value.speed_limit_override?,
                     transit: value.transit?,
                     version: value.version?,
                 })
@@ -5294,9 +4927,12 @@ pub mod types {
                     infrastructure: Ok(value.infrastructure),
                     opportunity: Ok(value.opportunity),
                     people: Ok(value.people),
+                    pop_size: Ok(value.pop_size),
+                    population: Ok(value.population),
                     recreation: Ok(value.recreation),
                     retail: Ok(value.retail),
                     score: Ok(value.score),
+                    speed_limit_override: Ok(value.speed_limit_override),
                     transit: Ok(value.transit),
                     version: Ok(value.version),
                 }
@@ -6446,59 +6082,6 @@ impl Client {
         builder::GetCity::new(self)
     }
 
-    ///Get the details of a specific city with its associated census
-    /// information.
-    ///
-    ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
-    ///
-    ///Arguments:
-    /// - `country`: Country name
-    /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or
-    ///something similar depending on the country. If a country does not have
-    ///this concept, then the country name is used.
-    /// - `name`: City name
-    /// - `page`: The result page being returned
-    /// - `page_size`: The number of items per page
-    ///```ignore
-    /// let response = client.get_city_censuses()
-    ///    .country(country)
-    ///    .region(region)
-    ///    .name(name)
-    ///    .page(page)
-    ///    .page_size(page_size)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn get_city_censuses(&self) -> builder::GetCityCensuses {
-        builder::GetCityCensuses::new(self)
-    }
-
-    ///Create census information for a specific city.
-    ///
-    ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
-    ///
-    ///Arguments:
-    /// - `country`: Country name
-    /// - `region`: Region name. A region can be a state, a province, a
-    ///   community, or
-    ///something similar depending on the country. If a country does not have
-    ///this concept, then the country name is used.
-    /// - `name`: City name
-    /// - `body`
-    ///```ignore
-    /// let response = client.post_city_census()
-    ///    .country(country)
-    ///    .region(region)
-    ///    .name(name)
-    ///    .body(body)
-    ///    .send()
-    ///    .await;
-    /// ```
-    pub fn post_city_census(&self) -> builder::PostCityCensus {
-        builder::PostCityCensus::new(self)
-    }
-
     ///Get the details of a specific city with all the analysis that were
     /// performed against it.
     ///
@@ -7319,265 +6902,6 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::get_city_censuses`]
-    ///
-    ///[`Client::get_city_censuses`]: super::Client::get_city_censuses
-    #[derive(Debug, Clone)]
-    pub struct GetCityCensuses<'a> {
-        client: &'a super::Client,
-        country: Result<types::Country, String>,
-        region: Result<::std::string::String, String>,
-        name: Result<::std::string::String, String>,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
-    }
-
-    impl<'a> GetCityCensuses<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                country: Err("country was not initialized".to_string()),
-                region: Err("region was not initialized".to_string()),
-                name: Err("name was not initialized".to_string()),
-                page: Ok(None),
-                page_size: Ok(None),
-            }
-        }
-
-        pub fn country<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::Country>,
-        {
-            self.country = value
-                .try_into()
-                .map_err(|_| "conversion to `Country` for country failed".to_string());
-            self
-        }
-
-        pub fn region<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<::std::string::String>,
-        {
-            self.region = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for region failed".to_string()
-            });
-            self
-        }
-
-        pub fn name<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<::std::string::String>,
-        {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
-            self
-        }
-
-        pub fn page<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
-            self
-        }
-
-        pub fn page_size<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<i64>,
-        {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
-            self
-        }
-
-        ///Sends a `GET` request to `/cities/{country}/{region}/{name}/census`
-        pub async fn send(
-            self,
-        ) -> Result<ResponseValue<types::CityCensuses>, Error<types::ApiErrors>> {
-            let Self {
-                client,
-                country,
-                region,
-                name,
-                page,
-                page_size,
-            } = self;
-            let country = country.map_err(Error::InvalidRequest)?;
-            let region = region.map_err(Error::InvalidRequest)?;
-            let name = name.map_err(Error::InvalidRequest)?;
-            let page = page.map_err(Error::InvalidRequest)?;
-            let page_size = page_size.map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/cities/{}/{}/{}/census",
-                client.baseurl,
-                encode_path(&country.to_string()),
-                encode_path(&region.to_string()),
-                encode_path(&name.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .get(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                200u16 => ResponseValue::from_response(response).await,
-                400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                _ => Err(Error::UnexpectedResponse(response)),
-            }
-        }
-    }
-
-    ///Builder for [`Client::post_city_census`]
-    ///
-    ///[`Client::post_city_census`]: super::Client::post_city_census
-    #[derive(Debug, Clone)]
-    pub struct PostCityCensus<'a> {
-        client: &'a super::Client,
-        country: Result<types::Country, String>,
-        region: Result<::std::string::String, String>,
-        name: Result<::std::string::String, String>,
-        body: Result<types::builder::CensusPost, String>,
-    }
-
-    impl<'a> PostCityCensus<'a> {
-        pub fn new(client: &'a super::Client) -> Self {
-            Self {
-                client: client,
-                country: Err("country was not initialized".to_string()),
-                region: Err("region was not initialized".to_string()),
-                name: Err("name was not initialized".to_string()),
-                body: Ok(::std::default::Default::default()),
-            }
-        }
-
-        pub fn country<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::Country>,
-        {
-            self.country = value
-                .try_into()
-                .map_err(|_| "conversion to `Country` for country failed".to_string());
-            self
-        }
-
-        pub fn region<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<::std::string::String>,
-        {
-            self.region = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for region failed".to_string()
-            });
-            self
-        }
-
-        pub fn name<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<::std::string::String>,
-        {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
-            self
-        }
-
-        pub fn body<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<types::CensusPost>,
-            <V as std::convert::TryInto<types::CensusPost>>::Error: std::fmt::Display,
-        {
-            self.body = value
-                .try_into()
-                .map(From::from)
-                .map_err(|s| format!("conversion to `CensusPost` for body failed: {}", s));
-            self
-        }
-
-        pub fn body_map<F>(mut self, f: F) -> Self
-        where
-            F: std::ops::FnOnce(types::builder::CensusPost) -> types::builder::CensusPost,
-        {
-            self.body = self.body.map(f);
-            self
-        }
-
-        ///Sends a `POST` request to `/cities/{country}/{region}/{name}/census`
-        pub async fn send(self) -> Result<ResponseValue<types::Census>, Error<types::ApiErrors>> {
-            let Self {
-                client,
-                country,
-                region,
-                name,
-                body,
-            } = self;
-            let country = country.map_err(Error::InvalidRequest)?;
-            let region = region.map_err(Error::InvalidRequest)?;
-            let name = name.map_err(Error::InvalidRequest)?;
-            let body = body
-                .and_then(|v| types::CensusPost::try_from(v).map_err(|e| e.to_string()))
-                .map_err(Error::InvalidRequest)?;
-            let url = format!(
-                "{}/cities/{}/{}/{}/census",
-                client.baseurl,
-                encode_path(&country.to_string()),
-                encode_path(&region.to_string()),
-                encode_path(&name.to_string()),
-            );
-            #[allow(unused_mut)]
-            let mut request = client
-                .client
-                .post(url)
-                .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
-                )
-                .json(&body)
-                .build()?;
-            let result = client.client.execute(request).await;
-            let response = result?;
-            match response.status().as_u16() {
-                201u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),

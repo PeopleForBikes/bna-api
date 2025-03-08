@@ -72,6 +72,8 @@ POST {{host}}/ratings
   "transit": {
     "transit": 0
   },
+  "pop_size": 2,
+  "population": 123456,
   "version": "24.12",
   "score": 8.93
 }

@@ -21,8 +21,10 @@ test *env:
   hurl --test \
     --variables-file $1.vars \
     scenario/pagination.hurl \
+    endpoints/cities.hurl \
+    endpoints/pricing.hurl \
     endpoints/ratings.hurl \
-    endpoints/cities.hurl
+    endpoints/reports.hurl
 
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-public *env:
@@ -50,3 +52,6 @@ test-staging-schemathesis:
     --exclude-method 'PATCH' \
     --base-url https://api.peopleforbikes.xyz/
 
+# Dump the database with its data (for testing purpose)
+dbdump:
+  pg_dump $DATABASE_URL -f database-with-test-data.sql
