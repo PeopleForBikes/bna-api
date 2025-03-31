@@ -446,14 +446,14 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-sqs"
-version = "1.60.0"
+version = "1.61.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "79658931b5ceb0b88779f521b891c6e60f28c464775e3482ae56dfc518052159"
+checksum = "c50ff7694f857436b7c9f8e8e930190bdf8381251151886f4a0ac32eb0cb8fd1"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
  "aws-smithy-async",
- "aws-smithy-http 0.60.12",
+ "aws-smithy-http 0.61.1",
  "aws-smithy-json",
  "aws-smithy-runtime",
  "aws-smithy-runtime-api",
