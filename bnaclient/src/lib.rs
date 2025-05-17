@@ -2,14 +2,12 @@
 use progenitor_client::{encode_path, RequestBuilderExt};
 #[allow(unused_imports)]
 pub use progenitor_client::{ByteStream, Error, ResponseValue};
-#[allow(unused_imports)]
-use reqwest::header::{HeaderMap, HeaderValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
     /// Error types.
     pub mod error {
-        /// Error from a TryFrom or FromStr implementation.
+        /// Error from a `TryFrom` or `FromStr` implementation.
         pub struct ConversionError(::std::borrow::Cow<'static, str>);
         impl ::std::error::Error for ConversionError {}
         impl ::std::fmt::Display for ConversionError {
@@ -268,7 +266,7 @@ pub mod types {
         }
     }
 
-    ///BnaPipeline
+    ///`BnaPipeline`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -375,7 +373,7 @@ pub mod types {
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
@@ -389,11 +387,11 @@ pub mod types {
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Start time
-        pub start_time: chrono::DateTime<chrono::offset::Utc>,
+        pub start_time: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Pipeline identifier
         ///This is the ID of the AWS state machine that was used to run the
         /// pipeline
-        pub state_machine_id: uuid::Uuid,
+        pub state_machine_id: ::uuid::Uuid,
         pub status: PipelineStatus,
         pub step: BnaPipelineStep,
     }
@@ -410,7 +408,7 @@ pub mod types {
         }
     }
 
-    ///BnaPipelinePatch
+    ///`BnaPipelinePatch`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -512,7 +510,7 @@ pub mod types {
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
@@ -527,7 +525,7 @@ pub mod types {
         pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         pub status: PipelineStatus,
         pub step: BnaPipelineStep,
     }
@@ -544,7 +542,7 @@ pub mod types {
         }
     }
 
-    ///BnaPipelinePost
+    ///`BnaPipelinePost`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -645,7 +643,7 @@ pub mod types {
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub end_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
@@ -660,11 +658,11 @@ pub mod types {
         pub sqs_message: ::std::option::Option<::std::string::String>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub start_time: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Pipeline identifier
         ///This is the ID of the AWS state machine that was used to run the
         /// pipeline
-        pub state_machine_id: uuid::Uuid,
+        pub state_machine_id: ::uuid::Uuid,
     }
 
     impl ::std::convert::From<&BnaPipelinePost> for BnaPipelinePost {
@@ -679,7 +677,7 @@ pub mod types {
         }
     }
 
-    ///BnaPipelineStep
+    ///`BnaPipelineStep`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -769,7 +767,7 @@ pub mod types {
         }
     }
 
-    ///BnaPipelines
+    ///`BnaPipelines`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -810,7 +808,7 @@ pub mod types {
         }
     }
 
-    ///Cities
+    ///`Cities`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -969,9 +967,9 @@ pub mod types {
     pub struct City {
         pub country: Country,
         ///Creation date
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///City identifier
-        pub id: uuid::Uuid,
+        pub id: ::uuid::Uuid,
         ///Geographic coordinate that specifies the north-south position of a
         /// point on the surface of the Earth.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -998,7 +996,7 @@ pub mod types {
         pub state_abbrev: ::std::option::Option<::std::string::String>,
         ///Update date
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub updated_at: ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+        pub updated_at: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
     }
 
     impl ::std::convert::From<&City> for City {
@@ -1013,7 +1011,7 @@ pub mod types {
         }
     }
 
-    ///CityPost
+    ///`CityPost`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1146,7 +1144,7 @@ pub mod types {
         }
     }
 
-    ///CityRatings
+    ///`CityRatings`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1189,7 +1187,7 @@ pub mod types {
         }
     }
 
-    ///CoreServices
+    ///`CoreServices`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1324,7 +1322,7 @@ pub mod types {
         }
     }
 
-    ///Country
+    ///`Country`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1552,7 +1550,7 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct FargatePrice {
         ///Creation date
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Identifier of the Fargate Price rate used to compute the cost of the
         /// pipeline run
         pub id: i32,
@@ -1614,7 +1612,7 @@ pub mod types {
         }
     }
 
-    ///Infrastructure
+    ///`Infrastructure`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1681,7 +1679,7 @@ pub mod types {
         }
     }
 
-    ///Opportunity
+    ///`Opportunity`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1791,7 +1789,7 @@ pub mod types {
         }
     }
 
-    ///People
+    ///`People`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1841,7 +1839,7 @@ pub mod types {
         }
     }
 
-    ///PipelineStatus
+    ///`PipelineStatus`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1927,7 +1925,7 @@ pub mod types {
         }
     }
 
-    ///Rating
+    ///`Rating`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -1997,10 +1995,10 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Rating {
         ///City identifier
-        pub city_id: uuid::Uuid,
+        pub city_id: ::uuid::Uuid,
         pub core_services: CoreServices,
         ///Rating identifier
-        pub id: uuid::Uuid,
+        pub id: ::uuid::Uuid,
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
         pub people: People,
@@ -2026,7 +2024,7 @@ pub mod types {
         }
     }
 
-    ///RatingPost
+    ///`RatingPost`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2110,7 +2108,7 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct RatingPost {
         ///City identifier
-        pub city_id: uuid::Uuid,
+        pub city_id: ::uuid::Uuid,
         pub core_services: CoreServices,
         pub infrastructure: Infrastructure,
         pub opportunity: Opportunity,
@@ -2145,7 +2143,7 @@ pub mod types {
         }
     }
 
-    ///RatingSummary
+    ///`RatingSummary`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2197,11 +2195,11 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct RatingSummary {
         ///City identifier
-        pub city_id: uuid::Uuid,
+        pub city_id: ::uuid::Uuid,
         ///Creation date
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Analysis identifier
-        pub id: uuid::Uuid,
+        pub id: ::uuid::Uuid,
         pub score: f64,
         ///Analysis version. The format follows the [calver](https://calver.org)
         ///specification with the YY.0M[.Minor] scheme.
@@ -2220,7 +2218,7 @@ pub mod types {
         }
     }
 
-    ///RatingWithCity
+    ///`RatingWithCity`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2260,7 +2258,7 @@ pub mod types {
         }
     }
 
-    ///Ratings
+    ///`Ratings`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2301,7 +2299,7 @@ pub mod types {
         }
     }
 
-    ///Recreation
+    ///`Recreation`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2395,7 +2393,7 @@ pub mod types {
         }
     }
 
-    ///Retail
+    ///`Retail`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2445,7 +2443,7 @@ pub mod types {
         }
     }
 
-    ///Submission
+    ///`Submission`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2569,7 +2567,7 @@ pub mod types {
         pub consent: bool,
         pub country: Country,
         ///Creation date
-        pub created_at: chrono::DateTime<chrono::offset::Utc>,
+        pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///email address
         pub email: ::std::string::String,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
@@ -2608,7 +2606,7 @@ pub mod types {
         }
     }
 
-    ///SubmissionPatch
+    ///`SubmissionPatch`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2755,7 +2753,7 @@ pub mod types {
         }
     }
 
-    ///SubmissionPost
+    ///`SubmissionPost`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2902,7 +2900,7 @@ pub mod types {
         }
     }
 
-    ///Submissions
+    ///`Submissions`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -2943,7 +2941,7 @@ pub mod types {
         }
     }
 
-    ///Transit
+    ///`Transit`
     ///
     /// <details><summary>JSON schema</summary>
     ///
@@ -3151,7 +3149,7 @@ pub mod types {
                 ::std::string::String,
             >,
             end_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
             fargate_price_id:
@@ -3168,9 +3166,11 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            start_time:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
-            state_machine_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            start_time: ::std::result::Result<
+                ::chrono::DateTime<::chrono::offset::Utc>,
+                ::std::string::String,
+            >,
+            state_machine_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
             step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
         }
@@ -3206,7 +3206,7 @@ pub mod types {
             pub fn end_time<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -3263,7 +3263,7 @@ pub mod types {
             }
             pub fn start_time<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.start_time = value
@@ -3273,7 +3273,7 @@ pub mod types {
             }
             pub fn state_machine_id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.state_machine_id = value.try_into().map_err(|e| {
@@ -3350,7 +3350,7 @@ pub mod types {
                 ::std::string::String,
             >,
             end_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
             fargate_price_id:
@@ -3368,7 +3368,7 @@ pub mod types {
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
             status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
@@ -3405,7 +3405,7 @@ pub mod types {
             pub fn end_time<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -3463,7 +3463,7 @@ pub mod types {
             pub fn start_time<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -3536,7 +3536,7 @@ pub mod types {
                 ::std::string::String,
             >,
             end_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
             fargate_price_id:
@@ -3554,10 +3554,10 @@ pub mod types {
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
-            state_machine_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            state_machine_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
         }
 
         impl ::std::default::Default for BnaPipelinePost {
@@ -3589,7 +3589,7 @@ pub mod types {
             pub fn end_time<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -3647,7 +3647,7 @@ pub mod types {
             pub fn start_time<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -3658,7 +3658,7 @@ pub mod types {
             }
             pub fn state_machine_id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.state_machine_id = value.try_into().map_err(|e| {
@@ -3707,9 +3707,11 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct City {
             country: ::std::result::Result<super::Country, ::std::string::String>,
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
-            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::chrono::DateTime<::chrono::offset::Utc>,
+                ::std::string::String,
+            >,
+            id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             name: ::std::result::Result<::std::string::String, ::std::string::String>,
@@ -3725,7 +3727,7 @@ pub mod types {
                 ::std::string::String,
             >,
             updated_at: ::std::result::Result<
-                ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
         }
@@ -3761,7 +3763,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
@@ -3771,7 +3773,7 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.id = value
@@ -3855,7 +3857,7 @@ pub mod types {
             pub fn updated_at<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<chrono::DateTime<chrono::offset::Utc>>,
+                    ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -4244,8 +4246,10 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct FargatePrice {
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::chrono::DateTime<::chrono::offset::Utc>,
+                ::std::string::String,
+            >,
             id: ::std::result::Result<i32, ::std::string::String>,
             per_second: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
@@ -4263,7 +4267,7 @@ pub mod types {
         impl FargatePrice {
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
@@ -4539,9 +4543,9 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct Rating {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            city_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
-            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
             people: ::std::result::Result<super::People, ::std::string::String>,
@@ -4573,7 +4577,7 @@ pub mod types {
         impl Rating {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.city_id = value
@@ -4593,7 +4597,7 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.id = value
@@ -4724,7 +4728,7 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct RatingPost {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            city_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
@@ -4763,7 +4767,7 @@ pub mod types {
         impl RatingPost {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.city_id = value
@@ -4941,10 +4945,12 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct RatingSummary {
-            city_id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
-            id: ::std::result::Result<uuid::Uuid, ::std::string::String>,
+            city_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::chrono::DateTime<::chrono::offset::Utc>,
+                ::std::string::String,
+            >,
+            id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             score: ::std::result::Result<f64, ::std::string::String>,
             version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
@@ -4964,7 +4970,7 @@ pub mod types {
         impl RatingSummary {
             pub fn city_id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.city_id = value
@@ -4974,7 +4980,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
@@ -4984,7 +4990,7 @@ pub mod types {
             }
             pub fn id<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<uuid::Uuid>,
+                T: ::std::convert::TryInto<::uuid::Uuid>,
                 T::Error: ::std::fmt::Display,
             {
                 self.id = value
@@ -5241,8 +5247,10 @@ pub mod types {
             city: ::std::result::Result<::std::string::String, ::std::string::String>,
             consent: ::std::result::Result<bool, ::std::string::String>,
             country: ::std::result::Result<super::Country, ::std::string::String>,
-            created_at:
-                ::std::result::Result<chrono::DateTime<chrono::offset::Utc>, ::std::string::String>,
+            created_at: ::std::result::Result<
+                ::chrono::DateTime<::chrono::offset::Utc>,
+                ::std::string::String,
+            >,
             email: ::std::result::Result<::std::string::String, ::std::string::String>,
             fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
             first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
@@ -5316,7 +5324,7 @@ pub mod types {
             }
             pub fn created_at<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<chrono::DateTime<chrono::offset::Utc>>,
+                T: ::std::convert::TryInto<::chrono::DateTime<::chrono::offset::Utc>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.created_at = value
@@ -6310,17 +6318,15 @@ impl Client {
 pub mod builder {
     use super::types;
     #[allow(unused_imports)]
-    use super::{
-        encode_path, ByteStream, Error, HeaderMap, HeaderValue, RequestBuilderExt, ResponseValue,
-    };
+    use super::{encode_path, ByteStream, Error, RequestBuilderExt, ResponseValue};
     ///Builder for [`Client::get_cities`]
     ///
     ///[`Client::get_cities`]: super::Client::get_cities
     #[derive(Debug, Clone)]
     pub struct GetCities<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
 
     impl<'a> GetCities<'a> {
@@ -6334,23 +6340,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -6364,16 +6368,22 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6428,15 +6438,21 @@ pub mod builder {
                 .and_then(|v| types::CityPost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .post(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6465,8 +6481,8 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetCitiesSubmissions<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
         status: Result<Option<::std::string::String>, String>,
     }
 
@@ -6482,23 +6498,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -6526,17 +6540,23 @@ pub mod builder {
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let status = status.map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities/submissions", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .query(&progenitor_client::QueryParam::new("status", &status))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6605,15 +6625,21 @@ pub mod builder {
                 .and_then(|v| types::SubmissionPost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
             let url = format!("{}/cities/submissions", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .post(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6691,15 +6717,21 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&submission_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("status", &status))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6789,15 +6821,21 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&submission_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .patch(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6889,14 +6927,20 @@ pub mod builder {
                 encode_path(&region.to_string()),
                 encode_path(&name.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -6928,8 +6972,8 @@ pub mod builder {
         country: Result<types::Country, String>,
         region: Result<::std::string::String, String>,
         name: Result<::std::string::String, String>,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
 
     impl<'a> GetCityRatings<'a> {
@@ -6976,23 +7020,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -7020,16 +7062,22 @@ pub mod builder {
                 encode_path(&region.to_string()),
                 encode_path(&name.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7058,8 +7106,8 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPipelinesBnas<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
 
     impl<'a> GetPipelinesBnas<'a> {
@@ -7073,23 +7121,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -7105,16 +7151,22 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/pipelines/bna", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7183,15 +7235,21 @@ pub mod builder {
                 .and_then(|v| types::BnaPipelinePost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
             let url = format!("{}/pipelines/bna", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .post(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7220,7 +7278,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPipelinesBna<'a> {
         client: &'a super::Client,
-        pipeline_id: Result<uuid::Uuid, String>,
+        pipeline_id: Result<::uuid::Uuid, String>,
     }
 
     impl<'a> GetPipelinesBna<'a> {
@@ -7233,11 +7291,11 @@ pub mod builder {
 
         pub fn pipeline_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<uuid::Uuid>,
+            V: std::convert::TryInto<::uuid::Uuid>,
         {
             self.pipeline_id = value
                 .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for pipeline_id failed".to_string());
+                .map_err(|_| "conversion to `:: uuid :: Uuid` for pipeline_id failed".to_string());
             self
         }
 
@@ -7255,14 +7313,20 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&pipeline_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7291,7 +7355,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct PatchPipelinesBna<'a> {
         client: &'a super::Client,
-        pipeline_id: Result<uuid::Uuid, String>,
+        pipeline_id: Result<::uuid::Uuid, String>,
         body: Result<types::builder::BnaPipelinePatch, String>,
     }
 
@@ -7306,11 +7370,11 @@ pub mod builder {
 
         pub fn pipeline_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<uuid::Uuid>,
+            V: std::convert::TryInto<::uuid::Uuid>,
         {
             self.pipeline_id = value
                 .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for pipeline_id failed".to_string());
+                .map_err(|_| "conversion to `:: uuid :: Uuid` for pipeline_id failed".to_string());
             self
         }
 
@@ -7354,15 +7418,21 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&pipeline_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .patch(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7391,8 +7461,8 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPricesFargate<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
 
     impl<'a> GetPricesFargate<'a> {
@@ -7406,23 +7476,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -7436,16 +7504,22 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/prices/fargate", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7494,14 +7568,20 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&price_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7530,8 +7610,8 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetRatings<'a> {
         client: &'a super::Client,
-        page: Result<Option<i64>, String>,
-        page_size: Result<Option<i64>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
 
     impl<'a> GetRatings<'a> {
@@ -7545,23 +7625,21 @@ pub mod builder {
 
         pub fn page<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page failed".to_string());
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
             self
         }
 
         pub fn page_size<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
-            self.page_size = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `i64` for page_size failed".to_string());
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
             self
         }
 
@@ -7575,16 +7653,22 @@ pub mod builder {
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
             let url = format!("{}/ratings", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7639,15 +7723,21 @@ pub mod builder {
                 .and_then(|v| types::RatingPost::try_from(v).map_err(|e| e.to_string()))
                 .map_err(Error::InvalidRequest)?;
             let url = format!("{}/ratings", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .post(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7676,7 +7766,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetRating<'a> {
         client: &'a super::Client,
-        rating_id: Result<uuid::Uuid, String>,
+        rating_id: Result<::uuid::Uuid, String>,
     }
 
     impl<'a> GetRating<'a> {
@@ -7689,11 +7779,11 @@ pub mod builder {
 
         pub fn rating_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<uuid::Uuid>,
+            V: std::convert::TryInto<::uuid::Uuid>,
         {
             self.rating_id = value
                 .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
+                .map_err(|_| "conversion to `:: uuid :: Uuid` for rating_id failed".to_string());
             self
         }
 
@@ -7706,14 +7796,20 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&rating_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7742,7 +7838,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetRatingsCity<'a> {
         client: &'a super::Client,
-        rating_id: Result<uuid::Uuid, String>,
+        rating_id: Result<::uuid::Uuid, String>,
     }
 
     impl<'a> GetRatingsCity<'a> {
@@ -7755,11 +7851,11 @@ pub mod builder {
 
         pub fn rating_id<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<uuid::Uuid>,
+            V: std::convert::TryInto<::uuid::Uuid>,
         {
             self.rating_id = value
                 .try_into()
-                .map_err(|_| "conversion to `uuid :: Uuid` for rating_id failed".to_string());
+                .map_err(|_| "conversion to `:: uuid :: Uuid` for rating_id failed".to_string());
             self
         }
 
@@ -7774,14 +7870,20 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&rating_id.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
             let mut request = client
                 .client
                 .get(url)
                 .header(
-                    reqwest::header::ACCEPT,
-                    reqwest::header::HeaderValue::from_static("application/json"),
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;
             let response = result?;
@@ -7821,8 +7923,13 @@ pub mod builder {
         pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
             let Self { client } = self;
             let url = format!("{}/reports", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
-            let mut request = client.client.get(url).build()?;
+            let mut request = client.client.get(url).headers(header_map).build()?;
             let result = client.client.execute(request).await;
             let response = result?;
             match response.status().as_u16() {
@@ -7838,7 +7945,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetReportsYear<'a> {
         client: &'a super::Client,
-        year: Result<i64, String>,
+        year: Result<i32, String>,
     }
 
     impl<'a> GetReportsYear<'a> {
@@ -7851,11 +7958,11 @@ pub mod builder {
 
         pub fn year<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<i64>,
+            V: std::convert::TryInto<i32>,
         {
             self.year = value
                 .try_into()
-                .map_err(|_| "conversion to `i64` for year failed".to_string());
+                .map_err(|_| "conversion to `i32` for year failed".to_string());
             self
         }
 
@@ -7868,8 +7975,13 @@ pub mod builder {
                 client.baseurl,
                 encode_path(&year.to_string()),
             );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
             #[allow(unused_mut)]
-            let mut request = client.client.get(url).build()?;
+            let mut request = client.client.get(url).headers(header_map).build()?;
             let result = client.client.execute(request).await;
             let response = result?;
             match response.status().as_u16() {
