@@ -50,6 +50,13 @@ pub(crate) struct Bna {
 
     // BNA Transit
     pub(crate) transit: Option<f64>,
+
+    // Measure
+    pub(crate) buffered_lane: Option<f64>,
+    pub(crate) lane: Option<f64>,
+    pub(crate) path: Option<f64>,
+    pub(crate) sharrow: Option<f64>,
+    pub(crate) track: Option<f64>,
 }
 
 #[derive(Debug, FromQueryResult, Deserialize, Serialize)]

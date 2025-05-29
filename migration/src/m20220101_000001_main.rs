@@ -564,7 +564,7 @@ enum City {
 }
 
 #[derive(Iden)]
-enum Summary {
+pub(crate) enum Summary {
     Table,
     /// Analysis unique identifier.
     Id,

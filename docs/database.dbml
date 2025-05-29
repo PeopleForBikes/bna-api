@@ -2,6 +2,10 @@ Table "approval_status" {
   "status" "character varying" [pk, not null]
 }
 
+Table "bike_lane_type" {
+  "name" "character varying" [pk, not null]
+}
+
 Table "bna_pipeline" {
   "state_machine_id" uuid [pk, not null]
   "step" "character varying" [not null]
@@ -36,7 +40,7 @@ Table "city" {
   "longitude" doubleprecision
   "region" "character varying"
   "state_abbrev" "character varying"
-  "speed_limit" integer
+  "residential_speed_limit" integer
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "updated_at" timestamp
   "fips_code" "character varying"
@@ -72,6 +76,15 @@ Table "infrastructure" {
   "id" uuid [pk, not null]
   "low_stress_miles" doubleprecision
   "high_stress_miles" doubleprecision
+}
+
+Table "measure" {
+  "id" uuid [pk, not null]
+  "buffered_lane" real
+  "lane" real
+  "path" real
+  "sharrow" real
+  "track" real
 }
 
 Table "opportunity" {
@@ -139,7 +152,7 @@ Table "summary" {
   "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
   "pop_size" integer [not null]
   "population" integer [not null]
-  "speed_limit_override" integer
+  "residential_speed_limit_override" integer
   "score" doubleprecision [not null]
   "version" "character varying" [not null]
 
@@ -176,6 +189,8 @@ Ref "city_country_fkey":"country"."name" < "city"."country"
 Ref "core_services_id_fkey":"summary"."id" < "core_services"."id" [delete: cascade]
 
 Ref "infrastructure_id_fkey":"summary"."id" < "infrastructure"."id" [delete: cascade]
+
+Ref "measure_id_fkey":"summary"."id" < "measure"."id" [delete: cascade]
 
 Ref "opportunity_id_fkey":"summary"."id" < "opportunity"."id" [delete: cascade]
 

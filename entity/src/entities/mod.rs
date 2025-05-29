@@ -3,6 +3,7 @@
 pub mod prelude;
 
 pub mod approval_status;
+pub mod bike_lane_type;
 pub mod bna_pipeline;
 pub mod bna_pipeline_status;
 pub mod bna_pipeline_step;
@@ -12,6 +13,7 @@ pub mod core_services;
 pub mod country;
 pub mod fargate_price;
 pub mod infrastructure;
+pub mod measure;
 pub mod opportunity;
 pub mod people;
 pub mod recreation;

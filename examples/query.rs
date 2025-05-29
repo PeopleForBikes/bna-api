@@ -4,21 +4,18 @@ use color_eyre::{eyre::Report, Result};
 use dotenv::dotenv;
 use entity::prelude::*;
 use once_cell::sync::OnceCell;
-use sea_orm::{
-    prelude::Uuid, ActiveValue, DatabaseConnection, DbBackend, EntityTrait, FromQueryResult,
-    QueryTrait,
-};
+use sea_orm::{ActiveValue, DatabaseConnection, DbBackend, EntityTrait, QueryTrait};
 
 static _DATABASE_CONNECTION: OnceCell<DatabaseConnection> = OnceCell::new();
 
-#[derive(Debug, FromQueryResult)]
-struct BnaReport {
-    pub bna_uuid: Uuid,
-    pub city_id: Uuid,
-    pub score: f64,
-    pub cs_score: f64,
-    pub rec_score: f64,
-}
+// #[derive(FromQueryResult)]
+// struct BnaReport {
+//     pub bna_uuid: Uuid,
+//     pub city_id: Uuid,
+//     pub score: f64,
+//     pub cs_score: f64,
+//     pub rec_score: f64,
+// }
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
