@@ -32,6 +32,8 @@ pub enum Relation {
     CoreServices,
     #[sea_orm(has_one = "super::infrastructure::Entity")]
     Infrastructure,
+    #[sea_orm(has_one = "super::measure::Entity")]
+    Measure,
     #[sea_orm(has_one = "super::opportunity::Entity")]
     Opportunity,
     #[sea_orm(has_one = "super::people::Entity")]
@@ -59,6 +61,12 @@ impl Related<super::core_services::Entity> for Entity {
 impl Related<super::infrastructure::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Infrastructure.def()
+    }
+}
+
+impl Related<super::measure::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::Measure.def()
     }
 }
 

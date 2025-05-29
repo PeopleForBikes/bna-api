@@ -99,8 +99,7 @@ pub fn parse_request_body<T>(event: &Request) -> Result<T, std::io::Error>
 where
     T: for<'a> Deserialize<'a>,
 {
-    let body_str = std::str::from_utf8(event.body())
-        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    let body_str = std::str::from_utf8(event.body()).map_err(std::io::Error::other)?;
     // serde_json::Error::custom("body contains invalid UTF-8 characters"))?;
     Ok(serde_json::from_str::<T>(body_str)?)
 }
