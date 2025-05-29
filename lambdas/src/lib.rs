@@ -292,7 +292,7 @@ where
 ///
 /// This macros expects the following items to be setup before use:
 ///   - the type must implement a `parse` function with the following signature
-///       `pub fn parse(i: &str) -> IResult<&str, __type__>`
+///     `pub fn parse(i: &str) -> IResult<&str, __type__>`
 #[macro_export]
 macro_rules! nomstr {
     ($a:ident) => {

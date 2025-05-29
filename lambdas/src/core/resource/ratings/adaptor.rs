@@ -4,7 +4,8 @@ use super::{
 };
 use crate::{database_connect, Context, ExecutionError};
 use entity::{
-    core_services, infrastructure, opportunity, people, recreation, retail, summary, transit,
+    core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
+    transit,
 };
 use sea_orm::{ActiveModelTrait, ActiveValue};
 use tracing::info;
@@ -150,6 +151,30 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
         score: ActiveValue::Set(rating.recreation.score),
     };
     info!("{:?}", recreation);
+    let measure = measure::ActiveModel {
+        id: ActiveValue::Set(rating_id),
+        buffered_lane: rating
+            .measure
+            .buffered_lane
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+        lane: rating
+            .measure
+            .lane
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+        path: rating
+            .measure
+            .path
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+        sharrow: rating
+            .measure
+            .sharrow
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+        track: rating
+            .measure
+            .track
+            .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
+    };
+    info!("{:?}", measure);
 
     // Get the database connection.
     let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
@@ -164,6 +189,7 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
     let recreation_model = recreation.insert(&db).await?;
     let retail_model = retail.insert(&db).await?;
     let transit_model = transit.insert(&db).await?;
+    let measure_model = measure.insert(&db).await?;
     let bna = Bna {
         id: summary_model.id,
         city_id: summary_model.city_id,
@@ -192,6 +218,11 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
         people: people_model.score,
         retail: retail_model.score,
         transit: transit_model.score,
+        buffered_lane: measure_model.buffered_lane,
+        lane: measure_model.lane,
+        path: measure_model.path,
+        sharrow: measure_model.sharrow,
+        track: measure_model.track,
     };
     info!("{:?}", bna);
     Ok(bna)

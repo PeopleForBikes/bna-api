@@ -40,6 +40,9 @@ pub(crate) struct Rating {
 
     /// BNA Transit
     transit: Transit,
+
+    /// Measurement of the city's bike infrastructure.
+    measure: Measure,
 }
 
 impl From<Bna> for Rating {
@@ -83,6 +86,13 @@ impl From<Bna> for Rating {
             },
             transit: Transit {
                 transit: value.transit,
+            },
+            measure: Measure {
+                buffered_lane: value.buffered_lane,
+                lane: value.lane,
+                path: value.path,
+                sharrow: value.sharrow,
+                track: value.track,
             },
         }
     }
@@ -232,4 +242,26 @@ pub(crate) struct RatingPost {
 
     /// BNA Transit
     pub(crate) transit: Transit,
+
+    /// Measurement of the city's bike infrastructure.
+    pub(crate) measure: Measure,
+}
+
+#[derive(ToSchema, Serialize, Deserialize)]
+pub(crate) struct Measure {
+    /// Miles of buffered bike lanes.
+    #[schema(examples(53.859))]
+    pub(crate) buffered_lane: Option<f64>,
+    /// Miles of bike lanes.
+    #[schema(examples(0.0))]
+    pub(crate) lane: Option<f64>,
+    /// Miles of off-street paths.
+    #[schema(examples(53.859))]
+    pub(crate) path: Option<f64>,
+    /// Miles of sharrows.
+    #[schema(examples(53.859))]
+    pub(crate) sharrow: Option<f64>,
+    /// Miles of tracks.
+    #[schema(examples(53.859))]
+    pub(crate) track: Option<f64>,
 }

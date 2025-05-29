@@ -117,7 +117,7 @@ async fn main() -> Result<(), Report> {
             let err_msg = format!("cannot find country {}", scorecard.country.clone());
             let country = countries
                 .get(&scorecard.country.clone())
-                .expect(err_msg.as_str())
+                .unwrap_or_else(|| panic!("{}", err_msg))
                 .to_string();
 
             let city_model = city::ActiveModel {
@@ -191,7 +191,7 @@ async fn main() -> Result<(), Report> {
 
         // Populate the recreation model.
         let recreation_model = recreation::ActiveModel {
-            id: ActiveValue::Set(bna_uuid.clone()),
+            id: ActiveValue::Set(bna_uuid),
             community_centers: ActiveValue::Set(scorecard.bna_recreation_community_centers),
             parks: ActiveValue::Set(scorecard.bna_recreation_parks),
             recreation_trails: ActiveValue::Set(scorecard.bna_recreation_trails),

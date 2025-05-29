@@ -1679,6 +1679,116 @@ pub mod types {
         }
     }
 
+    ///`Measure`
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "properties": {
+    ///    "buffered_lane": {
+    ///      "description": "Miles of buffered bike lanes.",
+    ///      "examples": [
+    ///        53.859
+    ///      ],
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
+    ///    },
+    ///    "lane": {
+    ///      "description": "Miles of bike lanes.",
+    ///      "examples": [
+    ///        0
+    ///      ],
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
+    ///    },
+    ///    "path": {
+    ///      "description": "Miles of off-street paths.",
+    ///      "examples": [
+    ///        53.859
+    ///      ],
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
+    ///    },
+    ///    "sharrow": {
+    ///      "description": "Miles of sharrows.",
+    ///      "examples": [
+    ///        53.859
+    ///      ],
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
+    ///    },
+    ///    "track": {
+    ///      "description": "Miles of tracks.",
+    ///      "examples": [
+    ///        53.859
+    ///      ],
+    ///      "type": [
+    ///        "number",
+    ///        "null"
+    ///      ],
+    ///      "format": "double"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct Measure {
+        ///Miles of buffered bike lanes.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub buffered_lane: ::std::option::Option<f64>,
+        ///Miles of bike lanes.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub lane: ::std::option::Option<f64>,
+        ///Miles of off-street paths.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub path: ::std::option::Option<f64>,
+        ///Miles of sharrows.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub sharrow: ::std::option::Option<f64>,
+        ///Miles of tracks.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub track: ::std::option::Option<f64>,
+    }
+
+    impl ::std::convert::From<&Measure> for Measure {
+        fn from(value: &Measure) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ::std::default::Default for Measure {
+        fn default() -> Self {
+            Self {
+                buffered_lane: Default::default(),
+                lane: Default::default(),
+                path: Default::default(),
+                sharrow: Default::default(),
+                track: Default::default(),
+            }
+        }
+    }
+
+    impl Measure {
+        pub fn builder() -> builder::Measure {
+            Default::default()
+        }
+    }
+
     ///`Opportunity`
     ///
     /// <details><summary>JSON schema</summary>
@@ -1937,6 +2047,7 @@ pub mod types {
     ///    "core_services",
     ///    "id",
     ///    "infrastructure",
+    ///    "measure",
     ///    "opportunity",
     ///    "people",
     ///    "recreation",
@@ -1961,6 +2072,9 @@ pub mod types {
     ///    },
     ///    "infrastructure": {
     ///      "$ref": "#/components/schemas/Infrastructure"
+    ///    },
+    ///    "measure": {
+    ///      "$ref": "#/components/schemas/Measure"
     ///    },
     ///    "opportunity": {
     ///      "$ref": "#/components/schemas/Opportunity"
@@ -2000,6 +2114,7 @@ pub mod types {
         ///Rating identifier
         pub id: ::uuid::Uuid,
         pub infrastructure: Infrastructure,
+        pub measure: Measure,
         pub opportunity: Opportunity,
         pub people: People,
         pub recreation: Recreation,
@@ -2035,6 +2150,7 @@ pub mod types {
     ///    "city_id",
     ///    "core_services",
     ///    "infrastructure",
+    ///    "measure",
     ///    "opportunity",
     ///    "people",
     ///    "pop_size",
@@ -2056,6 +2172,9 @@ pub mod types {
     ///    },
     ///    "infrastructure": {
     ///      "$ref": "#/components/schemas/Infrastructure"
+    ///    },
+    ///    "measure": {
+    ///      "$ref": "#/components/schemas/Measure"
     ///    },
     ///    "opportunity": {
     ///      "$ref": "#/components/schemas/Opportunity"
@@ -2111,6 +2230,7 @@ pub mod types {
         pub city_id: ::uuid::Uuid,
         pub core_services: CoreServices,
         pub infrastructure: Infrastructure,
+        pub measure: Measure,
         pub opportunity: Opportunity,
         pub people: People,
         ///City population size category (small, medium, large).
@@ -4388,6 +4508,107 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct Measure {
+            buffered_lane: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            lane: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            path: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            sharrow: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+            track: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for Measure {
+            fn default() -> Self {
+                Self {
+                    buffered_lane: Ok(Default::default()),
+                    lane: Ok(Default::default()),
+                    path: Ok(Default::default()),
+                    sharrow: Ok(Default::default()),
+                    track: Ok(Default::default()),
+                }
+            }
+        }
+
+        impl Measure {
+            pub fn buffered_lane<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.buffered_lane = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for buffered_lane: {}", e)
+                });
+                self
+            }
+            pub fn lane<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.lane = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for lane: {}", e));
+                self
+            }
+            pub fn path<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.path = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for path: {}", e));
+                self
+            }
+            pub fn sharrow<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.sharrow = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for sharrow: {}", e));
+                self
+            }
+            pub fn track<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<f64>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.track = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for track: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<Measure> for super::Measure {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: Measure,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    buffered_lane: value.buffered_lane?,
+                    lane: value.lane?,
+                    path: value.path?,
+                    sharrow: value.sharrow?,
+                    track: value.track?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::Measure> for Measure {
+            fn from(value: super::Measure) -> Self {
+                Self {
+                    buffered_lane: Ok(value.buffered_lane),
+                    lane: Ok(value.lane),
+                    path: Ok(value.path),
+                    sharrow: Ok(value.sharrow),
+                    track: Ok(value.track),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct Opportunity {
             employment: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             higher_education:
@@ -4547,6 +4768,7 @@ pub mod types {
             core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
             id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
+            measure: ::std::result::Result<super::Measure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
             people: ::std::result::Result<super::People, ::std::string::String>,
             recreation: ::std::result::Result<super::Recreation, ::std::string::String>,
@@ -4563,6 +4785,7 @@ pub mod types {
                     core_services: Err("no value supplied for core_services".to_string()),
                     id: Err("no value supplied for id".to_string()),
                     infrastructure: Err("no value supplied for infrastructure".to_string()),
+                    measure: Err("no value supplied for measure".to_string()),
                     opportunity: Err("no value supplied for opportunity".to_string()),
                     people: Err("no value supplied for people".to_string()),
                     recreation: Err("no value supplied for recreation".to_string()),
@@ -4613,6 +4836,16 @@ pub mod types {
                 self.infrastructure = value.try_into().map_err(|e| {
                     format!("error converting supplied value for infrastructure: {}", e)
                 });
+                self
+            }
+            pub fn measure<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Measure>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.measure = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for measure: {}", e));
                 self
             }
             pub fn opportunity<T>(mut self, value: T) -> Self
@@ -4697,6 +4930,7 @@ pub mod types {
                     core_services: value.core_services?,
                     id: value.id?,
                     infrastructure: value.infrastructure?,
+                    measure: value.measure?,
                     opportunity: value.opportunity?,
                     people: value.people?,
                     recreation: value.recreation?,
@@ -4715,6 +4949,7 @@ pub mod types {
                     core_services: Ok(value.core_services),
                     id: Ok(value.id),
                     infrastructure: Ok(value.infrastructure),
+                    measure: Ok(value.measure),
                     opportunity: Ok(value.opportunity),
                     people: Ok(value.people),
                     recreation: Ok(value.recreation),
@@ -4731,6 +4966,7 @@ pub mod types {
             city_id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             core_services: ::std::result::Result<super::CoreServices, ::std::string::String>,
             infrastructure: ::std::result::Result<super::Infrastructure, ::std::string::String>,
+            measure: ::std::result::Result<super::Measure, ::std::string::String>,
             opportunity: ::std::result::Result<super::Opportunity, ::std::string::String>,
             people: ::std::result::Result<super::People, ::std::string::String>,
             pop_size: ::std::result::Result<i32, ::std::string::String>,
@@ -4750,6 +4986,7 @@ pub mod types {
                     city_id: Err("no value supplied for city_id".to_string()),
                     core_services: Err("no value supplied for core_services".to_string()),
                     infrastructure: Err("no value supplied for infrastructure".to_string()),
+                    measure: Err("no value supplied for measure".to_string()),
                     opportunity: Err("no value supplied for opportunity".to_string()),
                     people: Err("no value supplied for people".to_string()),
                     pop_size: Err("no value supplied for pop_size".to_string()),
@@ -4793,6 +5030,16 @@ pub mod types {
                 self.infrastructure = value.try_into().map_err(|e| {
                     format!("error converting supplied value for infrastructure: {}", e)
                 });
+                self
+            }
+            pub fn measure<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::Measure>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.measure = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for measure: {}", e));
                 self
             }
             pub fn opportunity<T>(mut self, value: T) -> Self
@@ -4909,6 +5156,7 @@ pub mod types {
                     city_id: value.city_id?,
                     core_services: value.core_services?,
                     infrastructure: value.infrastructure?,
+                    measure: value.measure?,
                     opportunity: value.opportunity?,
                     people: value.people?,
                     pop_size: value.pop_size?,
@@ -4929,6 +5177,7 @@ pub mod types {
                     city_id: Ok(value.city_id),
                     core_services: Ok(value.core_services),
                     infrastructure: Ok(value.infrastructure),
+                    measure: Ok(value.measure),
                     opportunity: Ok(value.opportunity),
                     people: Ok(value.people),
                     pop_size: Ok(value.pop_size),

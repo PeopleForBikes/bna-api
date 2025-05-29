@@ -111,11 +111,7 @@ generate-client:
 
 # Start the Axum server locally in watch mode.
 debug-axum:
-  BNA_API_LOG_LEVEL=debug \
-  BNA_API_STANDALONE=1 \
-  DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres \
-  cargo watch -x \
-    'run -p lambdas --bin axumed'
+  bacon axum-debug
 
 # Generate the OAS 3.1.x from the Axum source code.
 generate-oas-31:
