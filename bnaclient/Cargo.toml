@@ -8,7 +8,7 @@ license = "MIT"
 bytes = "1.10"
 chrono = { workspace = true, features = ["serde"] }
 futures-core = "0.3"
-progenitor-client = "0.10.0"
+progenitor-client = "0.11.0"
 reqwest = { workspace = true, features = ["json", "stream"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
