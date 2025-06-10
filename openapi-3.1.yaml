@@ -1993,6 +1993,49 @@ components:
           description: Total miles of low-stress streets and paths in the measured area.
           examples:
           - 127
+    Measure:
+      type: object
+      properties:
+        buffered_lane:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Miles of buffered bike lanes.
+          examples:
+          - 53.859
+        lane:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Miles of bike lanes.
+          examples:
+          - 0.0
+        path:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Miles of off-street paths.
+          examples:
+          - 53.859
+        sharrow:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Miles of sharrows.
+          examples:
+          - 53.859
+        track:
+          type:
+          - number
+          - 'null'
+          format: double
+          description: Miles of tracks.
+          examples:
+          - 53.859
     Opportunity:
       type: object
       properties:
@@ -2067,6 +2110,7 @@ components:
       - people
       - retail
       - transit
+      - measure
       properties:
         city_id:
           type: string
@@ -2082,6 +2126,9 @@ components:
         infrastructure:
           $ref: '#/components/schemas/Infrastructure'
           description: BNAInfrastructure
+        measure:
+          $ref: '#/components/schemas/Measure'
+          description: Measurement of the city's bike infrastructure.
         opportunity:
           $ref: '#/components/schemas/Opportunity'
           description: BNA Opportunity
@@ -2124,6 +2171,7 @@ components:
       - people
       - retail
       - transit
+      - measure
       properties:
         city_id:
           type: string
@@ -2135,6 +2183,9 @@ components:
         infrastructure:
           $ref: '#/components/schemas/Infrastructure'
           description: BNAInfrastructure
+        measure:
+          $ref: '#/components/schemas/Measure'
+          description: Measurement of the city's bike infrastructure.
         opportunity:
           $ref: '#/components/schemas/Opportunity'
           description: BNA Opportunity
