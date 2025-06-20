@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 17.4 (Homebrew)
+-- Dumped by pg_dump version 17.5 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -31,6 +31,17 @@ CREATE TABLE public.approval_status (
 
 
 ALTER TABLE public.approval_status OWNER TO postgres;
+
+--
+-- Name: bike_lane_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bike_lane_type (
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.bike_lane_type OWNER TO postgres;
 
 --
 -- Name: bna_pipeline; Type: TABLE; Schema: public; Owner: postgres
@@ -98,7 +109,7 @@ CREATE TABLE public.city (
     longitude double precision,
     region character varying,
     state_abbrev character varying,
-    speed_limit integer,
+    residential_speed_limit integer,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone,
     fips_code character varying
@@ -183,6 +194,22 @@ CREATE TABLE public.infrastructure (
 
 
 ALTER TABLE public.infrastructure OWNER TO postgres;
+
+--
+-- Name: measure; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.measure (
+    id uuid NOT NULL,
+    buffered_lane real,
+    lane real,
+    path real,
+    sharrow real,
+    track real
+);
+
+
+ALTER TABLE public.measure OWNER TO postgres;
 
 --
 -- Name: opportunity; Type: TABLE; Schema: public; Owner: postgres
@@ -318,7 +345,7 @@ CREATE TABLE public.summary (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     pop_size integer NOT NULL,
     population integer NOT NULL,
-    speed_limit_override integer,
+    residential_speed_limit_override integer,
     score double precision NOT NULL,
     version character varying NOT NULL
 );
@@ -372,6 +399,14 @@ ALTER TABLE ONLY public.submission ALTER COLUMN id SET DEFAULT nextval('public.s
 
 ALTER TABLE ONLY public.approval_status
     ADD CONSTRAINT approval_status_pkey PRIMARY KEY (status);
+
+
+--
+-- Name: bike_lane_type bike_lane_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bike_lane_type
+    ADD CONSTRAINT bike_lane_type_pkey PRIMARY KEY (name);
 
 
 --
@@ -452,6 +487,14 @@ ALTER TABLE ONLY public.fargate_price
 
 ALTER TABLE ONLY public.infrastructure
     ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: measure measure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.measure
+    ADD CONSTRAINT measure_pkey PRIMARY KEY (id);
 
 
 --
@@ -638,6 +681,14 @@ ALTER TABLE ONLY public.core_services
 
 ALTER TABLE ONLY public.infrastructure
     ADD CONSTRAINT infrastructure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
+
+
+--
+-- Name: measure measure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.measure
+    ADD CONSTRAINT measure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --

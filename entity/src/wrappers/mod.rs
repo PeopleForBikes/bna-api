@@ -79,6 +79,15 @@ impl Display for BnaRegion {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum BikeLaneType {
+    BufferedLane,
+    Lane,
+    Path,
+    Sharrow,
+    Track,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

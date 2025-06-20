@@ -3,7 +3,7 @@
 --
 
 -- Dumped from database version 15.2 (Debian 15.2-1.pgdg110+1)
--- Dumped by pg_dump version 17.4 (Homebrew)
+-- Dumped by pg_dump version 17.5 (Homebrew)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -31,6 +31,17 @@ CREATE TABLE public.approval_status (
 
 
 ALTER TABLE public.approval_status OWNER TO postgres;
+
+--
+-- Name: bike_lane_type; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bike_lane_type (
+    name character varying NOT NULL
+);
+
+
+ALTER TABLE public.bike_lane_type OWNER TO postgres;
 
 --
 -- Name: bna_pipeline; Type: TABLE; Schema: public; Owner: postgres
@@ -183,6 +194,22 @@ CREATE TABLE public.infrastructure (
 
 
 ALTER TABLE public.infrastructure OWNER TO postgres;
+
+--
+-- Name: measure; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.measure (
+    id uuid NOT NULL,
+    buffered_lane double precision,
+    lane double precision,
+    path double precision,
+    sharrow double precision,
+    track double precision
+);
+
+
+ALTER TABLE public.measure OWNER TO postgres;
 
 --
 -- Name: opportunity; Type: TABLE; Schema: public; Owner: postgres
@@ -378,6 +405,19 @@ Rejected
 
 
 --
+-- Data for Name: bike_lane_type; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.bike_lane_type (name) FROM stdin;
+buffered_lane
+lane
+path
+sharrow
+track
+\.
+
+
+--
 -- Data for Name: bna_pipeline; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -427,26 +467,26 @@ South
 --
 
 COPY public.city (id, country, state, name, latitude, longitude, region, state_abbrev, residential_speed_limit, created_at, updated_at, fips_code) FROM stdin;
-09c049b6-213b-405c-bc4e-178346ff814d	United States	Illinois	Highland Park	42.1824	-87.8108	Midwest	IL	25	2021-02-25 13:26:00+00	\N	1734722
-3fa975ec-55af-4a63-addf-a36b920fc9a7	United States	West Virginia	St. Albans	38.3776	-81.8193	South	WV	\N	2024-03-14 09:22:00+00	\N	5471212
-a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	Spain	Alicante	Alicante	38.346	-0.4907	Spain	A	\N	2023-04-17 16:59:00+00	\N	9900139
-58f1f419-ac98-4f12-9f4d-d78939773041	United States	Wisconsin	Franklin	42.8839	-88.0115	Midwest	WI	\N	2024-03-08 15:30:00+00	\N	5527300
-6ba8c886-419a-4880-a749-b7e4246bb78c	United States	California	Eureka	40.7934	-124.1552	Pacific	CA	\N	2024-03-05 17:23:00+00	\N	623042
-6ef16bd9-0759-447d-b7af-744888b824ca	Canada	British Columbia	Courtenay	49.6841	-124.9904	Canada	BC	\N	2024-04-04 13:13:00+00	\N	9900063
-f249b76f-3db0-4641-b2d7-b65aa69ee229	Canada	New Brunswick	Fredericton	45.9636	-66.6431	Canada	NB	\N	2023-04-12 16:18:00+00	\N	9900080
-712846c3-d432-480b-b582-d47730cf90bf	United States	Kansas	Overland Park	38.889	-94.6906	Midwest	KS	25	2017-04-29 06:58:00+00	\N	2053775
-bbd47ea1-3ca9-41b6-803d-ab7c9505e768	Mexico	Jalisco	Zapopan	20.7203	-103.3919	Mexico	JAL	\N	2023-01-07 21:28:00+00	\N	9900233
 3bd1329c-4f97-4278-beae-c025a6a1ea66	Netherlands	Flevoland	Almere	52.3508	5.2647	Netherlands	FL	\N	2023-04-18 09:34:00+00	\N	9900234
-bfdde387-2429-490a-95f0-4e719ef7aa78	Canada	Ontario	Mississauga	43.589	-79.6441	Canada	ON	\N	2022-03-28 16:00:00+00	\N	9900096
-8f11086a-b44a-44cf-a755-1fc9c257a48d	Canada	British Columbia	Victoria	48.4284	-123.3656	Canada	BC	\N	2021-03-24 12:30:00+00	\N	9900076
-06b9181f-f879-40d5-b531-c239caa8ccd9	United States	North Carolina	Leland	34.223	-78.0447	South	NC	\N	2023-08-23 13:59:00+00	\N	3737680
-a6c14f18-ff74-42fb-9324-72f2c8d0fb66	England	Greater London	Lambeth	51.4581	-0.1237	England	\N	\N	2024-04-01 15:00:00+00	\N	9900184
-daffa2db-4980-4ddd-8bf2-4bf79ef09e10	Australia	New South Wales	Bathurst	-33.4107	149.5783	Australia	NSW	\N	2024-04-03 16:47:00+00	\N	9900003
-bd1f74b3-bcc8-44c2-959f-f959accc3712	Brazil	Rio de Janeiro	Belford Roxo	-22.7606	-43.4037	Brazil	RJ	\N	2024-04-12 10:49:00+00	\N	9900051
-4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	United States	Tennessee	Chattanooga	35.066	-85.2484	South	TN	25	2023-12-06 08:32:00+00	\N	4714000
-4febf356-c079-41c9-81b4-e930dcf2daac	United States	Illinois	Winfield	41.8785	-88.1502	Midwest	IL	\N	2017-04-29 06:59:00+00	\N	1782400
-fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	United States	Washington	Kirkland	47.6967	-122.2042	Pacific	WA	\N	2022-02-01 19:14:00+00	\N	5335940
 06118205-6e16-46da-bc9c-459860189e8f	United States	Pennsylvania	Hatfield	40.2771	-75.2989	Mid-Atlantic	PA	\N	2024-03-20 17:11:00+00	\N	4233112
+8f11086a-b44a-44cf-a755-1fc9c257a48d	Canada	British Columbia	Victoria	48.4284	-123.3656	Canada	BC	\N	2021-03-24 12:30:00+00	\N	9900076
+f249b76f-3db0-4641-b2d7-b65aa69ee229	Canada	New Brunswick	Fredericton	45.9636	-66.6431	Canada	NB	\N	2023-04-12 16:18:00+00	\N	9900080
+fbdeaa5e-92d7-43b7-b00b-915b8c10c9a7	United States	Washington	Kirkland	47.6967	-122.2042	Pacific	WA	\N	2022-02-01 19:14:00+00	\N	5335940
+bfdde387-2429-490a-95f0-4e719ef7aa78	Canada	Ontario	Mississauga	43.589	-79.6441	Canada	ON	\N	2022-03-28 16:00:00+00	\N	9900096
+daffa2db-4980-4ddd-8bf2-4bf79ef09e10	Australia	New South Wales	Bathurst	-33.4107	149.5783	Australia	NSW	\N	2024-04-03 16:47:00+00	\N	9900003
+58f1f419-ac98-4f12-9f4d-d78939773041	United States	Wisconsin	Franklin	42.8839	-88.0115	Midwest	WI	\N	2024-03-08 15:30:00+00	\N	5527300
+a6c14f18-ff74-42fb-9324-72f2c8d0fb66	England	Greater London	Lambeth	51.4581	-0.1237	England	\N	\N	2024-04-01 15:00:00+00	\N	9900184
+4ccfcf6b-17c9-4006-b1cd-7e2829d85d54	United States	Tennessee	Chattanooga	35.066	-85.2484	South	TN	25	2023-12-06 08:32:00+00	\N	4714000
+bd1f74b3-bcc8-44c2-959f-f959accc3712	Brazil	Rio de Janeiro	Belford Roxo	-22.7606	-43.4037	Brazil	RJ	\N	2024-04-12 10:49:00+00	\N	9900051
+6ba8c886-419a-4880-a749-b7e4246bb78c	United States	California	Eureka	40.7934	-124.1552	Pacific	CA	\N	2024-03-05 17:23:00+00	\N	623042
+3fa975ec-55af-4a63-addf-a36b920fc9a7	United States	West Virginia	St. Albans	38.3776	-81.8193	South	WV	\N	2024-03-14 09:22:00+00	\N	5471212
+06b9181f-f879-40d5-b531-c239caa8ccd9	United States	North Carolina	Leland	34.223	-78.0447	South	NC	\N	2023-08-23 13:59:00+00	\N	3737680
+4febf356-c079-41c9-81b4-e930dcf2daac	United States	Illinois	Winfield	41.8785	-88.1502	Midwest	IL	\N	2017-04-29 06:59:00+00	\N	1782400
+bbd47ea1-3ca9-41b6-803d-ab7c9505e768	Mexico	Jalisco	Zapopan	20.7203	-103.3919	Mexico	JAL	\N	2023-01-07 21:28:00+00	\N	9900233
+6ef16bd9-0759-447d-b7af-744888b824ca	Canada	British Columbia	Courtenay	49.6841	-124.9904	Canada	BC	\N	2024-04-04 13:13:00+00	\N	9900063
+09c049b6-213b-405c-bc4e-178346ff814d	United States	Illinois	Highland Park	42.1824	-87.8108	Midwest	IL	25	2021-02-25 13:26:00+00	\N	1734722
+a1fe143b-6253-40d8-bfb0-7bfaeccee6c4	Spain	Alicante	Alicante	38.346	-0.4907	Spain	A	\N	2023-04-17 16:59:00+00	\N	9900139
+712846c3-d432-480b-b582-d47730cf90bf	United States	Kansas	Overland Park	38.889	-94.6906	Midwest	KS	25	2017-04-29 06:58:00+00	\N	2053775
 \.
 
 
@@ -518,7 +558,7 @@ Wales
 --
 
 COPY public.fargate_price (id, per_second, created_at) FROM stdin;
-1	0.000038	2025-03-07 14:35:36.317488+00
+1	0.000038	2025-06-10 15:36:26.403661+00
 \.
 
 
@@ -547,6 +587,14 @@ a66fb30f-7d80-4b27-90c6-4f6b0723ab89	317.5	532.9
 3bc70777-1f75-479f-9eb9-7b639881ba19	1118.2	142.5
 36a29ed3-81c7-465b-a7f5-5e44a6a99cbf	1723.3	321.5
 fff6c9d5-5828-4c71-8bb7-5c462ff5cf9e	690.7	2437.1
+\.
+
+
+--
+-- Data for Name: measure; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY public.measure (id, buffered_lane, lane, path, sharrow, track) FROM stdin;
 \.
 
 
@@ -667,9 +715,10 @@ fff6c9d5-5828-4c71-8bb7-5c462ff5cf9e	65.13
 --
 
 COPY public.seaql_migrations (version, applied_at) FROM stdin;
-m20220101_000001_main	1741358136
-m20231010_232527_city_submission	1741358136
-m20240202_004130_brokenspoke_analyzer_pipeline	1741358136
+m20220101_000001_main	1749569786
+m20231010_232527_city_submission	1749569786
+m20240202_004130_brokenspoke_analyzer_pipeline	1749569786
+m20250529_151932_measure	1749569786
 \.
 
 
@@ -880,6 +929,14 @@ ALTER TABLE ONLY public.approval_status
 
 
 --
+-- Name: bike_lane_type bike_lane_type_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bike_lane_type
+    ADD CONSTRAINT bike_lane_type_pkey PRIMARY KEY (name);
+
+
+--
 -- Name: bna_pipeline bna_pipeline_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -957,6 +1014,14 @@ ALTER TABLE ONLY public.fargate_price
 
 ALTER TABLE ONLY public.infrastructure
     ADD CONSTRAINT infrastructure_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: measure measure_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.measure
+    ADD CONSTRAINT measure_pkey PRIMARY KEY (id);
 
 
 --
@@ -1143,6 +1208,14 @@ ALTER TABLE ONLY public.core_services
 
 ALTER TABLE ONLY public.infrastructure
     ADD CONSTRAINT infrastructure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
+
+
+--
+-- Name: measure measure_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.measure
+    ADD CONSTRAINT measure_id_fkey FOREIGN KEY (id) REFERENCES public.summary(id) ON DELETE CASCADE;
 
 
 --
