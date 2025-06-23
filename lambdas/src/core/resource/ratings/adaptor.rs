@@ -16,7 +16,7 @@ pub async fn get_ratings_summaries_adaptor(
     page_size: u64,
 ) -> Result<(u64, Vec<summary::Model>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of summary.
     Ok(fetch_ratings_summaries(&db, page, page_size).await?)
@@ -27,7 +27,7 @@ pub(crate) async fn get_rating_adaptor(
     ctx: Context,
 ) -> Result<Bna, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the model.
     let model: Option<super::db::Bna> = fetch_rating(&db, rating_id).await?;
@@ -46,7 +46,7 @@ pub(crate) async fn get_ratings_adaptor(
     page_size: u64,
 ) -> Result<(u64, Vec<Bna>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of summary.
     Ok(fetch_ratings(&db, page, page_size).await?)
@@ -56,7 +56,7 @@ pub(crate) async fn get_ratings_city_adaptor(
     rating_id: Uuid,
     ctx: Context,
 ) -> Result<(Bna, entity::city::Model), ExecutionError> {
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the model.
     let model = fetch_ratings_city(&db, rating_id).await?;
@@ -177,7 +177,7 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
     info!("{:?}", measure);
 
     // Get the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
     info!("DB acquired");
 
     // And insert a new entry for each model.

@@ -8,7 +8,7 @@ use serde_json::{json, Value};
 
 pub async fn get_price_fargate_adaptor(id: i32, ctx: Context) -> Result<Value, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the city model.
     let model = fetch_fargate_price(&db, id).await?;
@@ -27,7 +27,7 @@ pub async fn get_price_fargate_adaptor_model_(
     ctx: Context,
 ) -> Result<entity::fargate_price::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the city model.
     let model = fetch_fargate_price(&db, id).await?;
@@ -47,7 +47,7 @@ pub async fn get_prices_fargate_adaptor(
     page_size: u64,
 ) -> Result<PageFlow<Vec<fargate_price::Model>>, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of cities.
     let (total_items, models) = fetch_fargate_prices(
@@ -72,7 +72,7 @@ pub async fn get_prices_fargate_adaptor_model_(
     page_size: u64,
 ) -> Result<(u64, Vec<entity::fargate_price::Model>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of cities.
     let (total_items, models) = fetch_fargate_prices(

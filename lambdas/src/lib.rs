@@ -29,25 +29,29 @@ pub type APIResult<T> = std::result::Result<T, Response<Body>>;
 // /// Number of items to return per page if no argument was provided.
 // pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
-/// Returns the database connection.
+/// Returns the database connection from a custom environment variable or secret.
 ///
 /// Look up for the connection string:
-///   - first inside the value of the `DATABASE_URL`environment variable,
-///   - then in the AWS Secrets Manager with the `secret_id` id if provided.
-pub async fn database_connect(secret_id: Option<&str>) -> Result<DatabaseConnection, DbErr> {
-    const DATABASE_URL_KEY: &str = "DATABASE_URL";
-    let database_url: String = match env::var(DATABASE_URL_KEY) {
+///   - first inside the value of the `name` environment variable,
+///   - then in the AWS Secrets Manager with the `name`  and  `secret_key` provided.
+pub async fn database_connect_custom(
+    name: &str,
+    secret_key: &str,
+) -> Result<DatabaseConnection, DbErr> {
+    let database_url: String = match env::var(name) {
         Ok(value) => value,
-        Err(_) => match secret_id {
-            Some(secret_id) =>
-                match env::var(secret_id) {
-                  Ok(v) => get_aws_secrets_value(&v, DATABASE_URL_KEY).await.map_err(|e| DbErr::Custom(format!("Cannot find the connection string within the secret {secret_id}. Ensure `{DATABASE_URL_KEY}` is correctly set: {e}")))?,
-                  Err(e) => return Err(DbErr::Custom(format!("Cannot find the connection string in the AWS Secrets Manager. Ensure `{secret_id}` is correctly set. Reason: {e}"))),
-            }
-            None => return Err(DbErr::Custom(format!("Cannot find the connection string. Ensure `{DATABASE_URL_KEY}` is correctly set."))),
-        },
+        Err(_) => get_aws_secrets_value(name, secret_key).await.map_err(|e| DbErr::Custom(format!("Cannot find the connection string within the secret {name}. Ensure `{secret_key}` is correctly set: {e}")))?,
     };
     Database::connect(database_url).await
+}
+
+/// Returns the database connection.
+///
+/// Look up for the database connection string a standard `DATABASE_URL` environment
+/// variable or secret.
+pub async fn database_connect() -> Result<DatabaseConnection, DbErr> {
+    const DATABASE_URL_KEY: &str = "DATABASE_URL";
+    database_connect_custom(DATABASE_URL_KEY, DATABASE_URL_KEY).await
 }
 
 /// Builds a paginated Response.
@@ -314,7 +318,7 @@ macro_rules! nomstr {
 
 pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnection> {
     debug!("Connecting to the database...");
-    match database_connect(Some("DATABASE_URL_SECRET_ID")).await {
+    match database_connect().await {
         Ok(db) => Ok(db),
         Err(e) => {
             let apigw_request_id = event.apigw_request_id();
