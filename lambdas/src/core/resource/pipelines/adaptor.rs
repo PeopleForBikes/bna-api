@@ -13,7 +13,7 @@ pub async fn get_pipelines_bna_adaptor(
     ctx: Context,
 ) -> Result<entity::bna_pipeline::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the model.
     let model = fetch_bna_pipeline(&db, pipeline_id).await?;
@@ -32,7 +32,7 @@ pub async fn get_pipelines_bnas_adaptor(
     page_size: u64,
 ) -> Result<PageFlow<Vec<bna_pipeline::Model>>, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of summary.
     let (total_items, models) = fetch_bna_pipelines(&db, page, page_size).await?;
@@ -48,7 +48,7 @@ pub async fn post_pipelines_bna_adaptor(
     bna_pipeline: BNAPipelinePost,
 ) -> Result<entity::bna_pipeline::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Turn the post model into an active model.
     let active_model = bna_pipeline.into_active_model();
@@ -67,7 +67,7 @@ pub async fn patch_pipelines_bna_adaptor(
     analysis_id: Uuid,
 ) -> Result<entity::bna_pipeline::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Turn the patch model into an active model.
     let mut active_model = bna_pipeline.into_active_model();

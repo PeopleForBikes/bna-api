@@ -22,7 +22,7 @@ pub async fn get_city_adaptor(
     ctx: Context,
 ) -> Result<city::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the city model.
     let model = match fetch_city(&db, country, region, name).await {
@@ -47,7 +47,7 @@ pub async fn get_cities_adaptor(
     page_size: u64,
 ) -> Result<(u64, Vec<entity::city::Model>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of cities.
     Ok(fetch_cities(&db, page, page_size).await?)
@@ -62,7 +62,7 @@ pub async fn get_cities_ratings_adaptor(
     ctx: Context,
 ) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch a page of city censuses.
     let (total_items, models) =
@@ -82,7 +82,7 @@ pub async fn get_cities_ratings_adaptor(
 
 pub async fn post_cities_adaptor(city: CityPost) -> Result<Value, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Ensure the country is a valid one.
     if fetch_country(&db, &city.country).await?.is_none() {
@@ -126,7 +126,7 @@ pub async fn get_cities_submission_adaptor(
     ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the model.
     let status_str = status.clone().unwrap_or("any".to_string());
@@ -147,7 +147,7 @@ pub async fn get_cities_submissions_adaptor(
     page_size: u64,
 ) -> Result<(u64, Vec<entity::submission::Model>), ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Fetch the model.
     Ok(fetch_cities_submissions(&db, status, page, page_size).await?)
@@ -158,7 +158,7 @@ pub async fn patch_cities_submission_adaptor(
     submission: SubmissionPatch,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Turn the wrapper into an active model.
     let mut active_model = submission.into_active_model();
@@ -172,7 +172,7 @@ pub async fn post_cities_submission_adaptor(
     submission: SubmissionPost,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Set the database connection.
-    let db = database_connect(Some("DATABASE_URL_SECRET_ID")).await?;
+    let db = database_connect().await?;
 
     // Ensure the country is a valid one.
     if fetch_country(&db, &submission.country).await?.is_none() {
