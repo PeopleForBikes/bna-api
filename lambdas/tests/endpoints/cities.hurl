@@ -38,4 +38,9 @@ HTTP 404
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/{{region}}/unknown_city/ratings"
 
+# Query the top 10 cities for 2024
+GET {{host}}/cities/top/2024/10
 
+HTTP 200
+[Asserts]
+jsonpath "$" count <= 10

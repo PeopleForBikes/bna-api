@@ -25,7 +25,7 @@ impl FromStr for PipelineStatus {
 impl Display for PipelineStatus {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = serde_plain::to_string(&self).expect("cannot serialize value");
-        write!(f, "{}", value)
+        write!(f, "{value}")
     }
 }
 
@@ -155,7 +155,7 @@ impl FromStr for BnaPipelineStep {
 impl Display for BnaPipelineStep {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = serde_plain::to_string(&self).expect("cannot serialize value");
-        write!(f, "{}", value)
+        write!(f, "{value}")
     }
 }
 
