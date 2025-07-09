@@ -849,6 +849,47 @@ pub mod types {
         }
     }
 
+    ///`CitiesWithSummary`
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "array",
+    ///  "items": {
+    ///    "$ref": "#/components/schemas/CityWithSummary"
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
+    pub struct CitiesWithSummary(pub ::std::vec::Vec<CityWithSummary>);
+    impl ::std::ops::Deref for CitiesWithSummary {
+        type Target = ::std::vec::Vec<CityWithSummary>;
+        fn deref(&self) -> &::std::vec::Vec<CityWithSummary> {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<CitiesWithSummary> for ::std::vec::Vec<CityWithSummary> {
+        fn from(value: CitiesWithSummary) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::convert::From<&CitiesWithSummary> for CitiesWithSummary {
+        fn from(value: &CitiesWithSummary) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ::std::convert::From<::std::vec::Vec<CityWithSummary>> for CitiesWithSummary {
+        fn from(value: ::std::vec::Vec<CityWithSummary>) -> Self {
+            Self(value)
+        }
+    }
+
     ///Detailed information of a city
     ///
     /// <details><summary>JSON schema</summary>
@@ -1183,6 +1224,46 @@ pub mod types {
 
     impl CityRatings {
         pub fn builder() -> builder::CityRatings {
+            Default::default()
+        }
+    }
+
+    ///`CityWithSummary`
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "object",
+    ///  "required": [
+    ///    "city",
+    ///    "sumary"
+    ///  ],
+    ///  "properties": {
+    ///    "city": {
+    ///      "$ref": "#/components/schemas/City"
+    ///    },
+    ///    "sumary": {
+    ///      "$ref": "#/components/schemas/RatingSummary"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct CityWithSummary {
+        pub city: City,
+        pub sumary: RatingSummary,
+    }
+
+    impl ::std::convert::From<&CityWithSummary> for CityWithSummary {
+        fn from(value: &CityWithSummary) -> Self {
+            value.clone()
+        }
+    }
+
+    impl CityWithSummary {
+        pub fn builder() -> builder::CityWithSummary {
             Default::default()
         }
     }
@@ -2274,6 +2355,8 @@ pub mod types {
     ///    "city_id",
     ///    "created_at",
     ///    "id",
+    ///    "pop_size",
+    ///    "population",
     ///    "score",
     ///    "version"
     ///  ],
@@ -2292,6 +2375,32 @@ pub mod types {
     ///      "description": "Analysis identifier",
     ///      "type": "string",
     ///      "format": "uuid"
+    ///    },
+    ///    "pop_size": {
+    ///      "description": "City population size category (small, medium,
+    /// large).",
+    ///      "examples": [
+    ///        "large"
+    ///      ],
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    },
+    ///    "population": {
+    ///      "description": "City population based on the annual U.S. Census
+    /// American Community Survey.",
+    ///      "examples": [
+    ///        "989252"
+    ///      ],
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    },
+    ///    "residential_speed_limit_override": {
+    ///      "description": "Residential speed limit override.",
+    ///      "type": [
+    ///        "integer",
+    ///        "null"
+    ///      ],
+    ///      "format": "int32"
     ///    },
     ///    "score": {
     ///      "description": "BNA score",
@@ -2320,6 +2429,14 @@ pub mod types {
         pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Analysis identifier
         pub id: ::uuid::Uuid,
+        ///City population size category (small, medium, large).
+        pub pop_size: i32,
+        ///City population based on the annual U.S. Census American Community
+        /// Survey.
+        pub population: i32,
+        ///Residential speed limit override.
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub residential_speed_limit_override: ::std::option::Option<i32>,
         pub score: f64,
         ///Analysis version. The format follows the [calver](https://calver.org)
         ///specification with the YY.0M[.Minor] scheme.
@@ -4235,6 +4352,65 @@ pub mod types {
         }
 
         #[derive(Clone, Debug)]
+        pub struct CityWithSummary {
+            city: ::std::result::Result<super::City, ::std::string::String>,
+            sumary: ::std::result::Result<super::RatingSummary, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for CityWithSummary {
+            fn default() -> Self {
+                Self {
+                    city: Err("no value supplied for city".to_string()),
+                    sumary: Err("no value supplied for sumary".to_string()),
+                }
+            }
+        }
+
+        impl CityWithSummary {
+            pub fn city<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::City>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.city = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for city: {}", e));
+                self
+            }
+            pub fn sumary<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<super::RatingSummary>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.sumary = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for sumary: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<CityWithSummary> for super::CityWithSummary {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: CityWithSummary,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    city: value.city?,
+                    sumary: value.sumary?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::CityWithSummary> for CityWithSummary {
+            fn from(value: super::CityWithSummary) -> Self {
+                Self {
+                    city: Ok(value.city),
+                    sumary: Ok(value.sumary),
+                }
+            }
+        }
+
+        #[derive(Clone, Debug)]
         pub struct CoreServices {
             dentists: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             doctors: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
@@ -5200,6 +5376,10 @@ pub mod types {
                 ::std::string::String,
             >,
             id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
+            pop_size: ::std::result::Result<i32, ::std::string::String>,
+            population: ::std::result::Result<i32, ::std::string::String>,
+            residential_speed_limit_override:
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             score: ::std::result::Result<f64, ::std::string::String>,
             version: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
@@ -5210,6 +5390,9 @@ pub mod types {
                     city_id: Err("no value supplied for city_id".to_string()),
                     created_at: Err("no value supplied for created_at".to_string()),
                     id: Err("no value supplied for id".to_string()),
+                    pop_size: Err("no value supplied for pop_size".to_string()),
+                    population: Err("no value supplied for population".to_string()),
+                    residential_speed_limit_override: Ok(Default::default()),
                     score: Err("no value supplied for score".to_string()),
                     version: Err("no value supplied for version".to_string()),
                 }
@@ -5247,6 +5430,39 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for id: {}", e));
                 self
             }
+            pub fn pop_size<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.pop_size = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for pop_size: {}", e));
+                self
+            }
+            pub fn population<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.population = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for population: {}", e));
+                self
+            }
+            pub fn residential_speed_limit_override<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<i32>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.residential_speed_limit_override = value.try_into().map_err(|e| {
+                    format!(
+                        "error converting supplied value for residential_speed_limit_override: {}",
+                        e
+                    )
+                });
+                self
+            }
             pub fn score<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<f64>,
@@ -5278,6 +5494,9 @@ pub mod types {
                     city_id: value.city_id?,
                     created_at: value.created_at?,
                     id: value.id?,
+                    pop_size: value.pop_size?,
+                    population: value.population?,
+                    residential_speed_limit_override: value.residential_speed_limit_override?,
                     score: value.score?,
                     version: value.version?,
                 })
@@ -5290,6 +5509,9 @@ pub mod types {
                     city_id: Ok(value.city_id),
                     created_at: Ok(value.created_at),
                     id: Ok(value.id),
+                    pop_size: Ok(value.pop_size),
+                    population: Ok(value.population),
+                    residential_speed_limit_override: Ok(value.residential_speed_limit_override),
                     score: Ok(value.score),
                     version: Ok(value.version),
                 }
@@ -6316,6 +6538,24 @@ impl Client {
         builder::PatchCitiesSubmission::new(self)
     }
 
+    ///Get the top N cities for a specific year.
+    ///
+    ///Sends a `GET` request to `/cities/top/{year}/{count}`
+    ///
+    ///Arguments:
+    /// - `year`: The year to collect the top cities for
+    /// - `count`: The number of top cities to collect
+    ///```ignore
+    /// let response = client.get_top_cities()
+    ///    .year(year)
+    ///    .count(count)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_top_cities(&self) -> builder::GetTopCities {
+        builder::GetTopCities::new(self)
+    }
+
     ///Get the details of a specific city where an BNA analysis was computed.
     ///
     ///Sends a `GET` request to `/cities/{country}/{region}/{name}`
@@ -7084,6 +7324,98 @@ pub mod builder {
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
                 .json(&body)
+                .headers(header_map)
+                .build()?;
+            let result = client.client.execute(request).await;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_top_cities`]
+    ///
+    ///[`Client::get_top_cities`]: super::Client::get_top_cities
+    #[derive(Debug, Clone)]
+    pub struct GetTopCities<'a> {
+        client: &'a super::Client,
+        year: Result<i32, String>,
+        count: Result<::std::num::NonZeroU32, String>,
+    }
+
+    impl<'a> GetTopCities<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                year: Err("year was not initialized".to_string()),
+                count: Err("count was not initialized".to_string()),
+            }
+        }
+
+        pub fn year<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<i32>,
+        {
+            self.year = value
+                .try_into()
+                .map_err(|_| "conversion to `i32` for year failed".to_string());
+            self
+        }
+
+        pub fn count<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::num::NonZeroU32>,
+        {
+            self.count = value.try_into().map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU32` for count failed".to_string()
+            });
+            self
+        }
+
+        ///Sends a `GET` request to `/cities/top/{year}/{count}`
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::CitiesWithSummary>, Error<types::ApiErrors>> {
+            let Self {
+                client,
+                year,
+                count,
+            } = self;
+            let year = year.map_err(Error::InvalidRequest)?;
+            let count = count.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/cities/top/{}/{}",
+                client.baseurl,
+                encode_path(&year.to_string()),
+                encode_path(&count.to_string()),
+            );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
+                )
                 .headers(header_map)
                 .build()?;
             let result = client.client.execute(request).await;

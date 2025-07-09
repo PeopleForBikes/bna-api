@@ -57,7 +57,7 @@ impl From<String> for Country {
 impl Display for Country {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = serde_plain::to_string(&self).expect("cannot serialize value");
-        write!(f, "{}", value)
+        write!(f, "{value}")
     }
 }
 
@@ -284,7 +284,7 @@ impl From<String> for BikeLaneType {
 impl Display for BikeLaneType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = serde_plain::to_string(&self).expect("cannot serialize value");
-        write!(f, "{}", value)
+        write!(f, "{value}")
     }
 }
 impl From<entity::wrappers::BikeLaneType> for BikeLaneType {

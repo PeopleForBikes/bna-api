@@ -2,7 +2,9 @@
 use crate::core::resource::schema::{City, Country};
 use chrono::DateTime;
 use entity::{submission, summary};
+use sea_orm::FromQueryResult;
 use serde::{Deserialize, Serialize};
+use std::vec::Vec;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
@@ -63,7 +65,7 @@ pub(crate) struct CensusPost {
     population: i32,
 }
 
-#[derive(ToSchema, Serialize)]
+#[derive(ToSchema, Serialize, FromQueryResult)]
 pub(crate) struct RatingSummary {
     /// Analysis identifier
     id: Uuid,
@@ -71,6 +73,14 @@ pub(crate) struct RatingSummary {
     city_id: Uuid,
     /// Creation date
     created_at: DateTime<chrono::FixedOffset>,
+    /// City population size category (small, medium, large).
+    #[schema(examples("large"))]
+    pub pop_size: i32,
+    /// City population based on the annual U.S. Census American Community Survey.
+    #[schema(examples("989252"))]
+    pub population: i32,
+    /// Residential speed limit override.
+    pub residential_speed_limit_override: Option<i32>,
     /// BNA score
     #[schema(examples("77.0"))]
     score: f64,
@@ -80,12 +90,18 @@ pub(crate) struct RatingSummary {
     version: String,
 }
 
+/*
+*/
+
 impl From<summary::Model> for RatingSummary {
     fn from(value: summary::Model) -> Self {
         Self {
-            id: value.id,
             city_id: value.city_id,
             created_at: value.created_at,
+            id: value.id,
+            pop_size: value.pop_size,
+            population: value.population,
+            residential_speed_limit_override: value.residential_speed_limit_override,
             score: value.score,
             version: value.version,
         }
@@ -260,3 +276,12 @@ pub(crate) struct CityParams {
     #[param(example = "Antwerp")]
     name: String,
 }
+
+#[derive(ToSchema, Serialize)]
+pub(crate) struct CityWithSummary {
+    pub(crate) city: City,
+    pub(crate) sumary: RatingSummary,
+}
+
+#[derive(ToSchema, Serialize)]
+pub(crate) struct CitiesWithSummary(pub(crate) Vec<CityWithSummary>);
