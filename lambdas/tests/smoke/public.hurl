@@ -25,6 +25,13 @@ HTTP 200
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
 HTTP 200
 
+# Query the top 10 cities for 2024
+GET {{host}}/cities/top/2024/10
+
+HTTP 200
+[Asserts]
+jsonpath "$" count <= 10
+
 # Create a new submission.
 POST {{host}}/cities/submissions
 content-type: application/json

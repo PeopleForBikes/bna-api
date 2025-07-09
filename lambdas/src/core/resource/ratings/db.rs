@@ -315,20 +315,6 @@ pub async fn fetch_ratings_city(
         }
         None => Ok(None),
     }
-    // let bna = fetch_rating(db, rating_id).await?;
-    // match bna {
-    //     Some(bna) => {
-    //         let a = summary::Entity::find_by_id(rating_id)
-    //             .find_also_related(city::Entity)
-    //             .one(db)
-    //             .await?;
-    //         Ok((bna, city: city.expect("a city must be attached to a rating")))
-    //     }
-    //     None => Err(ExecutionError::NotFound(
-    //         ctx.request_id(),
-    //         ctx.source(),
-    //         format!("cannot find a rating with id {rating_id}"),
-    //     )),
 }
 
 pub async fn fetch_rating(

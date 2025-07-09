@@ -1,6 +1,6 @@
 use super::db::{
     fetch_cities, fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions,
-    fetch_city, fetch_country, fetch_state_region_crosswalk,
+    fetch_city, fetch_country, fetch_state_region_crosswalk, fetch_top_cities,
 };
 use crate::{database_connect, Context, ExecutionError};
 use entity::{
@@ -188,4 +188,30 @@ pub async fn post_cities_submission_adaptor(
     // And insert a new entry.
     let model = active_model.insert(&db).await?;
     Ok(model)
+}
+
+pub(crate) async fn get_top_cities_adaptor(
+    year: i32,
+    count: i32,
+    ctx: Context,
+) -> Result<Vec<(city::Model, summary::Model)>, ExecutionError> {
+    // Set the database connection.
+    let db = database_connect().await?;
+
+    // Fetch the top cities and their associated summaries.
+    let model = match fetch_top_cities(&db, year, count).await {
+        Ok(model) => model,
+        Err(e) => {
+            info!("{e:?}");
+            return Err(e.into());
+        }
+    };
+    match model {
+        Some(model) => Ok(model),
+        None => Err(ExecutionError::NotFound(
+            ctx.request_id(),
+            ctx.source(),
+            format!("cannot fetch the {count} top cities for the year {year}"),
+        )),
+    }
 }

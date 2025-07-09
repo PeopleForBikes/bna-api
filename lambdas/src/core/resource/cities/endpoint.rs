@@ -11,7 +11,11 @@ use super::{
 };
 use crate::{
     core::resource::{
-        cities::{schema::CityParams, CitiesPathParameters},
+        cities::{
+            adaptor::get_top_cities_adaptor,
+            schema::{CitiesWithSummary, CityParams, CityWithSummary},
+            CitiesPathParameters,
+        },
         schema::{City, ErrorResponses, PaginationParams},
     },
     Context, ExecutionError, PageFlow, Paginatron,
@@ -40,6 +44,7 @@ pub fn routes() -> OpenApiRouter {
         .routes(routes!(post_cities_submission))
         .routes(routes!(patch_cities_submission))
         .routes(routes!(get_cities_submissions))
+        .routes(routes!(get_top_cities))
 }
 
 #[utoipa::path(
@@ -260,6 +265,36 @@ async fn patch_cities_submission(
         .await
         .map(Submission::from)
         .map(Json)
+}
+
+#[utoipa::path(
+  get,
+  path = "/cities/top/{year}/{count}",
+  description = "Get the top N cities for a specific year.",
+  tag = TAG,
+  params(
+    ("year" = i32, Path, description = "The year to collect the top cities for",  example = "2024", minimum = 2017, maximum = 2029),
+    ("count" = i32, Path, description = "The number of top cities to collect",  example = "10", minimum = 1, maximum = 25),
+  ),
+  responses(
+    (status = OK, description = "Fetches cities with their respective summary", body = CitiesWithSummary),
+    ErrorResponses,
+  ))]
+async fn get_top_cities(
+    Path((year, count)): Path<(i32, i32)>,
+    ctx: Context,
+) -> Result<Json<CitiesWithSummary>, ExecutionError> {
+    let models = get_top_cities_adaptor(year, count, ctx).await?;
+
+    let payload = models
+        .iter()
+        .map(|(c, s)| CityWithSummary {
+            city: c.clone().into(),
+            sumary: s.clone().into(),
+        })
+        .collect::<Vec<CityWithSummary>>();
+
+    Ok(Json(CitiesWithSummary(payload)))
 }
 
 #[cfg(test)]
