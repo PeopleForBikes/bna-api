@@ -71,7 +71,7 @@ async fn main() -> Result<(), Report> {
     }
 
     // Load the historical data CSV file.
-    let mut csv_reader = Reader::from_path("../../PeopleForBikes/brokenspoke/assets/city-ratings/city-ratings-all-historical-results-v24.07.csv")?;
+    let mut csv_reader = Reader::from_path("examples/sample.csv")?;
     for record in csv_reader.deserialize() {
         // Read the record.
         let scorecard: ScoreCard24 = record?;

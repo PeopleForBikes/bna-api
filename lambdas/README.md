@@ -1,54 +1,65 @@
-# lambdas
+# Lambdas
 
 Repository containing all the lambda endpoints for API Gateway.
 
 ## Requirements
 
-- [Cargo Lambda]
+- [Just]
+- [Docker]
+- [Hurl]
 
-## Testing
+## Quickstart
 
-- 2 terminals are required to test the functions.
-- Start Docker Compose: `docker compose up [-d]`
-- Export the database URL:
+For this part, the Docker daemon must be running and 2 terminals will be needed.
+
+### Terminal 1
+
+The first terminal is used to watch the API server output in debug mode.
+
+- Start Docker Compose
+
+  ```bash
+  just compose-up
+  ```
+
+- Export the database URL
 
   ```bash
   export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
   ```
 
-### Terminal 1
+- Seed the database
 
-The first terminal is used to watch the functions, meaning it will emulate the
-AWS Lambda control plane API.
+  ```bash
+  just db-seed
+  ```
 
-Launch it with the following command:
+- Start the API server in debug mode
 
-```bash
-cd lambdas
-cargo lambda watch
-```
-
-The verbose flag `-v/-vv` can be added to increase the log level, and therefore
-the amount of information being output.
+  ```bash
+  just debug-axum
+  ```
 
 ### Terminal 2
 
-The second terminal will serve to send requests to the Lambda emulator.
+The second terminal will serve to send requests to the server.
 
-Since we are emulating sending the requests through API Gateway, the payloads
-must simulate what API GW would send to the Lambda function.
-
-Such payloads are stored in the `/src/fixtures` folder, and invoking request
-follows the following pattern:
+You can either send requests using cURL (or your favorite REST client), for
+instance:
 
 ```bash
-cargo lambda invoke --data-file lambdas/src/fixtures/${LAMBDA}.json ${LAMBDA}
+# Query the first page of City Ratings.
+curl http://localhost:3000/ratings
 ```
 
-For instance:
+Or use the predifined test suites, using Hurl:
 
 ```bash
-cargo lambda invoke --data-file lambdas/src/fixtures/get-cities.json get-cities
+cd lambda/tests
+just test-smoke-public localhost
+just test localhost
 ```
 
-[cargo lambda]: https://www.cargo-lambda.info/
+[just]: https://github.com/casey/just
+[docker]: https://www.docker.com/get-started/
+[hurl]: http://hurl.dev
