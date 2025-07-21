@@ -26,7 +26,7 @@ entity = { path = "entity" }
 futures = "0.3.31"
 http-serde = "2.0.0"
 itertools = "0.14.0"
-lambda_http = "0.15.1"
+lambda_http = "0.15.2"
 lambda_runtime = "0.14.2"
 migration = { path = "migration" }
 nom = "7.1.3"
