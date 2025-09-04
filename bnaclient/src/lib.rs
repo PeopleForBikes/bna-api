@@ -721,10 +721,10 @@ pub mod types {
     impl ::std::fmt::Display for BnaPipelineStep {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::SqsMessage => write!(f, "SqsMessage"),
-                Self::Setup => write!(f, "Setup"),
-                Self::Analysis => write!(f, "Analysis"),
-                Self::Cleanup => write!(f, "Cleanup"),
+                Self::SqsMessage => f.write_str("SqsMessage"),
+                Self::Setup => f.write_str("Setup"),
+                Self::Analysis => f.write_str("Analysis"),
+                Self::Cleanup => f.write_str("Cleanup"),
             }
         }
     }
@@ -1496,33 +1496,33 @@ pub mod types {
     impl ::std::fmt::Display for Country {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Australia => write!(f, "Australia"),
-                Self::Belgium => write!(f, "Belgium"),
-                Self::Brazil => write!(f, "Brazil"),
-                Self::Canada => write!(f, "Canada"),
-                Self::Chile => write!(f, "Chile"),
-                Self::Colombia => write!(f, "Colombia"),
-                Self::Croatia => write!(f, "Croatia"),
-                Self::Cuba => write!(f, "Cuba"),
-                Self::England => write!(f, "England"),
-                Self::France => write!(f, "France"),
-                Self::Germany => write!(f, "Germany"),
-                Self::Greece => write!(f, "Greece"),
-                Self::Guatemala => write!(f, "Guatemala"),
-                Self::Iran => write!(f, "Iran"),
-                Self::Iraq => write!(f, "Iraq"),
-                Self::Ireland => write!(f, "Ireland"),
-                Self::Italy => write!(f, "Italy"),
-                Self::Mexico => write!(f, "Mexico"),
-                Self::Netherlands => write!(f, "Netherlands"),
-                Self::NewZealand => write!(f, "New Zealand"),
-                Self::NorthernIreland => write!(f, "Northern Ireland"),
-                Self::Portugal => write!(f, "Portugal"),
-                Self::Scotland => write!(f, "Scotland"),
-                Self::Spain => write!(f, "Spain"),
-                Self::UnitedStates => write!(f, "United States"),
-                Self::Vietnam => write!(f, "Vietnam"),
-                Self::Wales => write!(f, "Wales"),
+                Self::Australia => f.write_str("Australia"),
+                Self::Belgium => f.write_str("Belgium"),
+                Self::Brazil => f.write_str("Brazil"),
+                Self::Canada => f.write_str("Canada"),
+                Self::Chile => f.write_str("Chile"),
+                Self::Colombia => f.write_str("Colombia"),
+                Self::Croatia => f.write_str("Croatia"),
+                Self::Cuba => f.write_str("Cuba"),
+                Self::England => f.write_str("England"),
+                Self::France => f.write_str("France"),
+                Self::Germany => f.write_str("Germany"),
+                Self::Greece => f.write_str("Greece"),
+                Self::Guatemala => f.write_str("Guatemala"),
+                Self::Iran => f.write_str("Iran"),
+                Self::Iraq => f.write_str("Iraq"),
+                Self::Ireland => f.write_str("Ireland"),
+                Self::Italy => f.write_str("Italy"),
+                Self::Mexico => f.write_str("Mexico"),
+                Self::Netherlands => f.write_str("Netherlands"),
+                Self::NewZealand => f.write_str("New Zealand"),
+                Self::NorthernIreland => f.write_str("Northern Ireland"),
+                Self::Portugal => f.write_str("Portugal"),
+                Self::Scotland => f.write_str("Scotland"),
+                Self::Spain => f.write_str("Spain"),
+                Self::UnitedStates => f.write_str("United States"),
+                Self::Vietnam => f.write_str("Vietnam"),
+                Self::Wales => f.write_str("Wales"),
             }
         }
     }
@@ -2072,9 +2072,9 @@ pub mod types {
     impl ::std::fmt::Display for PipelineStatus {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::Completed => write!(f, "Completed"),
-                Self::Pending => write!(f, "Pending"),
-                Self::Processing => write!(f, "Processing"),
+                Self::Completed => f.write_str("Completed"),
+                Self::Pending => f.write_str("Pending"),
+                Self::Processing => f.write_str("Processing"),
             }
         }
     }
