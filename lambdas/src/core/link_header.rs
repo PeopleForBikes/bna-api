@@ -59,7 +59,7 @@ impl<'a> RelationType<'a> {
     /// assert_eq!(RelationType::parse(r#" ; rel="prev""#), Ok(("", RelationType::new("prev"))));
     /// assert_eq!(RelationType::parse(r#" ; rel="alternate stylesheet""#), Ok(("", RelationType::new("alternate stylesheet"))));
     /// ```
-    pub fn parse(i: &str) -> IResult<&str, RelationType> {
+    pub fn parse(i: &str) -> IResult<&str, RelationType<'_>> {
         let (i, _) = space0(i)?;
         let (i, _) = tag(";")(i)?;
         let (i, _) = space0(i)?;
@@ -141,6 +141,12 @@ impl Display for Link<'_> {
     }
 }
 
+impl<'a> Default for Link<'a> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<'a> Link<'a> {
     /// Recognizes a Link.
     ///
@@ -150,7 +156,7 @@ impl<'a> Link<'a> {
     ///
     /// let link = Link::parse(r#"link: <https://api.github.com/repositories/1300192/issues?page=2>; rel="prev""#).unwrap();
     /// ```
-    pub fn parse(i: &str) -> IResult<&str, Link> {
+    pub fn parse(i: &str) -> IResult<&str, Link<'_>> {
         let (i, _) = alt((tag("Link:"), tag("link:")))(i)?;
         let (i, _) = space1(i)?;
         let (i, links) = separated_list1(tag(", "), LinkValues::parse)(i)?;
@@ -291,7 +297,7 @@ impl<'a> LinkValues<'a> {
         }
     }
 
-    pub fn parse(i: &str) -> IResult<&str, LinkValues> {
+    pub fn parse(i: &str) -> IResult<&str, LinkValues<'_>> {
         let (i, uri) = LinkTarget::parse(i)?;
         let (i, link_params) = many1(LinkParam::parse)(i)?;
         let lv = LinkValues::try_from_link_params(uri, &link_params);
@@ -341,7 +347,7 @@ impl<'a> LinkParam<'a> {
         self.token
     }
 
-    pub fn parse(i: &str) -> IResult<&str, LinkParam> {
+    pub fn parse(i: &str) -> IResult<&str, LinkParam<'_>> {
         let (i, _) = space0(i)?;
         let (i, _) = tag(";")(i)?;
         let (i, _) = space0(i)?;
