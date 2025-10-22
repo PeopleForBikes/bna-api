@@ -1,7 +1,7 @@
 #[allow(unused_imports)]
-use progenitor_client::{encode_path, RequestBuilderExt};
+use progenitor_client::{encode_path, ClientHooks, OperationInfo, RequestBuilderExt};
 #[allow(unused_imports)]
-pub use progenitor_client::{ByteStream, Error, ResponseValue};
+pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
@@ -6393,7 +6393,7 @@ impl Client {
     pub fn new(baseurl: &str) -> Self {
         #[cfg(not(target_arch = "wasm32"))]
         let client = {
-            let dur = std::time::Duration::from_secs(15);
+            let dur = ::std::time::Duration::from_secs(15u64);
             reqwest::ClientBuilder::new()
                 .connect_timeout(dur)
                 .timeout(dur)
@@ -6415,26 +6415,27 @@ impl Client {
             client,
         }
     }
+}
 
-    /// Get the base URL to which requests are made.
-    pub fn baseurl(&self) -> &String {
-        &self.baseurl
+impl ClientInfo<()> for Client {
+    fn api_version() -> &'static str {
+        "1.0.0"
     }
 
-    /// Get the internal `reqwest::Client` used to make requests.
-    pub fn client(&self) -> &reqwest::Client {
+    fn baseurl(&self) -> &str {
+        self.baseurl.as_str()
+    }
+
+    fn client(&self) -> &reqwest::Client {
         &self.client
     }
 
-    /// Get the version of this API.
-    ///
-    /// This string is pulled directly from the source OpenAPI
-    /// document and may be in any format the API selects.
-    pub fn api_version(&self) -> &'static str {
-        "1.0.0"
+    fn inner(&self) -> &() {
+        &()
     }
 }
 
+impl ClientHooks<()> for &Client {}
 impl Client {
     ///Get the details of all cities where an BNA analysis was performed.
     ///
@@ -6450,7 +6451,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_cities(&self) -> builder::GetCities {
+    pub fn get_cities(&self) -> builder::GetCities<'_> {
         builder::GetCities::new(self)
     }
 
@@ -6464,7 +6465,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_city(&self) -> builder::PostCity {
+    pub fn post_city(&self) -> builder::PostCity<'_> {
         builder::PostCity::new(self)
     }
 
@@ -6484,7 +6485,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_cities_submissions(&self) -> builder::GetCitiesSubmissions {
+    pub fn get_cities_submissions(&self) -> builder::GetCitiesSubmissions<'_> {
         builder::GetCitiesSubmissions::new(self)
     }
 
@@ -6498,7 +6499,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_cities_submission(&self) -> builder::PostCitiesSubmission {
+    pub fn post_cities_submission(&self) -> builder::PostCitiesSubmission<'_> {
         builder::PostCitiesSubmission::new(self)
     }
 
@@ -6516,7 +6517,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_cities_submission(&self) -> builder::GetCitiesSubmission {
+    pub fn get_cities_submission(&self) -> builder::GetCitiesSubmission<'_> {
         builder::GetCitiesSubmission::new(self)
     }
 
@@ -6534,7 +6535,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn patch_cities_submission(&self) -> builder::PatchCitiesSubmission {
+    pub fn patch_cities_submission(&self) -> builder::PatchCitiesSubmission<'_> {
         builder::PatchCitiesSubmission::new(self)
     }
 
@@ -6552,7 +6553,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_top_cities(&self) -> builder::GetTopCities {
+    pub fn get_top_cities(&self) -> builder::GetTopCities<'_> {
         builder::GetTopCities::new(self)
     }
 
@@ -6575,7 +6576,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_city(&self) -> builder::GetCity {
+    pub fn get_city(&self) -> builder::GetCity<'_> {
         builder::GetCity::new(self)
     }
 
@@ -6603,7 +6604,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_city_ratings(&self) -> builder::GetCityRatings {
+    pub fn get_city_ratings(&self) -> builder::GetCityRatings<'_> {
         builder::GetCityRatings::new(self)
     }
 
@@ -6621,7 +6622,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_pipelines_bnas(&self) -> builder::GetPipelinesBnas {
+    pub fn get_pipelines_bnas(&self) -> builder::GetPipelinesBnas<'_> {
         builder::GetPipelinesBnas::new(self)
     }
 
@@ -6635,7 +6636,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_pipelines_bna(&self) -> builder::PostPipelinesBna {
+    pub fn post_pipelines_bna(&self) -> builder::PostPipelinesBna<'_> {
         builder::PostPipelinesBna::new(self)
     }
 
@@ -6651,7 +6652,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_pipelines_bna(&self) -> builder::GetPipelinesBna {
+    pub fn get_pipelines_bna(&self) -> builder::GetPipelinesBna<'_> {
         builder::GetPipelinesBna::new(self)
     }
 
@@ -6669,7 +6670,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn patch_pipelines_bna(&self) -> builder::PatchPipelinesBna {
+    pub fn patch_pipelines_bna(&self) -> builder::PatchPipelinesBna<'_> {
         builder::PatchPipelinesBna::new(self)
     }
 
@@ -6687,7 +6688,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_prices_fargate(&self) -> builder::GetPricesFargate {
+    pub fn get_prices_fargate(&self) -> builder::GetPricesFargate<'_> {
         builder::GetPricesFargate::new(self)
     }
 
@@ -6704,7 +6705,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_price_fargate(&self) -> builder::GetPriceFargate {
+    pub fn get_price_fargate(&self) -> builder::GetPriceFargate<'_> {
         builder::GetPriceFargate::new(self)
     }
 
@@ -6722,7 +6723,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_ratings(&self) -> builder::GetRatings {
+    pub fn get_ratings(&self) -> builder::GetRatings<'_> {
         builder::GetRatings::new(self)
     }
 
@@ -6736,7 +6737,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn post_rating(&self) -> builder::PostRating {
+    pub fn post_rating(&self) -> builder::PostRating<'_> {
         builder::PostRating::new(self)
     }
 
@@ -6752,7 +6753,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_rating(&self) -> builder::GetRating {
+    pub fn get_rating(&self) -> builder::GetRating<'_> {
         builder::GetRating::new(self)
     }
 
@@ -6768,7 +6769,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_ratings_city(&self) -> builder::GetRatingsCity {
+    pub fn get_ratings_city(&self) -> builder::GetRatingsCity<'_> {
         builder::GetRatingsCity::new(self)
     }
 
@@ -6781,7 +6782,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_reports(&self) -> builder::GetReports {
+    pub fn get_reports(&self) -> builder::GetReports<'_> {
         builder::GetReports::new(self)
     }
 
@@ -6797,7 +6798,7 @@ impl Client {
     ///    .send()
     ///    .await;
     /// ```
-    pub fn get_reports_year(&self) -> builder::GetReportsYear {
+    pub fn get_reports_year(&self) -> builder::GetReportsYear<'_> {
         builder::GetReportsYear::new(self)
     }
 }
@@ -6807,7 +6808,10 @@ impl Client {
 pub mod builder {
     use super::types;
     #[allow(unused_imports)]
-    use super::{encode_path, ByteStream, Error, RequestBuilderExt, ResponseValue};
+    use super::{
+        encode_path, ByteStream, ClientHooks, ClientInfo, Error, OperationInfo, RequestBuilderExt,
+        ResponseValue,
+    };
     ///Builder for [`Client::get_cities`]
     ///
     ///[`Client::get_cities`]: super::Client::get_cities
@@ -6860,7 +6864,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -6874,7 +6878,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_cities",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -6930,7 +6939,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -6943,7 +6952,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "post_city",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
@@ -7032,7 +7046,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7047,7 +7061,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("status", &status))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_cities_submissions",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7117,7 +7136,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7130,7 +7149,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "post_cities_submission",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
@@ -7209,7 +7233,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7222,7 +7246,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("status", &status))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_cities_submission",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7313,7 +7342,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7326,7 +7355,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "patch_cities_submission",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7406,7 +7440,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7418,7 +7452,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_top_cities",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7511,7 +7550,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7523,7 +7562,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_city",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7646,7 +7690,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7660,7 +7704,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_city_ratings",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7735,7 +7784,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7749,7 +7798,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_pipelines_bnas",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -7819,7 +7873,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7832,7 +7886,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "post_pipelines_bna",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
@@ -7897,7 +7956,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -7909,7 +7968,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_pipelines_bna",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8002,7 +8066,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8015,7 +8079,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "patch_pipelines_bna",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8088,7 +8157,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8102,7 +8171,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_prices_fargate",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8152,7 +8226,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8164,7 +8238,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_price_fargate",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8237,7 +8316,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8251,7 +8330,12 @@ pub mod builder {
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_ratings",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8307,7 +8391,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8320,7 +8404,12 @@ pub mod builder {
                 .json(&body)
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "post_rating",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
@@ -8380,7 +8469,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8392,7 +8481,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_rating",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8454,7 +8548,7 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client
@@ -8466,7 +8560,12 @@ pub mod builder {
                 )
                 .headers(header_map)
                 .build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_ratings_city",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
@@ -8507,11 +8606,16 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client.client.get(url).headers(header_map).build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_reports",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => Ok(ResponseValue::stream(response)),
@@ -8559,11 +8663,16 @@ pub mod builder {
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
                 ::reqwest::header::HeaderName::from_static("api-version"),
-                ::reqwest::header::HeaderValue::from_static(client.api_version()),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
             );
             #[allow(unused_mut)]
             let mut request = client.client.get(url).headers(header_map).build()?;
-            let result = client.client.execute(request).await;
+            let info = OperationInfo {
+                operation_id: "get_reports_year",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
             let response = result?;
             match response.status().as_u16() {
                 200u16 => Ok(ResponseValue::stream(response)),
