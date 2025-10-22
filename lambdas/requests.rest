@@ -11,7 +11,6 @@
 # Query the first page of the bnas.
 GET {{host}}/ratings
 
-
 ###
 # Query the first page of the bnas.
 GET {{host}}/ratings?page_size=1257596201
@@ -116,26 +115,6 @@ X-Amz-Target: AWSCognitoIdentityProviderService.RespondToAuthChallenge
 @cognito_refresh = {{cognito_mfa.response.body.AuthenticationResult.RefreshToken}}
 
 ###
-# Enqueue a new city to be analyzed.
-POST {{host}}/cities/enqueue
-content-type: application/json
-Authorization: Bearer {{cognito_access}}
-
-[
-  {
-  "city": "santa rosa",
-  "country": "United States",
-  "fips_code": "3570670",
-  "region": "new mexico"
-  }
-]
-
-###
-# Collect the list of analysis that completed.
-GET {{host}}/ratings/results
-Authorization: Bearer {{cognito_access}}
-
-###
 # Update a specific submission.
 PATCH  {{host}}/cities/submissions/1
 content-type: application/json
@@ -170,37 +149,9 @@ Authorization: Bearer {{cognito_access}}
 }
 
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/ratings/analyses
+GET {{host}}/ratings/
 Authorization: Bearer {{cognito_access}}
 
-### Query a specific BNA analysis performed by the Brokenspoke-analyzer pipeline.
-GET {{host}}/ratings/analyses/{{state_machine_id}}
-Authorization: Bearer {{cognito_access}}
-
-### Update an existing BNA analysis performed by the Brokenspoke-analyzer pipeline.
-PATCH {{host}}/ratings/analysis/{{state_machine_id}}
-content-type: application/json
-Authorization: Bearer {{cognito_access}}
-
-{
-  "neon_branch_id": "br-aged-salad-637688"
-}
-
-
-
-###
-#
-PATCH {{host}}/ratings/analyses/c86473dd-53b5-4abd-be0d-c25ed6b5f029
-content-type: application/json
-Authorization: Bearer {{cognito_access}}
-
-{
-  "cost": 10.345,
-  "results_posted": true,
-  "start_time": "2024-12-09T18:02:22.607245Z",
-  "status": "Completed",
-  "step": "Setup"
-}
 
 ### Create a new BNA .
 POST {{host}}/ratings
@@ -208,7 +159,7 @@ content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 {
-  "city_id": "09c049b6-213b-405c-bc4e-178346ff814d",
+  "city_id": "a59cd356-7f63-47e5-be6d-29cf220fc359",
   "core_services": {
     "dentists": 0,
     "doctors": 0,
@@ -265,26 +216,3 @@ Authorization: Bearer {{cognito_access}}
     "state_abbrev": "VC",
     "speed_limit": null,
 }
-
-################################################################################
-# Bellow this point are the tests from schemathesis.
-################################################################################
-
-GET {{host}}/ratings/1
-X-Schemathesis-TestCaseId: 3bf4a72a4cc04ed589c5eedaf57b3ca2
-
-###
-GET {{host}}/ratings/0/city
-X-Schemathesis-TestCaseId: 9fa24d92de444fd28180df72fa1fabd6
-
-###
-GET {{host}}/cities
-X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
-
-###
-GET {{host}}/cities/0
-X-Schemathesis-TestCaseId: 6c4cbf8880594f3d921ed1c3fe474a7f
-
-###
-GET {{host}}/cities/0/ratings
-X-Schemathesis-TestCaseId: 1f951094a7f14597bb50cafc52b812e0

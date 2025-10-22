@@ -34,10 +34,16 @@ HTTP 404
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/ratings/{{fake_rating_id}}/city"
 
+# Get the first city ID in order to attache a new ratings to it.
+GET {{host}}/cities
+HTTP 200
+[Captures]
+city_id: jsonpath "$.[0].id"
+
 # Post a new city rating
 POST {{host}}/ratings
 {
-  "city_id": "09c049b6-213b-405c-bc4e-178346ff814d",
+  "city_id": "{{city_id}}",
   "core_services": {
     "dentists": 0,
     "doctors": 0,
