@@ -1713,6 +1713,16 @@ components:
           nullable: true
         source:
           $ref: '#/components/schemas/APIErrorSource'
+          description: >-
+            An object containing references to the primary source of the error.
+
+
+            This field may be omitted in some situation. For instance, if the
+            server cannot
+
+            parse the request as valid JSON, including source doesn’t make sense
+
+            (because there’s no JSON document for source to refer to).
         status:
           type: string
           description: >-
@@ -1847,8 +1857,10 @@ components:
             pipeline
         status:
           $ref: '#/components/schemas/PipelineStatus'
+          description: Pipeline status
         step:
           $ref: '#/components/schemas/BnaPipelineStep'
+          description: Last pipeline step that was completed
     BnaPipelinePatch:
       type: object
       required:
@@ -1897,8 +1909,10 @@ components:
           nullable: true
         status:
           $ref: '#/components/schemas/PipelineStatus'
+          description: Pipeline status
         step:
           $ref: '#/components/schemas/BnaPipelineStep'
+          description: Last pipeline step that was completed
     BnaPipelinePost:
       type: object
       required:
@@ -1983,6 +1997,7 @@ components:
       properties:
         country:
           $ref: '#/components/schemas/Country'
+          description: Country name
         created_at:
           type: string
           format: date-time
@@ -2057,6 +2072,7 @@ components:
       properties:
         country:
           $ref: '#/components/schemas/Country'
+          description: Country name
         latitude:
           type: number
           format: double
@@ -2365,22 +2381,29 @@ components:
           description: City identifier
         core_services:
           $ref: '#/components/schemas/CoreServices'
+          description: BNA Core Services
         id:
           type: string
           format: uuid
           description: Rating identifier
         infrastructure:
           $ref: '#/components/schemas/Infrastructure'
+          description: BNAInfrastructure
         measure:
           $ref: '#/components/schemas/Measure'
+          description: Measurement of the city's bike infrastructure.
         opportunity:
           $ref: '#/components/schemas/Opportunity'
+          description: BNA Opportunity
         people:
           $ref: '#/components/schemas/People'
+          description: BNA People
         recreation:
           $ref: '#/components/schemas/Recreation'
+          description: BNA Recreation
         retail:
           $ref: '#/components/schemas/Retail'
+          description: BNA Retail
         score:
           type: number
           format: double
@@ -2389,6 +2412,7 @@ components:
           minimum: 0
         transit:
           $ref: '#/components/schemas/Transit'
+          description: BNA Transit
         version:
           type: string
           description: >-
@@ -2421,14 +2445,19 @@ components:
           description: City identifier
         core_services:
           $ref: '#/components/schemas/CoreServices'
+          description: BNA Core Services
         infrastructure:
           $ref: '#/components/schemas/Infrastructure'
+          description: BNAInfrastructure
         measure:
           $ref: '#/components/schemas/Measure'
+          description: Measurement of the city's bike infrastructure.
         opportunity:
           $ref: '#/components/schemas/Opportunity'
+          description: BNA Opportunity
         people:
           $ref: '#/components/schemas/People'
+          description: BNA People
         pop_size:
           type: integer
           format: int32
@@ -2441,8 +2470,10 @@ components:
             Survey.
         recreation:
           $ref: '#/components/schemas/Recreation'
+          description: BNA Recreation
         retail:
           $ref: '#/components/schemas/Retail'
+          description: BNA Retail
         score:
           type: number
           format: double
@@ -2454,6 +2485,7 @@ components:
           nullable: true
         transit:
           $ref: '#/components/schemas/Transit'
+          description: BNA Transit
         version:
           type: string
           description: >-
@@ -2595,6 +2627,7 @@ components:
           example: 'true'
         country:
           $ref: '#/components/schemas/Country'
+          description: Country
         created_at:
           type: string
           format: date-time
@@ -2667,6 +2700,7 @@ components:
           example: 'true'
         country:
           $ref: '#/components/schemas/Country'
+          description: Country
         email:
           type: string
           description: email address
@@ -2731,6 +2765,7 @@ components:
           example: 'true'
         country:
           $ref: '#/components/schemas/Country'
+          description: Country
         email:
           type: string
           description: email address
