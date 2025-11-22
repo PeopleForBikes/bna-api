@@ -11,7 +11,11 @@ use entity::{
     city, core_services, infrastructure, opportunity, people, prelude::*, recreation, retail,
     summary, transit,
 };
-use sea_orm::{prelude::Uuid, ActiveValue, Database, EntityTrait};
+use sea_orm::{
+    prelude::Uuid,
+    ActiveValue::{self},
+    Database, EntityTrait,
+};
 use serde::Deserialize;
 use std::collections::{HashMap, HashSet};
 use time::format_description::well_known;
@@ -26,12 +30,15 @@ pub struct CitySpeedLimitCSV {
     speed: u32,
 }
 
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Csc(String, String, String);
+
 #[tokio::main]
 async fn main() -> Result<(), Report> {
     dotenv().ok();
 
     // Populate entities.
-    let mut cities: HashMap<Uuid, city::ActiveModel> = HashMap::new();
+    let mut cities: HashMap<Csc, city::ActiveModel> = HashMap::new();
     let mut summaries: Vec<summary::ActiveModel> = Vec::new();
     let mut bna_people: Vec<people::ActiveModel> = Vec::new();
     let mut bna_retail: Vec<retail::ActiveModel> = Vec::new();
@@ -40,8 +47,9 @@ async fn main() -> Result<(), Report> {
     let mut bna_recreation: Vec<recreation::ActiveModel> = Vec::new();
     let mut bna_opportunity: Vec<opportunity::ActiveModel> = Vec::new();
     let mut bna_infrastructure: Vec<infrastructure::ActiveModel> = Vec::new();
-    let mut versions: HashMap<Uuid, Calver> = HashMap::new();
+    let mut versions: HashMap<Csc, Calver> = HashMap::new();
     let mut city_fips2limit: HashMap<u32, u32> = HashMap::new();
+    let mut csc_2_cids: HashMap<Csc, Uuid> = HashMap::new();
 
     // Set the database connection.
     let database_url = dotenv::var("DATABASE_URL")?;
@@ -65,13 +73,13 @@ async fn main() -> Result<(), Report> {
     let mut city_speed_limit_csv_reader =
         Reader::from_path("examples/seeder-city_fips_speed-v24.03.csv")?;
     for record in city_speed_limit_csv_reader.deserialize() {
-        // Read the record.
         let speed_limit: CitySpeedLimitCSV = record?;
         city_fips2limit.insert(speed_limit.fips_code_city, speed_limit.speed);
     }
 
     // Load the historical data CSV file.
     let mut csv_reader = Reader::from_path("examples/sample.csv")?;
+    let mut cids: HashSet<Uuid> = HashSet::new();
     for record in csv_reader.deserialize() {
         // Read the record.
         let scorecard: ScoreCard24 = record?;
@@ -90,20 +98,39 @@ async fn main() -> Result<(), Report> {
         // Get the City UUID.
         let city_uuid = Uuid::parse_str(&scorecard.bna_id).unwrap();
 
-        // Look for a newer summary entry than this one.
-        let mut has_newer = false;
-        if versions.contains_key(&city_uuid) {
-            let v = versions.get(&city_uuid).unwrap();
-            if version > *v {
-                versions.insert(city_uuid, version.clone());
-                has_newer = true;
+        // Compute the city primary key.
+        let csc = Csc(
+            scorecard.country.clone(),
+            scorecard.state_full.clone(),
+            scorecard.city.clone(),
+        );
+
+        if let Some(city_id) = csc_2_cids.get_key_value(&csc) {
+            if *city_id.1 != city_uuid {
+                println!("ERROR: mismatched city UUID detected!");
+                println!("Mismatch: existing = {}, new = {}", city_id.1, city_uuid);
+                dbg!(csc.clone());
+                return Ok(());
             }
         } else {
-            versions.insert(city_uuid, version.clone());
+            csc_2_cids.insert(csc.clone(), city_uuid);
+        }
+
+        // Look for a new or a newer summary entry than this one.
+        let is_new_city = !versions.contains_key(&csc);
+        if is_new_city {
+            versions.insert(csc.clone(), version.clone());
+        }
+        let mut is_newer_version = false;
+        if let Some(previous_version) = versions.get(&csc) {
+            if version > *previous_version {
+                versions.insert(csc.clone(), version.clone());
+                is_newer_version = true;
+            }
         }
 
         // Populate the city model.
-        if !has_newer {
+        if is_new_city || is_newer_version {
             let fips_code = scorecard.census_fips_code.unwrap_or_default().to_string();
             let city_speed_limit = match scorecard.census_fips_code {
                 Some(fips) => city_fips2limit.get(&fips).map(|x| *x as i32),
@@ -134,7 +161,18 @@ async fn main() -> Result<(), Report> {
                 updated_at: ActiveValue::NotSet,
                 fips_code: ActiveValue::Set(Some(fips_code)),
             };
-            cities.insert(city_uuid, city_model);
+
+            if is_new_city && !cids.insert(city_uuid) {
+                println!("ERROR: duplicate city UUID detected!");
+                dbg!(csc);
+                dbg!(city_uuid);
+                dbg!(version);
+                dbg!(is_new_city);
+                dbg!(is_newer_version);
+                return Ok(());
+            }
+
+            cities.insert(csc, city_model);
         }
 
         // Populate the summary model.
@@ -222,10 +260,15 @@ async fn main() -> Result<(), Report> {
     }
 
     // Insert the entries.
+    dbg!(&cities.len());
     City::insert_many(cities.into_values()).exec(&db).await?;
+    println!("Cities inserted.");
+    dbg!(&summaries.len());
     for chunk in summaries.chunks(CHUNK_SIZE) {
+        dbg!(&chunk);
         Summary::insert_many(chunk.to_vec()).exec(&db).await?;
     }
+    println!("Summaries inserted.");
     People::insert_many(bna_people).exec(&db).await?;
     Retail::insert_many(bna_retail).exec(&db).await?;
     Transit::insert_many(bna_transit).exec(&db).await?;
