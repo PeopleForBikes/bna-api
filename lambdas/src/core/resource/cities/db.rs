@@ -1,7 +1,7 @@
 use entity::{city, country, state_region_crosswalk, submission, summary, Summary};
 use sea_orm::{
     ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait,
-    FromQueryResult, PaginatorTrait, QueryFilter, QuerySelect, Statement,
+    FromQueryResult, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
 };
 use serde::Serialize;
 use uuid::Uuid;
@@ -43,7 +43,8 @@ pub(crate) async fn fetch_cities_ratings(
 ) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), DbErr> {
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
-            .find_also_related(summary::Entity);
+            .find_also_related(summary::Entity)
+            .order_by_desc(summary::Column::Version);
     let models = select
         .clone()
         .paginate(db, page_size)
