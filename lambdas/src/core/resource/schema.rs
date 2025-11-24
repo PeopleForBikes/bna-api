@@ -109,7 +109,7 @@ impl From<entity::city::Model> for City {
             state: value.state,
             name: value.name,
             latitude: value.latitude,
-            longitude: value.latitude,
+            longitude: value.longitude,
             region: value.region,
             state_abbrev: value.state_abbrev,
             residential_speed_limit: value.residential_speed_limit,
