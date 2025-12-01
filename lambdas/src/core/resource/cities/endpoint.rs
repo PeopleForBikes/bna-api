@@ -84,7 +84,6 @@ async fn get_city(
 async fn get_cities(
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
-    // let Query(pagination) = pagination;
     let payload = get_cities_adaptor(pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
         Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),

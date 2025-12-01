@@ -1485,6 +1485,117 @@ paths:
           description: Fetches the latest rating reports for a specific year in csv format
           content:
             text/csv: {}
+  /usstates:
+    get:
+      tags:
+      - usstate
+      description: Get the details of all US states.
+      operationId: get_us_states
+      parameters:
+      - name: page_size
+        in: query
+        description: The number of items per page
+        required: false
+        schema:
+          type: integer
+          format: int64
+          maximum: 65536
+          minimum: 1
+        example: 25
+      - name: page
+        in: query
+        description: The result page being returned
+        required: false
+        schema:
+          type: integer
+          format: int64
+          maximum: 65536
+          minimum: 1
+        example: 5
+      responses:
+        '200':
+          description: Fetches US states
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsStates'
+  /usstates/{name}:
+    get:
+      tags:
+      - usstate
+      description: Get the details of a specific US state.
+      operationId: get_us_state
+      parameters:
+      - name: name
+        in: path
+        description: Full name of a US state
+        required: true
+        schema:
+          type: string
+        example: Texas
+      responses:
+        '200':
+          description: Fetches a Us state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UsState'
+        '400':
+          description: The request was formatted incorrectly or missing required parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                - details: the request was formatted incorrectly or missing required parameters
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    parameter: status
+                  status: '400'
+                  title: Bad Request
+        '401':
+          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                - details: invalid authentication credentials to access the specified resource
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '401'
+                  title: Unauthorized
+        '403':
+          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                - details: access to the requested resource is forbidden
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '403'
+                  title: Forbidden
+        '404':
+          description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                - details: the resource was not found
+                  id: blfwkg8nvHcEJnQ=
+                  source:
+                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                  status: '404'
+                  title: Item Not Found
 components:
   schemas:
     APIError:
@@ -2684,6 +2795,40 @@ components:
           description: BNA category score for access to major transit stops.
           maximum: 100
           minimum: 0
+    UsState:
+      type: object
+      description: Detailed information of a city
+      required:
+      - name
+      - abbrev
+      - fipscode
+      - speed_limit
+      properties:
+        abbrev:
+          type: string
+          description: Two-letter state abbreviation..
+          examples:
+          - TX
+        fipscode:
+          type: string
+          description: State FIPS code.
+          examples:
+          - '48'
+        name:
+          type: string
+          description: State name.
+          examples:
+          - Texas
+        speed_limit:
+          type: integer
+          format: int32
+          description: State speed limit in mph.
+          examples:
+          - '30'
+    UsStates:
+      type: array
+      items:
+        $ref: '#/components/schemas/UsState'
 tags:
 - name: city
   description: City API endpoints

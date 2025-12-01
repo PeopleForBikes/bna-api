@@ -56,15 +56,14 @@ The first terminal is used to watch the API server output in debug mode.
 
 The second terminal will serve to send requests to the server.
 
-You can send requests using cURL or your favorite REST client, for
-instance:
+You can send requests using cURL or your favorite REST client, for instance:
 
 ```bash
 # Query the first page of City Ratings.
 curl http://localhost:3000/ratings
 ```
 
-Or use the predifined test suites, using Hurl:
+Or use the predefined test suites, using Hurl:
 
 ```bash
 cd lambda/tests
