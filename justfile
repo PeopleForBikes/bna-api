@@ -37,11 +37,11 @@ lint-spellcheck:
 
 # Dump database schema.
 db-dump:
-  pg_dump -d $DATABASE_URL --schema-only > {{ sql_dump }}
+    pg_dump -d $DATABASE_URL --schema-only > {{ sql_dump }}
 
 # Dump database with data.
 db-dump-with-data:
-  pg_dump -d $DATABASE_URL > {{ sql_dump_data }}
+    pg_dump -d $DATABASE_URL > {{ sql_dump_data }}
 
 # Dump database and convert it to dbml.
 db-to-dbml: db-dump dbml-from-sql dbml-svg
@@ -53,7 +53,6 @@ db-generate-models:
       -o {{ entites }} \
       --with-serde both \
       --date-time-crate chrono
-
 
 # Apply migrations and seed the database.
 db-init: db-migrate db-seed
@@ -78,25 +77,25 @@ db-seed:
 
 # Generate PostgreSQL dump from dbml.
 dbml-sql:
-  npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} -o {{ sql_dump }}
+    npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} -o {{ sql_dump }}
 
 # Convert PostgreSQL dump to dbml.
 dbml-from-sql:
-  npx -y --package=@dbml/cli sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
+    npx -y --package=@dbml/cli sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
 
 # Generate the SVG diagram from dbml.
 dbml-svg:
-  npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i {{ dbml }} -o docs/database.svg
+    npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i {{ dbml }} -o docs/database.svg
 
 # Spin up Docker Compose.
 compose-up:
-  docker compose up -d
+    docker compose up -d
 
 # Tear down Docker Compose.
 compose-down:
-  docker compose down
-  docker compose rm -sfv
-  docker volume rm -f bna-api_postgres
+    docker compose down
+    docker compose rm -sfv
+    docker volume rm -f bna-api_postgres
 
 # Generate BNA API client.
 generate-client:
@@ -111,22 +110,22 @@ generate-client:
 
 # Start the Axum server locally in watch mode.
 debug-axum:
-  bacon axum-debug
+    bacon axum-debug
 
 # Generate the OAS 3.1.x from the Axum source code.
 generate-oas-31:
-  BNA_API_GENERATE_ONLY=1 \
-    cargo run \
-    -p lambdas \
-    --bin axumed
+    BNA_API_GENERATE_ONLY=1 \
+      cargo run \
+      -p lambdas \
+      --bin axumed
 
 # Generate the OAS 3.0.x from the OAS 3.1.x.
 generate-oas-30:
-  npx -y @apiture/openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
+    npx -y @apiture/openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
 
 # Regenerate the OpenAPI specifications and the client.
 regenerate-all: generate-oas-31 generate-oas-30 generate-client
 
 # Regenerate the OpenAPI specifications and the client without updating Cargo.toml.
 regenerate-all-no-cargo: regenerate-all
-  git restore bnaclient/Cargo.toml
+    git restore bnaclient/Cargo.toml

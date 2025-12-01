@@ -3,6 +3,7 @@ use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities, pipelines, price, ratings, reports,
     schema::{APIError, APIErrorSource, APIErrors},
+    usstates,
 };
 use std::{
     env::{self, set_var},
@@ -124,6 +125,7 @@ async fn main() -> Result<(), Error> {
         .merge(price::endpoint::routes())
         .merge(ratings::endpoint::routes())
         .merge(reports::endpoint::routes())
+        .merge(usstates::endpoint::routes())
         .layer(TraceLayer::new_for_http())
         .split_for_parts();
 

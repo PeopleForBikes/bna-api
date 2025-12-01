@@ -3228,6 +3228,119 @@ pub mod types {
         }
     }
 
+    ///Detailed information of a city
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Detailed information of a city",
+    ///  "type": "object",
+    ///  "required": [
+    ///    "abbrev",
+    ///    "fipscode",
+    ///    "name",
+    ///    "speed_limit"
+    ///  ],
+    ///  "properties": {
+    ///    "abbrev": {
+    ///      "description": "Two-letter state abbreviation..",
+    ///      "examples": [
+    ///        "TX"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "fipscode": {
+    ///      "description": "State FIPS code.",
+    ///      "examples": [
+    ///        "48"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "name": {
+    ///      "description": "State name.",
+    ///      "examples": [
+    ///        "Texas"
+    ///      ],
+    ///      "type": "string"
+    ///    },
+    ///    "speed_limit": {
+    ///      "description": "State speed limit in mph.",
+    ///      "examples": [
+    ///        "30"
+    ///      ],
+    ///      "type": "integer",
+    ///      "format": "int32"
+    ///    }
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    pub struct UsState {
+        ///Two-letter state abbreviation..
+        pub abbrev: ::std::string::String,
+        ///State FIPS code.
+        pub fipscode: ::std::string::String,
+        ///State name.
+        pub name: ::std::string::String,
+        ///State speed limit in mph.
+        pub speed_limit: i32,
+    }
+
+    impl ::std::convert::From<&UsState> for UsState {
+        fn from(value: &UsState) -> Self {
+            value.clone()
+        }
+    }
+
+    impl UsState {
+        pub fn builder() -> builder::UsState {
+            Default::default()
+        }
+    }
+
+    ///`UsStates`
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "type": "array",
+    ///  "items": {
+    ///    "$ref": "#/components/schemas/UsState"
+    ///  }
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(transparent)]
+    pub struct UsStates(pub ::std::vec::Vec<UsState>);
+    impl ::std::ops::Deref for UsStates {
+        type Target = ::std::vec::Vec<UsState>;
+        fn deref(&self) -> &::std::vec::Vec<UsState> {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<UsStates> for ::std::vec::Vec<UsState> {
+        fn from(value: UsStates) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::convert::From<&UsStates> for UsStates {
+        fn from(value: &UsStates) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ::std::convert::From<::std::vec::Vec<UsState>> for UsStates {
+        fn from(value: ::std::vec::Vec<UsState>) -> Self {
+            Self(value)
+        }
+    }
+
     /// Types for composing complex structures.
     pub mod builder {
         #[derive(Clone, Debug)]
@@ -6370,6 +6483,93 @@ pub mod types {
                 }
             }
         }
+
+        #[derive(Clone, Debug)]
+        pub struct UsState {
+            abbrev: ::std::result::Result<::std::string::String, ::std::string::String>,
+            fipscode: ::std::result::Result<::std::string::String, ::std::string::String>,
+            name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            speed_limit: ::std::result::Result<i32, ::std::string::String>,
+        }
+
+        impl ::std::default::Default for UsState {
+            fn default() -> Self {
+                Self {
+                    abbrev: Err("no value supplied for abbrev".to_string()),
+                    fipscode: Err("no value supplied for fipscode".to_string()),
+                    name: Err("no value supplied for name".to_string()),
+                    speed_limit: Err("no value supplied for speed_limit".to_string()),
+                }
+            }
+        }
+
+        impl UsState {
+            pub fn abbrev<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.abbrev = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for abbrev: {}", e));
+                self
+            }
+            pub fn fipscode<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.fipscode = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for fipscode: {}", e));
+                self
+            }
+            pub fn name<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::string::String>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.name = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for name: {}", e));
+                self
+            }
+            pub fn speed_limit<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<i32>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.speed_limit = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for speed_limit: {}", e));
+                self
+            }
+        }
+
+        impl ::std::convert::TryFrom<UsState> for super::UsState {
+            type Error = super::error::ConversionError;
+            fn try_from(
+                value: UsState,
+            ) -> ::std::result::Result<Self, super::error::ConversionError> {
+                Ok(Self {
+                    abbrev: value.abbrev?,
+                    fipscode: value.fipscode?,
+                    name: value.name?,
+                    speed_limit: value.speed_limit?,
+                })
+            }
+        }
+
+        impl ::std::convert::From<super::UsState> for UsState {
+            fn from(value: super::UsState) -> Self {
+                Self {
+                    abbrev: Ok(value.abbrev),
+                    fipscode: Ok(value.fipscode),
+                    name: Ok(value.name),
+                    speed_limit: Ok(value.speed_limit),
+                }
+            }
+        }
     }
 }
 
@@ -6800,6 +7000,40 @@ impl Client {
     /// ```
     pub fn get_reports_year(&self) -> builder::GetReportsYear<'_> {
         builder::GetReportsYear::new(self)
+    }
+
+    ///Get the details of all US states.
+    ///
+    ///Sends a `GET` request to `/usstates`
+    ///
+    ///Arguments:
+    /// - `page`: The result page being returned
+    /// - `page_size`: The number of items per page
+    ///```ignore
+    /// let response = client.get_us_states()
+    ///    .page(page)
+    ///    .page_size(page_size)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_us_states(&self) -> builder::GetUsStates<'_> {
+        builder::GetUsStates::new(self)
+    }
+
+    ///Get the details of a specific US state.
+    ///
+    ///Sends a `GET` request to `/usstates/{name}`
+    ///
+    ///Arguments:
+    /// - `name`: Full name of a US state
+    ///```ignore
+    /// let response = client.get_us_state()
+    ///    .name(name)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_us_state(&self) -> builder::GetUsState<'_> {
+        builder::GetUsState::new(self)
     }
 }
 
@@ -8676,6 +8910,163 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => Ok(ResponseValue::stream(response)),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_us_states`]
+    ///
+    ///[`Client::get_us_states`]: super::Client::get_us_states
+    #[derive(Debug, Clone)]
+    pub struct GetUsStates<'a> {
+        client: &'a super::Client,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
+    }
+
+    impl<'a> GetUsStates<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                page: Ok(None),
+                page_size: Ok(None),
+            }
+        }
+
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
+        {
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
+        {
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
+            self
+        }
+
+        ///Sends a `GET` request to `/usstates`
+        pub async fn send(self) -> Result<ResponseValue<types::UsStates>, Error<()>> {
+            let Self {
+                client,
+                page,
+                page_size,
+            } = self;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let url = format!("{}/usstates", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .headers(header_map)
+                .build()?;
+            let info = OperationInfo {
+                operation_id: "get_us_states",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_us_state`]
+    ///
+    ///[`Client::get_us_state`]: super::Client::get_us_state
+    #[derive(Debug, Clone)]
+    pub struct GetUsState<'a> {
+        client: &'a super::Client,
+        name: Result<::std::string::String, String>,
+    }
+
+    impl<'a> GetUsState<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                name: Err("name was not initialized".to_string()),
+            }
+        }
+
+        pub fn name<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.name = value.try_into().map_err(|_| {
+                "conversion to `:: std :: string :: String` for name failed".to_string()
+            });
+            self
+        }
+
+        ///Sends a `GET` request to `/usstates/{name}`
+        pub async fn send(self) -> Result<ResponseValue<types::UsState>, Error<types::ApiErrors>> {
+            let Self { client, name } = self;
+            let name = name.map_err(Error::InvalidRequest)?;
+            let url = format!(
+                "{}/usstates/{}",
+                client.baseurl,
+                encode_path(&name.to_string()),
+            );
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .headers(header_map)
+                .build()?;
+            let info = OperationInfo {
+                operation_id: "get_us_state",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                401u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                403u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
