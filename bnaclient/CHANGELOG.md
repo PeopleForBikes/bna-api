@@ -8,6 +8,15 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.3.0] - 2025-12-01
+
+### Added
+
+- Added `/usstates` endpoint to get the details of the US states. [#348]
+
+[#348]: https://github.com/PeopleForBikes/bna-api/pull/348
+[1.3.0]: https://github.com/PeopleForBikes/bna-api/releases/tag/1.3.0
+
 ## [1.2.0] - 2025-07-09
 
 ### Added

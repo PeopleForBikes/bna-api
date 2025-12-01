@@ -24,7 +24,8 @@ test *env:
     endpoints/cities.hurl \
     endpoints/pricing.hurl \
     endpoints/ratings.hurl \
-    endpoints/reports.hurl
+    endpoints/reports.hurl \
+    endpoints/usstates.hurl
 
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-public *env:
