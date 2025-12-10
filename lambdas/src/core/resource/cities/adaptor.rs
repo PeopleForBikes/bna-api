@@ -174,10 +174,12 @@ pub async fn post_cities_submission_adaptor(
     // Set the database connection.
     let db = database_connect().await?;
 
+    // note(rgreinho): Leaving it commented out here because this check is still under
+    // discussion.
     // Ensure the country is a valid one.
-    if fetch_country(&db, &submission.country).await?.is_none() {
-        return Err(ExecutionError::UncoveredCountry(submission.country));
-    }
+    // if fetch_country(&db, &submission.country).await?.is_none() {
+    //     return Err(ExecutionError::UncoveredCountry(submission.country));
+    // }
 
     // Turn the post model into an active model.
     let mut active_model: entity::submission::ActiveModel = submission.into_active_model();
