@@ -30,6 +30,7 @@ use effortless::api::PaginationParameters;
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
 use serde_json::Value;
+use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "city";
@@ -239,6 +240,10 @@ async fn post_cities_submission(
 ) -> Result<(StatusCode, Json<Submission>), ExecutionError> {
     post_cities_submission_adaptor(submission)
         .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
         .map(Submission::from)
         .map(|v| (StatusCode::CREATED, Json(v)))
 }
