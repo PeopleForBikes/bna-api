@@ -45,7 +45,7 @@ serde_with = "3.16.1"
 thiserror = "2.0.17"
 time = "0.3.44"
 tokio = "1.48.0"
-tower-http = "0.6.7"
+tower-http = "0.6.8"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3.22", default-features = false }
 url = "2.5.7"
