@@ -13,7 +13,7 @@ aws_lambda_events = "1.0.1"
 aws-config = "1.8.11"
 aws-sdk-s3 = "1.116.0"
 aws-sdk-sqs = "1.91.0"
-axum = "0.8.7"
+axum = "0.8.8"
 axum-extra = "0.12.2"
 axum-streams = "0.24.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "87a367b" }
