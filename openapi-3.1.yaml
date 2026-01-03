@@ -7,1620 +7,1620 @@ info:
     url: https://peopleforbikes.github.io/
   version: 1.0.0
 servers:
-- url: https://localhost:3000
-  description: Local development API
-- url: https://api.peopleforbikes.xyz
-  description: Staging API
+  - url: http://localhost:3000
+    description: Local development API
+  - url: https://api.peopleforbikes.xyz
+    description: Staging API
 paths:
   /cities:
     get:
       tags:
-      - city
+        - city
       description: Get the details of all cities where an BNA analysis was performed.
       operationId: get_cities
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches cities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cities'
+                $ref: "#/components/schemas/Cities"
     post:
       tags:
-      - city
+        - city
       description: Create a new city.
       operationId: post_city
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CityPost'
+              $ref: "#/components/schemas/CityPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/City'
-        '400':
+                $ref: "#/components/schemas/City"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /cities/submissions:
     get:
       tags:
-      - city
+        - city
       description: Get the submissions details.
       operationId: get_cities_submissions
       parameters:
-      - name: status
-        in: query
-        description: Filter for the submission status
-        required: false
-        schema:
-          type: string
-        example: Pending
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: status
+          in: query
+          description: Filter for the submission status
+          required: false
+          schema:
+            type: string
+          example: Pending
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches submissions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submissions'
-        '400':
+                $ref: "#/components/schemas/Submissions"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
     post:
       tags:
-      - city
+        - city
       description: Create a new city submission.
       operationId: post_cities_submission
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmissionPost'
+              $ref: "#/components/schemas/SubmissionPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /cities/submissions/{submission_id}:
     get:
       tags:
-      - city
+        - city
       description: Get the details of a specific sumission.
       operationId: get_cities_submission
       parameters:
-      - name: submission_id
-        in: path
-        description: Submission identifier
-        required: true
-        schema:
-          type: integer
-          format: int32
-        example: '1'
-      - name: status
-        in: query
-        description: Filter for the submission status
-        required: false
-        schema:
-          type: string
-        example: Pending
+        - name: submission_id
+          in: path
+          description: Submission identifier
+          required: true
+          schema:
+            type: integer
+            format: int32
+          example: "1"
+        - name: status
+          in: query
+          description: Filter for the submission status
+          required: false
+          schema:
+            type: string
+          example: Pending
       responses:
-        '200':
+        "200":
           description: Fetches a submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
     patch:
       tags:
-      - city
+        - city
       description: Update a city submission.
       operationId: patch_cities_submission
       parameters:
-      - name: submission_id
-        in: path
-        description: Submission identifier
-        required: true
-        schema:
-          type: integer
-          format: int32
-        example: '1'
+        - name: submission_id
+          in: path
+          description: Submission identifier
+          required: true
+          schema:
+            type: integer
+            format: int32
+          example: "1"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmissionPatch'
+              $ref: "#/components/schemas/SubmissionPatch"
         required: true
       responses:
-        '200':
+        "200":
           description: Updates a city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /cities/top/{year}/{count}:
     get:
       tags:
-      - city
+        - city
       description: Get the top N cities for a specific year.
       operationId: get_top_cities
       parameters:
-      - name: year
-        in: path
-        description: The year to collect the top cities for
-        required: true
-        schema:
-          type: integer
-          format: int32
-          maximum: 2029
-          minimum: 2017
-        example: '2024'
-      - name: count
-        in: path
-        description: The number of top cities to collect
-        required: true
-        schema:
-          type: integer
-          format: int32
-          maximum: 25
-          minimum: 1
-        example: '10'
+        - name: year
+          in: path
+          description: The year to collect the top cities for
+          required: true
+          schema:
+            type: integer
+            format: int32
+            maximum: 2029
+            minimum: 2017
+          example: "2024"
+        - name: count
+          in: path
+          description: The number of top cities to collect
+          required: true
+          schema:
+            type: integer
+            format: int32
+            maximum: 25
+            minimum: 1
+          example: "10"
       responses:
-        '200':
+        "200":
           description: Fetches cities with their respective summary
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CitiesWithSummary'
-        '400':
+                $ref: "#/components/schemas/CitiesWithSummary"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /cities/{country}/{region}/{name}:
     get:
       tags:
-      - city
+        - city
       description: Get the details of a specific city where an BNA analysis was computed.
       operationId: get_city
       parameters:
-      - name: country
-        in: path
-        description: Country name
-        required: true
-        schema:
-          $ref: '#/components/schemas/Country'
-        example: Belgium
-      - name: region
-        in: path
-        description: |-
-          Region name. A region can be a state, a province, a community, or
-          something similar depending on the country. If a country does not have
-          this concept, then the country name is used.
-        required: true
-        schema:
-          type: string
-        example: Antwerp
-      - name: name
-        in: path
-        description: City name
-        required: true
-        schema:
-          type: string
-        example: Antwerp
+        - name: country
+          in: path
+          description: Country name
+          required: true
+          schema:
+            $ref: "#/components/schemas/Country"
+          example: Belgium
+        - name: region
+          in: path
+          description: |-
+            Region name. A region can be a state, a province, a community, or
+            something similar depending on the country. If a country does not have
+            this concept, then the country name is used.
+          required: true
+          schema:
+            type: string
+          example: Antwerp
+        - name: name
+          in: path
+          description: City name
+          required: true
+          schema:
+            type: string
+          example: Antwerp
       responses:
-        '200':
+        "200":
           description: Fetches a city
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/City'
-        '400':
+                $ref: "#/components/schemas/City"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /cities/{country}/{region}/{name}/ratings:
     get:
       tags:
-      - city
+        - city
       description: Get the details of a specific city with all the analysis that were performed against it.
       operationId: get_city_ratings
       parameters:
-      - name: country
-        in: path
-        description: Country name
-        required: true
-        schema:
-          $ref: '#/components/schemas/Country'
-        example: Belgium
-      - name: region
-        in: path
-        description: |-
-          Region name. A region can be a state, a province, a community, or
-          something similar depending on the country. If a country does not have
-          this concept, then the country name is used.
-        required: true
-        schema:
-          type: string
-        example: Antwerp
-      - name: name
-        in: path
-        description: City name
-        required: true
-        schema:
-          type: string
-        example: Antwerp
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: country
+          in: path
+          description: Country name
+          required: true
+          schema:
+            $ref: "#/components/schemas/Country"
+          example: Belgium
+        - name: region
+          in: path
+          description: |-
+            Region name. A region can be a state, a province, a community, or
+            something similar depending on the country. If a country does not have
+            this concept, then the country name is used.
+          required: true
+          schema:
+            type: string
+          example: Antwerp
+        - name: name
+          in: path
+          description: City name
+          required: true
+          schema:
+            type: string
+          example: Antwerp
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches city ratings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CityRatings'
-        '400':
+                $ref: "#/components/schemas/CityRatings"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /pipelines/bna:
     get:
       tags:
-      - pipeline
+        - pipeline
       description: Get the details of all BNA pipelines
       operationId: get_pipelines_bnas
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches the details of all BNA pipelines
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipelines'
-        '400':
+                $ref: "#/components/schemas/BnaPipelines"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
     post:
       tags:
-      - pipeline
+        - pipeline
       description: Create a new BNA pipeline
       operationId: post_pipelines_bna
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BnaPipelinePost'
+              $ref: "#/components/schemas/BnaPipelinePost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /pipelines/bna/{pipeline_id}:
     get:
       tags:
-      - pipeline
+        - pipeline
       description: Get the details of a specific BNA pipeline
       operationId: get_pipelines_bna
       parameters:
-      - name: pipeline_id
-        in: path
-        description: Pipeline identifier
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: pipeline_id
+          in: path
+          description: Pipeline identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches the details of a BNA pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
     patch:
       tags:
-      - pipeline
+        - pipeline
       description: Update the details of a specific BNA pipeline
       operationId: patch_pipelines_bna
       parameters:
-      - name: pipeline_id
-        in: path
-        description: Pipeline identifier
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: pipeline_id
+          in: path
+          description: Pipeline identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BnaPipelinePatch'
+              $ref: "#/components/schemas/BnaPipelinePatch"
         required: true
       responses:
-        '200':
+        "200":
           description: Updates the details of a BNA pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /prices/fargate:
     get:
       tags:
-      - price
+        - price
       description: Get all the AWS Fargate prices used to compute analysis costs.
       operationId: get_prices_fargate
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches a collection of Fargate prices
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FargatePrices'
+                $ref: "#/components/schemas/FargatePrices"
   /prices/fargate/{price_id}:
     get:
       tags:
-      - price
+        - price
       description: Get a specific AWS Fargate price used to compute the cost of analysis cost.
       operationId: get_price_fargate
       parameters:
-      - name: price_id
-        in: path
-        description: Identifier of a Fargate price
-        required: true
-        schema:
-          type: integer
-          format: int32
+        - name: price_id
+          in: path
+          description: Identifier of a Fargate price
+          required: true
+          schema:
+            type: integer
+            format: int32
       responses:
-        '200':
+        "200":
           description: Fetches a Fargate price used to estimate the cost of an analysis
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FargatePrice'
-        '400':
+                $ref: "#/components/schemas/FargatePrice"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /ratings:
     get:
       tags:
-      - rating
+        - rating
       description: Get city ratings
       operationId: get_ratings
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches the city ratings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ratings'
+                $ref: "#/components/schemas/Ratings"
     post:
       tags:
-      - rating
+        - rating
       description: Create a new city rating
       operationId: post_rating
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RatingPost'
+              $ref: "#/components/schemas/RatingPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city rating
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rating'
-        '400':
+                $ref: "#/components/schemas/Rating"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /ratings/{rating_id}:
     get:
       tags:
-      - rating
+        - rating
       description: Get the details of a specific city rating
       operationId: get_rating
       parameters:
-      - name: rating_id
-        in: path
-        description: Rating identifier
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: rating_id
+          in: path
+          description: Rating identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches the details of a city rating
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rating'
-        '400':
+                $ref: "#/components/schemas/Rating"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /ratings/{rating_id}/city:
     get:
       tags:
-      - rating
+        - rating
       description: Get a city rating and its associated city details
       operationId: get_ratings_city
       parameters:
-      - name: rating_id
-        in: path
-        description: Rating identifier
-        required: true
-        schema:
-          type: string
-          format: uuid
+        - name: rating_id
+          in: path
+          description: Rating identifier
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches a city rating and its associated city details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RatingWithCity'
-        '400':
+                $ref: "#/components/schemas/RatingWithCity"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
   /reports:
     get:
       tags:
-      - report
+        - report
       description: Retrieve all rating reports.
       operationId: get_reports
       responses:
-        '200':
+        "200":
           description: Fetches all rating reports in csv format
           content:
             text/csv: {}
   /reports/{year}:
     get:
       tags:
-      - report
+        - report
       description: Retrieve the latest rating reports for a specific year.
       operationId: get_reports_year
       parameters:
-      - name: year
-        in: path
-        description: Year to retrieve the reports for
-        required: true
-        schema:
-          type: integer
-          format: int32
-          maximum: 2029
-          minimum: 2017
+        - name: year
+          in: path
+          description: Year to retrieve the reports for
+          required: true
+          schema:
+            type: integer
+            format: int32
+            maximum: 2029
+            minimum: 2017
       responses:
-        '200':
+        "200":
           description: Fetches the latest rating reports for a specific year in csv format
           content:
             text/csv: {}
   /usstates:
     get:
       tags:
-      - usstate
+        - usstate
       description: Get the details of all US states.
       operationId: get_us_states
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
-      - name: page
-        in: query
-        description: The result page being returned
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 5
+        - name: page_size
+          in: query
+          description: The number of items per page
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 25
+        - name: page
+          in: query
+          description: The result page being returned
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
       responses:
-        '200':
+        "200":
           description: Fetches US states
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsStates'
+                $ref: "#/components/schemas/UsStates"
   /usstates/{name}:
     get:
       tags:
-      - usstate
+        - usstate
       description: Get the details of a specific US state.
       operationId: get_us_state
       parameters:
-      - name: name
-        in: path
-        description: Full name of a US state
-        required: true
-        schema:
-          type: string
-        example: Texas
+        - name: name
+          in: path
+          description: Full name of a US state
+          required: true
+          schema:
+            type: string
+          example: Texas
       responses:
-        '200':
+        "200":
           description: Fetches a Us state
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsState'
-        '400':
+                $ref: "#/components/schemas/UsState"
+        "400":
           description: The request was formatted incorrectly or missing required parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the request was formatted incorrectly or missing required parameters
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    parameter: status
-                  status: '400'
-                  title: Bad Request
-        '401':
+                  - details: the request was formatted incorrectly or missing required parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: "400"
+                    title: Bad Request
+        "401":
           description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
+                  - details: invalid authentication credentials to access the specified resource
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "401"
+                    title: Unauthorized
+        "403":
           description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
-        '404':
+                  - details: access to the requested resource is forbidden
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "403"
+                    title: Forbidden
+        "404":
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
-                - details: the resource was not found
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '404'
-                  title: Item Not Found
+                  - details: the resource was not found
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                    status: "404"
+                    title: Item Not Found
 components:
   schemas:
     APIError:
       type: object
       description: Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
       required:
-      - status
-      - title
-      - details
-      - source
+        - status
+        - title
+        - details
+        - source
       properties:
         details:
           type: string
           description: A human-readable explanation specific to this occurrence of the problem
           examples:
-          - the entry was not found
+            - the entry was not found
         id:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: A unique identifier for this particular occurrence of the problem.
           examples:
-          - blfwkg8nvHcEJnQ=
+            - blfwkg8nvHcEJnQ=
         source:
-          $ref: '#/components/schemas/APIErrorSource'
+          $ref: "#/components/schemas/APIErrorSource"
           description: |-
             An object containing references to the primary source of the error.
 
@@ -1631,44 +1631,44 @@ components:
           type: string
           description: The HTTP status code applicable to this problem, expressed as a string value.
           examples:
-          - '404'
+            - "404"
         title:
           type: string
           description: A short, human-readable summary of the problem
           examples:
-          - Item Not Found
+            - Item Not Found
     APIErrorSource:
       oneOf:
-      - type: object
-        description: A JSON Pointer [RFC6901] to the value in the request document that caused the error.
-        required:
-        - pointer
-        properties:
-          pointer:
-            type: string
-            description: A JSON Pointer [RFC6901] to the value in the request document that caused the error.
-        examples:
-        - pointer: /data/attributes/title
-      - type: object
-        description: A string indicating which URI query parameter caused the error.
-        required:
-        - parameter
-        properties:
-          parameter:
-            type: string
-            description: A string indicating which URI query parameter caused the error.
-        examples:
-        - parameter: include
-      - type: object
-        description: A string indicating the name of a single request header which caused the error.
-        required:
-        - header
-        properties:
-          header:
-            type: string
-            description: A string indicating the name of a single request header which caused the error.
-        examples:
-        - header: Content-Type
+        - type: object
+          description: A JSON Pointer [RFC6901] to the value in the request document that caused the error.
+          required:
+            - pointer
+          properties:
+            pointer:
+              type: string
+              description: A JSON Pointer [RFC6901] to the value in the request document that caused the error.
+          examples:
+            - pointer: /data/attributes/title
+        - type: object
+          description: A string indicating which URI query parameter caused the error.
+          required:
+            - parameter
+          properties:
+            parameter:
+              type: string
+              description: A string indicating which URI query parameter caused the error.
+          examples:
+            - parameter: include
+        - type: object
+          description: A string indicating the name of a single request header which caused the error.
+          required:
+            - header
+          properties:
+            header:
+              type: string
+              description: A string indicating the name of a single request header which caused the error.
+          examples:
+            - header: Content-Type
       description: |-
         An object containing references to the primary source of the error.
 
@@ -1688,63 +1688,63 @@ components:
         Error objects MUST be returned as an array keyed by errors in the top level of a
         JSON:API document.
       required:
-      - errors
+        - errors
       properties:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/APIError'
+            $ref: "#/components/schemas/APIError"
     BnaPipeline:
       type: object
       required:
-      - start_time
-      - state_machine_id
-      - status
-      - step
+        - start_time
+        - state_machine_id
+        - status
+        - step
       properties:
         cost:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Cost of an analysis in USD
           examples:
-          - '6.8941'
+            - "6.8941"
         end_time:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: End time
         fargate_price_id:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Fargate price identifier used to compute the cost
         fargate_task_arn:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: ARN of the Fargate task that performed the analysis
           examples:
-          - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
+            - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
         s3_bucket:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Path of the S3 bucket where the results were stored
           examples:
-          - united states/new mexico/santa rosa/24.05.4
+            - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Copy of the JSON message that was sent for processing
           examples:
-          - city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
+            - city: santa rosa
+              country: United States
+              fips_code: "3570670"
+              region: new mexico
         start_time:
           type: string
           format: date-time
@@ -1756,124 +1756,124 @@ components:
             Pipeline identifier
             This is the ID of the AWS state machine that was used to run the pipeline
         status:
-          $ref: '#/components/schemas/PipelineStatus'
+          $ref: "#/components/schemas/PipelineStatus"
           description: Pipeline status
         step:
-          $ref: '#/components/schemas/BnaPipelineStep'
+          $ref: "#/components/schemas/BnaPipelineStep"
           description: Last pipeline step that was completed
     BnaPipelinePatch:
       type: object
       required:
-      - status
-      - step
+        - status
+        - step
       properties:
         cost:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Cost of an analysis in USD
           examples:
-          - '6.8941'
+            - "6.8941"
         end_time:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: End time
         fargate_price_id:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Fargate price identifier used to compute the cost
         fargate_task_arn:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: ARN of the Fargate task that performed the analysis
           examples:
-          - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
+            - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
         s3_bucket:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Path of the S3 bucket where the results were stored
           examples:
-          - united states/new mexico/santa rosa/24.05.4
+            - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Copy of the JSON message that was sent for processing
           examples:
-          - city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
+            - city: santa rosa
+              country: United States
+              fips_code: "3570670"
+              region: new mexico
         start_time:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: Start time
         status:
-          $ref: '#/components/schemas/PipelineStatus'
+          $ref: "#/components/schemas/PipelineStatus"
           description: Pipeline status
         step:
-          $ref: '#/components/schemas/BnaPipelineStep'
+          $ref: "#/components/schemas/BnaPipelineStep"
           description: Last pipeline step that was completed
     BnaPipelinePost:
       type: object
       required:
-      - state_machine_id
+        - state_machine_id
       properties:
         cost:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Cost of an analysis in USD
           examples:
-          - '6.8941'
+            - "6.8941"
         end_time:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: End time
         fargate_price_id:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Fargate price identifier used to compute the cost
         fargate_task_arn:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: ARN of the Fargate task that performed the analysis
           examples:
-          - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
+            - arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0
         s3_bucket:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Path of the S3 bucket where the results were stored
           examples:
-          - united states/new mexico/santa rosa/24.05.4
+            - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Copy of the JSON message that was sent for processing
           examples:
-          - city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
+            - city: santa rosa
+              country: United States
+              fips_code: "3570670"
+              region: new mexico
         start_time:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: Start time
         state_machine_id:
@@ -1885,34 +1885,34 @@ components:
     BnaPipelineStep:
       type: string
       enum:
-      - SqsMessage
-      - Setup
-      - Analysis
-      - Cleanup
+        - SqsMessage
+        - Setup
+        - Analysis
+        - Cleanup
     BnaPipelines:
       type: array
       items:
-        $ref: '#/components/schemas/BnaPipeline'
+        $ref: "#/components/schemas/BnaPipeline"
     Cities:
       type: array
       items:
-        $ref: '#/components/schemas/City'
+        $ref: "#/components/schemas/City"
     CitiesWithSummary:
       type: array
       items:
-        $ref: '#/components/schemas/CityWithSummary'
+        $ref: "#/components/schemas/CityWithSummary"
     City:
       type: object
       description: Detailed information of a city
       required:
-      - id
-      - country
-      - state
-      - name
-      - created_at
+        - id
+        - country
+        - state
+        - name
+        - created_at
       properties:
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country name
         created_at:
           type: string
@@ -1924,209 +1924,209 @@ components:
           description: City identifier
         latitude:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: |-
             Geographic coordinate that specifies the north-south position of a point
             on the surface of the Earth.
           examples:
-          - '51.260197'
+            - "51.260197"
         longitude:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: |-
             Geographic coordinate that specifies the east–west position of a point
             on the surface of the Earth.
           examples:
-          - '4.402771'
+            - "4.402771"
         name:
           type: string
           description: City name
           examples:
-          - Antwerp
+            - Antwerp
         region:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: |-
             Region name. A region can be a state, a province, a community, or
             something similar depending on the country. If a country does not have
             this concept, then the country name is used.
           examples:
-          - Antwerp
+            - Antwerp
         residential_speed_limit:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: |-
             Residential speed limit in kilometer per hour (km/h).
             Only use if different from the state speed limit.
           examples:
-          - '50'
+            - "50"
         state:
           type: string
           description: State name
           examples:
-          - Antwerp
+            - Antwerp
         state_abbrev:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: A short version of the state name, usually 2 or 3 character long
           examples:
-          - VAN
+            - VAN
         updated_at:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
           description: Update date
     CityPost:
       type: object
       required:
-      - country
-      - name
-      - state
+        - country
+        - name
+        - state
       properties:
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country name
         latitude:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: |-
             Geographic coordinate that specifies the north-south position of a point
             on the surface of the Earth.
           examples:
-          - '51.260197'
+            - "51.260197"
         longitude:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: |-
             Geographic coordinate that specifies the east–west position of a point
             on the surface of the Earth.
           examples:
-          - '4.402771'
+            - "4.402771"
         name:
           type: string
           description: City name
           examples:
-          - Antwerp
+            - Antwerp
         region:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: |-
             Region name. A region can be a state, a province, a community, or
             something similar depending on the country. If a country does not have
             this concept, then the country name is used.
           examples:
-          - Antwerp
+            - Antwerp
         speed_limit:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Speed limit in kilometer per hour (km/h).
           examples:
-          - '50'
+            - "50"
         state:
           type: string
           description: A short version of the state name, usually 2 or 3 character long
           examples:
-          - VAN
+            - VAN
         state_abbrev:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: A short version of the state name, usually 2 or 3 character long
           examples:
-          - VAN
+            - VAN
     CityRatings:
       type: object
       required:
-      - city
-      - ratings
+        - city
+        - ratings
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         ratings:
           type: array
           items:
-            $ref: '#/components/schemas/RatingSummary'
+            $ref: "#/components/schemas/RatingSummary"
     CityWithSummary:
       type: object
       required:
-      - city
-      - sumary
+        - city
+        - sumary
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         sumary:
-          $ref: '#/components/schemas/RatingSummary'
+          $ref: "#/components/schemas/RatingSummary"
     CoreServices:
       type: object
       properties:
         dentists:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to dentists.
           maximum: 100
           minimum: 0
         doctors:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to doctors.
           maximum: 100
           minimum: 0
         grocery:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to grocery stores.
           maximum: 100
           minimum: 0
         hospitals:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to hospitals.
           maximum: 100
           minimum: 0
         pharmacies:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to pharmacies.
           maximum: 100
           minimum: 0
         score:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to core services.
           maximum: 100
           minimum: 0
         social_services:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to social services.
           maximum: 100
@@ -2134,40 +2134,40 @@ components:
     Country:
       type: string
       enum:
-      - Australia
-      - Belgium
-      - Brazil
-      - Canada
-      - Chile
-      - Colombia
-      - Croatia
-      - Cuba
-      - England
-      - France
-      - Germany
-      - Greece
-      - Guatemala
-      - Iran
-      - Iraq
-      - Ireland
-      - Italy
-      - Mexico
-      - Netherlands
-      - New Zealand
-      - Northern Ireland
-      - Portugal
-      - Scotland
-      - Spain
-      - United States
-      - Vietnam
-      - Wales
+        - Australia
+        - Belgium
+        - Brazil
+        - Canada
+        - Chile
+        - Colombia
+        - Croatia
+        - Cuba
+        - England
+        - France
+        - Germany
+        - Greece
+        - Guatemala
+        - Iran
+        - Iraq
+        - Ireland
+        - Italy
+        - Mexico
+        - Netherlands
+        - New Zealand
+        - Northern Ireland
+        - Portugal
+        - Scotland
+        - Spain
+        - United States
+        - Vietnam
+        - Wales
     FargatePrice:
       type: object
       description: A Fargate price used to estimate the cost of an analysis
       required:
-      - id
-      - per_second
-      - created_at
+        - id
+        - per_second
+        - created_at
       properties:
         created_at:
           type: string
@@ -2178,118 +2178,118 @@ components:
           format: int32
           description: Identifier of the Fargate Price rate used to compute the cost of the pipeline run
           examples:
-          - '1'
+            - "1"
         per_second:
           type: string
           description: Cost to run Fargate for 1 second
           examples:
-          - '0.0023'
+            - "0.0023"
     FargatePrices:
       type: array
       items:
-        $ref: '#/components/schemas/FargatePrice'
+        $ref: "#/components/schemas/FargatePrice"
       description: A collection of Fargate prices.
     Infrastructure:
       type: object
       properties:
         high_stress_miles:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Total miles of high-stress streets in the measured area.
           examples:
-          - 253
+            - 253
         low_stress_miles:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Total miles of low-stress streets and paths in the measured area.
           examples:
-          - 127
+            - 127
     Measure:
       type: object
       properties:
         buffered_lane:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Miles of buffered bike lanes.
           examples:
-          - 53.859
+            - 53.859
         lane:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Miles of bike lanes.
           examples:
-          - 0.0
+            - 0.0
         path:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Miles of off-street paths.
           examples:
-          - 53.859
+            - 53.859
         sharrow:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Miles of sharrows.
           examples:
-          - 53.859
+            - 53.859
         track:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: Miles of tracks.
           examples:
-          - 53.859
+            - 53.859
     Opportunity:
       type: object
       properties:
         employment:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to job location areas.
           maximum: 100
           minimum: 0
         higher_education:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to universities and colleges.
           maximum: 100
           minimum: 0
         k12_education:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to k12 schools
           maximum: 100
           minimum: 0
         score:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to education and jobs.
           maximum: 100
           minimum: 0
         technical_vocational_college:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to technical and vocational colleges.
           maximum: 100
@@ -2299,8 +2299,8 @@ components:
       properties:
         people:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to residential areas.
           maximum: 100
@@ -2308,53 +2308,53 @@ components:
     PipelineStatus:
       type: string
       enum:
-      - Completed
-      - Pending
-      - Processing
+        - Completed
+        - Pending
+        - Processing
     Rating:
       type: object
       required:
-      - id
-      - city_id
-      - score
-      - version
-      - infrastructure
-      - recreation
-      - opportunity
-      - core_services
-      - people
-      - retail
-      - transit
-      - measure
+        - id
+        - city_id
+        - score
+        - version
+        - infrastructure
+        - recreation
+        - opportunity
+        - core_services
+        - people
+        - retail
+        - transit
+        - measure
       properties:
         city_id:
           type: string
           format: uuid
           description: City identifier
         core_services:
-          $ref: '#/components/schemas/CoreServices'
+          $ref: "#/components/schemas/CoreServices"
           description: BNA Core Services
         id:
           type: string
           format: uuid
           description: Rating identifier
         infrastructure:
-          $ref: '#/components/schemas/Infrastructure'
+          $ref: "#/components/schemas/Infrastructure"
           description: BNAInfrastructure
         measure:
-          $ref: '#/components/schemas/Measure'
+          $ref: "#/components/schemas/Measure"
           description: Measurement of the city's bike infrastructure.
         opportunity:
-          $ref: '#/components/schemas/Opportunity'
+          $ref: "#/components/schemas/Opportunity"
           description: BNA Opportunity
         people:
-          $ref: '#/components/schemas/People'
+          $ref: "#/components/schemas/People"
           description: BNA People
         recreation:
-          $ref: '#/components/schemas/Recreation'
+          $ref: "#/components/schemas/Recreation"
           description: BNA Recreation
         retail:
-          $ref: '#/components/schemas/Retail'
+          $ref: "#/components/schemas/Retail"
           description: BNA Retail
         score:
           type: number
@@ -2363,7 +2363,7 @@ components:
           maximum: 100
           minimum: 0
         transit:
-          $ref: '#/components/schemas/Transit'
+          $ref: "#/components/schemas/Transit"
           description: BNA Transit
         version:
           type: string
@@ -2374,38 +2374,38 @@ components:
     RatingPost:
       type: object
       required:
-      - city_id
-      - version
-      - score
-      - pop_size
-      - population
-      - infrastructure
-      - recreation
-      - opportunity
-      - core_services
-      - people
-      - retail
-      - transit
-      - measure
+        - city_id
+        - version
+        - score
+        - pop_size
+        - population
+        - infrastructure
+        - recreation
+        - opportunity
+        - core_services
+        - people
+        - retail
+        - transit
+        - measure
       properties:
         city_id:
           type: string
           format: uuid
           description: City identifier
         core_services:
-          $ref: '#/components/schemas/CoreServices'
+          $ref: "#/components/schemas/CoreServices"
           description: BNA Core Services
         infrastructure:
-          $ref: '#/components/schemas/Infrastructure'
+          $ref: "#/components/schemas/Infrastructure"
           description: BNAInfrastructure
         measure:
-          $ref: '#/components/schemas/Measure'
+          $ref: "#/components/schemas/Measure"
           description: Measurement of the city's bike infrastructure.
         opportunity:
-          $ref: '#/components/schemas/Opportunity'
+          $ref: "#/components/schemas/Opportunity"
           description: BNA Opportunity
         people:
-          $ref: '#/components/schemas/People'
+          $ref: "#/components/schemas/People"
           description: BNA People
         pop_size:
           type: integer
@@ -2416,10 +2416,10 @@ components:
           format: int32
           description: City population based on the annual U.S. Census American Community Survey.
         recreation:
-          $ref: '#/components/schemas/Recreation'
+          $ref: "#/components/schemas/Recreation"
           description: BNA Recreation
         retail:
-          $ref: '#/components/schemas/Retail'
+          $ref: "#/components/schemas/Retail"
           description: BNA Retail
         score:
           type: number
@@ -2427,12 +2427,12 @@ components:
           description: City rating score
         speed_limit_override:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Residential speed limit, if any.
         transit:
-          $ref: '#/components/schemas/Transit'
+          $ref: "#/components/schemas/Transit"
           description: BNA Transit
         version:
           type: string
@@ -2443,13 +2443,13 @@ components:
     RatingSummary:
       type: object
       required:
-      - id
-      - city_id
-      - created_at
-      - pop_size
-      - population
-      - score
-      - version
+        - id
+        - city_id
+        - created_at
+        - pop_size
+        - population
+        - score
+        - version
       properties:
         city_id:
           type: string
@@ -2468,17 +2468,17 @@ components:
           format: int32
           description: City population size category (small, medium, large).
           examples:
-          - large
+            - large
         population:
           type: integer
           format: int32
           description: City population based on the annual U.S. Census American Community Survey.
           examples:
-          - '989252'
+            - "989252"
         residential_speed_limit_override:
           type:
-          - integer
-          - 'null'
+            - integer
+            - "null"
           format: int32
           description: Residential speed limit override.
         score:
@@ -2486,59 +2486,59 @@ components:
           format: double
           description: BNA score
           examples:
-          - '77.0'
+            - "77.0"
         version:
           type: string
           description: |-
             Analysis version. The format follows the [calver](https://calver.org)
             specification with the YY.0M[.Minor] scheme.
           examples:
-          - '23.12'
+            - "23.12"
     RatingWithCity:
       type: object
       required:
-      - rating
-      - city
+        - rating
+        - city
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         rating:
-          $ref: '#/components/schemas/Rating'
+          $ref: "#/components/schemas/Rating"
     Ratings:
       type: array
       items:
-        $ref: '#/components/schemas/Rating'
+        $ref: "#/components/schemas/Rating"
     Recreation:
       type: object
       properties:
         community_centers:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to community centers.
           maximum: 100
           minimum: 0
         parks:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to parks.
           maximum: 100
           minimum: 0
         score:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to recreational facilities.
           maximum: 100
           minimum: 0
         trails:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category subscore for access to bikeable trails.
           maximum: 100
@@ -2548,8 +2548,8 @@ components:
       properties:
         retail:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to major retail centers.
           maximum: 100
@@ -2557,29 +2557,29 @@ components:
     Submission:
       type: object
       required:
-      - id
-      - first_name
-      - last_name
-      - email
-      - country
-      - city
-      - fips_code
-      - consent
-      - status
-      - created_at
+        - id
+        - first_name
+        - last_name
+        - email
+        - country
+        - city
+        - fips_code
+        - consent
+        - status
+        - created_at
       properties:
         city:
           type: string
           description: City name
           examples:
-          - Antwerp
+            - Antwerp
         consent:
           type: boolean
           description: Consent status
           examples:
-          - 'true'
+            - "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         created_at:
           type: string
@@ -2589,17 +2589,17 @@ components:
           type: string
           description: email address
           examples:
-          - jane.doe@orgllc.com
+            - jane.doe@orgllc.com
         fips_code:
           type: string
           description: Numerical city identifier given by the U.S. census, or 0 for non-US cities
           examples:
-          - '4805000'
+            - "4805000"
         first_name:
           type: string
           description: First name
           examples:
-          - Jane
+            - Jane
         id:
           type: integer
           format: int32
@@ -2609,188 +2609,188 @@ components:
           description: Last name
         occupation:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Job title or position
           examples:
-          - CTO
+            - CTO
         organization:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Organization or company
           examples:
-          - Organization LLC
+            - Organization LLC
         region:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: |-
             Region name. A region can be a state, a province, a community, or
             something similar depending on the country. If a country does not have
             this concept, then the country name is used.
           examples:
-          - Antwerp
+            - Antwerp
         status:
           type: string
           description: Submission status, e.g. "Pending"
           examples:
-          - Pending
+            - Pending
     SubmissionPatch:
       type: object
       required:
-      - first_name
-      - last_name
-      - email
-      - country
-      - city
-      - fips_code
-      - consent
-      - status
+        - first_name
+        - last_name
+        - email
+        - country
+        - city
+        - fips_code
+        - consent
+        - status
       properties:
         city:
           type: string
           description: City name
           examples:
-          - Antwerp
+            - Antwerp
         consent:
           type: boolean
           description: Consent status
           examples:
-          - 'true'
+            - "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         email:
           type: string
           description: email address
           examples:
-          - jane.doe@orgllc.com
+            - jane.doe@orgllc.com
         fips_code:
           type: string
           description: Numerical city identifier given by the U.S. census, or 0 for non-US cities
           examples:
-          - '4805000'
+            - "4805000"
         first_name:
           type: string
           description: First name
           examples:
-          - Jane
+            - Jane
         last_name:
           type: string
           description: Last name
         occupation:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Job title or position
           examples:
-          - CTO
+            - CTO
         organization:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Organization or company
           examples:
-          - Organization LLC
+            - Organization LLC
         region:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: |-
             Region name. A region can be a state, a province, a community, or
             something similar depending on the country. If a country does not have
             this concept, then the country name is used.
           examples:
-          - Antwerp
+            - Antwerp
         status:
           type: string
           description: Submission status, e.g. "Pending"
           examples:
-          - Pending
+            - Pending
     SubmissionPost:
       type: object
       required:
-      - first_name
-      - last_name
-      - email
-      - country
-      - city
-      - fips_code
-      - consent
-      - status
+        - first_name
+        - last_name
+        - email
+        - country
+        - city
+        - fips_code
+        - consent
+        - status
       properties:
         city:
           type: string
           description: City name
           examples:
-          - Antwerp
+            - Antwerp
         consent:
           type: boolean
           description: Consent status
           examples:
-          - 'true'
+            - "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         email:
           type: string
           description: email address
           examples:
-          - jane.doe@orgllc.com
+            - jane.doe@orgllc.com
         fips_code:
           type: string
           description: Numerical city identifier given by the U.S. census, or 0 for non-US cities
           examples:
-          - '4805000'
+            - "4805000"
         first_name:
           type: string
           description: First name
           examples:
-          - Jane
+            - Jane
         last_name:
           type: string
           description: Last name
         occupation:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Job title or position
           examples:
-          - CTO
+            - CTO
         organization:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: Organization or company
           examples:
-          - Organization LLC
+            - Organization LLC
         region:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           description: |-
             Region name. A region can be a state, a province, a community, or
             something similar depending on the country. If a country does not have
             this concept, then the country name is used.
           examples:
-          - Antwerp
+            - Antwerp
         status:
           type: string
           description: Submission status, e.g. "Pending"
           examples:
-          - Pending
+            - Pending
     Submissions:
       type: array
       items:
-        $ref: '#/components/schemas/Submission'
+        $ref: "#/components/schemas/Submission"
     Transit:
       type: object
       properties:
         transit:
           type:
-          - number
-          - 'null'
+            - number
+            - "null"
           format: double
           description: BNA category score for access to major transit stops.
           maximum: 100
@@ -2799,42 +2799,42 @@ components:
       type: object
       description: Detailed information of a city
       required:
-      - name
-      - abbrev
-      - fipscode
-      - speed_limit
+        - name
+        - abbrev
+        - fipscode
+        - speed_limit
       properties:
         abbrev:
           type: string
           description: Two-letter state abbreviation..
           examples:
-          - TX
+            - TX
         fipscode:
           type: string
           description: State FIPS code.
           examples:
-          - '48'
+            - "48"
         name:
           type: string
           description: State name.
           examples:
-          - Texas
+            - Texas
         speed_limit:
           type: integer
           format: int32
           description: State speed limit in mph.
           examples:
-          - '30'
+            - "30"
     UsStates:
       type: array
       items:
-        $ref: '#/components/schemas/UsState'
+        $ref: "#/components/schemas/UsState"
 tags:
-- name: city
-  description: City API endpoints
-- name: pipeline
-  description: Pipeline API endpoints
-- name: price
-  description: Price API endpoints
-- name: rating
-  description: Rating API endpoints
+  - name: city
+    description: City API endpoints
+  - name: pipeline
+    description: Pipeline API endpoints
+  - name: price
+    description: Price API endpoints
+  - name: rating
+    description: Rating API endpoints

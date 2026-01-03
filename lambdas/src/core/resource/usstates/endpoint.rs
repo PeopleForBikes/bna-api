@@ -2,12 +2,11 @@ use axum::{
     extract::{Path, Query},
     Json,
 };
-use effortless::api::PaginationParameters;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 use crate::{
     core::resource::{
-        schema::{ErrorResponses, PaginationParams},
+        schema::{ErrorResponses, PaginationParameters},
         usstates::{
             adaptor::{get_us_state_adaptor, get_us_states_adaptor},
             schema::{UsState, UsStates},
@@ -53,7 +52,7 @@ async fn get_us_state(
   description = "Get the details of all US states.",
   tag = TAG,
   params(
-    PaginationParams,
+    PaginationParameters,
   ),
   responses(
     (status = OK, description = "Fetches US states", body = UsStates),

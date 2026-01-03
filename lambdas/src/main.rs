@@ -66,7 +66,7 @@ async fn main() -> Result<(), Error> {
         .servers(Some(vec![
             Server::builder()
                 .description(Some("Local development API"))
-                .url("https://localhost:3000")
+                .url("http://localhost:3000")
                 .build(),
             Server::builder()
                 .description(Some("Staging API"))

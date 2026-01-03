@@ -5,7 +5,7 @@ use super::{
     schema::{Rating, RatingPost, RatingWithCity, Ratings},
 };
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParams},
+    core::resource::schema::{ErrorResponses, PaginationParameters},
     Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{
@@ -13,7 +13,6 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use effortless::api::PaginationParameters;
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -60,7 +59,7 @@ async fn get_rating(
   description = "Get city ratings",
   tag = TAG,
   params(
-    PaginationParams,
+    PaginationParameters,
   ),
   responses(
     (status = OK, description = "Fetches the city ratings", body = Ratings),

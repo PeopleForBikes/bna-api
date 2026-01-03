@@ -1,9 +1,9 @@
 use crate::{
     error::{APIError, APIErrorSource, APIErrors},
-    fragment::{self, get_apigw_request_id, BnaRequestExt},
+    fragment::{self, get_apigw_request_id},
 };
-use lambda_http::{http::StatusCode, Body, Request, RequestExt, RequestPayloadExt, Response};
-use serde::{de::DeserializeOwned, Deserialize};
+use lambda_http::{http::StatusCode, Request, RequestPayloadExt};
+use serde::de::DeserializeOwned;
 use std::{fmt::Display, str::FromStr};
 
 /// Parse the first path parameter found in the API Gateway request, into the provided type.
@@ -186,190 +186,93 @@ pub fn invalid_query_parameter(event: &Request, parameter: &str, details: &str) 
     )
 }
 
-/// Maximum number of items allowed to be returned by a query at once.
-pub const MAX_PAGE_SIZE: u64 = 100;
-/// Number of items to return per page if no argument was provided.
-pub const DEFAULT_PAGE_SIZE: u64 = 50;
-
-/// The pagination details.
-#[derive(Debug, Deserialize)]
-pub struct PaginationParameters {
-    /// The number of items per page.
-    page_size: Option<u64>,
-    /// The result page being returned.
-    page: Option<u64>,
-}
-
-impl Default for PaginationParameters {
-    fn default() -> Self {
-        Self {
-            page_size: Some(DEFAULT_PAGE_SIZE),
-            page: Some(0),
-        }
-    }
-}
-
-impl PaginationParameters {
-    pub fn page_size(&self) -> u64 {
-        // self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
-        match self.page_size {
-            Some(value) => match value {
-                0 => 1,
-                1..=MAX_PAGE_SIZE => value,
-                _ => MAX_PAGE_SIZE,
-            },
-            None => DEFAULT_PAGE_SIZE,
-        }
-    }
-
-    pub fn page(&self) -> u64 {
-        self.page.unwrap_or_default()
-    }
-}
-
-// Retrieves the pagination parameters.
-///
-/// If nothing is provided, the first page is returned and will contain up to
-/// [`DEFAULT_PAGE_SIZE`] items.
-///
-/// If `page` does not exist, the lambda functions will return the first page.
-pub fn extract_pagination_parameters(
-    event: &Request,
-) -> Result<PaginationParameters, Response<Body>> {
-    let mut pagination = PaginationParameters::default();
-
-    // If no query parameters were provided, return the default values.
-    if !event.has_query_parameters() {
-        return Ok(pagination);
-    }
-
-    // Otherwise process the parameters.
-    let parameter = "page_size";
-    if let Some(page_size) = event.query_string_parameters().first(parameter) {
-        match page_size.parse::<u64>() {
-            Ok(page_size) => {
-                pagination.page_size = match page_size {
-                    1..=MAX_PAGE_SIZE => Some(page_size),
-                    _ => Some(MAX_PAGE_SIZE),
-                }
-            }
-            Err(e) => {
-                let api_error = invalid_query_parameter(
-                    event,
-                    parameter,
-                    format!("failed to process the `{parameter}` parameter: {e}").as_str(),
-                );
-                return Err(APIErrors::new(&[api_error]).into());
-            }
-        }
-    }
-
-    let parameter = "page";
-    if let Some(page) = event.query_string_parameters().first(parameter) {
-        match page.parse::<u64>() {
-            Ok(page) => pagination.page = Some(page),
-            Err(e) => {
-                let api_error = invalid_query_parameter(
-                    event,
-                    parameter,
-                    format!("failed to process the `{parameter}` parameter: {e}").as_str(),
-                );
-                return Err(APIErrors::new(&[api_error]).into());
-            }
-        }
-    }
-
-    Ok(pagination)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::error::APIErrorSource::Parameter;
     use lambda_http::{
         http::{self, header, StatusCode},
-        request::from_str,
-        RequestExt,
+        Body, RequestExt,
     };
     use std::collections::HashMap;
 
-    #[test]
-    fn test_pagination_parameters_without_params() {
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let req = from_str(input).unwrap();
+    // #[test]
+    // fn test_pagination_parameters_without_params() {
+    //     let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
+    //     let req = from_str(input).unwrap();
 
-        let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size(), DEFAULT_PAGE_SIZE);
-        assert_eq!(actual.page(), 0);
-    }
+    //     let actual = extract_pagination_parameters(&req).unwrap();
+    //     assert_eq!(actual.page_size(), DEFAULT_PAGE_SIZE);
+    //     assert_eq!(actual.page(), 0);
+    // }
 
-    #[test]
-    fn test_pagination_parameters_with_valid_params() {
-        const PAGE_SIZE: u64 = 25;
-        const PAGE: u64 = 8;
+    // #[test]
+    // fn test_pagination_parameters_with_valid_params() {
+    //     const PAGE_SIZE: u64 = 25;
+    //     const PAGE: u64 = 8;
 
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
-        data.insert("page".into(), vec![PAGE.to_string()]);
+    //     let mut data = HashMap::new();
+    //     data.insert("page_size".into(), vec![PAGE_SIZE.to_string()]);
+    //     data.insert("page".into(), vec![PAGE.to_string()]);
 
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
+    //     let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
+    //     let result = from_str(input).unwrap();
+    //     let req = result.with_query_string_parameters(data);
 
-        let actual = extract_pagination_parameters(&req).unwrap();
-        assert_eq!(actual.page_size(), PAGE_SIZE);
-        assert_eq!(actual.page(), PAGE);
-    }
+    //     let actual = extract_pagination_parameters(&req).unwrap();
+    //     assert_eq!(actual.page_size(), PAGE_SIZE);
+    //     assert_eq!(actual.page(), PAGE);
+    // }
 
-    #[test]
-    fn test_pagination_parameters_with_invalid_page_size() {
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec!["-1".to_string()]);
-        data.insert("page".into(), vec!["50".to_string()]);
+    // #[test]
+    // fn test_pagination_parameters_with_invalid_page_size() {
+    //     let mut data = HashMap::new();
+    //     data.insert("page_size".into(), vec!["-1".to_string()]);
+    //     data.insert("page".into(), vec!["50".to_string()]);
 
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
+    //     let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
+    //     let result = from_str(input).unwrap();
+    //     let req = result.with_query_string_parameters(data);
 
-        let actual = extract_pagination_parameters(&req).unwrap_err();
+    //     let actual = extract_pagination_parameters(&req).unwrap_err();
 
-        // Ensure the error had the BAD_REQUEST status.
-        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+    //     // Ensure the error had the BAD_REQUEST status.
+    //     assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
 
-        // Ensure the error message is correct.
-        let b = actual.body();
-        let message = match b {
-            Body::Text(message) => message,
-            _ => panic!("The body does not match the Text invariant."),
-        };
-        let api_error: APIErrors = serde_json::from_str(message).unwrap();
-        assert_eq!(api_error.errors.len(), 1)
-    }
+    //     // Ensure the error message is correct.
+    //     let b = actual.body();
+    //     let message = match b {
+    //         Body::Text(message) => message,
+    //         _ => panic!("The body does not match the Text invariant."),
+    //     };
+    //     let api_error: APIErrors = serde_json::from_str(message).unwrap();
+    //     assert_eq!(api_error.errors.len(), 1)
+    // }
 
-    #[test]
-    fn test_pagination_parameters_with_invalid_page() {
-        let mut data = HashMap::new();
-        data.insert("page_size".into(), vec!["1".to_string()]);
-        data.insert("page".into(), vec!["abc".to_string()]);
+    // #[test]
+    // fn test_pagination_parameters_with_invalid_page() {
+    //     let mut data = HashMap::new();
+    //     data.insert("page_size".into(), vec!["1".to_string()]);
+    //     data.insert("page".into(), vec!["abc".to_string()]);
 
-        let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
-        let result = from_str(input).unwrap();
-        let req = result.with_query_string_parameters(data);
+    //     let input = include_str!("fixtures/api-gateway-v2-proxy-request-minimal.json");
+    //     let result = from_str(input).unwrap();
+    //     let req = result.with_query_string_parameters(data);
 
-        let actual = extract_pagination_parameters(&req).unwrap_err();
+    //     let actual = extract_pagination_parameters(&req).unwrap_err();
 
-        // Ensure the error had the BAD_REQUEST status.
-        assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
+    //     // Ensure the error had the BAD_REQUEST status.
+    //     assert_eq!(actual.status(), StatusCode::BAD_REQUEST);
 
-        // Ensure the error message is correct.
-        let b = actual.body();
-        let message = match b {
-            Body::Text(message) => message,
-            _ => panic!("The body does not match the Text invariant."),
-        };
-        let api_error: APIErrors = serde_json::from_str(message).unwrap();
-        assert_eq!(api_error.errors.len(), 1)
-    }
+    //     // Ensure the error message is correct.
+    //     let b = actual.body();
+    //     let message = match b {
+    //         Body::Text(message) => message,
+    //         _ => panic!("The body does not match the Text invariant."),
+    //     };
+    //     let api_error: APIErrors = serde_json::from_str(message).unwrap();
+    //     assert_eq!(api_error.errors.len(), 1)
+    // }
 
     #[test]
     fn test_entry_not_found() {

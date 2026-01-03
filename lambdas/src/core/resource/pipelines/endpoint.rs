@@ -4,7 +4,7 @@ use super::adaptor::{
 };
 use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines};
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParams},
+    core::resource::schema::{ErrorResponses, PaginationParameters},
     Context, ExecutionError,
 };
 use axum::{
@@ -12,7 +12,6 @@ use axum::{
     http::StatusCode,
     Json,
 };
-use effortless::api::PaginationParameters;
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
 use serde_json::{json, Value};
 use tracing::debug;
@@ -57,7 +56,7 @@ async fn get_pipelines_bna(
   description = "Get the details of all BNA pipelines",
   tag = TAG,
   params(
-    PaginationParams,
+    PaginationParameters,
   ),
   responses(
     (status = OK, description = "Fetches the details of all BNA pipelines", body = BnaPipelines),

@@ -6,7 +6,7 @@ use axum::{
 };
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
-    api::DEFAULT_PAGE_SIZE,
+    // api::DEFAULT_PAGE_SIZE,
     error::{APIError, APIErrors},
     fragment::BnaRequestExt,
 };
@@ -15,11 +15,15 @@ use lambda_http::{
     Body, Error, Request, Response,
 };
 use sea_orm::{Database, DatabaseConnection, DbErr};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::{json, Value};
-use serde_plain::derive_fromstr_from_deserialize;
 use std::env;
 use tracing::{debug, error};
+
+/// Maximum number of items allowed to be returned by a query at once.
+pub const MAX_PAGE_SIZE: u64 = 100;
+/// Number of items to return per page if no argument was provided.
+pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
 /// The result type to return to the caller of the Lambda API handler.
 pub type APIResult<T> = std::result::Result<T, Response<Body>>;
@@ -442,14 +446,14 @@ impl Context {
     }
 }
 
-#[derive(Default, Deserialize)]
-pub enum Sort {
-    Asc,
-    #[default]
-    Desc,
-}
+// #[derive(Default, Deserialize)]
+// pub enum Order {
+//     Asc,
+//     #[default]
+//     Desc,
+// }
 
-derive_fromstr_from_deserialize!(Sort);
+// derive_fromstr_from_deserialize!(Order);
 
 #[cfg(test)]
 mod tests {

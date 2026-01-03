@@ -7,7 +7,7 @@ info:
     url: https://peopleforbikes.github.io/
   version: 1.0.0
 servers:
-  - url: https://localhost:3000
+  - url: http://localhost:3000
     description: Local development API
   - url: https://api.peopleforbikes.xyz
     description: Staging API
@@ -40,12 +40,12 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches cities
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Cities'
+                $ref: "#/components/schemas/Cities"
     post:
       tags:
         - city
@@ -55,23 +55,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CityPost'
+              $ref: "#/components/schemas/CityPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/City'
-        '400':
+                $ref: "#/components/schemas/City"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -80,16 +80,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -98,39 +98,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /cities/submissions:
     get:
@@ -167,20 +167,20 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches submissions
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submissions'
-        '400':
+                $ref: "#/components/schemas/Submissions"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -189,16 +189,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -207,39 +207,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
     post:
       tags:
@@ -250,23 +250,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmissionPost'
+              $ref: "#/components/schemas/SubmissionPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -275,16 +275,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -293,39 +293,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /cities/submissions/{submission_id}:
     get:
@@ -341,7 +341,7 @@ paths:
           schema:
             type: integer
             format: int32
-          example: '1'
+          example: "1"
         - name: status
           in: query
           description: Filter for the submission status
@@ -350,20 +350,20 @@ paths:
             type: string
           example: Pending
       responses:
-        '200':
+        "200":
           description: Fetches a submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -372,16 +372,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -390,39 +390,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
     patch:
       tags:
@@ -437,28 +437,28 @@ paths:
           schema:
             type: integer
             format: int32
-          example: '1'
+          example: "1"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SubmissionPatch'
+              $ref: "#/components/schemas/SubmissionPatch"
         required: true
       responses:
-        '200':
+        "200":
           description: Updates a city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Submission'
-        '400':
+                $ref: "#/components/schemas/Submission"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -467,16 +467,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -485,39 +485,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /cities/top/{year}/{count}:
     get:
@@ -535,7 +535,7 @@ paths:
             format: int32
             maximum: 2029
             minimum: 2017
-          example: '2024'
+          example: "2024"
         - name: count
           in: path
           description: The number of top cities to collect
@@ -545,22 +545,22 @@ paths:
             format: int32
             maximum: 25
             minimum: 1
-          example: '10'
+          example: "10"
       responses:
-        '200':
+        "200":
           description: Fetches cities with their respective summary
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CitiesWithSummary'
-        '400':
+                $ref: "#/components/schemas/CitiesWithSummary"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -569,16 +569,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -587,39 +587,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /cities/{country}/{region}/{name}:
     get:
@@ -633,7 +633,7 @@ paths:
           description: Country name
           required: true
           schema:
-            $ref: '#/components/schemas/Country'
+            $ref: "#/components/schemas/Country"
           example: Belgium
         - name: region
           in: path
@@ -656,20 +656,20 @@ paths:
             type: string
           example: Antwerp
       responses:
-        '200':
+        "200":
           description: Fetches a city
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/City'
-        '400':
+                $ref: "#/components/schemas/City"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -678,16 +678,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -696,39 +696,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /cities/{country}/{region}/{name}/ratings:
     get:
@@ -744,7 +744,7 @@ paths:
           description: Country name
           required: true
           schema:
-            $ref: '#/components/schemas/Country'
+            $ref: "#/components/schemas/Country"
           example: Belgium
         - name: region
           in: path
@@ -787,20 +787,20 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches city ratings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CityRatings'
-        '400':
+                $ref: "#/components/schemas/CityRatings"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -809,16 +809,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -827,39 +827,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /pipelines/bna:
     get:
@@ -889,20 +889,20 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches the details of all BNA pipelines
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipelines'
-        '400':
+                $ref: "#/components/schemas/BnaPipelines"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -911,16 +911,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -929,39 +929,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
     post:
       tags:
@@ -972,23 +972,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BnaPipelinePost'
+              $ref: "#/components/schemas/BnaPipelinePost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city submission
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -997,16 +997,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1015,39 +1015,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /pipelines/bna/{pipeline_id}:
     get:
@@ -1064,20 +1064,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches the details of a BNA pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1086,16 +1086,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1104,39 +1104,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
     patch:
       tags:
@@ -1155,23 +1155,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BnaPipelinePatch'
+              $ref: "#/components/schemas/BnaPipelinePatch"
         required: true
       responses:
-        '200':
+        "200":
           description: Updates the details of a BNA pipeline
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BnaPipeline'
-        '400':
+                $ref: "#/components/schemas/BnaPipeline"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1180,16 +1180,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1198,39 +1198,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /prices/fargate:
     get:
@@ -1260,12 +1260,12 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches a collection of Fargate prices
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FargatePrices'
+                $ref: "#/components/schemas/FargatePrices"
   /prices/fargate/{price_id}:
     get:
       tags:
@@ -1283,20 +1283,20 @@ paths:
             type: integer
             format: int32
       responses:
-        '200':
+        "200":
           description: Fetches a Fargate price used to estimate the cost of an analysis
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FargatePrice'
-        '400':
+                $ref: "#/components/schemas/FargatePrice"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1305,16 +1305,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1323,39 +1323,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /ratings:
     get:
@@ -1385,12 +1385,12 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches the city ratings
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Ratings'
+                $ref: "#/components/schemas/Ratings"
     post:
       tags:
         - rating
@@ -1400,23 +1400,23 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RatingPost'
+              $ref: "#/components/schemas/RatingPost"
         required: true
       responses:
-        '201':
+        "201":
           description: Creates a new city rating
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rating'
-        '400':
+                $ref: "#/components/schemas/Rating"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1425,16 +1425,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1443,39 +1443,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /ratings/{rating_id}:
     get:
@@ -1492,20 +1492,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches the details of a city rating
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Rating'
-        '400':
+                $ref: "#/components/schemas/Rating"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1514,16 +1514,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1532,39 +1532,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /ratings/{rating_id}/city:
     get:
@@ -1581,20 +1581,20 @@ paths:
             type: string
             format: uuid
       responses:
-        '200':
+        "200":
           description: Fetches a city rating and its associated city details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RatingWithCity'
-        '400':
+                $ref: "#/components/schemas/RatingWithCity"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1603,16 +1603,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1621,39 +1621,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
   /reports:
     get:
@@ -1662,7 +1662,7 @@ paths:
       description: Retrieve all rating reports.
       operationId: get_reports
       responses:
-        '200':
+        "200":
           description: Fetches all rating reports in csv format
           content:
             text/csv: {}
@@ -1683,7 +1683,7 @@ paths:
             maximum: 2029
             minimum: 2017
       responses:
-        '200':
+        "200":
           description: Fetches the latest rating reports for a specific year in csv format
           content:
             text/csv: {}
@@ -1715,12 +1715,12 @@ paths:
             minimum: 1
           example: 5
       responses:
-        '200':
+        "200":
           description: Fetches US states
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsStates'
+                $ref: "#/components/schemas/UsStates"
   /usstates/{name}:
     get:
       tags:
@@ -1736,20 +1736,20 @@ paths:
             type: string
           example: Texas
       responses:
-        '200':
+        "200":
           description: Fetches a Us state
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UsState'
-        '400':
+                $ref: "#/components/schemas/UsState"
+        "400":
           description: >-
             The request was formatted incorrectly or missing required
             parameters.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1758,16 +1758,16 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
-                    status: '400'
+                    status: "400"
                     title: Bad Request
-        '401':
+        "401":
           description: >-
             The request has not been fulfilled because it lacks valid
             authentication credentials for the target resource.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: >-
@@ -1776,39 +1776,39 @@ paths:
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
+                    status: "401"
                     title: Unauthorized
-        '403':
+        "403":
           description: >-
             Forbidden to make the request. Most likely this indicates an issue
             with the credentials or permissions.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: access to the requested resource is forbidden
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
+                    status: "403"
                     title: Forbidden
-        '404':
+        "404":
           description: >-
             The particular resource requested was not found. This occurs, for
             example, when the id of the requested  resource does not exist.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/APIErrors'
+                $ref: "#/components/schemas/APIErrors"
               example:
                 errors:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
+                    status: "404"
                     title: Item Not Found
 components:
   schemas:
@@ -1835,7 +1835,7 @@ components:
           example: blfwkg8nvHcEJnQ=
           nullable: true
         source:
-          $ref: '#/components/schemas/APIErrorSource'
+          $ref: "#/components/schemas/APIErrorSource"
           description: >-
             An object containing references to the primary source of the error.
 
@@ -1851,7 +1851,7 @@ components:
           description: >-
             The HTTP status code applicable to this problem, expressed as a
             string value.
-          example: '404'
+          example: "404"
         title:
           type: string
           description: A short, human-readable summary of the problem
@@ -1922,7 +1922,7 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/APIError'
+            $ref: "#/components/schemas/APIError"
     BnaPipeline:
       type: object
       required:
@@ -1934,7 +1934,7 @@ components:
         cost:
           type: string
           description: Cost of an analysis in USD
-          example: '6.8941'
+          example: "6.8941"
           nullable: true
         end_time:
           type: string
@@ -1963,7 +1963,7 @@ components:
           example:
             city: santa rosa
             country: United States
-            fips_code: '3570670'
+            fips_code: "3570670"
             region: new mexico
           nullable: true
         start_time:
@@ -1979,10 +1979,10 @@ components:
             This is the ID of the AWS state machine that was used to run the
             pipeline
         status:
-          $ref: '#/components/schemas/PipelineStatus'
+          $ref: "#/components/schemas/PipelineStatus"
           description: Pipeline status
         step:
-          $ref: '#/components/schemas/BnaPipelineStep'
+          $ref: "#/components/schemas/BnaPipelineStep"
           description: Last pipeline step that was completed
     BnaPipelinePatch:
       type: object
@@ -1993,7 +1993,7 @@ components:
         cost:
           type: string
           description: Cost of an analysis in USD
-          example: '6.8941'
+          example: "6.8941"
           nullable: true
         end_time:
           type: string
@@ -2022,7 +2022,7 @@ components:
           example:
             city: santa rosa
             country: United States
-            fips_code: '3570670'
+            fips_code: "3570670"
             region: new mexico
           nullable: true
         start_time:
@@ -2031,10 +2031,10 @@ components:
           description: Start time
           nullable: true
         status:
-          $ref: '#/components/schemas/PipelineStatus'
+          $ref: "#/components/schemas/PipelineStatus"
           description: Pipeline status
         step:
-          $ref: '#/components/schemas/BnaPipelineStep'
+          $ref: "#/components/schemas/BnaPipelineStep"
           description: Last pipeline step that was completed
     BnaPipelinePost:
       type: object
@@ -2044,7 +2044,7 @@ components:
         cost:
           type: string
           description: Cost of an analysis in USD
-          example: '6.8941'
+          example: "6.8941"
           nullable: true
         end_time:
           type: string
@@ -2073,7 +2073,7 @@ components:
           example:
             city: santa rosa
             country: United States
-            fips_code: '3570670'
+            fips_code: "3570670"
             region: new mexico
           nullable: true
         start_time:
@@ -2099,15 +2099,15 @@ components:
     BnaPipelines:
       type: array
       items:
-        $ref: '#/components/schemas/BnaPipeline'
+        $ref: "#/components/schemas/BnaPipeline"
     Cities:
       type: array
       items:
-        $ref: '#/components/schemas/City'
+        $ref: "#/components/schemas/City"
     CitiesWithSummary:
       type: array
       items:
-        $ref: '#/components/schemas/CityWithSummary'
+        $ref: "#/components/schemas/CityWithSummary"
     City:
       type: object
       description: Detailed information of a city
@@ -2119,7 +2119,7 @@ components:
         - created_at
       properties:
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country name
         created_at:
           type: string
@@ -2137,7 +2137,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '51.260197'
+          example: "51.260197"
           nullable: true
         longitude:
           type: number
@@ -2147,7 +2147,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '4.402771'
+          example: "4.402771"
           nullable: true
         name:
           type: string
@@ -2170,7 +2170,7 @@ components:
           description: |-
             Residential speed limit in kilometer per hour (km/h).
             Only use if different from the state speed limit.
-          example: '50'
+          example: "50"
           nullable: true
         state:
           type: string
@@ -2194,7 +2194,7 @@ components:
         - state
       properties:
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country name
         latitude:
           type: number
@@ -2204,7 +2204,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '51.260197'
+          example: "51.260197"
           nullable: true
         longitude:
           type: number
@@ -2214,7 +2214,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '4.402771'
+          example: "4.402771"
           nullable: true
         name:
           type: string
@@ -2235,7 +2235,7 @@ components:
           type: integer
           format: int32
           description: Speed limit in kilometer per hour (km/h).
-          example: '50'
+          example: "50"
           nullable: true
         state:
           type: string
@@ -2253,11 +2253,11 @@ components:
         - ratings
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         ratings:
           type: array
           items:
-            $ref: '#/components/schemas/RatingSummary'
+            $ref: "#/components/schemas/RatingSummary"
     CityWithSummary:
       type: object
       required:
@@ -2265,9 +2265,9 @@ components:
         - sumary
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         sumary:
-          $ref: '#/components/schemas/RatingSummary'
+          $ref: "#/components/schemas/RatingSummary"
     CoreServices:
       type: object
       properties:
@@ -2368,15 +2368,15 @@ components:
           description: >-
             Identifier of the Fargate Price rate used to compute the cost of the
             pipeline run
-          example: '1'
+          example: "1"
         per_second:
           type: string
           description: Cost to run Fargate for 1 second
-          example: '0.0023'
+          example: "0.0023"
     FargatePrices:
       type: array
       items:
-        $ref: '#/components/schemas/FargatePrice'
+        $ref: "#/components/schemas/FargatePrice"
       description: A collection of Fargate prices.
     Infrastructure:
       type: object
@@ -2503,29 +2503,29 @@ components:
           format: uuid
           description: City identifier
         core_services:
-          $ref: '#/components/schemas/CoreServices'
+          $ref: "#/components/schemas/CoreServices"
           description: BNA Core Services
         id:
           type: string
           format: uuid
           description: Rating identifier
         infrastructure:
-          $ref: '#/components/schemas/Infrastructure'
+          $ref: "#/components/schemas/Infrastructure"
           description: BNAInfrastructure
         measure:
-          $ref: '#/components/schemas/Measure'
+          $ref: "#/components/schemas/Measure"
           description: Measurement of the city's bike infrastructure.
         opportunity:
-          $ref: '#/components/schemas/Opportunity'
+          $ref: "#/components/schemas/Opportunity"
           description: BNA Opportunity
         people:
-          $ref: '#/components/schemas/People'
+          $ref: "#/components/schemas/People"
           description: BNA People
         recreation:
-          $ref: '#/components/schemas/Recreation'
+          $ref: "#/components/schemas/Recreation"
           description: BNA Recreation
         retail:
-          $ref: '#/components/schemas/Retail'
+          $ref: "#/components/schemas/Retail"
           description: BNA Retail
         score:
           type: number
@@ -2534,7 +2534,7 @@ components:
           maximum: 100
           minimum: 0
         transit:
-          $ref: '#/components/schemas/Transit'
+          $ref: "#/components/schemas/Transit"
           description: BNA Transit
         version:
           type: string
@@ -2567,19 +2567,19 @@ components:
           format: uuid
           description: City identifier
         core_services:
-          $ref: '#/components/schemas/CoreServices'
+          $ref: "#/components/schemas/CoreServices"
           description: BNA Core Services
         infrastructure:
-          $ref: '#/components/schemas/Infrastructure'
+          $ref: "#/components/schemas/Infrastructure"
           description: BNAInfrastructure
         measure:
-          $ref: '#/components/schemas/Measure'
+          $ref: "#/components/schemas/Measure"
           description: Measurement of the city's bike infrastructure.
         opportunity:
-          $ref: '#/components/schemas/Opportunity'
+          $ref: "#/components/schemas/Opportunity"
           description: BNA Opportunity
         people:
-          $ref: '#/components/schemas/People'
+          $ref: "#/components/schemas/People"
           description: BNA People
         pop_size:
           type: integer
@@ -2592,10 +2592,10 @@ components:
             City population based on the annual U.S. Census American Community
             Survey.
         recreation:
-          $ref: '#/components/schemas/Recreation'
+          $ref: "#/components/schemas/Recreation"
           description: BNA Recreation
         retail:
-          $ref: '#/components/schemas/Retail'
+          $ref: "#/components/schemas/Retail"
           description: BNA Retail
         score:
           type: number
@@ -2607,7 +2607,7 @@ components:
           description: Residential speed limit, if any.
           nullable: true
         transit:
-          $ref: '#/components/schemas/Transit'
+          $ref: "#/components/schemas/Transit"
           description: BNA Transit
         version:
           type: string
@@ -2652,7 +2652,7 @@ components:
           description: >-
             City population based on the annual U.S. Census American Community
             Survey.
-          example: '989252'
+          example: "989252"
         residential_speed_limit_override:
           type: integer
           format: int32
@@ -2662,7 +2662,7 @@ components:
           type: number
           format: double
           description: BNA score
-          example: '77.0'
+          example: "77.0"
         version:
           type: string
           description: >-
@@ -2670,7 +2670,7 @@ components:
             [calver](https://calver.org)
 
             specification with the YY.0M[.Minor] scheme.
-          example: '23.12'
+          example: "23.12"
     RatingWithCity:
       type: object
       required:
@@ -2678,13 +2678,13 @@ components:
         - city
       properties:
         city:
-          $ref: '#/components/schemas/City'
+          $ref: "#/components/schemas/City"
         rating:
-          $ref: '#/components/schemas/Rating'
+          $ref: "#/components/schemas/Rating"
     Ratings:
       type: array
       items:
-        $ref: '#/components/schemas/Rating'
+        $ref: "#/components/schemas/Rating"
     Recreation:
       type: object
       properties:
@@ -2747,9 +2747,9 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         created_at:
           type: string
@@ -2764,7 +2764,7 @@ components:
           description: >-
             Numerical city identifier given by the U.S. census, or 0 for non-US
             cities
-          example: '4805000'
+          example: "4805000"
         first_name:
           type: string
           description: First name
@@ -2820,9 +2820,9 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         email:
           type: string
@@ -2833,7 +2833,7 @@ components:
           description: >-
             Numerical city identifier given by the U.S. census, or 0 for non-US
             cities
-          example: '4805000'
+          example: "4805000"
         first_name:
           type: string
           description: First name
@@ -2885,9 +2885,9 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: "true"
         country:
-          $ref: '#/components/schemas/Country'
+          $ref: "#/components/schemas/Country"
           description: Country
         email:
           type: string
@@ -2898,7 +2898,7 @@ components:
           description: >-
             Numerical city identifier given by the U.S. census, or 0 for non-US
             cities
-          example: '4805000'
+          example: "4805000"
         first_name:
           type: string
           description: First name
@@ -2934,7 +2934,7 @@ components:
     Submissions:
       type: array
       items:
-        $ref: '#/components/schemas/Submission'
+        $ref: "#/components/schemas/Submission"
     Transit:
       type: object
       properties:
@@ -2961,7 +2961,7 @@ components:
         fipscode:
           type: string
           description: State FIPS code.
-          example: '48'
+          example: "48"
         name:
           type: string
           description: State name.
@@ -2970,11 +2970,11 @@ components:
           type: integer
           format: int32
           description: State speed limit in mph.
-          example: '30'
+          example: "30"
     UsStates:
       type: array
       items:
-        $ref: '#/components/schemas/UsState'
+        $ref: "#/components/schemas/UsState"
 tags:
   - name: city
     description: City API endpoints
