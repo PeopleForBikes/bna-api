@@ -121,7 +121,7 @@ generate-oas-31:
 
 # Generate the OAS 3.0.x from the OAS 3.1.x.
 generate-oas-30:
-    npx -y @apiture/openapi-down-convert --input openapi-3.1.yaml --output openapi-3.0.yaml
+    npx -y @apiture/openapi-down-convert@0.14.2 --input openapi-3.1.yaml --output openapi-3.0.yaml
 
 # Regenerate the OpenAPI specifications and the client.
 regenerate-all: generate-oas-31 generate-oas-30 generate-client

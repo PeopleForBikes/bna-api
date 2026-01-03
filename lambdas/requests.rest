@@ -56,6 +56,9 @@ GET {{host}}/cities/submissions/1
 GET {{host}}/prices/fargate
 
 ###
+GET {{host}}/prices/fargate?page_size=12
+
+###
 # Create a new submission.
 POST {{host}}/cities/submissions
 content-type: application/json

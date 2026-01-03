@@ -16,7 +16,7 @@ use crate::{
             schema::{CitiesWithSummary, CityParams, CityWithSummary},
             CitiesPathParameters,
         },
-        schema::{City, ErrorResponses, PaginationParams},
+        schema::{City, ErrorResponses, PaginationParameters},
     },
     Context, ExecutionError, PageFlow, Paginatron,
 };
@@ -26,7 +26,6 @@ use axum::{
     Json,
 };
 use axum_extra::extract::OptionalQuery;
-use effortless::api::PaginationParameters;
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
 use serde_json::Value;
@@ -77,7 +76,7 @@ async fn get_city(
   description = "Get the details of all cities where an BNA analysis was performed.",
   tag = TAG,
   params(
-    PaginationParams,
+    PaginationParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities", body = Cities),
@@ -99,7 +98,7 @@ async fn get_cities(
   tag = TAG,
   params(
     CityParams,
-    PaginationParams,
+    PaginationParameters,
   ),
   responses(
     (status = OK, description = "Fetches city ratings", body = CityRatings),
@@ -191,7 +190,7 @@ struct SubmissionParameters {
     tag = TAG,
     params(
       ("status" = Option<str>, Query, description = "Filter for the submission status", example = "Pending"),
-      PaginationParams,
+      PaginationParameters,
     ),
     responses(
       (status = OK, description = "Fetches submissions", body = Submissions),

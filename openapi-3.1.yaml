@@ -7,7 +7,7 @@ info:
     url: https://peopleforbikes.github.io/
   version: 1.0.0
 servers:
-- url: https://localhost:3000
+- url: http://localhost:3000
   description: Local development API
 - url: https://api.peopleforbikes.xyz
   description: Staging API
@@ -1087,19 +1087,8 @@ paths:
       description: Get all the AWS Fargate prices used to compute analysis costs.
       operationId: get_prices_fargate
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
       - name: page
         in: query
-        description: The result page being returned
         required: false
         schema:
           type: integer
@@ -1107,6 +1096,33 @@ paths:
           maximum: 65536
           minimum: 1
         example: 5
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+          maximum: 65536
+          minimum: 1
+        example: 25
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+        example: created_at
+      - name: order_direction
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/OrderDirection'
+        example: desc
+      - name: latest
+        in: query
+        required: false
+        schema:
+          type: boolean
+        example: 'true'
       responses:
         '200':
           description: Fetches a collection of Fargate prices
@@ -2133,6 +2149,7 @@ components:
           minimum: 0
     Country:
       type: string
+      description: Supported countries
       enum:
       - Australia
       - Belgium
@@ -2294,6 +2311,12 @@ components:
           description: BNA category subscore for access to technical and vocational colleges.
           maximum: 100
           minimum: 0
+    OrderDirection:
+      type: string
+      description: Order direction for sorting
+      enum:
+      - Asc
+      - Desc
     People:
       type: object
       properties:

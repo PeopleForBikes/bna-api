@@ -1,11 +1,8 @@
-use super::{
-    adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor_model_},
-    PriceParameters,
-};
+use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor_model_};
 use crate::{
     core::resource::{
         price::schema::{FargatePrice, FargatePrices},
-        schema::{ErrorResponses, PaginationParams},
+        schema::{ErrorResponses, ListParameters},
     },
     PageFlow, Paginatron,
 };
@@ -14,7 +11,7 @@ use axum::{
     extract::{Path, Query},
     Json,
 };
-use effortless::api::PaginationParameters;
+use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "price";
@@ -25,30 +22,33 @@ pub fn routes() -> OpenApiRouter {
         .routes(routes!(get_price_fargate))
 }
 
+#[axum::debug_handler]
 #[utoipa::path(
   get,
   path = "/prices/fargate",
   description = "Get all the AWS Fargate prices used to compute analysis costs.",
   tag = TAG,
   params(
-    PaginationParams
+    ListParameters
   ),
   responses(
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
   ))]
 pub(crate) async fn get_prices_fargate(
-    Query(pagination): Query<PaginationParameters>,
-    price_parameters: PriceParameters,
+    Query(list): Query<ListParameters>,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
+    debug!("{:?}", list);
     let (total_items, models) = get_prices_fargate_adaptor_model_(
-        price_parameters,
-        pagination.page(),
-        pagination.page_size(),
+        list.order_direction(),
+        &list.sort_by(),
+        list.latest(),
+        list.page(),
+        list.page_size(),
     )
     .await?;
     let payload: FargatePrices = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
+        Paginatron::new(None, total_items, list.page(), list.page_size()),
         payload,
     ))
 }
@@ -74,6 +74,3 @@ pub(crate) async fn get_price_fargate(
         .map(FargatePrice::from)
         .map(Json)
 }
-
-// (status = BAD_REQUEST, description = "The request was formatted incorrectly or missing required parameters.", body = UserResponses::BadRequest),
-// (status = NOT_FOUND, description = "The particular resource you are requesting was not found. This occurs, for example, if you request a resource by an id that does not exist.", body = APIErrorNotFound ),
