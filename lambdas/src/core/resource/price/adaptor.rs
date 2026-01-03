@@ -1,9 +1,10 @@
-use super::PriceParameters;
 use crate::{
-    core::resource::price::db::{fetch_fargate_price, fetch_fargate_prices},
-    database_connect, Context, ExecutionError, PageFlow, Paginatron,
+    core::resource::{
+        price::db::{fetch_fargate_price, fetch_fargate_prices},
+        schema::OrderDirection,
+    },
+    database_connect, Context, ExecutionError,
 };
-use entity::fargate_price;
 use serde_json::{json, Value};
 
 pub async fn get_price_fargate_adaptor(id: i32, ctx: Context) -> Result<Value, ExecutionError> {
@@ -41,33 +42,10 @@ pub async fn get_price_fargate_adaptor_model_(
     }
 }
 
-pub async fn get_prices_fargate_adaptor(
-    params: PriceParameters,
-    page: u64,
-    page_size: u64,
-) -> Result<PageFlow<Vec<fargate_price::Model>>, ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
-    // Fetch a page of cities.
-    let (total_items, models) = fetch_fargate_prices(
-        &db,
-        params.sort.unwrap_or_default(),
-        params.latest,
-        page,
-        page_size,
-    )
-    .await?;
-
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        models,
-    ))
-}
-
 pub async fn get_prices_fargate_adaptor_model_(
-    params: PriceParameters,
+    sort_direction: OrderDirection,
+    sort_by: &str,
+    latest: bool,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<entity::fargate_price::Model>), ExecutionError> {
@@ -75,14 +53,8 @@ pub async fn get_prices_fargate_adaptor_model_(
     let db = database_connect().await?;
 
     // Fetch a page of cities.
-    let (total_items, models) = fetch_fargate_prices(
-        &db,
-        params.sort.unwrap_or_default(),
-        params.latest,
-        page,
-        page_size,
-    )
-    .await?;
+    let (total_items, models) =
+        fetch_fargate_prices(&db, sort_direction, sort_by, latest, page, page_size).await?;
 
     Ok((total_items, models))
 }

@@ -2,7 +2,7 @@ use ::tracing::{debug, info};
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities, pipelines, price, ratings, reports,
-    schema::{APIError, APIErrorSource, APIErrors},
+    schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
     usstates,
 };
 use std::{
@@ -66,7 +66,7 @@ async fn main() -> Result<(), Error> {
         .servers(Some(vec![
             Server::builder()
                 .description(Some("Local development API"))
-                .url("https://localhost:3000")
+                .url("http://localhost:3000")
                 .build(),
             Server::builder()
                 .description(Some("Staging API"))
@@ -112,6 +112,13 @@ async fn main() -> Result<(), Error> {
                     schema!(
                         #[inline]
                         APIErrors
+                    ),
+                )
+                .schema(
+                    "OrderDirection",
+                    schema!(
+                        #[inline]
+                        OrderDirection
                     ),
                 )
                 .build(),

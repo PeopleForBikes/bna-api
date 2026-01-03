@@ -1,12 +1,15 @@
 //! Describes the schemas shared accross resources.
+use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use std::convert::Into;
 use std::{fmt::Display, str::FromStr};
 use utoipa::{IntoParams, IntoResponses, ToSchema};
 use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Deserialize)]
+#[schema(description = "Supported countries")]
 pub(crate) enum Country {
     Australia,
     Belgium,
@@ -247,13 +250,150 @@ pub(crate) enum ErrorResponses {
 }
 
 #[allow(dead_code)]
-#[derive(Deserialize, IntoParams)]
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
-pub(crate) struct PaginationParams {
+pub(crate) struct PaginationParameters {
     /// The number of items per page
     #[param(minimum = 1, maximum = 65536, example = 25)]
     page_size: Option<u64>,
     /// The result page being returned
     #[param(minimum = 1, maximum = 65536, example = 5)]
     page: Option<u64>,
+}
+
+impl Default for PaginationParameters {
+    fn default() -> Self {
+        Self {
+            page_size: Some(DEFAULT_PAGE_SIZE),
+            page: Some(0),
+        }
+    }
+}
+
+impl PaginationParameters {
+    pub fn page_size(&self) -> u64 {
+        match self.page_size {
+            Some(value) => match value {
+                0 => 1,
+                1..=MAX_PAGE_SIZE => value,
+                _ => MAX_PAGE_SIZE,
+            },
+            None => DEFAULT_PAGE_SIZE,
+        }
+    }
+
+    pub fn page(&self) -> u64 {
+        self.page.unwrap_or_default()
+    }
+}
+
+#[derive(Debug, Default, Deserialize, Clone, ToSchema)]
+#[schema(description = "Order direction for sorting")]
+pub enum OrderDirection {
+    Asc,
+    #[default]
+    Desc,
+}
+
+impl From<sea_orm::Order> for OrderDirection {
+    fn from(value: sea_orm::Order) -> Self {
+        match value {
+            sea_orm::Order::Desc => OrderDirection::Desc,
+            _ => OrderDirection::Asc,
+        }
+    }
+}
+
+impl From<OrderDirection> for sea_orm::Order {
+    fn from(value: OrderDirection) -> Self {
+        match value {
+            OrderDirection::Desc => sea_orm::Order::Desc,
+            _ => sea_orm::Order::Asc,
+        }
+    }
+}
+
+/// Sorting parameters shared across all list endpoints.
+#[allow(dead_code)]
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
+#[into_params(parameter_in = Query)]
+pub(crate) struct SortParameters {
+    /// Field to sort by.
+    #[param(example = "created_at")]
+    sort_by: Option<String>,
+
+    /// Sort direction (`asc` or `desc`).
+    #[param(example = "desc")]
+    order_direction: Option<OrderDirection>,
+
+    /// Fetch the latest entry.
+    /// When specified, it ignores the `sort_by` and `order_direction` parameters.
+    #[param(example = "true")]
+    latest: Option<bool>,
+}
+
+impl Default for SortParameters {
+    fn default() -> Self {
+        Self {
+            sort_by: Some(String::from("created_at")),
+            order_direction: Some(OrderDirection::default()),
+            latest: Some(false),
+        }
+    }
+}
+
+/// List parameters combining sorting and pagination.
+#[allow(dead_code)]
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
+#[schema(as = ListParameters)]
+pub(crate) struct ListParams {
+    #[serde(flatten)]
+    pagination: Option<PaginationParameters>,
+
+    #[serde(flatten)]
+    sorting: Option<SortParameters>,
+}
+
+#[derive(Debug, Deserialize, IntoParams, ToSchema)]
+#[into_params(parameter_in = Query)]
+pub(crate) struct ListParameters {
+    #[param(minimum = 1, maximum = 65536, example = 5)]
+    page: Option<u64>,
+    #[param(minimum = 1, maximum = 65536, example = 25)]
+    page_size: Option<u64>,
+    #[param(example = "created_at")]
+    sort_by: Option<String>,
+    #[param(example = "desc")]
+    order_direction: Option<OrderDirection>,
+    #[param(example = "true")]
+    latest: Option<bool>,
+}
+
+impl ListParameters {
+    pub fn page(&self) -> u64 {
+        self.page.unwrap_or_default()
+    }
+
+    pub fn page_size(&self) -> u64 {
+        match self.page_size {
+            Some(value) => match value {
+                0 => 1,
+                1..=MAX_PAGE_SIZE => value,
+                _ => MAX_PAGE_SIZE,
+            },
+            None => DEFAULT_PAGE_SIZE,
+        }
+    }
+
+    pub fn sort_by(&self) -> String {
+        self.sort_by.clone().unwrap_or("created_at".to_string())
+    }
+
+    pub fn order_direction(&self) -> OrderDirection {
+        self.order_direction.clone().unwrap_or_default()
+    }
+
+    pub fn latest(&self) -> bool {
+        self.latest.unwrap_or_default()
+    }
 }
