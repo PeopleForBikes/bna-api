@@ -6,7 +6,6 @@ use axum::{
 };
 use bnacore::aws::get_aws_secrets_value;
 use effortless::{
-    // api::DEFAULT_PAGE_SIZE,
     error::{APIError, APIErrors},
     fragment::BnaRequestExt,
 };
@@ -445,15 +444,6 @@ impl Context {
         self.source.to_owned()
     }
 }
-
-// #[derive(Default, Deserialize)]
-// pub enum Order {
-//     Asc,
-//     #[default]
-//     Desc,
-// }
-
-// derive_fromstr_from_deserialize!(Order);
 
 #[cfg(test)]
 mod tests {

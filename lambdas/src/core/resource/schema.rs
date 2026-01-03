@@ -1,7 +1,6 @@
 //! Describes the schemas shared accross resources.
 use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
-// use nom::Into;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::Into;
@@ -9,9 +8,8 @@ use std::{fmt::Display, str::FromStr};
 use utoipa::{IntoParams, IntoResponses, ToSchema};
 use uuid::Uuid;
 
-// use crate::Order;
-
 #[derive(ToSchema, Serialize, Deserialize)]
+#[schema(description = "Supported countries")]
 pub(crate) enum Country {
     Australia,
     Belgium,
@@ -290,6 +288,7 @@ impl PaginationParameters {
 }
 
 #[derive(Debug, Default, Deserialize, Clone, ToSchema)]
+#[schema(description = "Order direction for sorting")]
 pub enum OrderDirection {
     Asc,
     #[default]
@@ -357,7 +356,7 @@ pub(crate) struct ListParams {
 
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
-pub struct ListParameters {
+pub(crate) struct ListParameters {
     #[param(minimum = 1, maximum = 65536, example = 5)]
     page: Option<u64>,
     #[param(minimum = 1, maximum = 65536, example = 25)]

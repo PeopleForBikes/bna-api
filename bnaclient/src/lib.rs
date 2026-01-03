@@ -1403,12 +1403,13 @@ pub mod types {
         }
     }
 
-    ///`Country`
+    ///Supported countries
     ///
     /// <details><summary>JSON schema</summary>
     ///
     /// ```json
     ///{
+    ///  "description": "Supported countries",
     ///  "type": "string",
     ///  "enum": [
     ///    "Australia",
@@ -1977,6 +1978,89 @@ pub mod types {
     impl Opportunity {
         pub fn builder() -> builder::Opportunity {
             Default::default()
+        }
+    }
+
+    ///Order direction for sorting
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Order direction for sorting",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Asc",
+    ///    "Desc"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum OrderDirection {
+        Asc,
+        Desc,
+    }
+
+    impl ::std::convert::From<&Self> for OrderDirection {
+        fn from(value: &OrderDirection) -> Self {
+            value.clone()
+        }
+    }
+
+    impl ::std::fmt::Display for OrderDirection {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Asc => f.write_str("Asc"),
+                Self::Desc => f.write_str("Desc"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for OrderDirection {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Asc" => Ok(Self::Asc),
+                "Desc" => Ok(Self::Desc),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for OrderDirection {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for OrderDirection {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for OrderDirection {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
 
@@ -6878,13 +6962,13 @@ impl Client {
     ///
     ///Sends a `GET` request to `/prices/fargate`
     ///
-    ///Arguments:
-    /// - `page`: The result page being returned
-    /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_prices_fargate()
+    ///    .latest(latest)
+    ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
+    ///    .sort_by(sort_by)
     ///    .send()
     ///    .await;
     /// ```
@@ -8345,17 +8429,44 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPricesFargate<'a> {
         client: &'a super::Client,
+        latest: Result<Option<bool>, String>,
+        order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
+        sort_by: Result<Option<::std::string::String>, String>,
     }
 
     impl<'a> GetPricesFargate<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
+                latest: Ok(None),
+                order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
+                sort_by: Ok(None),
             }
+        }
+
+        pub fn latest<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<bool>,
+        {
+            self.latest = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `bool` for latest failed".to_string());
+            self
+        }
+
+        pub fn order_direction<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::OrderDirection>,
+        {
+            self.order_direction = value.try_into().map(Some).map_err(|_| {
+                "conversion to `OrderDirection` for order_direction failed".to_string()
+            });
+            self
         }
 
         pub fn page<V>(mut self, value: V) -> Self
@@ -8378,15 +8489,31 @@ pub mod builder {
             self
         }
 
+        pub fn sort_by<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.sort_by = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+            });
+            self
+        }
+
         ///Sends a `GET` request to `/prices/fargate`
         pub async fn send(self) -> Result<ResponseValue<types::FargatePrices>, Error<()>> {
             let Self {
                 client,
+                latest,
+                order_direction,
                 page,
                 page_size,
+                sort_by,
             } = self;
+            let latest = latest.map_err(Error::InvalidRequest)?;
+            let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let sort_by = sort_by.map_err(Error::InvalidRequest)?;
             let url = format!("{}/prices/fargate", client.baseurl,);
             let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
             header_map.append(
@@ -8401,8 +8528,14 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
+                .query(&progenitor_client::QueryParam::new("latest", &latest))
+                .query(&progenitor_client::QueryParam::new(
+                    "order_direction",
+                    &order_direction,
+                ))
                 .query(&progenitor_client::QueryParam::new("page", &page))
                 .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&progenitor_client::QueryParam::new("sort_by", &sort_by))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
