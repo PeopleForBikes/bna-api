@@ -16,7 +16,7 @@ use crate::{
             schema::{CitiesWithSummary, CityParams, CityWithSummary},
             CitiesPathParameters,
         },
-        schema::{City, ErrorResponses, PaginationParameters},
+        schema::{City, ErrorResponses, ListParameters, PaginationParameters},
     },
     Context, ExecutionError, PageFlow, Paginatron,
 };
@@ -76,17 +76,23 @@ async fn get_city(
   description = "Get the details of all cities where an BNA analysis was performed.",
   tag = TAG,
   params(
-    PaginationParameters,
+    ListParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities", body = Cities),
   ))]
 async fn get_cities(
-    Query(pagination): Query<PaginationParameters>,
+    Query(list): Query<ListParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
-    let payload = get_cities_adaptor(pagination.page(), pagination.page_size()).await?;
+    let payload = get_cities_adaptor(
+        list.order_direction(),
+        &list.sort_by(),
+        list.page(),
+        list.page_size(),
+    )
+    .await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
+        Paginatron::new(None, payload.0, list.page(), list.page_size()),
         payload.1.into(),
     ))
 }

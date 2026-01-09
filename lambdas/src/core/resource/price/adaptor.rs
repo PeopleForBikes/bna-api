@@ -42,7 +42,7 @@ pub async fn get_price_fargate_adaptor_model_(
     }
 }
 
-pub async fn get_prices_fargate_adaptor_model_(
+pub async fn get_prices_fargate_adaptor(
     sort_direction: OrderDirection,
     sort_by: &str,
     latest: bool,

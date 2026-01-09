@@ -2,7 +2,7 @@ use super::db::{
     fetch_cities, fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions,
     fetch_city, fetch_country, fetch_state_region_crosswalk, fetch_top_cities,
 };
-use crate::{database_connect, Context, ExecutionError};
+use crate::{core::resource::schema::OrderDirection, database_connect, Context, ExecutionError};
 use entity::{
     city, summary,
     wrappers::{
@@ -43,6 +43,8 @@ pub async fn get_city_adaptor(
 }
 
 pub async fn get_cities_adaptor(
+    sort_direction: OrderDirection,
+    sort_by: &str,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<entity::city::Model>), ExecutionError> {
@@ -50,7 +52,7 @@ pub async fn get_cities_adaptor(
     let db = database_connect().await?;
 
     // Fetch a page of cities.
-    Ok(fetch_cities(&db, page, page_size).await?)
+    Ok(fetch_cities(&db, sort_direction, sort_by, page, page_size).await?)
 }
 
 pub async fn get_cities_ratings_adaptor(
