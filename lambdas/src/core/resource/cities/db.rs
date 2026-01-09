@@ -1,3 +1,4 @@
+use crate::core::resource::schema::OrderDirection;
 use entity::{city, country, state_region_crosswalk, submission, summary, Summary};
 use sea_orm::{
     ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait,
@@ -19,16 +20,32 @@ pub(crate) async fn fetch_city(
 
 pub(crate) async fn fetch_cities(
     db: &DatabaseConnection,
+    sort_direction: OrderDirection,
+    sort_by: &str,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<city::Model>), DbErr> {
-    let select = city::Entity::find();
+    let sort_column = match sort_by {
+        "name" => city::Column::Name,
+        "country" => city::Column::Country,
+        "state" => city::Column::State,
+        "state_abbrev" => city::Column::StateAbbrev,
+        "region" => city::Column::Region,
+        "fips_code" => city::Column::FipsCode,
+        _ => city::Column::CreatedAt,
+    };
+    let mut select = city::Entity::find();
     let count = select
         .clone()
         .select_only()
         .column_as(city::Column::Id.count(), "count")
         .count(db)
         .await?;
+
+    // Build the filter.
+    select = select.order_by(sort_column, sort_direction.into());
+
+    // Retrieve the models.
     let models = select.paginate(db, page_size).fetch_page(page).await?;
     Ok((count, models))
 }

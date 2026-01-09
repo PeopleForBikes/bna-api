@@ -1,4 +1,4 @@
-use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor_model_};
+use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor};
 use crate::{
     core::resource::{
         price::schema::{FargatePrice, FargatePrices},
@@ -11,7 +11,6 @@ use axum::{
     extract::{Path, Query},
     Json,
 };
-use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "price";
@@ -37,8 +36,7 @@ pub fn routes() -> OpenApiRouter {
 pub(crate) async fn get_prices_fargate(
     Query(list): Query<ListParameters>,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
-    debug!("{:?}", list);
-    let (total_items, models) = get_prices_fargate_adaptor_model_(
+    let (total_items, models) = get_prices_fargate_adaptor(
         list.order_direction(),
         &list.sort_by(),
         list.latest(),
