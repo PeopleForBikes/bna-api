@@ -19,19 +19,8 @@ paths:
       description: Get the details of all cities where an BNA analysis was performed.
       operationId: get_cities
       parameters:
-      - name: page_size
-        in: query
-        description: The number of items per page
-        required: false
-        schema:
-          type: integer
-          format: int64
-          maximum: 65536
-          minimum: 1
-        example: 25
       - name: page
         in: query
-        description: The result page being returned
         required: false
         schema:
           type: integer
@@ -39,6 +28,33 @@ paths:
           maximum: 65536
           minimum: 1
         example: 5
+      - name: page_size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int64
+          maximum: 65536
+          minimum: 1
+        example: 25
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+        example: created_at
+      - name: order_direction
+        in: query
+        required: false
+        schema:
+          $ref: '#/components/schemas/OrderDirection'
+        example: desc
+      - name: latest
+        in: query
+        required: false
+        schema:
+          type: boolean
+        example: 'true'
       responses:
         '200':
           description: Fetches cities
@@ -2315,8 +2331,8 @@ components:
       type: string
       description: Order direction for sorting
       enum:
-      - Asc
-      - Desc
+      - asc
+      - desc
     People:
       type: object
       properties:

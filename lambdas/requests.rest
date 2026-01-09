@@ -24,8 +24,12 @@ GET {{host}}/ratings/{{rating_id}}
 GET {{host}}/ratings/{{rating_id}}/city
 
 ###
-# Query the first page of the cities.
+# Query the first page of cities.
 GET {{host}}/cities
+
+###
+# Query the first page of cities and sort the results alphabetically by name.
+GET {{host}}/cities?sort_by=name&order_direction=asc
 
 ###
 # Query a specific city.

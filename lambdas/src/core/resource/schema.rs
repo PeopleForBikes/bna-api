@@ -288,10 +288,11 @@ impl PaginationParameters {
 }
 
 #[derive(Debug, Default, Deserialize, Clone, ToSchema)]
+#[serde(rename_all = "lowercase")]
 #[schema(description = "Order direction for sorting")]
 pub enum OrderDirection {
-    Asc,
     #[default]
+    Asc,
     Desc,
 }
 
@@ -328,6 +329,7 @@ pub(crate) struct SortParameters {
 
     /// Fetch the latest entry.
     /// When specified, it ignores the `sort_by` and `order_direction` parameters.
+    /// This parameter does not apply to all entities.
     #[param(example = "true")]
     latest: Option<bool>,
 }
