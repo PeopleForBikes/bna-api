@@ -14,5 +14,5 @@ HTTP 200
 jsonpath "$.name" == "Texas"
 jsonpath "$.abbrev" == "TX"
 jsonpath "$.fipscode" == "48"
-jsonpath "$.speed_limit" == "30"
+jsonpath "$.speed_limit" == 30
 

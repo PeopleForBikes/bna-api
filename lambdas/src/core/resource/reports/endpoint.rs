@@ -1,3 +1,5 @@
+use crate::DB_CONN;
+
 use super::adaptor::{get_report_adaptor, get_reports_adaptor};
 use axum::extract::Path;
 use axum::response::IntoResponse;
@@ -24,7 +26,8 @@ pub fn routes() -> OpenApiRouter {
   )
 )]
 async fn get_reports() -> impl IntoResponse {
-    let ratings = get_reports_adaptor().await.expect("reports");
+    let db = DB_CONN.get().expect("DB not initialized");
+    let ratings = get_reports_adaptor(db).await.expect("reports");
     let stream = stream::iter(ratings);
     StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
@@ -45,7 +48,8 @@ async fn get_reports() -> impl IntoResponse {
   )
 )]
 async fn get_reports_year(Path(year): Path<u32>) -> impl IntoResponse {
-    let ratings = get_report_adaptor(year).await.expect("reports");
+    let db = DB_CONN.get().expect("DB not initialized");
+    let ratings = get_report_adaptor(db, year).await.expect("reports");
     let stream = stream::iter(ratings);
     StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
