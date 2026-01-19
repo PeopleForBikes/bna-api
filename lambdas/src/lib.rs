@@ -13,6 +13,7 @@ use lambda_http::{
     http::{header, StatusCode},
     Body, Error, Request, Response,
 };
+use once_cell::sync::OnceCell;
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Serialize;
 use serde_json::{json, Value};
@@ -23,6 +24,9 @@ use tracing::{debug, error};
 pub const MAX_PAGE_SIZE: u64 = 100;
 /// Number of items to return per page if no argument was provided.
 pub const DEFAULT_PAGE_SIZE: u64 = 50;
+
+/// Global static database connection.
+pub static DB_CONN: OnceCell<DatabaseConnection> = OnceCell::new();
 
 /// The result type to return to the caller of the Lambda API handler.
 pub type APIResult<T> = std::result::Result<T, Response<Body>>;

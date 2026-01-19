@@ -1,9 +1,12 @@
 use ::tracing::{debug, info};
 use lambda_http::{run, tracing, Error};
-use lambdas::core::resource::{
-    cities, pipelines, price, ratings, reports,
-    schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
-    usstates,
+use lambdas::{
+    core::resource::{
+        cities, pipelines, price, ratings, reports,
+        schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
+        usstates,
+    },
+    database_connect, DB_CONN,
 };
 use std::{
     env::{self, set_var},
@@ -148,6 +151,10 @@ async fn main() -> Result<(), Error> {
 
     // Add the Swagger UI.
     let app = app.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
+
+    // Set the database connection once at startup.
+    let db = database_connect().await?;
+    DB_CONN.set(db.clone()).ok();
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")
