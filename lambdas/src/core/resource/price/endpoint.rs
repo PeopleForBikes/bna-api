@@ -4,7 +4,7 @@ use crate::{
         price::schema::{FargatePrice, FargatePrices},
         schema::{ErrorResponses, ListParameters},
     },
-    PageFlow, Paginatron,
+    PageFlow, Paginatron, DB_CONN,
 };
 use crate::{Context, ExecutionError};
 use axum::{
@@ -36,7 +36,9 @@ pub fn routes() -> OpenApiRouter {
 pub(crate) async fn get_prices_fargate(
     Query(list): Query<ListParameters>,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
+    let db = DB_CONN.get().expect("DB not initialized");
     let (total_items, models) = get_prices_fargate_adaptor(
+        db,
         list.order_direction(),
         &list.sort_by(),
         list.latest(),
@@ -67,7 +69,8 @@ pub(crate) async fn get_price_fargate(
     Path(price_id): Path<i32>,
     ctx: Context,
 ) -> Result<Json<FargatePrice>, ExecutionError> {
-    get_price_fargate_adaptor_model_(price_id, ctx)
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_price_fargate_adaptor_model_(db, price_id, ctx)
         .await
         .map(FargatePrice::from)
         .map(Json)

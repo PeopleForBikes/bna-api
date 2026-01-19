@@ -3,6 +3,7 @@ use super::adaptor::{
     post_pipelines_bna_adaptor,
 };
 use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines};
+use crate::DB_CONN;
 use crate::{
     core::resource::schema::{ErrorResponses, PaginationParameters},
     Context, ExecutionError,
@@ -44,7 +45,8 @@ async fn get_pipelines_bna(
     Path(pipeline_id): Path<Uuid>,
     ctx: Context,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
-    get_pipelines_bna_adaptor(pipeline_id, ctx)
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_pipelines_bna_adaptor(db, pipeline_id, ctx)
         .await
         .map(BnaPipeline::from)
         .map(Json)
@@ -65,7 +67,8 @@ async fn get_pipelines_bna(
 async fn get_pipelines_bnas(
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<Json<Value>, ExecutionError> {
-    get_pipelines_bnas_adaptor(pagination.page(), pagination.page_size())
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size())
         .await
         .map(|v| Json(json!(v.payload())))
 }
@@ -83,7 +86,8 @@ async fn get_pipelines_bnas(
 async fn post_pipelines_bna(
     Json(bna_pipeline): Json<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<BnaPipeline>), ExecutionError> {
-    post_pipelines_bna_adaptor(bna_pipeline)
+    let db = DB_CONN.get().expect("DB not initialized");
+    post_pipelines_bna_adaptor(db, bna_pipeline)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -110,7 +114,8 @@ async fn patch_pipelines_bna(
     Path(analysis_id): Path<Uuid>,
     Json(bna_pipeline): Json<BNAPipelinePatch>,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
-    patch_pipelines_bna_adaptor(bna_pipeline, analysis_id)
+    let db = DB_CONN.get().expect("DB not initialized");
+    patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id)
         .await
         .map_err(|e| {
             debug!("{e}");
