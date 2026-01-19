@@ -1,9 +1,3 @@
-use axum::{
-    extract::{Path, Query},
-    Json,
-};
-use utoipa_axum::{router::OpenApiRouter, routes};
-
 use crate::{
     core::resource::{
         schema::{ErrorResponses, PaginationParameters},
@@ -12,8 +6,13 @@ use crate::{
             schema::{UsState, UsStates},
         },
     },
-    Context, ExecutionError, PageFlow, Paginatron,
+    Context, ExecutionError, PageFlow, Paginatron, DB_CONN,
 };
+use axum::{
+    extract::{Path, Query},
+    Json,
+};
+use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "usstate";
 
@@ -39,7 +38,8 @@ async fn get_us_state(
     Path(name): Path<String>,
     ctx: Context,
 ) -> Result<Json<UsState>, ExecutionError> {
-    get_us_state_adaptor(&name, ctx)
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_us_state_adaptor(db, &name, ctx)
         .await
         .map(UsState::from)
         .map(Json)
@@ -60,7 +60,8 @@ async fn get_us_state(
 async fn get_us_states(
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<UsStates>, ExecutionError> {
-    let payload = get_us_states_adaptor(pagination.page(), pagination.page_size()).await?;
+    let db = DB_CONN.get().expect("DB not initialized");
+    let payload = get_us_states_adaptor(db, pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
         Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
         payload.1.into(),

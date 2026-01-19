@@ -1,19 +1,18 @@
 use crate::{
     core::resource::usstates::db::{fetch_us_state, fetch_us_states},
-    database_connect, Context, ExecutionError,
+    Context, ExecutionError,
 };
 use entity::us_state;
+use sea_orm::DatabaseConnection;
 use tracing::info;
 
 pub async fn get_us_state_adaptor(
+    db: &DatabaseConnection,
     name: &str,
     ctx: Context,
 ) -> Result<us_state::Model, ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
     // Fetch the us_state model.
-    let model = match fetch_us_state(&db, name).await {
+    let model = match fetch_us_state(db, name).await {
         Ok(model) => model,
         Err(e) => {
             info!("{e:?}");
@@ -31,12 +30,10 @@ pub async fn get_us_state_adaptor(
 }
 
 pub async fn get_us_states_adaptor(
+    db: &DatabaseConnection,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<entity::us_state::Model>), ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
     // Fetch a page of US states.
-    Ok(fetch_us_states(&db, page, page_size).await?)
+    Ok(fetch_us_states(db, page, page_size).await?)
 }
