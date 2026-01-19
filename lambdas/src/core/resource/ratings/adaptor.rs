@@ -2,35 +2,31 @@ use super::{
     db::{fetch_rating, fetch_ratings, fetch_ratings_city, fetch_ratings_summaries, Bna},
     schema::RatingPost,
 };
-use crate::{database_connect, Context, ExecutionError};
+use crate::{Context, ExecutionError};
 use entity::{
     core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
     transit,
 };
-use sea_orm::{ActiveModelTrait, ActiveValue};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection};
 use tracing::info;
 use uuid::Uuid;
 
 pub async fn get_ratings_summaries_adaptor(
+    db: &DatabaseConnection,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<summary::Model>), ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
     // Fetch a page of summary.
-    Ok(fetch_ratings_summaries(&db, page, page_size).await?)
+    Ok(fetch_ratings_summaries(db, page, page_size).await?)
 }
 
 pub(crate) async fn get_rating_adaptor(
+    db: &DatabaseConnection,
     rating_id: Uuid,
     ctx: Context,
 ) -> Result<Bna, ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
     // Fetch the model.
-    let model: Option<super::db::Bna> = fetch_rating(&db, rating_id).await?;
+    let model: Option<super::db::Bna> = fetch_rating(db, rating_id).await?;
     match model {
         Some(model) => Ok(model),
         None => Err(ExecutionError::NotFound(
@@ -42,24 +38,21 @@ pub(crate) async fn get_rating_adaptor(
 }
 
 pub(crate) async fn get_ratings_adaptor(
+    db: &DatabaseConnection,
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<Bna>), ExecutionError> {
-    // Set the database connection.
-    let db = database_connect().await?;
-
     // Fetch a page of summary.
-    Ok(fetch_ratings(&db, page, page_size).await?)
+    Ok(fetch_ratings(db, page, page_size).await?)
 }
 
 pub(crate) async fn get_ratings_city_adaptor(
+    db: &DatabaseConnection,
     rating_id: Uuid,
     ctx: Context,
 ) -> Result<(Bna, entity::city::Model), ExecutionError> {
-    let db = database_connect().await?;
-
     // Fetch the model.
-    let model = fetch_ratings_city(&db, rating_id).await?;
+    let model = fetch_ratings_city(db, rating_id).await?;
     match model {
         Some((bna, city)) => Ok((bna, city)),
         None => Err(ExecutionError::NotFound(
@@ -70,7 +63,10 @@ pub(crate) async fn get_ratings_city_adaptor(
     }
 }
 
-pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, ExecutionError> {
+pub(crate) async fn post_ratings_adaptor(
+    db: &DatabaseConnection,
+    rating: RatingPost,
+) -> Result<Bna, ExecutionError> {
     // Generate a rating id.
     let rating_id = Uuid::new_v4();
 
@@ -176,20 +172,16 @@ pub(crate) async fn post_ratings_adaptor(rating: RatingPost) -> Result<Bna, Exec
     };
     info!("{:?}", measure);
 
-    // Get the database connection.
-    let db = database_connect().await?;
-    info!("DB acquired");
-
     // And insert a new entry for each model.
-    let summary_model = summary.insert(&db).await?;
-    let core_services_model = core_services.insert(&db).await?;
-    let infrastructure_model = infrastructure.insert(&db).await?;
-    let opportunity_model = opportunity.insert(&db).await?;
-    let people_model = people.insert(&db).await?;
-    let recreation_model = recreation.insert(&db).await?;
-    let retail_model = retail.insert(&db).await?;
-    let transit_model = transit.insert(&db).await?;
-    let measure_model = measure.insert(&db).await?;
+    let summary_model = summary.insert(db).await?;
+    let core_services_model = core_services.insert(db).await?;
+    let infrastructure_model = infrastructure.insert(db).await?;
+    let opportunity_model = opportunity.insert(db).await?;
+    let people_model = people.insert(db).await?;
+    let recreation_model = recreation.insert(db).await?;
+    let retail_model = retail.insert(db).await?;
+    let transit_model = transit.insert(db).await?;
+    let measure_model = measure.insert(db).await?;
     let bna = Bna {
         id: summary_model.id,
         city_id: summary_model.city_id,
