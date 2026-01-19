@@ -18,7 +18,7 @@ use crate::{
         },
         schema::{City, ErrorResponses, ListParameters, PaginationParameters},
     },
-    Context, ExecutionError, PageFlow, Paginatron,
+    Context, ExecutionError, PageFlow, Paginatron, DB_CONN,
 };
 use axum::{
     extract::{Path, Query},
@@ -63,7 +63,8 @@ async fn get_city(
     Path(params): Path<CitiesPathParameters>,
     ctx: Context,
 ) -> Result<Json<City>, ExecutionError> {
-    get_city_adaptor(&params.country, &params.region, &params.name, ctx)
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_city_adaptor(db, &params.country, &params.region, &params.name, ctx)
         .await
         .map(City::from)
         .map(Json)
@@ -84,7 +85,9 @@ async fn get_city(
 async fn get_cities(
     Query(list): Query<ListParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
+    let db = DB_CONN.get().expect("DB not initialized");
     let payload = get_cities_adaptor(
+        db,
         list.order_direction(),
         &list.sort_by(),
         list.page(),
@@ -115,7 +118,9 @@ async fn get_city_ratings(
     Query(pagination): Query<PaginationParameters>,
     ctx: Context,
 ) -> Result<PageFlow<CityRatings>, ExecutionError> {
+    let db = DB_CONN.get().expect("DB not initialized");
     let city_ratings = get_cities_ratings_adaptor(
+        db,
         &params.country,
         &params.region,
         &params.name,
@@ -157,7 +162,8 @@ async fn get_city_ratings(
     ErrorResponses,
   ))]
 async fn post_city(Json(city): Json<city::CityPost>) -> Result<Json<Value>, ExecutionError> {
-    post_cities_adaptor(city).await.map(Json)
+    let db = DB_CONN.get().expect("DB not initialized");
+    post_cities_adaptor(db, city).await.map(Json)
 }
 
 #[utoipa::path(
@@ -178,7 +184,8 @@ async fn get_cities_submission(
     OptionalQuery(status): OptionalQuery<String>,
     ctx: Context,
 ) -> Result<Json<Submission>, ExecutionError> {
-    get_cities_submission_adaptor(submission_id, status, ctx)
+    let db = DB_CONN.get().expect("DB not initialized");
+    get_cities_submission_adaptor(db, submission_id, status, ctx)
         .await
         .map(Submission::from)
         .map(Json)
@@ -206,7 +213,9 @@ async fn get_cities_submissions(
     Query(submission_params): Query<SubmissionParameters>,
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
+    let db = DB_CONN.get().expect("DB not initialized");
     let cities_submissions = get_cities_submissions_adaptor(
+        db,
         submission_params.status,
         pagination.page(),
         pagination.page_size(),
@@ -243,7 +252,8 @@ async fn get_cities_submissions(
 async fn post_cities_submission(
     Json(submission): Json<submission::SubmissionPost>,
 ) -> Result<(StatusCode, Json<Submission>), ExecutionError> {
-    post_cities_submission_adaptor(submission)
+    let db = DB_CONN.get().expect("DB not initialized");
+    post_cities_submission_adaptor(db, submission)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -270,7 +280,8 @@ async fn patch_cities_submission(
     Query(submission_id): Query<i32>,
     Json(submission): Json<submission::SubmissionPatch>,
 ) -> Result<Json<Submission>, ExecutionError> {
-    patch_cities_submission_adaptor(submission_id, submission)
+    let db = DB_CONN.get().expect("DB not initialized");
+    patch_cities_submission_adaptor(db, submission_id, submission)
         .await
         .map(Submission::from)
         .map(Json)
@@ -293,7 +304,8 @@ async fn get_top_cities(
     Path((year, count)): Path<(i32, i32)>,
     ctx: Context,
 ) -> Result<Json<CitiesWithSummary>, ExecutionError> {
-    let models = get_top_cities_adaptor(year, count, ctx).await?;
+    let db = DB_CONN.get().expect("DB not initialized");
+    let models = get_top_cities_adaptor(db, year, count, ctx).await?;
 
     let payload = models
         .iter()

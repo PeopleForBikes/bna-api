@@ -66,7 +66,7 @@ curl http://localhost:3000/ratings
 Or use the predefined test suites, using Hurl:
 
 ```bash
-cd lambda/tests
+cd lambdas/tests
 just test-smoke-public localhost
 just test localhost
 ```
