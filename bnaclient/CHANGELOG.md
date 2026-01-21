@@ -8,6 +8,19 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-01-21
+
+## Changed
+
+- Improved pagination and sorting. [#368]
+- Implemented better pagination and sorting for the `/cities` endpoint. [#374]
+- Used shared database connection pool. [#379]
+
+[#368]: https://github.com/PeopleForBikes/bna-api/pull/368
+[#374]: https://github.com/PeopleForBikes/bna-api/pull/374
+[#379]: https://github.com/PeopleForBikes/bna-api/pull/379
+[1.4.0]: https://github.com/PeopleForBikes/bna-api/releases/tag/1.4.0
+
 ## [1.3.0] - 2025-12-01
 
 ### Added
