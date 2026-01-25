@@ -1,5 +1,5 @@
-# @host=https://api.peopleforbikes.xyz
-@host=http://localhost:3000
+@host=https://origin-api.peopleforbikes.xyz
+# @host=http://localhost:3000
 # Austin, TX, USA.
 @city_id=ef8384d5-b96f-439d-a83b-bc801735ddc6
 @rating_id=1a759b85-cd87-4bb1-9efa-5789e38e9982
@@ -157,6 +157,7 @@ Authorization: Bearer {{cognito_access}}
 
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
 GET {{host}}/ratings/
+content-type: application/json
 Authorization: Bearer {{cognito_access}}
 
 

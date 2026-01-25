@@ -16,7 +16,7 @@ aws-sdk-sqs = "1.92.0"
 axum = "0.8.8"
 axum-extra = "0.12.5"
 axum-streams = "0.24.0"
-bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "33a2c85" }
+bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "b630b4a" }
 bon = "3.8.2"
 chrono = "0.4.43"
 color-eyre = "0.6.5"

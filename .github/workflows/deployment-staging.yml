@@ -35,7 +35,4 @@ jobs:
         run: cd lambdas && cargo lambda build --release
       - name: Deploy lambdas
         run: >
-          cargo lambda deploy
-          --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
-          --env-var DATABASE_URL_SECRET_ID=${{ secrets.DATABASE_URL_SECRET_ID_STAGING }}
-          axumed
+          cargo lambda deploy --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }} axumed
