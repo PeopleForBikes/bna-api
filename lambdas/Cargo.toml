@@ -23,7 +23,12 @@ lambda_runtime = { workspace = true }
 nom = { workspace = true }
 once_cell = { workspace = true }
 query_map = { workspace = true, features = ["url-query"] }
-reqwest = { workspace = true, features = ["json", "native-tls-vendored"] }
+reqwest = { workspace = true, default-features = false, features = [
+  "charset",
+  "http2",
+  "json",
+  "rustls",
+] }
 sea-orm = { workspace = true, features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
@@ -34,7 +39,7 @@ serde_json = { workspace = true }
 serde_plain = { workspace = true }
 serde_with = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true, features = ["macros"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
