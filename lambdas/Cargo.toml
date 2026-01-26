@@ -65,10 +65,34 @@ path = "src/main.rs"
 color-eyre = { workspace = true }
 rstest = { workspace = true }
 
+[profile.release]
+# Optimize for size instead of speed
+opt-level = "z"
+
+# Enable Link-Time Optimization
+lto = true
+
+# Use single codegen unit for better optimization
+codegen-units = 1
+
+# Strip all symbols from binary
+strip = true
+
+# Enable panic abort instead of unwinding
+panic = "abort"
+
+# Reduce debug info
+debug = false
+
+# Optimize for size in dependencies too
+[profile.release.package."*"]
+opt-level = "z"
+strip = true
+
 [package.metadata.lambda.deploy]
 memory = 128
 timeout = 10
 tracing = "active"
 layers = [
-  "arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension:4",
+  "arn:aws:lambda:us-west-2:345057560386:layer:AWS-Parameters-and-Secrets-Lambda-Extension:24",
 ]
