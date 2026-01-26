@@ -17,12 +17,10 @@ dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
 futures = { workspace = true }
-http-serde = { workspace = true }
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
 nom = { workspace = true }
 once_cell = { workspace = true }
-query_map = { workspace = true, features = ["url-query"] }
 reqwest = { workspace = true, default-features = false, features = [
   "charset",
   "http2",
@@ -34,12 +32,12 @@ sea-orm = { workspace = true, features = [
   "runtime-tokio-rustls",
   "macros",
 ] }
-serde = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 serde_plain = { workspace = true }
 serde_with = { workspace = true }
 thiserror = { workspace = true }
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tokio = { workspace = true, features = ["macros"] }
 tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
@@ -61,33 +59,13 @@ path = "src/lib.rs"
 name = "axumed"
 path = "src/main.rs"
 
+[[bin]]
+name = "secret-tester"
+path = "src/bin/secret-tester/secret-tester.rs"
+
 [dev-dependencies]
 color-eyre = { workspace = true }
 rstest = { workspace = true }
-
-[profile.release]
-# Optimize for size instead of speed
-opt-level = "z"
-
-# Enable Link-Time Optimization
-lto = true
-
-# Use single codegen unit for better optimization
-codegen-units = 1
-
-# Strip all symbols from binary
-strip = true
-
-# Enable panic abort instead of unwinding
-panic = "abort"
-
-# Reduce debug info
-debug = false
-
-# Optimize for size in dependencies too
-[profile.release.package."*"]
-opt-level = "z"
-strip = true
 
 [package.metadata.lambda.deploy]
 memory = 128

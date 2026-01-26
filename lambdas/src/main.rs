@@ -1,5 +1,4 @@
-use ::tracing::{debug, info};
-use lambda_http::{run, tracing, Error};
+use lambda_http::{run, service_fn, tracing, Error, LambdaEvent};
 use lambdas::{
     core::resource::{
         cities, pipelines, price, ratings, reports,
@@ -8,11 +7,13 @@ use lambdas::{
     },
     database_connect, DB_CONN,
 };
+use serde_json::Value;
 use std::{
     env::{self, set_var},
     fs,
 };
 use tower_http::trace::TraceLayer;
+use tracing::{debug, info};
 use utoipa::{
     openapi::{Components, ContactBuilder, Info, OpenApiBuilder, Server, Tag},
     schema,
@@ -153,8 +154,24 @@ async fn main() -> Result<(), Error> {
     let app = app.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
 
     // Set the database connection once at startup.
-    let db = database_connect().await?;
-    DB_CONN.set(db.clone()).ok();
+    let _ = lambda_runtime::run(service_fn(database_connect_handler)).await;
+    // info!("Retrieving DATABASE_URL secret from AWS Secrets Manager a la mano");
+    // let res = reqwest::Client::new()
+    //     .get("http://localhost:2773/secretsmanager/get?secretId=DATABASE_URL")
+    //     .header("X-Aws-Parameters-Secrets-Token", aws_session_token)
+    //     .send()
+    //     .await;
+    // dbg!(&res);
+    // let res = res.unwrap();
+    // dbg!(&res);
+    // let res = res.json::<serde_json::Value>().await;
+    // dbg!(&res);
+    // info!("Retrieving DATABASE_URL secret from AWS Secrets Manager from utilities");
+    // let sec = get_aws_secrets("DATABASE_URL").await;
+    // dbg!(&sec);
+    // info!("Retrieving Database Connection.");
+    // let db = database_connect().await?;
+    // DB_CONN.set(db.clone()).ok();
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")
@@ -172,4 +189,11 @@ async fn main() -> Result<(), Error> {
     } else {
         run(app).await
     }
+}
+
+pub(crate) async fn database_connect_handler(_event: LambdaEvent<Value>) -> Result<(), Error> {
+    info!("Retrieving Database Connection.");
+    let db = database_connect().await?;
+    DB_CONN.set(db.clone()).ok();
+    Ok(())
 }
