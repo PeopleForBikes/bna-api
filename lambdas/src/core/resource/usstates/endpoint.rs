@@ -6,7 +6,7 @@ use crate::{
             schema::{UsState, UsStates},
         },
     },
-    Context, ExecutionError, PageFlow, Paginatron, DB_CONN,
+    database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{
     extract::{Path, Query},
@@ -38,7 +38,7 @@ async fn get_us_state(
     Path(name): Path<String>,
     ctx: Context,
 ) -> Result<Json<UsState>, ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     get_us_state_adaptor(db, &name, ctx)
         .await
         .map(UsState::from)
@@ -60,7 +60,7 @@ async fn get_us_state(
 async fn get_us_states(
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<UsStates>, ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     let payload = get_us_states_adaptor(db, pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
         Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),

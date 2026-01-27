@@ -1,8 +1,7 @@
-use crate::DB_CONN;
+use crate::{database_connect_or_init, ExecutionError};
 
 use super::adaptor::{get_report_adaptor, get_reports_adaptor};
 use axum::extract::Path;
-use axum::response::IntoResponse;
 use axum_streams::*;
 use futures::{stream, StreamExt};
 use utoipa_axum::router::OpenApiRouter;
@@ -25,14 +24,14 @@ pub fn routes() -> OpenApiRouter {
     (status = OK, description = "Fetches all rating reports in csv format", content_type = "text/csv"),
   )
 )]
-async fn get_reports() -> impl IntoResponse {
-    let db = DB_CONN.get().expect("DB not initialized");
+async fn get_reports() -> Result<StreamBodyAs<'static>, ExecutionError> {
+    let db = database_connect_or_init().await?;
     let ratings = get_reports_adaptor(db).await.expect("reports");
     let stream = stream::iter(ratings);
-    StreamBodyAs::new(
+    Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
         stream.map(Ok::<_, axum::Error>),
-    )
+    ))
 }
 
 #[utoipa::path(
@@ -47,12 +46,12 @@ async fn get_reports() -> impl IntoResponse {
     (status = OK, description = "Fetches the latest rating reports for a specific year in csv format", content_type = "text/csv"),
   )
 )]
-async fn get_reports_year(Path(year): Path<u32>) -> impl IntoResponse {
-    let db = DB_CONN.get().expect("DB not initialized");
+async fn get_reports_year(Path(year): Path<u32>) -> Result<StreamBodyAs<'static>, ExecutionError> {
+    let db = database_connect_or_init().await?;
     let ratings = get_report_adaptor(db, year).await.expect("reports");
     let stream = stream::iter(ratings);
-    StreamBodyAs::new(
+    Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
         stream.map(Ok::<_, axum::Error>),
-    )
+    ))
 }

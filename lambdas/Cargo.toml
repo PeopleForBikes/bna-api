@@ -17,12 +17,10 @@ dotenv = { workspace = true }
 effortless = { path = "../effortless" }
 entity = { path = "../entity" }
 futures = { workspace = true }
-http-serde = { workspace = true }
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
 nom = { workspace = true }
 once_cell = { workspace = true }
-query_map = { workspace = true, features = ["url-query"] }
 reqwest = { workspace = true, default-features = false, features = [
   "charset",
   "http2",
@@ -34,7 +32,7 @@ sea-orm = { workspace = true, features = [
   "runtime-tokio-rustls",
   "macros",
 ] }
-serde = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 serde_plain = { workspace = true }
 serde_with = { workspace = true }

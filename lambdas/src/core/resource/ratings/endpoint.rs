@@ -6,7 +6,7 @@ use super::{
 };
 use crate::{
     core::resource::schema::{ErrorResponses, PaginationParameters},
-    Context, ExecutionError, PageFlow, Paginatron, DB_CONN,
+    database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{
     extract::{Path, Query},
@@ -43,7 +43,7 @@ async fn get_rating(
     Path(rating_id): Path<Uuid>,
     ctx: Context,
 ) -> Result<Json<Rating>, ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     get_rating_adaptor(db, rating_id, ctx)
         .await
         .map_err(|e| {
@@ -68,7 +68,7 @@ async fn get_rating(
 async fn get_ratings(
     Query(pagination): Query<PaginationParameters>,
 ) -> Result<PageFlow<Ratings>, ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     let (total_items, models) =
         get_ratings_adaptor(db, pagination.page(), pagination.page_size()).await?;
 
@@ -92,7 +92,7 @@ async fn get_ratings(
 async fn post_rating(
     Json(bna): Json<RatingPost>,
 ) -> Result<(StatusCode, Json<Rating>), ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     post_ratings_adaptor(db, bna)
         .await
         .map_err(|e| {
@@ -119,7 +119,7 @@ async fn get_ratings_city(
     Path(rating_id): Path<Uuid>,
     ctx: Context,
 ) -> Result<Json<RatingWithCity>, ExecutionError> {
-    let db = DB_CONN.get().expect("DB not initialized");
+    let db = database_connect_or_init().await?;
     get_ratings_city_adaptor(db, rating_id, ctx)
         .await
         .map(|(rating, model)| RatingWithCity {

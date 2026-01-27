@@ -61,6 +61,18 @@ pub async fn database_connect() -> Result<DatabaseConnection, DbErr> {
     database_connect_custom(DATABASE_URL_KEY, DATABASE_URL_KEY).await
 }
 
+pub(crate) async fn database_connect_or_init() -> Result<&'static DatabaseConnection, DbErr> {
+    if let Some(db) = DB_CONN.get() {
+        debug!("Database connection already set in cache.");
+        Ok(db)
+    } else {
+        debug!("Database connection not found in cache. Connecting...");
+        let db = database_connect().await?;
+        DB_CONN.set(db.clone()).ok();
+        Ok(DB_CONN.get().unwrap())
+    }
+}
+
 /// Builds a paginated Response.
 ///
 /// Builds a Response struct which contains the pagination information in the headers.
