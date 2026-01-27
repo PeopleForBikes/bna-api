@@ -155,23 +155,6 @@ async fn main() -> Result<(), Error> {
 
     // Set the database connection once at startup.
     let _ = lambda_runtime::run(service_fn(database_connect_handler)).await;
-    // info!("Retrieving DATABASE_URL secret from AWS Secrets Manager a la mano");
-    // let res = reqwest::Client::new()
-    //     .get("http://localhost:2773/secretsmanager/get?secretId=DATABASE_URL")
-    //     .header("X-Aws-Parameters-Secrets-Token", aws_session_token)
-    //     .send()
-    //     .await;
-    // dbg!(&res);
-    // let res = res.unwrap();
-    // dbg!(&res);
-    // let res = res.json::<serde_json::Value>().await;
-    // dbg!(&res);
-    // info!("Retrieving DATABASE_URL secret from AWS Secrets Manager from utilities");
-    // let sec = get_aws_secrets("DATABASE_URL").await;
-    // dbg!(&sec);
-    // info!("Retrieving Database Connection.");
-    // let db = database_connect().await?;
-    // DB_CONN.set(db.clone()).ok();
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")
@@ -180,6 +163,7 @@ async fn main() -> Result<(), Error> {
 
     // Start the server in standalone mode or in lambda_http mode.
     if standalone {
+        info!("Starting the BNA API standalone server.");
         let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
             .await
             .unwrap();
@@ -187,6 +171,7 @@ async fn main() -> Result<(), Error> {
         axum::serve(listener, app).await.unwrap();
         Ok(())
     } else {
+        info!("Starting the BNA API Lambda handler.");
         run(app).await
     }
 }
