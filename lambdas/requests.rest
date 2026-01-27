@@ -155,6 +155,12 @@ Authorization: Bearer {{cognito_access}}
   "step": "Setup"
 }
 
+###
+# Query the first page of cities.
+GET {{host}}/cities
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
+
 ### Query the BNA analysis performed by the Brokenspoke-analyzer pipeline.
 GET {{host}}/ratings/
 content-type: application/json
