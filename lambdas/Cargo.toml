@@ -21,7 +21,7 @@ lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
 nom = { workspace = true }
 once_cell = { workspace = true }
-reqwest = { workspace = true, default-features = false, features = [
+reqwest = { workspace = true, features = [
   "charset",
   "http2",
   "json",
@@ -62,30 +62,6 @@ path = "src/main.rs"
 [dev-dependencies]
 color-eyre = { workspace = true }
 rstest = { workspace = true }
-
-[profile.release]
-# Optimize for size instead of speed
-opt-level = "z"
-
-# Enable Link-Time Optimization
-lto = true
-
-# Use single codegen unit for better optimization
-codegen-units = 1
-
-# Strip all symbols from binary
-strip = true
-
-# Enable panic abort instead of unwinding
-panic = "abort"
-
-# Reduce debug info
-debug = false
-
-# Optimize for size in dependencies too
-[profile.release.package."*"]
-opt-level = "z"
-strip = true
 
 [package.metadata.lambda.deploy]
 memory = 128

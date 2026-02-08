@@ -254,7 +254,7 @@ pub(crate) enum ErrorResponses {
 #[into_params(parameter_in = Query)]
 pub(crate) struct PaginationParameters {
     /// The number of items per page
-    #[param(minimum = 1, maximum = 65536, example = 25)]
+    #[param(minimum = 1, maximum = 100, example = 25)]
     page_size: Option<u64>,
     /// The result page being returned
     #[param(minimum = 1, maximum = 65536, example = 5)]
@@ -361,7 +361,7 @@ pub(crate) struct ListParams {
 pub(crate) struct ListParameters {
     #[param(minimum = 1, maximum = 65536, example = 5)]
     page: Option<u64>,
-    #[param(minimum = 1, maximum = 65536, example = 25)]
+    #[param(minimum = 1, maximum = 100, example = 25)]
     page_size: Option<u64>,
     #[param(example = "created_at")]
     sort_by: Option<String>,
