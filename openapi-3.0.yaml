@@ -34,7 +34,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: sort_by
@@ -169,7 +169,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: page
@@ -789,7 +789,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: page
@@ -891,7 +891,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: page
@@ -1270,7 +1270,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: sort_by
@@ -1403,7 +1403,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: page
@@ -1733,7 +1733,7 @@ paths:
           schema:
             type: integer
             format: int64
-            maximum: 65536
+            maximum: 100
             minimum: 1
           example: 25
         - name: page

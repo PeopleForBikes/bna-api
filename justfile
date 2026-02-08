@@ -106,7 +106,7 @@ generate-client:
       -n bnaclient \
       --interface builder \
       --license-name MIT \
-      -v 1.0.0
+      -v 1.4.2
 
 # Start the Axum server locally in watch mode.
 debug-axum:
