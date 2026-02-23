@@ -18,7 +18,7 @@ axum-extra = "0.12.5"
 axum-streams = "0.24.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "d989124" }
 bon = "3.8.2"
-chrono = "0.4.43"
+chrono = "0.4.44"
 color-eyre = "0.6.5"
 csv = "1.4.0"
 dotenv = "0.15.0"
