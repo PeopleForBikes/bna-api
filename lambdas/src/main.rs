@@ -2,7 +2,7 @@ use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities, pipelines, price, ratings, reports,
     schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
-    usstates,
+    system, usstates,
 };
 use std::{
     env::{self, set_var},
@@ -70,7 +70,11 @@ async fn main() -> Result<(), Error> {
                 .build(),
             Server::builder()
                 .description(Some("Staging API"))
-                .url("https://api.peopleforbikes.xyz")
+                .url("https://api.staging.bna.peopleforbikes.org")
+                .build(),
+            Server::builder()
+                .description(Some("Production API"))
+                .url("https://api.bna.peopleforbikes.org")
                 .build(),
         ]))
         .tags(Some(vec![
@@ -89,6 +93,14 @@ async fn main() -> Result<(), Error> {
             Tag::builder()
                 .name("rating")
                 .description(Some("Rating API endpoints"))
+                .build(),
+            Tag::builder()
+                .name("reports")
+                .description(Some("Reports API endpoints"))
+                .build(),
+            Tag::builder()
+                .name("usstate")
+                .description(Some("US State API endpoints"))
                 .build(),
         ]))
         .components(Some(
@@ -132,6 +144,7 @@ async fn main() -> Result<(), Error> {
         .merge(price::endpoint::routes())
         .merge(ratings::endpoint::routes())
         .merge(reports::endpoint::routes())
+        .merge(system::endpoint::routes())
         .merge(usstates::endpoint::routes())
         .layer(TraceLayer::new_for_http())
         .split_for_parts();

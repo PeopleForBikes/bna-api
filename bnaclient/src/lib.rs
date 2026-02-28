@@ -6620,6 +6620,19 @@ impl Client {
         builder::GetCityRatings::new(self)
     }
 
+    ///Get the healthcheck of the system.
+    ///
+    ///Sends a `GET` request to `/health`
+    ///
+    ///```ignore
+    /// let response = client.get_health()
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_health(&self) -> builder::GetHealth<'_> {
+        builder::GetHealth::new(self)
+    }
+
     ///Get the details of all BNA pipelines
     ///
     ///Sends a `GET` request to `/pipelines/bna`
@@ -7820,6 +7833,44 @@ pub mod builder {
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_health`]
+    ///
+    ///[`Client::get_health`]: super::Client::get_health
+    #[derive(Debug, Clone)]
+    pub struct GetHealth<'a> {
+        client: &'a super::Client,
+    }
+
+    impl<'a> GetHealth<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self { client: client }
+        }
+
+        ///Sends a `GET` request to `/health`
+        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
+            let Self { client } = self;
+            let url = format!("{}/health", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client.client.get(url).headers(header_map).build()?;
+            let info = OperationInfo {
+                operation_id: "get_health",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => Ok(ResponseValue::stream(response)),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }

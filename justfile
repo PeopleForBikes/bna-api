@@ -5,6 +5,7 @@ set dotenv-load := true
 
 # Define variables.
 
+api_version := "1.5.0"
 dbml := "docs/database.dbml"
 entites := "entity/src/entities"
 sql_dump := "docs/database.sql"
@@ -106,7 +107,7 @@ generate-client:
       -n bnaclient \
       --interface builder \
       --license-name MIT \
-      -v 1.4.2
+      -v {{ api_version }}
 
 # Start the Axum server locally in watch mode.
 debug-axum:

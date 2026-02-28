@@ -1,3 +1,7 @@
+# Check the system liveness.
+GET {{host}}/health
+HTTP 200
+
 # Query the first page of the bnas.
 GET {{host}}/ratings
 HTTP 200
