@@ -9,8 +9,10 @@ info:
 servers:
 - url: http://localhost:3000
   description: Local development API
-- url: https://api.peopleforbikes.xyz
+- url: https://api.staging.bna.peopleforbikes.org
   description: Staging API
+- url: https://api.bna.peopleforbikes.org
+  description: Production API
 paths:
   /cities:
     get:
@@ -773,6 +775,19 @@ paths:
                     pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                   status: '404'
                   title: Item Not Found
+  /health:
+    get:
+      tags:
+      - system
+      description: Get the healthcheck of the system.
+      operationId: get_health
+      responses:
+        '200':
+          description: Fetches system healthcheck
+          content:
+            text/plain:
+              schema:
+                type: string
   /pipelines/bna:
     get:
       tags:
@@ -2877,3 +2892,7 @@ tags:
   description: Price API endpoints
 - name: rating
   description: Rating API endpoints
+- name: reports
+  description: Reports API endpoints
+- name: usstate
+  description: US State API endpoints
