@@ -13,4 +13,6 @@ async-std = { workspace = true, features = ["attributes", "tokio1"] }
 sea-orm-migration = { workspace = true, features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
+  "with-uuid",
 ] }
+uuid = { workspace = true, features = ["v4"] }
