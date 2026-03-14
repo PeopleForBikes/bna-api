@@ -9,15 +9,15 @@ members = ["bnaclient", "lambdas", "entity", "migration", "effortless"]
 
 [workspace.dependencies]
 async-std = "1"
-aws_lambda_events = "1.0.3"
+aws_lambda_events = "1.1.1"
 aws-config = "1.8.15"
-aws-sdk-s3 = "1.125.0"
+aws-sdk-s3 = "1.126.0"
 aws-sdk-sqs = "1.96.0"
 axum = "0.8.8"
 axum-extra = "0.12.5"
 axum-streams = "0.25.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "d989124" }
-bon = "3.9.0"
+bon = "3.9.1"
 chrono = "0.4.44"
 color-eyre = "0.6.5"
 csv = "1.4.0"
@@ -26,11 +26,11 @@ entity = { path = "entity" }
 futures = "0.3.32"
 http-serde = "2.0.0"
 itertools = "0.14.0"
-lambda_http = "1.0.2"
-lambda_runtime = "1.0.2"
+lambda_http = "1.1.1"
+lambda_runtime = "1.1.1"
 migration = { path = "migration" }
 nom = "7.1.3"
-once_cell = "1.21.3"
+once_cell = "1.21.4"
 query_map = "0.7.0"
 reqwest = "0.13.2"
 rstest = "0.26.1"
@@ -41,12 +41,12 @@ sea-query = "0.32.7"
 serde = "1.0.228"
 serde_json = "1.0.149"
 serde_plain = "1.0.2"
-serde_with = "3.17.0"
+serde_with = "3.18.0"
 thiserror = "2.0.18"
 tokio = "1.50.0"
 tower-http = "0.6.8"
 tracing = "0.1.44"
-tracing-subscriber = { version = "0.3.22", default-features = false }
+tracing-subscriber = { version = "0.3.23", default-features = false }
 url = "2.5.8"
 urlencoding = "2.1.3"
 utoipa = "5.4.0"
@@ -69,6 +69,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 serde_with = { workspace = true }
 tokio = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
 
 [dev-dependencies]
 bnacore = { workspace = true }
