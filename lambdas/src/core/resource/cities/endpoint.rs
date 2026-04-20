@@ -1,19 +1,19 @@
 use super::{
     adaptor::{
-        get_cities_adaptor, get_cities_ratings_adaptor, get_cities_submission_adaptor,
-        get_cities_submissions_adaptor, get_city_adaptor, patch_cities_submission_adaptor,
-        post_cities_adaptor, post_cities_submission_adaptor,
+        get_cities_adaptor, get_cities_latest_summary_adaptor, get_cities_ratings_adaptor,
+        get_cities_submission_adaptor, get_cities_submissions_adaptor, get_city_adaptor,
+        patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
     },
     schema::{
-        Cities, CityPost, CityRatings, RatingSummary, Submission, SubmissionPatch, SubmissionPost,
-        Submissions,
+        Cities, CitiesWithSummary, CityPost, CityRatings, RatingSummary, Submission,
+        SubmissionPatch, SubmissionPost, Submissions,
     },
 };
 use crate::{
     core::resource::{
         cities::{
             adaptor::get_top_cities_adaptor,
-            schema::{CitiesWithSummary, CityParams, CityWithSummary},
+            schema::{CityParams, CityWithSummary},
             CitiesPathParameters,
         },
         schema::{City, ErrorResponses, ListParameters, PaginationParameters},
@@ -33,12 +33,14 @@ use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "city";
+const TOP_CITIES_MAX_COUNT: u64 = 100;
 
 pub fn routes() -> OpenApiRouter {
     OpenApiRouter::new()
         .routes(routes!(get_city))
         .routes(routes!(post_city))
         .routes(routes!(get_cities))
+        .routes(routes!(get_cities_latest_summary))
         .routes(routes!(get_city_ratings))
         .routes(routes!(get_cities_submission))
         .routes(routes!(post_cities_submission))
@@ -97,6 +99,49 @@ async fn get_cities(
     Ok(PageFlow::new(
         Paginatron::new(None, payload.0, list.page(), list.page_size()),
         payload.1.into(),
+    ))
+}
+
+#[utoipa::path(
+  get,
+  path = "/cities/summary/latest",
+  description = "Get all cities with their latest summary.",
+  tag = TAG,
+  params(
+    ListParameters,
+  ),
+  responses(
+    (status = OK, description = "Fetches cities with their latest summary", body = CitiesWithSummary),
+  ))]
+async fn get_cities_latest_summary(
+    Query(list): Query<ListParameters>,
+) -> Result<PageFlow<CitiesWithSummary>, ExecutionError> {
+    let db = database_connect_or_init().await?;
+    let payload = get_cities_latest_summary_adaptor(
+        db,
+        list.order_direction(),
+        &list.sort_by(),
+        list.page(),
+        list.page_size(),
+    )
+    .await
+    .map_err(|e| {
+        debug!("{e}");
+        e
+    })?;
+
+    let cities_with_summaries = payload
+        .1
+        .iter()
+        .map(|(c, s)| CityWithSummary {
+            city: c.clone().into(),
+            summary: s.clone().into(),
+        })
+        .collect::<Vec<CityWithSummary>>();
+
+    Ok(PageFlow::new(
+        Paginatron::new(None, payload.0, list.page(), list.page_size()),
+        CitiesWithSummary(cities_with_summaries),
     ))
 }
 
@@ -221,7 +266,6 @@ async fn get_cities_submissions(
         pagination.page_size(),
     )
     .await?;
-    // .map(|v| Json(json!(v.payload())))
     let submissions = cities_submissions
         .1
         .into_iter()
@@ -294,17 +338,18 @@ async fn patch_cities_submission(
   tag = TAG,
   params(
     ("year" = i32, Path, description = "The year to collect the top cities for",  example = "2024", minimum = 2017, maximum = 2029),
-    ("count" = i32, Path, description = "The number of top cities to collect",  example = "10", minimum = 1, maximum = 25),
+    ("count" = u64, Path, description = "The number of top cities to collect",  example = "10", minimum = 1, maximum = 100),
   ),
   responses(
     (status = OK, description = "Fetches cities with their respective summary", body = CitiesWithSummary),
     ErrorResponses,
   ))]
 async fn get_top_cities(
-    Path((year, count)): Path<(i32, i32)>,
+    Path((year, count)): Path<(i32, u64)>,
     ctx: Context,
 ) -> Result<Json<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
+    let count = count.clamp(1, TOP_CITIES_MAX_COUNT);
     let models = get_top_cities_adaptor(db, year, count, ctx).await?;
 
     let payload = models

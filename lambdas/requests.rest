@@ -1,4 +1,3 @@
-@host=https://origin-api.peopleforbikes.xyz
 # @host=http://localhost:3000
 # Austin, TX, USA.
 @city_id=ef8384d5-b96f-439d-a83b-bc801735ddc6
@@ -230,3 +229,8 @@ Authorization: Bearer {{cognito_access}}
     "state_abbrev": "VC",
     "speed_limit": null,
 }
+
+### Get the top 10 cities by score.
+GET {{host}}/cities/top/2026/10
+content-type: application/json
+Authorization: Bearer {{cognito_access}}
