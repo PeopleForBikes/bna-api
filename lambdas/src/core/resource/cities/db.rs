@@ -146,8 +146,10 @@ pub(crate) async fn fetch_top_cities(
     let query = r#"
     WITH latest_scores AS (
     SELECT
+        s.id,
         s.city_id,
         s.score,
+        s.created_at,
         ROW_NUMBER() OVER (
             PARTITION BY s.city_id ORDER BY s.created_at DESC
         ) AS rn
@@ -157,15 +159,13 @@ pub(crate) async fn fetch_top_cities(
     )
 
     SELECT
-        s.id
+        latest_scores.id
     FROM
-        summary as s
-    INNER JOIN latest_scores AS ls
-      ON ls.city_id = s.city_id
+        latest_scores
     WHERE
-        ls.rn = 1
+        latest_scores.rn = 1
     ORDER BY
-        ls.score DESC
+        latest_scores.score DESC
     LIMIT $2;
     "#;
 

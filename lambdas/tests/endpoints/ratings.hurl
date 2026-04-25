@@ -4,7 +4,7 @@ HTTP 200
 [Asserts]
 jsonpath "$" count > 0
 [Captures]
-rating_id: jsonpath "$.[0].id"
+rating_id: jsonpath "$[0].id"
 
 
 # Queries a specific bna run.
@@ -38,7 +38,7 @@ jsonpath "$.errors[0].source.pointer" == "/ratings/{{fake_rating_id}}/city"
 GET {{host}}/cities
 HTTP 200
 [Captures]
-city_id: jsonpath "$.[0].id"
+city_id: jsonpath "$[0].id"
 
 # Post a new city rating
 POST {{host}}/ratings

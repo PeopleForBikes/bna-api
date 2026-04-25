@@ -1,7 +1,7 @@
 # Set Just options.
 
-set positional-arguments := true
-set dotenv-load := true
+set positional-arguments
+set dotenv-load
 
 # Define variables.
 
@@ -9,7 +9,7 @@ api_version := "1.5.0"
 dbml := "docs/database.dbml"
 entites := "entity/src/entities"
 sql_dump := "docs/database.sql"
-sql_dump_data := "docs/database-with-data.sql"
+sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 
 # Meta task running ALL the CI tasks at onces.
 ci: lint

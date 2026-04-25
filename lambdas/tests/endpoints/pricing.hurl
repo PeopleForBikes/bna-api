@@ -5,7 +5,7 @@ HTTP 200
 [Asserts]
 jsonpath "$" count > 0
 [Captures]
-price_id: jsonpath "$.[0].id"
+price_id: jsonpath "$[0].id"
 
 
 # Queries a specific fargate price.

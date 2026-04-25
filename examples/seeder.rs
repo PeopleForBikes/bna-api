@@ -52,7 +52,7 @@ async fn main() -> Result<(), Report> {
     let mut csc_2_cids: HashMap<Csc, Uuid> = HashMap::new();
 
     // Set the database connection.
-    let database_url = dotenv::var("DATABASE_URL")?;
+    let database_url = dotenvy::var("DATABASE_URL")?;
     let db = Database::connect(database_url).await?;
 
     // Load the US States Region Crosswalk.
@@ -265,7 +265,6 @@ async fn main() -> Result<(), Report> {
     println!("Cities inserted.");
     dbg!(&summaries.len());
     for chunk in summaries.chunks(CHUNK_SIZE) {
-        dbg!(&chunk);
         Summary::insert_many(chunk.to_vec()).exec(&db).await?;
     }
     println!("Summaries inserted.");

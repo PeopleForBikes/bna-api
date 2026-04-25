@@ -7,7 +7,7 @@ GET {{host}}/ratings
 HTTP 200
 
 [Captures]
-rating_id: jsonpath "$.[0].id"
+rating_id: jsonpath "$[0].id"
 
 # Query a specific bna run.
 GET {{host}}/ratings/{{rating_id}}
@@ -75,7 +75,7 @@ HTTP 200
 [Asserts]
 jsonpath "$" count >= 1
 [Captures]
-fargate_price_id: jsonpath "$.[0].id"
+fargate_price_id: jsonpath "$[0].id"
 
 # Query a specific Fargate price.
 GET {{host}}/prices/fargate/{{fargate_price_id}}

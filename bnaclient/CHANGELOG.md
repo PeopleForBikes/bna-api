@@ -8,6 +8,14 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-04-30
+
+## Fixed
+
+- Fixed the "summary" key in the `CityWithSummary` object. [#431]
+
+[#431]: https://github.com/PeopleForBikes/bna-api/pull/431
+
 ## [1.4.0] - 2026-01-21
 
 ## Changed

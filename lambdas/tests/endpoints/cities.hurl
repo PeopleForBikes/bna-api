@@ -38,9 +38,19 @@ HTTP 404
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/{{region}}/unknown_city/ratings"
 
-# Query the top 10 cities for 2024
-GET {{host}}/cities/top/2024/10
+# Query the top 5 cities for 2025
+GET {{host}}/cities/top/2025/5
 
 HTTP 200
+[Captures]
+score_0: jsonpath "$[0].summary.score"
+score_1: jsonpath "$[1].summary.score"
+score_2: jsonpath "$[2].summary.score"
+score_3: jsonpath "$[3].summary.score"
+score_4: jsonpath "$[4].summary.score"
 [Asserts]
-jsonpath "$" count <= 10
+jsonpath "$" count == 5
+jsonpath "$[0].summary.score" >= {{score_1}}
+jsonpath "$[1].summary.score" >= {{score_2}}
+jsonpath "$[2].summary.score" >= {{score_3}}
+jsonpath "$[3].summary.score" >= {{score_4}}

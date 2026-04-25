@@ -2113,11 +2113,11 @@ components:
       type: object
       required:
       - city
-      - sumary
+      - summary
       properties:
         city:
           $ref: '#/components/schemas/City'
-        sumary:
+        summary:
           $ref: '#/components/schemas/RatingSummary'
     CoreServices:
       type: object

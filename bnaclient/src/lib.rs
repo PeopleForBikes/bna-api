@@ -1159,13 +1159,13 @@ pub mod types {
     ///  "type": "object",
     ///  "required": [
     ///    "city",
-    ///    "sumary"
+    ///    "summary"
     ///  ],
     ///  "properties": {
     ///    "city": {
     ///      "$ref": "#/components/schemas/City"
     ///    },
-    ///    "sumary": {
+    ///    "summary": {
     ///      "$ref": "#/components/schemas/RatingSummary"
     ///    }
     ///  }
@@ -1175,7 +1175,7 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityWithSummary {
         pub city: City,
-        pub sumary: RatingSummary,
+        pub summary: RatingSummary,
     }
 
     impl CityWithSummary {
@@ -4301,14 +4301,14 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct CityWithSummary {
             city: ::std::result::Result<super::City, ::std::string::String>,
-            sumary: ::std::result::Result<super::RatingSummary, ::std::string::String>,
+            summary: ::std::result::Result<super::RatingSummary, ::std::string::String>,
         }
 
         impl ::std::default::Default for CityWithSummary {
             fn default() -> Self {
                 Self {
                     city: Err("no value supplied for city".to_string()),
-                    sumary: Err("no value supplied for sumary".to_string()),
+                    summary: Err("no value supplied for summary".to_string()),
                 }
             }
         }
@@ -4324,14 +4324,14 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for city: {e}"));
                 self
             }
-            pub fn sumary<T>(mut self, value: T) -> Self
+            pub fn summary<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<super::RatingSummary>,
                 T::Error: ::std::fmt::Display,
             {
-                self.sumary = value
+                self.summary = value
                     .try_into()
-                    .map_err(|e| format!("error converting supplied value for sumary: {e}"));
+                    .map_err(|e| format!("error converting supplied value for summary: {e}"));
                 self
             }
         }
@@ -4343,7 +4343,7 @@ pub mod types {
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     city: value.city?,
-                    sumary: value.sumary?,
+                    summary: value.summary?,
                 })
             }
         }
@@ -4352,7 +4352,7 @@ pub mod types {
             fn from(value: super::CityWithSummary) -> Self {
                 Self {
                     city: Ok(value.city),
-                    sumary: Ok(value.sumary),
+                    summary: Ok(value.summary),
                 }
             }
         }
