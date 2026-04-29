@@ -1,7 +1,7 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_s3::Client;
 use color_eyre::{eyre::Report, Result};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 
 #[tokio::main]
 async fn main() -> Result<(), Report> {
