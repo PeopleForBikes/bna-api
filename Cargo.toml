@@ -14,7 +14,7 @@ aws-config = "1.8.15"
 aws-sdk-s3 = "1.129.0"
 aws-sdk-sqs = "1.97.0"
 axum = "0.8.9"
-axum-extra = "0.12.5"
+axum-extra = "0.12.6"
 axum-streams = "0.25.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "d989124" }
 bon = "3.9.1"
