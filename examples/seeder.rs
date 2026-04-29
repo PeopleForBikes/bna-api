@@ -6,7 +6,7 @@ use bnacore::{
 use chrono::{DateTime, FixedOffset};
 use color_eyre::{eyre::Report, Result};
 use csv::Reader;
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use entity::{
     city, core_services, infrastructure, opportunity, people, prelude::*, recreation, retail,
     summary, transit,

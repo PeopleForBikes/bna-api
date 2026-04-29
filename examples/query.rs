@@ -1,7 +1,7 @@
 /// This example queries all the cities in the database and displays some
 /// information about each of them.
 use color_eyre::{eyre::Report, Result};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use entity::prelude::*;
 use once_cell::sync::OnceCell;
 use sea_orm::{ActiveValue, DatabaseConnection, DbBackend, EntityTrait, QueryTrait};
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Report> {
     dotenv().ok();
 
     // Set the database connection.
-    // let database_url = dotenv::var("DATABASE_URL")?;
+    // let database_url = dotenvy::var("DATABASE_URL")?;
     // let db = Database::connect(database_url).await?;
     // DATABASE_CONNECTION.set(db).unwrap();
     // let db = DATABASE_CONNECTION.get().unwrap();

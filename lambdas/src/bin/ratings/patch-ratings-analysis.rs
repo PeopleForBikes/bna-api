@@ -1,4 +1,4 @@
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use effortless::{
     api::{missing_parameter, parse_path_parameter, parse_request_body},
     error::APIErrors,
