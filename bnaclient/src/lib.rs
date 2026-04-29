@@ -2142,6 +2142,7 @@ pub mod types {
         pub people: People,
         pub recreation: Recreation,
         pub retail: Retail,
+        ///Total rating score
         pub score: f64,
         pub transit: Transit,
         ///Rating version
@@ -2257,6 +2258,7 @@ pub mod types {
         pub population: i32,
         pub recreation: Recreation,
         pub retail: Retail,
+        ///City rating score
         pub score: f64,
         ///Residential speed limit, if any.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -2367,6 +2369,7 @@ pub mod types {
         ///Residential speed limit override.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub residential_speed_limit_override: ::std::option::Option<i32>,
+        ///BNA score
         pub score: f64,
         ///Analysis version. The format follows the [calver](https://calver.org)
         ///specification with the YY.0M[.Minor] scheme.
