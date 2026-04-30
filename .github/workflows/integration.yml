@@ -16,7 +16,7 @@ jobs:
 
     services:
       postgres:
-        image: ghcr.io/peopleforbikes/docker-postgis-bna:17-3.4-1
+        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
@@ -37,7 +37,7 @@ jobs:
       - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
       - name: Install HURL
         run: |
-          HURL_VERSION=6.1.1
+          HURL_VERSION=8.0.1
           curl --location --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$HURL_VERSION/hurl_${HURL_VERSION}_amd64.deb
           sudo apt install ./hurl_${HURL_VERSION}_amd64.deb
       - name: Seed the database
@@ -70,6 +70,9 @@ jobs:
           lambdas/tests/endpoints/cities.hurl
           lambdas/tests/endpoints/pricing.hurl
           lambdas/tests/endpoints/ratings.hurl
+          lambdas/tests/endpoints/reports.hurl
+          lambdas/tests/endpoints/system.hurl
+          lambdas/tests/endpoints/usstates.hurl
 
       # - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
       #   with:

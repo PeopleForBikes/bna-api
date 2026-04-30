@@ -311,7 +311,7 @@ async fn get_top_cities(
         .iter()
         .map(|(c, s)| CityWithSummary {
             city: c.clone().into(),
-            sumary: s.clone().into(),
+            summary: s.clone().into(),
         })
         .collect::<Vec<CityWithSummary>>();
 

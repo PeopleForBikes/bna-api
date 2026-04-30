@@ -280,7 +280,7 @@ pub(crate) struct CityParams {
 #[derive(ToSchema, Serialize)]
 pub(crate) struct CityWithSummary {
     pub(crate) city: City,
-    pub(crate) sumary: RatingSummary,
+    pub(crate) summary: RatingSummary,
 }
 
 #[derive(ToSchema, Serialize)]

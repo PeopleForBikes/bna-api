@@ -71,6 +71,17 @@ just test-smoke-public localhost
 just test localhost
 ```
 
+## Extras
+
+### Generate the samples
+
+Here is a one liner to generate a new `samples.csv` file from the 2025
+historical results:
+
+```bash
+for id in `xan sample 10 city-ratings-all-historical-results-v25.09.csv | xan select bna_id`; do xan grep "${id}" "city-ratings-all-historical-results-v25.09.csv" ; done
+```
+
 [bacon]: https://dystroy.org/bacon/
 [cargo binstall]: https://github.com/cargo-bins/cargo-binstall
 [docker]: https://www.docker.com/get-started/
