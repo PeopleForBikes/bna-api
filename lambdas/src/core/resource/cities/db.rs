@@ -1,11 +1,9 @@
 use crate::core::resource::schema::OrderDirection;
 use entity::{city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
-    ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait,
-    FromQueryResult, LoaderTrait, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
+    ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait, LoaderTrait,
+    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
 };
-use serde::Serialize;
-use uuid::Uuid;
 
 pub(crate) fn city_column(header: &str) -> city::Column {
     match header {
@@ -136,11 +134,6 @@ pub(crate) async fn fetch_cities_submissions(
     Ok((count, models))
 }
 
-#[derive(FromQueryResult, Serialize)]
-struct SummaryID {
-    id: Uuid,
-}
-
 pub(crate) async fn fetch_top_cities(
     db: &DatabaseConnection,
     year: i32,
@@ -152,8 +145,12 @@ pub(crate) async fn fetch_top_cities(
     SELECT
         s.id,
         s.city_id,
-        s.score,
         s.created_at,
+        s.pop_size,
+        s.population,
+        s.residential_speed_limit_override,
+        s.score,
+        s.version,
         ROW_NUMBER() OVER (
             PARTITION BY s.city_id ORDER BY s.created_at DESC
         ) AS rn
@@ -163,7 +160,14 @@ pub(crate) async fn fetch_top_cities(
     )
 
     SELECT
-        latest_scores.id
+        latest_scores.id,
+        latest_scores.city_id,
+        latest_scores.created_at,
+        latest_scores.pop_size,
+        latest_scores.population,
+        latest_scores.residential_speed_limit_override,
+        latest_scores.score,
+        latest_scores.version
     FROM
         latest_scores
     WHERE
@@ -174,32 +178,29 @@ pub(crate) async fn fetch_top_cities(
     "#;
 
     // Fetch them.
-    let summary_ids: Vec<SummaryID> = SummaryID::find_by_statement(Statement::from_sql_and_values(
-        DatabaseBackend::Postgres,
-        query,
-        vec![year.into(), count.into()],
-    ))
-    .all(db)
-    .await?;
+    let summaries = summary::Entity::find()
+        .from_raw_sql(Statement::from_sql_and_values(
+            DatabaseBackend::Postgres,
+            query,
+            vec![year.into(), count.into()],
+        ))
+        .all(db)
+        .await?;
 
     // Return None if none were found.
-    if summary_ids.is_empty() {
+    if summaries.is_empty() {
         return Ok(None);
     }
 
-    // Otherwise return the full summary and the associated city.
-    let mut cities_with_summaries: Vec<(city::Model, summary::Model)> =
-        Vec::with_capacity(summary_ids.len());
-    for summary_id in summary_ids {
-        let (summary, opt_city) = summary::Entity::find_by_id(summary_id.id)
-            .find_also_related(entity::City)
-            .one(db)
-            .await?
-            .expect("the summary must exist at this point");
-        let city = opt_city.expect("a summary must belong to a city");
-        cities_with_summaries.push((city, summary));
-    }
-    Ok(Some(cities_with_summaries))
+    let cities = summaries.load_one(city::Entity::find(), db).await?;
+
+    // Zip cities with their latest summary.
+    let items = summaries
+        .into_iter()
+        .zip(cities)
+        .map(|(summary, city)| (city.expect("a city must exist"), summary))
+        .collect();
+    Ok(Some(items))
 }
 
 pub(crate) async fn fetch_cities_with_latest_summary(
