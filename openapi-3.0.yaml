@@ -537,6 +537,56 @@ paths:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+  /cities/summary/latest:
+    get:
+      tags:
+        - city
+      description: Get all cities with their latest summary.
+      operationId: get_cities_latest_summary
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 65536
+            minimum: 1
+          example: 5
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+            maximum: 100
+            minimum: 1
+          example: 25
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            type: string
+          example: created_at
+        - name: order_direction
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/OrderDirection'
+          example: desc
+        - name: latest
+          in: query
+          required: false
+          schema:
+            type: boolean
+          example: 'true'
+      responses:
+        '200':
+          description: Fetches cities with their latest summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CitiesWithSummary'
   /cities/top/{year}/{count}:
     get:
       tags:
@@ -560,8 +610,8 @@ paths:
           required: true
           schema:
             type: integer
-            format: int32
-            maximum: 25
+            format: int64
+            maximum: 100
             minimum: 1
           example: '10'
       responses:

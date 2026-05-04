@@ -1,11 +1,23 @@
 use crate::core::resource::schema::OrderDirection;
-use entity::{city, country, state_region_crosswalk, submission, summary, Summary};
+use entity::{city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
     ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait,
-    FromQueryResult, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
+    FromQueryResult, LoaderTrait, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
 };
 use serde::Serialize;
 use uuid::Uuid;
+
+pub(crate) fn city_column(header: &str) -> city::Column {
+    match header {
+        "name" => city::Column::Name,
+        "country" => city::Column::Country,
+        "state" => city::Column::State,
+        "state_abbrev" => city::Column::StateAbbrev,
+        "region" => city::Column::Region,
+        "fips_code" => city::Column::FipsCode,
+        _ => city::Column::CreatedAt,
+    }
+}
 
 pub(crate) async fn fetch_city(
     db: &DatabaseConnection,
@@ -25,15 +37,7 @@ pub(crate) async fn fetch_cities(
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<city::Model>), DbErr> {
-    let sort_column = match sort_by {
-        "name" => city::Column::Name,
-        "country" => city::Column::Country,
-        "state" => city::Column::State,
-        "state_abbrev" => city::Column::StateAbbrev,
-        "region" => city::Column::Region,
-        "fips_code" => city::Column::FipsCode,
-        _ => city::Column::CreatedAt,
-    };
+    let sort_column = city_column(sort_by);
     let mut select = city::Entity::find();
     let count = select
         .clone()
@@ -140,7 +144,7 @@ struct SummaryID {
 pub(crate) async fn fetch_top_cities(
     db: &DatabaseConnection,
     year: i32,
-    count: i32,
+    count: u64,
 ) -> Result<Option<Vec<(city::Model, summary::Model)>>, DbErr> {
     // Define a custom query to fetch the top N summary IDs of a specific year.
     let query = r#"
@@ -187,7 +191,7 @@ pub(crate) async fn fetch_top_cities(
     let mut cities_with_summaries: Vec<(city::Model, summary::Model)> =
         Vec::with_capacity(summary_ids.len());
     for summary_id in summary_ids {
-        let (summary, opt_city) = Summary::find_by_id(summary_id.id)
+        let (summary, opt_city) = summary::Entity::find_by_id(summary_id.id)
             .find_also_related(entity::City)
             .one(db)
             .await?
@@ -196,4 +200,44 @@ pub(crate) async fn fetch_top_cities(
         cities_with_summaries.push((city, summary));
     }
     Ok(Some(cities_with_summaries))
+}
+
+pub(crate) async fn fetch_cities_with_latest_summary(
+    db: &DatabaseConnection,
+    sort_direction: OrderDirection,
+    sort_by: &str,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<(city::Model, summary::Model)>), DbErr> {
+    // Query the total city count for pagination metadata.
+    let total_items = city::Entity::find().count(db).await?;
+
+    // Query one page of cities, alphabetically.
+    let sort_column = city_column(sort_by);
+    let cities = city::Entity::find()
+        .order_by(sort_column, sort_direction.into())
+        .limit(page_size)
+        .offset(page * page_size)
+        .all(db)
+        .await?;
+
+    // Query the latest summary for this page's cities.
+    let summaries_per_city = cities
+        .load_many(
+            summary::Entity::find().order_by_desc(summary::Column::CreatedAt),
+            db,
+        )
+        .await?;
+
+    // Zip cities with their latest summary.
+    let items = cities
+        .into_iter()
+        .zip(summaries_per_city)
+        .filter(|(_city, summaries)| !summaries.is_empty())
+        .map(|(city, mut summaries)| {
+            let latest = summaries.swap_remove(0);
+            (city, latest)
+        })
+        .collect();
+    Ok((total_items, items))
 }

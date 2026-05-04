@@ -54,3 +54,8 @@ jsonpath "$[0].summary.score" >= {{score_1}}
 jsonpath "$[1].summary.score" >= {{score_2}}
 jsonpath "$[2].summary.score" >= {{score_3}}
 jsonpath "$[3].summary.score" >= {{score_4}}
+
+# Queries the latest city summaries.
+GET {{host}}/cities/summary/latest
+
+HTTP 200

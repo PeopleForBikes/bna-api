@@ -6554,6 +6554,24 @@ impl Client {
         builder::PatchCitiesSubmission::new(self)
     }
 
+    ///Get all cities with their latest summary.
+    ///
+    ///Sends a `GET` request to `/cities/summary/latest`
+    ///
+    ///```ignore
+    /// let response = client.get_cities_latest_summary()
+    ///    .latest(latest)
+    ///    .order_direction(order_direction)
+    ///    .page(page)
+    ///    .page_size(page_size)
+    ///    .sort_by(sort_by)
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_cities_latest_summary(&self) -> builder::GetCitiesLatestSummary<'_> {
+        builder::GetCitiesLatestSummary::new(self)
+    }
+
     ///Get the top N cities for a specific year.
     ///
     ///Sends a `GET` request to `/cities/top/{year}/{count}`
@@ -7492,6 +7510,135 @@ pub mod builder {
         }
     }
 
+    ///Builder for [`Client::get_cities_latest_summary`]
+    ///
+    ///[`Client::get_cities_latest_summary`]: super::Client::get_cities_latest_summary
+    #[derive(Debug, Clone)]
+    pub struct GetCitiesLatestSummary<'a> {
+        client: &'a super::Client,
+        latest: Result<Option<bool>, String>,
+        order_direction: Result<Option<types::OrderDirection>, String>,
+        page: Result<Option<::std::num::NonZeroU64>, String>,
+        page_size: Result<Option<::std::num::NonZeroU64>, String>,
+        sort_by: Result<Option<::std::string::String>, String>,
+    }
+
+    impl<'a> GetCitiesLatestSummary<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self {
+                client: client,
+                latest: Ok(None),
+                order_direction: Ok(None),
+                page: Ok(None),
+                page_size: Ok(None),
+                sort_by: Ok(None),
+            }
+        }
+
+        pub fn latest<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<bool>,
+        {
+            self.latest = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `bool` for latest failed".to_string());
+            self
+        }
+
+        pub fn order_direction<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<types::OrderDirection>,
+        {
+            self.order_direction = value.try_into().map(Some).map_err(|_| {
+                "conversion to `OrderDirection` for order_direction failed".to_string()
+            });
+            self
+        }
+
+        pub fn page<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
+        {
+            self.page = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page failed".to_string()
+            });
+            self
+        }
+
+        pub fn page_size<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
+        {
+            self.page_size = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: num :: NonZeroU64` for page_size failed".to_string()
+            });
+            self
+        }
+
+        pub fn sort_by<V>(mut self, value: V) -> Self
+        where
+            V: std::convert::TryInto<::std::string::String>,
+        {
+            self.sort_by = value.try_into().map(Some).map_err(|_| {
+                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+            });
+            self
+        }
+
+        ///Sends a `GET` request to `/cities/summary/latest`
+        pub async fn send(self) -> Result<ResponseValue<types::CitiesWithSummary>, Error<()>> {
+            let Self {
+                client,
+                latest,
+                order_direction,
+                page,
+                page_size,
+                sort_by,
+            } = self;
+            let latest = latest.map_err(Error::InvalidRequest)?;
+            let order_direction = order_direction.map_err(Error::InvalidRequest)?;
+            let page = page.map_err(Error::InvalidRequest)?;
+            let page_size = page_size.map_err(Error::InvalidRequest)?;
+            let sort_by = sort_by.map_err(Error::InvalidRequest)?;
+            let url = format!("{}/cities/summary/latest", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .query(&progenitor_client::QueryParam::new("latest", &latest))
+                .query(&progenitor_client::QueryParam::new(
+                    "order_direction",
+                    &order_direction,
+                ))
+                .query(&progenitor_client::QueryParam::new("page", &page))
+                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&progenitor_client::QueryParam::new("sort_by", &sort_by))
+                .headers(header_map)
+                .build()?;
+            let info = OperationInfo {
+                operation_id: "get_cities_latest_summary",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
     ///Builder for [`Client::get_top_cities`]
     ///
     ///[`Client::get_top_cities`]: super::Client::get_top_cities
@@ -7499,7 +7646,7 @@ pub mod builder {
     pub struct GetTopCities<'a> {
         client: &'a super::Client,
         year: Result<i32, String>,
-        count: Result<::std::num::NonZeroU32, String>,
+        count: Result<::std::num::NonZeroU64, String>,
     }
 
     impl<'a> GetTopCities<'a> {
@@ -7523,10 +7670,10 @@ pub mod builder {
 
         pub fn count<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::num::NonZeroU32>,
+            V: std::convert::TryInto<::std::num::NonZeroU64>,
         {
             self.count = value.try_into().map_err(|_| {
-                "conversion to `:: std :: num :: NonZeroU32` for count failed".to_string()
+                "conversion to `:: std :: num :: NonZeroU64` for count failed".to_string()
             });
             self
         }

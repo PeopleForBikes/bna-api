@@ -1,6 +1,7 @@
 use super::db::{
     fetch_cities, fetch_cities_ratings, fetch_cities_submission, fetch_cities_submissions,
-    fetch_city, fetch_country, fetch_state_region_crosswalk, fetch_top_cities,
+    fetch_cities_with_latest_summary, fetch_city, fetch_country, fetch_state_region_crosswalk,
+    fetch_top_cities,
 };
 use crate::{core::resource::schema::OrderDirection, Context, ExecutionError};
 use entity::{
@@ -183,7 +184,7 @@ pub async fn post_cities_submission_adaptor(
 pub(crate) async fn get_top_cities_adaptor(
     db: &DatabaseConnection,
     year: i32,
-    count: i32,
+    count: u64,
     ctx: Context,
 ) -> Result<Vec<(city::Model, summary::Model)>, ExecutionError> {
     // Fetch the top cities and their associated summaries.
@@ -202,4 +203,15 @@ pub(crate) async fn get_top_cities_adaptor(
             format!("cannot fetch the {count} top cities for the year {year}"),
         )),
     }
+}
+
+pub async fn get_cities_latest_summary_adaptor(
+    db: &DatabaseConnection,
+    sort_direction: OrderDirection,
+    sort_by: &str,
+    page: u64,
+    page_size: u64,
+) -> Result<(u64, Vec<(city::Model, summary::Model)>), ExecutionError> {
+    // Fetch all cities with their latest summary.
+    Ok(fetch_cities_with_latest_summary(db, sort_direction, sort_by, page, page_size).await?)
 }
