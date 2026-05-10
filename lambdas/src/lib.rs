@@ -403,10 +403,12 @@ impl IntoResponse for ExecutionError {
         let api_error = APIError::from(self);
         let api_errors = APIErrors::from(api_error);
         let status = if api_errors.errors.len() == 1 {
-            api_errors.errors().first().unwrap().status()
+            let first = api_errors.errors.first().unwrap();
+            first.status().parse::<u16>().expect("invalid status code")
         } else {
-            StatusCode::BAD_REQUEST
+            StatusCode::BAD_REQUEST.as_u16()
         };
+        // let status = status;
         Response::builder()
             .status(status)
             .header(header::CONTENT_TYPE, "application/json")

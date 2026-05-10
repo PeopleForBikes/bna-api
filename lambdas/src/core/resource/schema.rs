@@ -1,6 +1,7 @@
 //! Describes the schemas shared accross resources.
 use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
+use entity::city;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::Into;
@@ -105,7 +106,7 @@ pub(crate) struct City {
 }
 
 impl From<entity::city::Model> for City {
-    fn from(value: entity::city::Model) -> Self {
+    fn from(value: city::Model) -> Self {
         Self {
             id: value.id,
             country: value.country.into(),

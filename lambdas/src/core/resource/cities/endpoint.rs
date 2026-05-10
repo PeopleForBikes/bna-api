@@ -28,7 +28,6 @@ use axum::{
 use axum_extra::extract::OptionalQuery;
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
-use serde_json::Value;
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
@@ -206,9 +205,18 @@ async fn get_city_ratings(
     (status = CREATED, description = "Creates a new city", body = City),
     ErrorResponses,
   ))]
-async fn post_city(Json(city): Json<city::CityPost>) -> Result<Json<Value>, ExecutionError> {
+async fn post_city(
+    Json(city): Json<city::CityPost>,
+) -> Result<(StatusCode, Json<City>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_cities_adaptor(db, city).await.map(Json)
+    post_cities_adaptor(db, city)
+        .await
+        .map_err(|e| {
+            debug!("{e}");
+            e
+        })
+        .map(City::from)
+        .map(|v| (StatusCode::CREATED, Json(v)))
 }
 
 #[utoipa::path(
