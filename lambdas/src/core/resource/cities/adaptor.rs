@@ -12,7 +12,6 @@ use entity::{
     },
 };
 use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
-use serde_json::{json, Value};
 use tracing::info;
 use uuid::Uuid;
 
@@ -80,7 +79,7 @@ pub async fn get_cities_ratings_adaptor(
 pub async fn post_cities_adaptor(
     db: &DatabaseConnection,
     city: CityPost,
-) -> Result<Value, ExecutionError> {
+) -> Result<city::Model, ExecutionError> {
     // Ensure the country is a valid one.
     if fetch_country(db, &city.country).await?.is_none() {
         return Err(ExecutionError::UncoveredCountry(city.country));
@@ -114,7 +113,7 @@ pub async fn post_cities_adaptor(
 
     // And insert a new entry.
     let model = active_model.insert(db).await?;
-    Ok(json!(model))
+    Ok(model)
 }
 
 pub async fn get_cities_submission_adaptor(

@@ -30,10 +30,8 @@ pub enum APIErrorSource {
 pub struct APIError {
     /// A unique identifier for this particular occurrence of the problem.
     id: Option<String>,
-    // Cannot use http_serde 2.0.0 until lambda_http upgraded the http crate to 1.0.0.
     /// The HTTP status code applicable to this problem, expressed as a string value.
-    #[serde(with = "http_serde::status_code")]
-    status: StatusCode,
+    status: String,
     /// A short, human-readable summary of the problem
     title: String,
     /// A human-readable explanation specific to this occurrence of the problem
@@ -57,7 +55,7 @@ impl APIError {
     ) -> Self {
         Self {
             id,
-            status,
+            status: status.as_u16().to_string(),
             title: title.to_string(),
             details: details.to_string(),
             source,
@@ -68,7 +66,7 @@ impl APIError {
     pub fn with_parameter(id: Option<String>, parameter: &str, message: &str) -> Self {
         Self {
             id,
-            status: StatusCode::BAD_REQUEST,
+            status: StatusCode::BAD_REQUEST.as_u16().to_string(),
             title: String::from("Invalid Query Sring Parameter"),
             source: Some(APIErrorSource::Parameter(parameter.into())),
             details: message.into(),
@@ -79,7 +77,7 @@ impl APIError {
     pub fn with_pointer(id: Option<String>, pointer: &str, message: &str) -> Self {
         Self {
             id,
-            status: StatusCode::BAD_REQUEST,
+            status: StatusCode::BAD_REQUEST.as_u16().to_string(),
             title: String::from("Invalid Attribute"),
             source: Some(APIErrorSource::Pointer(pointer.into())),
             details: message.into(),
@@ -90,7 +88,7 @@ impl APIError {
     pub fn internal_error(id: Option<String>, title: &str, details: &str, source: &str) -> Self {
         Self {
             id,
-            status: StatusCode::INTERNAL_SERVER_ERROR,
+            status: StatusCode::INTERNAL_SERVER_ERROR.as_u16().to_string(),
             source: Some(APIErrorSource::Pointer(source.into())),
             title: title.into(),
             details: details.into(),
@@ -106,7 +104,7 @@ impl APIError {
     pub fn not_found(id: Option<String>, source: &str, message: &str) -> Self {
         Self {
             id,
-            status: StatusCode::NOT_FOUND,
+            status: StatusCode::NOT_FOUND.as_u16().to_string(),
             title: String::from("Content Not Found"),
             source: Some(APIErrorSource::Pointer(source.into())),
             details: message.into(),
@@ -114,8 +112,8 @@ impl APIError {
     }
 
     /// Returns the APIError status.
-    pub fn status(&self) -> StatusCode {
-        self.status
+    pub fn status(&self) -> String {
+        self.status.clone()
     }
 }
 
@@ -182,9 +180,9 @@ impl From<APIErrors> for Response<Body> {
     /// as the one of the error. Otherwise it will be set to [StatusCode::BAD_REQUEST].
     fn from(value: APIErrors) -> Self {
         let status = if value.errors.len() == 1 {
-            value.errors.first().unwrap().status
+            value.errors.first().unwrap().status.as_bytes()
         } else {
-            StatusCode::BAD_REQUEST
+            StatusCode::BAD_REQUEST.as_str().as_bytes()
         };
         Response::builder()
             .status(status)
