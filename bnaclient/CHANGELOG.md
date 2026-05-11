@@ -8,9 +8,16 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-05-11
+
+### Changed
+
+- Added all the countries of the world to the country list [#437]
+- [#437]: https://github.com/PeopleForBikes/bna-api/pull/437
+
 ## [1.4.2] - 2026-04-30
 
-## Fixed
+### Fixed
 
 - Fixed the "summary" key in the `CityWithSummary` object. [#431]
 
@@ -18,7 +25,7 @@ and this project adheres to
 
 ## [1.4.0] - 2026-01-21
 
-## Changed
+### Changed
 
 - Improved pagination and sorting. [#368]
 - Implemented better pagination and sorting for the `/cities` endpoint. [#374]
