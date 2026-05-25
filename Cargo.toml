@@ -10,7 +10,7 @@ members = ["bnaclient", "lambdas", "entity", "migration", "effortless"]
 [workspace.dependencies]
 async-std = "1.13.2"
 aws_lambda_events = "1.2.0"
-aws-config = "1.8.16"
+aws-config = "1.8.17"
 aws-sdk-s3 = "1.132.0"
 aws-sdk-sqs = "1.99.0"
 axum = "0.8.9"
