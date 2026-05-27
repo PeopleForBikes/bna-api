@@ -79,13 +79,13 @@ impl From<Bna> for Rating {
                 social_services: value.social_services,
             },
             people: People {
-                people: value.people,
+                people: value.people_score,
             },
             retail: Retail {
-                retail: value.retail,
+                retail: value.retail_score,
             },
             transit: Transit {
-                transit: value.transit,
+                transit: value.transit_score,
             },
             measure: Measure {
                 buffered_lane: value.buffered_lane,

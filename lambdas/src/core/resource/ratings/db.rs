@@ -43,13 +43,13 @@ pub(crate) struct Bna {
     pub(crate) social_services: Option<f64>,
 
     // BNA People
-    pub(crate) people: Option<f64>,
+    pub(crate) people_score: Option<f64>,
 
     // BNA Retail
-    pub(crate) retail: Option<f64>,
+    pub(crate) retail_score: Option<f64>,
 
     // BNA Transit
-    pub(crate) transit: Option<f64>,
+    pub(crate) transit_score: Option<f64>,
 
     // Measure
     pub(crate) buffered_lane: Option<f64>,
