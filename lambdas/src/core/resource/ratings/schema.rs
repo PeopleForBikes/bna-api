@@ -60,13 +60,13 @@ impl From<Bna> for Rating {
                 community_centers: value.community_centers,
                 parks: value.parks,
                 trails: value.recreation_trails,
-                score: Some(value.score),
+                score: value.recreation_score,
             },
             opportunity: Opportunity {
                 employment: value.employment,
                 higher_education: value.higher_education,
                 k12_education: value.k12_education,
-                score: Some(value.score),
+                score: value.opportunity_score,
                 technical_vocational_college: value.technical_vocational_college,
             },
             core_services: CoreServices {
@@ -75,17 +75,17 @@ impl From<Bna> for Rating {
                 grocery: value.grocery,
                 hospitals: value.hospitals,
                 pharmacies: value.pharmacies,
-                score: Some(value.score),
+                score: value.coreservices_score,
                 social_services: value.social_services,
             },
             people: People {
-                people: value.people,
+                people: value.people_score,
             },
             retail: Retail {
-                retail: value.retail,
+                retail: value.retail_score,
             },
             transit: Transit {
-                transit: value.transit,
+                transit: value.transit_score,
             },
             measure: Measure {
                 buffered_lane: value.buffered_lane,
