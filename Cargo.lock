@@ -1121,9 +1121,9 @@ dependencies = [
 
 [[package]]
 name = "axum-streams"
-version = "0.26.0"
+version = "0.29.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a12a7c0b7a2da3ac277ff5f23ed1f27fda253039bdc603234fd674de66e84571"
+checksum = "69ef1c64ce4313904d33e99353f10e671ed1e0775f2ea8ce353cf463c811eb31"
 dependencies = [
  "axum",
  "bytes",
@@ -1131,6 +1131,8 @@ dependencies = [
  "futures",
  "http 1.4.0",
  "http-body 1.0.1",
+ "http-body-util",
+ "http-streams-core",
  "serde",
  "tokio-stream",
 ]
@@ -2734,6 +2736,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "http-streams-core"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "33ac884fd4948c7cec1936078deb7a62aca84fea7232372432c8d11923ffa57a"
+dependencies = [
+ "bytes",
+ "csv",
+ "csv-core",
+ "futures",
+ "http 1.4.0",
+ "serde",
+ "tokio-util",
+]
+
+[[package]]
 name = "httparse"
 version = "1.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2850,7 +2867,7 @@ dependencies = [
  "libc",
  "percent-encoding",
  "pin-project-lite",
- "socket2 0.5.10",
+ "socket2 0.6.3",
  "system-configuration",
  "tokio",
  "tower-service",
