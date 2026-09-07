@@ -130,3 +130,19 @@ regenerate-all: generate-oas-31 generate-oas-30 generate-client
 # Regenerate the OpenAPI specifications and the client without updating Cargo.toml.
 regenerate-all-no-cargo: regenerate-all
     git restore bnaclient/Cargo.toml
+
+# Use nono sandbox to login with Claude.
+nono-claude-login:
+    nono run --profile nolabs-ai/claude --allow-launch-services -- claude "/login"
+
+# Use nono sandbox for Claude.
+nono-claude profile="claude":
+    nono run --allow-cwd --profile {{ profile }} -- claude
+
+# Use nono sandbox for Claude -- restricted internet, skip-permissions.
+nono-claude-danger profile="claude":
+    nono run \
+    --allow-cwd \
+    --allow-domain github.com \
+    --profile {{ profile }} \
+    -- claude --dangerously-skip-permissions
