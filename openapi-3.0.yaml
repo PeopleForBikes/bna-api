@@ -2328,7 +2328,7 @@ components:
             this concept, then the country name is used.
           example: Antwerp
           nullable: true
-        speed_limit:
+        residential_speed_limit:
           type: integer
           format: int32
           description: Speed limit in kilometer per hour (km/h).

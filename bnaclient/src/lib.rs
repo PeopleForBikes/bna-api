@@ -1045,7 +1045,7 @@ pub mod types {
     ///        "null"
     ///      ]
     ///    },
-    ///    "speed_limit": {
+    ///    "residential_speed_limit": {
     ///      "description": "Speed limit in kilometer per hour (km/h).",
     ///      "examples": [
     ///        "50"
@@ -1099,7 +1099,7 @@ pub mod types {
         pub region: ::std::option::Option<::std::string::String>,
         ///Speed limit in kilometer per hour (km/h).
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub speed_limit: ::std::option::Option<i32>,
+        pub residential_speed_limit: ::std::option::Option<i32>,
         ///A short version of the state name, usually 2 or 3 character long
         pub state: ::std::string::String,
         ///A short version of the state name, usually 2 or 3 character long
@@ -4848,7 +4848,8 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            speed_limit: ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
+            residential_speed_limit:
+                ::std::result::Result<::std::option::Option<i32>, ::std::string::String>,
             state: ::std::result::Result<::std::string::String, ::std::string::String>,
             state_abbrev: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
@@ -4864,7 +4865,7 @@ pub mod types {
                     longitude: Ok(Default::default()),
                     name: Err("no value supplied for name".to_string()),
                     region: Ok(Default::default()),
-                    speed_limit: Ok(Default::default()),
+                    residential_speed_limit: Ok(Default::default()),
                     state: Err("no value supplied for state".to_string()),
                     state_abbrev: Ok(Default::default()),
                 }
@@ -4922,14 +4923,14 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for region: {e}"));
                 self
             }
-            pub fn speed_limit<T>(mut self, value: T) -> Self
+            pub fn residential_speed_limit<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<::std::option::Option<i32>>,
                 T::Error: ::std::fmt::Display,
             {
-                self.speed_limit = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for speed_limit: {e}"));
+                self.residential_speed_limit = value.try_into().map_err(|e| {
+                    format!("error converting supplied value for residential_speed_limit: {e}")
+                });
                 self
             }
             pub fn state<T>(mut self, value: T) -> Self
@@ -4965,7 +4966,7 @@ pub mod types {
                     longitude: value.longitude?,
                     name: value.name?,
                     region: value.region?,
-                    speed_limit: value.speed_limit?,
+                    residential_speed_limit: value.residential_speed_limit?,
                     state: value.state?,
                     state_abbrev: value.state_abbrev?,
                 })
@@ -4980,7 +4981,7 @@ pub mod types {
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),
                     region: Ok(value.region),
-                    speed_limit: Ok(value.speed_limit),
+                    residential_speed_limit: Ok(value.residential_speed_limit),
                     state: Ok(value.state),
                     state_abbrev: Ok(value.state_abbrev),
                 }
