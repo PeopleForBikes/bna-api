@@ -8,12 +8,22 @@ and this project adheres to
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-09-06
+
+### Fixes
+
+- Fixes field mismatch between the CityPost struct from tha API schema and the
+  entities. [#502]
+
+[#502]: https://github.com/PeopleForBikes/bna-api/pull/502
+
 ## [1.5.0] - 2026-05-11
 
 ### Changed
 
 - Added all the countries of the world to the country list [#437]
-- [#437]: https://github.com/PeopleForBikes/bna-api/pull/437
+
+[#437]: https://github.com/PeopleForBikes/bna-api/pull/437
 
 ## [1.4.2] - 2026-04-30
 

@@ -2127,7 +2127,7 @@ components:
             this concept, then the country name is used.
           examples:
           - Antwerp
-        speed_limit:
+        residential_speed_limit:
           type:
           - integer
           - 'null'

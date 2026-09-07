@@ -48,7 +48,7 @@ pub(crate) struct CityPost {
     state_abbrev: Option<String>,
     /// Speed limit in kilometer per hour (km/h).
     #[schema(examples("50"))]
-    speed_limit: Option<i32>,
+    residential_speed_limit: Option<i32>,
 }
 
 #[allow(dead_code)]
