@@ -1121,9 +1121,9 @@ dependencies = [
 
 [[package]]
 name = "axum-streams"
-version = "0.29.0"
+version = "0.29.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69ef1c64ce4313904d33e99353f10e671ed1e0775f2ea8ce353cf463c811eb31"
+checksum = "ccd1312b56ccb664b65777daac4ab4064e28429c25ab16602877153cb3569376"
 dependencies = [
  "axum",
  "bytes",
@@ -2744,9 +2744,9 @@ dependencies = [
 
 [[package]]
 name = "http-streams-core"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33ac884fd4948c7cec1936078deb7a62aca84fea7232372432c8d11923ffa57a"
+checksum = "a6004679600209819b583f8ccff3c48ea1083180197b48e85f1cfa478230fd1d"
 dependencies = [
  "bytes",
  "csv",
@@ -3745,7 +3745,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.1",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4717,7 +4717,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.1",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
