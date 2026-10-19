@@ -8035,7 +8035,8 @@ impl Client {
     ///Sends a `GET` request to `/usstates/{name}`
     ///
     ///Arguments:
-    /// - `name`: Full name of a US state
+    /// - `name`: Full name of a US state, case sensitive: `Texas` matches,
+    ///   `texas` does not
     ///```ignore
     /// let response = client.get_us_state()
     ///    .name(name)

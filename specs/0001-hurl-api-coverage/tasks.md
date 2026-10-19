@@ -187,7 +187,7 @@ resetting the database.
       `lambdas/src/core/resource/reports/endpoint.rs`.
 - [x] 8.3 Hurl: `endpoints/usstates.hurl` covers an unknown state (404) and the
       case sensitivity.
-- [ ] 8.4 M-27: document in the specification that the state name is case
+- [x] 8.4 M-27: document in the specification that the state name is case
       sensitive.
 
 ## Phase 9: Documented Status Codes (M-04)

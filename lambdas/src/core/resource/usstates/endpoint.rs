@@ -26,7 +26,7 @@ pub fn routes() -> OpenApiRouter {
   description = "Get the details of a specific US state.",
   tag = TAG,
   params(
-    ("name" = String, Path, description = "Full name of a US state", example = "Texas"),
+    ("name" = String, Path, description = "Full name of a US state, case sensitive: `Texas` matches, `texas` does not", example = "Texas"),
   ),
   responses(
     (status = OK, description = "Fetches a Us state", body = UsState),

@@ -1703,7 +1703,7 @@ paths:
       parameters:
       - name: name
         in: path
-        description: Full name of a US state
+        description: 'Full name of a US state, case sensitive: `Texas` matches, `texas` does not'
         required: true
         schema:
           type: string
