@@ -18,7 +18,7 @@ pub async fn fetch_bna_pipelines(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))

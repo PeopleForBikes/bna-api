@@ -68,7 +68,7 @@ pub async fn fetch_ratings_summaries(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
@@ -229,7 +229,7 @@ pub async fn fetch_ratings(
         .clone()
         .into_model::<Bna>()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))

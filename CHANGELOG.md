@@ -19,6 +19,10 @@ and this project adheres to
   OpenAPI specification. A body with missing or mistyped fields previously
   returned `422 Unprocessable Entity`, and a body sent without the
   `application/json` content type returned `415 Unsupported Media Type`.
+- Pages now start at 1, as documented in the OpenAPI specification. The first
+  page used to be page 0, so `page=1` returned the second page. The default page
+  is 1, `page=0` is rejected with `400 Bad Request`, and the `x-page`,
+  `x-prev-page`, and `x-next-page` headers use the same numbering.
 
 ### Fixed
 

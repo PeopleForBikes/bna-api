@@ -464,6 +464,18 @@ pub(crate) enum ErrorResponses {
     NotFound(APIErrors),
 }
 
+/// Deserializes a page number, rejecting page 0: pages start at 1.
+fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let page = Option::<u64>::deserialize(deserializer)?;
+    match page {
+        Some(0) => Err(serde::de::Error::custom("pages start at 1")),
+        _ => Ok(page),
+    }
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
@@ -473,6 +485,7 @@ pub(crate) struct PaginationParameters {
     page_size: Option<u64>,
     /// The result page being returned
     #[param(minimum = 1, maximum = 65536, example = 5)]
+    #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,
 }
 
@@ -480,7 +493,7 @@ impl Default for PaginationParameters {
     fn default() -> Self {
         Self {
             page_size: Some(DEFAULT_PAGE_SIZE),
-            page: Some(0),
+            page: Some(1),
         }
     }
 }
@@ -498,7 +511,7 @@ impl PaginationParameters {
     }
 
     pub fn page(&self) -> u64 {
-        self.page.unwrap_or_default()
+        self.page.unwrap_or(1)
     }
 }
 
@@ -575,6 +588,7 @@ pub(crate) struct ListParams {
 #[into_params(parameter_in = Query)]
 pub(crate) struct ListParameters {
     #[param(minimum = 1, maximum = 65536, example = 5)]
+    #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,
     #[param(minimum = 1, maximum = 100, example = 25)]
     page_size: Option<u64>,
@@ -588,7 +602,7 @@ pub(crate) struct ListParameters {
 
 impl ListParameters {
     pub fn page(&self) -> u64 {
-        self.page.unwrap_or_default()
+        self.page.unwrap_or(1)
     }
 
     pub fn page_size(&self) -> u64 {

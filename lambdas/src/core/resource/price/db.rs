@@ -41,7 +41,12 @@ pub async fn fetch_fargate_prices(
     // Retrieve the models.
     let models = match latest {
         true => select.paginate(db, 1).fetch_page(0).await?,
-        false => select.paginate(db, page_size).fetch_page(page).await?,
+        false => {
+            select
+                .paginate(db, page_size)
+                .fetch_page(page.saturating_sub(1))
+                .await?
+        }
     };
     Ok((count, models))
 }

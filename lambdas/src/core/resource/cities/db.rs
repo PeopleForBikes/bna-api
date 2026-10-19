@@ -43,7 +43,10 @@ pub(crate) async fn fetch_cities(
     select = select.order_by(sort_column, sort_direction.into());
 
     // Retrieve the models.
-    let models = select.paginate(db, page_size).fetch_page(page).await?;
+    let models = select
+        .paginate(db, page_size)
+        .fetch_page(page.saturating_sub(1))
+        .await?;
     Ok((count, models))
 }
 
@@ -62,7 +65,7 @@ pub(crate) async fn fetch_cities_ratings(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
@@ -123,7 +126,7 @@ pub(crate) async fn fetch_cities_submissions(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
@@ -213,7 +216,7 @@ pub(crate) async fn fetch_cities_with_latest_summary(
     let cities = city::Entity::find()
         .order_by(sort_column, sort_direction.into())
         .limit(page_size)
-        .offset(page * page_size)
+        .offset(page.saturating_sub(1) * page_size)
         .all(db)
         .await?;
 

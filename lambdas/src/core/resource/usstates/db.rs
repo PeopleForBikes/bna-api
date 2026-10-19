@@ -15,6 +15,9 @@ pub(crate) async fn fetch_us_states(
 ) -> Result<(u64, Vec<us_state::Model>), DbErr> {
     let select = us_state::Entity::find();
     let count = select.clone().count(db).await?;
-    let models = select.paginate(db, page_size).fetch_page(page).await?;
+    let models = select
+        .paginate(db, page_size)
+        .fetch_page(page.saturating_sub(1))
+        .await?;
     Ok((count, models))
 }

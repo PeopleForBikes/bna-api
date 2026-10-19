@@ -1,13 +1,42 @@
 # ################
 # Ratings
 # ################
-# Query the first ratings page.
+# Query the first ratings page: pages start at 1.
 GET {{host}}/ratings
 
 HTTP 200
+[Captures]
+first_rating_id: jsonpath "$[0].id"
 [Asserts]
 header "X-Per-Page" == "{{default_page_size}}"
-header "X-page" == "0"
+header "X-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "2"
+
+# Page 1 is the default page.
+GET {{host}}/ratings?page=1
+
+HTTP 200
+[Asserts]
+header "X-page" == "1"
+jsonpath "$[0].id" == "{{first_rating_id}}"
+
+# Page 2 starts after page 1.
+GET {{host}}/ratings?page=2&page_size=1
+
+HTTP 200
+[Asserts]
+header "X-page" == "2"
+header "x-prev-page" == "1"
+jsonpath "$" count == 1
+jsonpath "$[0].id" != "{{first_rating_id}}"
+
+# Page 0 does not exist.
+GET {{host}}/ratings?page=0
+
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
 
 # Queries the first page of the ratings with a page_size too big.
 # Ensures at most MAX_PAGE_SIZE is returned.
@@ -41,4 +70,4 @@ GET {{host}}/cities
 HTTP 200
 [Asserts]
 header "X-Per-Page" == "{{default_page_size}}"
-header "X-page" == "0"
+header "X-page" == "1"

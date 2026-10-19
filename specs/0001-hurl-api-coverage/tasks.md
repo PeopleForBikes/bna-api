@@ -110,7 +110,7 @@ resetting the database.
       header values (`x-page`, `x-per-page`, `x-total`, `x-total-pages`,
       `x-next-page`, `x-prev-page`, `link`), out-of-range values, and a page
       past the end.
-- [ ] 4.2 M-05: make pages 1-based, default 1, reject `page=0`.
+- [x] 4.2 M-05: make pages 1-based, default 1, reject `page=0`.
   - `lambdas/src/core/resource/schema.rs` (`page()`), the paginated queries in
     each `db.rs`, and `lambdas/src/lib.rs` (`Paginatron`, docs).
 - [ ] 4.3 M-06, M-07: reject `page` above 65536 and `page_size` outside 1–100
