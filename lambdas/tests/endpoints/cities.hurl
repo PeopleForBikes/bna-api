@@ -71,6 +71,36 @@ summary_city_id: jsonpath "$[0].city.id"
 jsonpath "$" count > 0
 jsonpath "$[0].summary.city_id" == "{{summary_city_id}}"
 
+# Creates a city.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "{{country_name}}",
+  "state": "{{region}}",
+  "name": "hurl-{{newUuid}}",
+  "latitude": 35.1,
+  "longitude": -85.2,
+  "residential_speed_limit": 30
+}
+HTTP 201
+[Captures]
+new_city_id: jsonpath "$.id"
+new_city_name: jsonpath "$.name"
+[Asserts]
+jsonpath "$.country" == "{{country_name}}"
+jsonpath "$.state" == "{{region}}"
+jsonpath "$.created_at" exists
+
+# Reads the new city back.
+GET {{host}}/cities/{{country}}/{{region}}/{{new_city_name}}
+HTTP 200
+[Asserts]
+jsonpath "$.id" == "{{new_city_id}}"
+jsonpath "$.latitude" == 35.1
+jsonpath "$.longitude" == -85.2
+jsonpath "$.residential_speed_limit" == 30
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc
 HTTP 400
