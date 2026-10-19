@@ -37,12 +37,7 @@ pub(crate) async fn fetch_cities(
 ) -> Result<(u64, Vec<city::Model>), DbErr> {
     let sort_column = city_column(sort_by);
     let mut select = city::Entity::find();
-    let count = select
-        .clone()
-        .select_only()
-        .column_as(city::Column::Id.count(), "count")
-        .count(db)
-        .await?;
+    let count = select.clone().count(db).await?;
 
     // Build the filter.
     select = select.order_by(sort_column, sort_direction.into());

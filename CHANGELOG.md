@@ -19,3 +19,8 @@ and this project adheres to
   OpenAPI specification. A body with missing or mistyped fields previously
   returned `422 Unprocessable Entity`, and a body sent without the
   `application/json` content type returned `415 Unsupported Media Type`.
+
+### Fixed
+
+- `GET /cities` and `GET /usstates` now report the real number of items in the
+  `x-total` and `x-total-pages` headers, which were always `1`.

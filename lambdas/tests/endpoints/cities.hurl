@@ -129,3 +129,13 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.header" == "content-type"
+
+# Counts every city in the pagination headers: with one city per page, there
+# are as many pages as cities.
+GET {{host}}/cities?page_size=1
+HTTP 200
+[Captures]
+cities_total: header "x-total"
+[Asserts]
+header "x-total" toInt > 1
+header "x-total-pages" == "{{cities_total}}"

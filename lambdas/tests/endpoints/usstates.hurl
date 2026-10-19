@@ -24,3 +24,11 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.parameter" == "page"
+
+# Counts every US state (50 states, District of Columbia, and Puerto Rico) in
+# the pagination headers.
+GET {{host}}/usstates?page_size=10
+HTTP 200
+[Asserts]
+header "x-total" == "52"
+header "x-total-pages" == "6"

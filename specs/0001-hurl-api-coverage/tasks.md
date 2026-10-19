@@ -115,7 +115,7 @@ resetting the database.
     each `db.rs`, and `lambdas/src/lib.rs` (`Paginatron`, docs).
 - [ ] 4.3 M-06, M-07: reject `page` above 65536 and `page_size` outside 1–100
       with 400.
-- [ ] 4.4 M-08: fix the total counts of `GET /cities` and `GET /usstates`.
+- [x] 4.4 M-08: fix the total counts of `GET /cities` and `GET /usstates`.
   - `lambdas/src/core/resource/cities/db.rs`,
     `lambdas/src/core/resource/usstates/db.rs`.
 - [ ] 4.5 M-09: return pagination headers from `GET /pipelines/bna`.
