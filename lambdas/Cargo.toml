@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 axum = { workspace = true, features = ["macros", "original-uri", "query"] }
-axum-extra = { workspace = true, features = ["query"] }
 axum-streams = { workspace = true, features = ["csv"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
