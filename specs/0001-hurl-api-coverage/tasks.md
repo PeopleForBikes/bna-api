@@ -33,7 +33,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
   - New: `lambdas/tests/baseline.sql`, a data-only export of `city`, `summary`,
     and the seven rating detail tables from the current
     `database-with-test-data.sql`.
-- [ ] 1.2 Write the fixtures file.
+- [x] 1.2 Write the fixtures file.
   - New: `lambdas/tests/fixtures.sql`, with fixed identifiers and timestamps.
   - Pin the `created_at` of the Fargate price inserted by the migrations.
   - 3 pipelines (`Pending`, `Processing`, `Completed` with cost and end time).
