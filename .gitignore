@@ -9,5 +9,6 @@ debug/
 lambdas/.env
 lambdas/tests/.hypothesis
 lambdas/tests/.venv
+lambdas/tests/__pycache__
 lambdas/tests/reports
 target/
