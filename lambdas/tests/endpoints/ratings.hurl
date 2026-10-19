@@ -1,33 +1,39 @@
-# Queries the first page of the bnas.
+# Queries the first page of the ratings.
 GET {{host}}/ratings
 HTTP 200
 [Asserts]
 jsonpath "$" count > 0
 [Captures]
 rating_id: jsonpath "$[0].id"
+rating_city_id: jsonpath "$[0].city_id"
 
 
-# Queries a specific bna run.
+# Queries a specific rating.
 GET {{host}}/ratings/{{rating_id}}
 HTTP 200
+[Asserts]
+jsonpath "$.id" == "{{rating_id}}"
+jsonpath "$.city_id" == "{{rating_city_id}}"
 
-# Queries a specific bna with an invalid id.
+# Queries a specific rating with an invalid id.
 GET {{host}}/ratings/1
 HTTP 400
 
-# Queries a non-existing bna run
+# Queries a non-existing rating.
 GET {{host}}/ratings/{{fake_rating_id}}
 HTTP 404
 [Asserts]
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/ratings/{{fake_rating_id}}"
 
-# Queries a specific bna run and its associated city.
+# Queries a specific rating and its associated city.
 GET {{host}}/ratings/{{rating_id}}/city
 HTTP 200
 [Asserts]
+jsonpath "$.rating.id" == "{{rating_id}}"
+jsonpath "$.city.id" == "{{rating_city_id}}"
 
-# Queries a non-existing bna run and its associated city.
+# Queries a non-existing rating and its associated city.
 GET {{host}}/ratings/{{fake_rating_id}}/city
 HTTP 404
 [Asserts]

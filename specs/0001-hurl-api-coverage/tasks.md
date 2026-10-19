@@ -73,7 +73,7 @@ contains every item of the design's "Test data" section.
       assertions.
 - [x] 2.7 T-04: fix the comment in `endpoints/system.hurl`; assert the `OK` body
       and `text/plain` content type.
-- [ ] 2.8 T-05: remove the empty `[Asserts]` in `endpoints/ratings.hurl` and the
+- [x] 2.8 T-05: remove the empty `[Asserts]` in `endpoints/ratings.hurl` and the
       unused captures in `endpoints/cities.hurl`; add value assertions to every
       request with a body.
 - [ ] 2.9 Make `endpoints/ratings.hurl` write run-unique data and read the
