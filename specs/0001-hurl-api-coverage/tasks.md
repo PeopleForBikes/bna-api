@@ -151,9 +151,9 @@ resetting the database.
 
 ## Phase 6: Ratings (M-20, M-29)
 
-- [ ] 6.1 Hurl: `POST /ratings` with an unknown `city_id` returns 400 with
+- [x] 6.1 Hurl: `POST /ratings` with an unknown `city_id` returns 400 with
       `source.pointer` `/city_id`.
-- [ ] 6.2 Code: validate the city before inserting the rating.
+- [x] 6.2 Code: validate the city before inserting the rating.
   - `lambdas/src/core/resource/ratings/adaptor.rs`.
 - [ ] 6.3 M-29 (pending approval): Hurl asserts the fixture measures on
       `GET /ratings/{rating_id}`; include the measure in every rating read.

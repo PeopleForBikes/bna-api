@@ -158,3 +158,29 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/score"
+
+# Rejects a rating for a city that does not exist.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "city_id": "00000000-0000-4000-8000-000000000000",
+  "core_services": {},
+  "infrastructure": {},
+  "opportunity": {},
+  "people": {},
+  "recreation": {},
+  "retail": {},
+  "transit": {},
+  "measure": {},
+  "pop_size": 2,
+  "population": 123456,
+  "version": "24.12",
+  "score": 8.93
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/city_id"

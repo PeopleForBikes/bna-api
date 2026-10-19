@@ -75,3 +75,5 @@ and this project adheres to
 - Creating a US city in a state that does not exist now returns
   `400 Bad Request` pointing at `/state`, instead of
   `500 Internal Server Error`.
+- Creating a rating for a city that does not exist now returns `400 Bad Request`
+  pointing at `/city_id`, instead of `500 Internal Server Error`.

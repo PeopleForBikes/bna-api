@@ -4,10 +4,12 @@ use super::{
 };
 use crate::{Context, ExecutionError};
 use entity::{
-    core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
+    city, core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
     transit,
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
+};
 use tracing::info;
 use uuid::Uuid;
 
@@ -67,6 +69,16 @@ pub(crate) async fn post_ratings_adaptor(
     db: &DatabaseConnection,
     rating: RatingPost,
 ) -> Result<Bna, ExecutionError> {
+    // Ensure the rated city exists.
+    if city::Entity::find()
+        .filter(city::Column::Id.eq(rating.city_id))
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(ExecutionError::UnknownCity(rating.city_id.to_string()));
+    }
+
     // Generate a rating id.
     let rating_id = Uuid::new_v4();
 

@@ -378,6 +378,10 @@ pub enum ExecutionError {
     /// Invalid US State.
     #[error("the state is not a valid US state: {0}")]
     InvalidUSState(String),
+
+    /// Unknown city referenced by a request body.
+    #[error("the city does not exist: {0}")]
+    UnknownCity(String),
 }
 
 impl From<ExecutionError> for APIError {
@@ -399,6 +403,11 @@ impl From<ExecutionError> for APIError {
                 None,
                 "/state",
                 &format!("the state is not a valid US state: {state}"),
+            ),
+            ExecutionError::UnknownCity(city_id) => APIError::with_pointer(
+                None,
+                "/city_id",
+                &format!("cannot find a city with the ID {city_id}"),
             ),
             _ => APIError::internal_error(
                 None,
