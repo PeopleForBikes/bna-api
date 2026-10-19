@@ -38,6 +38,18 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page"
 
+# The last allowed page is 65536.
+GET {{host}}/ratings?page=65536
+
+HTTP 200
+
+# Pages past 65536 are rejected.
+GET {{host}}/ratings?page=65537
+
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
 # Queries the first page of the ratings with a page_size too big.
 # Ensures at most MAX_PAGE_SIZE is returned.
 GET {{host}}/ratings?page_size=150

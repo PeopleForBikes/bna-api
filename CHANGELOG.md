@@ -23,6 +23,8 @@ and this project adheres to
   page used to be page 0, so `page=1` returned the second page. The default page
   is 1, `page=0` is rejected with `400 Bad Request`, and the `x-page`,
   `x-prev-page`, and `x-next-page` headers use the same numbering.
+- A `page` above 65536, the maximum documented in the OpenAPI specification, is
+  now rejected with `400 Bad Request`.
 
 ### Fixed
 

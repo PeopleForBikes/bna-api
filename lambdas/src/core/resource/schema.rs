@@ -464,7 +464,10 @@ pub(crate) enum ErrorResponses {
     NotFound(APIErrors),
 }
 
-/// Deserializes a page number, rejecting page 0: pages start at 1.
+/// Highest page number a client can request.
+const MAX_PAGE: u64 = 65536;
+
+/// Deserializes a page number, between 1 and `MAX_PAGE`.
 fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
 where
     D: serde::Deserializer<'de>,
@@ -472,6 +475,9 @@ where
     let page = Option::<u64>::deserialize(deserializer)?;
     match page {
         Some(0) => Err(serde::de::Error::custom("pages start at 1")),
+        Some(p) if p > MAX_PAGE => Err(serde::de::Error::custom(format!(
+            "pages go up to {MAX_PAGE}"
+        ))),
         _ => Ok(page),
     }
 }
