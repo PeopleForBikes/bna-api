@@ -71,7 +71,7 @@ contains every item of the design's "Test data" section.
       `start_time`/`end_time` order.
 - [x] 2.6 T-03: rewrite the comments of `scenario/pagination.hurl` to match the
       assertions.
-- [ ] 2.7 T-04: fix the comment in `endpoints/system.hurl`; assert the `OK` body
+- [x] 2.7 T-04: fix the comment in `endpoints/system.hurl`; assert the `OK` body
       and `text/plain` content type.
 - [ ] 2.8 T-05: remove the empty `[Asserts]` in `endpoints/ratings.hurl` and the
       unused captures in `endpoints/cities.hurl`; add value assertions to every
