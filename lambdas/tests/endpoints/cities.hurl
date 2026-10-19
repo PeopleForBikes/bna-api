@@ -110,11 +110,11 @@ content-type: application/json
 ```
 {"name": "Y"}
 ```
-HTTP 422
+HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/country"
 
 # Rejects a body sent without the JSON content type.
@@ -123,9 +123,9 @@ Authorization: Bearer {{token}}
 ```
 {"name": "Y"}
 ```
-HTTP 415
+HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.header" == "content-type"

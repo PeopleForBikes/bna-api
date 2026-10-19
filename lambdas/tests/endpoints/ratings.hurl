@@ -152,9 +152,9 @@ content-type: application/json
 ```
 {"city_id": "11111111-2222-3333-4444-555555555555", "score": "high"}
 ```
-HTTP 422
+HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/score"

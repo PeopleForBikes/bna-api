@@ -15,3 +15,7 @@ and this project adheres to
   instead of a plain text message. The error `source` names the failing query
   parameter, the request path, the JSON pointer of the failing body field, or
   the `content-type` header.
+- Invalid request bodies now return `400 Bad Request`, as documented in the
+  OpenAPI specification. A body with missing or mistyped fields previously
+  returned `422 Unprocessable Entity`, and a body sent without the
+  `application/json` content type returned `415 Unsupported Media Type`.

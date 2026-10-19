@@ -89,7 +89,7 @@ resetting the database.
 
 ## Phase 3: Error Contract (M-01, M-02, M-03)
 
-- [ ] 3.1 Hurl: add requests for malformed path, query, and body inputs on each
+- [x] 3.1 Hurl: add requests for malformed path, query, and body inputs on each
       resource, asserting 400 with an `APIErrors` JSON body and the right
       `source`.
 - [x] 3.2 Code: map every Axum extractor rejection (path, query, JSON) to an

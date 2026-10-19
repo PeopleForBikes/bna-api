@@ -112,9 +112,11 @@ where
                 } else {
                     APIErrorSource::Pointer(body_pointer(&details))
                 };
+                // Every body problem is a bad request, including the 415 and 422
+                // statuses Axum uses for a missing content type or invalid data.
                 Err(ExtractionError(APIError::new(
                     id,
-                    rejection.status(),
+                    StatusCode::BAD_REQUEST,
                     "Invalid Request Body",
                     &details,
                     Some(source),

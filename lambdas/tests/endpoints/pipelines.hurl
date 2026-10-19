@@ -25,9 +25,9 @@ content-type: application/json
 ```
 {}
 ```
-HTTP 422
+HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/state_machine_id"
