@@ -171,24 +171,13 @@ async fn get_city_ratings(
         ctx,
     )
     .await?;
-    let city = city_ratings.1.first().unwrap().0.clone();
-    let ratings = city_ratings
-        .1
-        .iter()
-        .filter_map(|e| e.1.clone())
-        .map(RatingSummary::from)
-        .collect::<Vec<RatingSummary>>();
+    let (city, total_items, ratings) = city_ratings;
     let payload = CityRatings {
         city: city.into(),
-        ratings,
+        ratings: ratings.into_iter().map(RatingSummary::from).collect(),
     };
     Ok(PageFlow::new(
-        Paginatron::new(
-            None,
-            city_ratings.0,
-            pagination.page(),
-            pagination.page_size(),
-        ),
+        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }

@@ -95,5 +95,8 @@ and this project adheres to
   `400 Bad Request` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was
   silently ignored.
+- `GET /cities/{country}/{region}/{name}/ratings` now returns the city with an
+  empty `ratings` list for a page past the last one, as documented, instead of
+  `404 Not Found`.
 - `GET /reports` and `GET /reports/{year}` now fill the `coreservices_score`,
   `people`, `retail`, and `transit` columns, which were always empty.

@@ -59,21 +59,18 @@ pub async fn get_cities_ratings_adaptor(
     page: u64,
     page_size: u64,
     ctx: Context,
-) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), ExecutionError> {
-    // Fetch a page of city censuses.
+) -> Result<(city::Model, u64, Vec<summary::Model>), ExecutionError> {
+    // Ensure the city exists: a page past the last one has no ratings, but the
+    // city is still found.
+    let city = get_city_adaptor(db, country, region, name, ctx).await?;
+
+    // Fetch a page of city ratings. A city without ratings has a single row
+    // without summary.
     let (total_items, models) =
         fetch_cities_ratings(db, country, region, name, page, page_size).await?;
+    let ratings = models.into_iter().filter_map(|(_, s)| s).collect();
 
-    // If there is no model, the city resource does not exist.
-    if models.is_empty() {
-        return Err(ExecutionError::NotFound(
-            ctx.request_id(),
-            ctx.source(),
-            format!("cannot find a city matching {country}, {region}, {name}"),
-        ));
-    }
-
-    Ok((total_items, models))
+    Ok((city, total_items, ratings))
 }
 
 pub async fn post_cities_adaptor(

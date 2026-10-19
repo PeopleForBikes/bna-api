@@ -39,6 +39,13 @@ jsonpath "$.city.name" == "{{name}}"
 jsonpath "$.ratings" count > 0
 jsonpath "$.ratings[0].city_id" == "{{city_id}}"
 
+# A page of ratings past the last one is empty, but the city is found.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=999
+HTTP 200
+[Asserts]
+jsonpath "$.city.name" == "{{name}}"
+jsonpath "$.ratings" count == 0
+
 # Queries all the BNAs of a non-existing city.
 GET {{host}}/cities/{{country}}/{{region}}/unknown_city/ratings
 

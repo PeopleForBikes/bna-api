@@ -161,6 +161,14 @@ the release notes.
   `page_size` and the totals overcount. Found while adding city creation tests,
   which create cities without ratings. Proposed: **Code**, count and page only
   the cities with a rating. **Pending approval.**
+- **M-37 City ratings past the last page.**
+  `GET /cities/{country}/{region}/{name}/ratings` with a page past the last one
+  returns 404 "cannot find a city", although the city exists and the
+  specification says such a page is empty. Found while reviewing the documented
+  codes (phase 9). Resolution: **Code**, look the city up first (404 only when
+  it does not exist) and return it with an empty `ratings` list. Fixed under the
+  rule that the implementation matches the specification. Like M-35, a city
+  without ratings still counts one item in `x-total`.
 - **M-19 Top cities bounds.** `/cities/top/{year}/{count}` returns 404 for years
   outside 2017–2029 and accepts `count=0` and `count=101` despite the
   specification's bounds. Proposed: **Code**, return 400 for any out-of-range
