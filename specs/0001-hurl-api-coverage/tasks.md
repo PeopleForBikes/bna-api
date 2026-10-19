@@ -62,7 +62,7 @@ contains every item of the design's "Test data" section.
       `https://api.staging.bna.peopleforbikes.org`.
 - [x] 2.2 T-01: add a plain (not URL-encoded) country variable to
       `localhost.vars` and `staging.vars`; use it in request bodies.
-- [ ] 2.3 T-06: remove the unused `city_id` from `localhost.vars` and
+- [x] 2.3 T-06: remove the unused `city_id` from `localhost.vars` and
       `staging.vars`; remove the stale `rating_id` from `staging.vars`.
 - [ ] 2.4 Add a `token` variable, empty in `localhost.vars`, never committed for
       staging; send `Authorization: Bearer {{token}}` on every write request.
