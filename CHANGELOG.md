@@ -55,3 +55,6 @@ and this project adheres to
   keep the wrong region.
 - Creating a city that already exists now returns the documented `409 Conflict`
   instead of `500 Internal Server Error`.
+- Creating a city in a country the BNA does not cover now returns
+  `400 Bad Request` pointing at `/country`, instead of
+  `500 Internal Server Error`.

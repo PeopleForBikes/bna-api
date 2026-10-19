@@ -390,6 +390,11 @@ impl From<ExecutionError> for APIError {
             ExecutionError::Conflict(id, source, message) => {
                 APIError::conflict(id, &source, &message)
             }
+            ExecutionError::UncoveredCountry(country) => APIError::with_pointer(
+                None,
+                "/country",
+                &format!("the country is not covered by the BNA: {country}"),
+            ),
             _ => APIError::internal_error(
                 None,
                 "Internal Error",

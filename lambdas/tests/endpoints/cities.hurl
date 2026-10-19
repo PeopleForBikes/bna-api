@@ -119,6 +119,21 @@ header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "409"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 
+# Rejects a city in a country the BNA does not cover.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Narnia",
+  "state": "Narnia",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/country"
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc
 HTTP 400
