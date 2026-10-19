@@ -76,7 +76,7 @@ contains every item of the design's "Test data" section.
 - [x] 2.8 T-05: remove the empty `[Asserts]` in `endpoints/ratings.hurl` and the
       unused captures in `endpoints/cities.hurl`; add value assertions to every
       request with a body.
-- [ ] 2.9 Make `endpoints/ratings.hurl` write run-unique data and read the
+- [x] 2.9 Make `endpoints/ratings.hurl` write run-unique data and read the
       created rating back.
 - [ ] 2.10 Make `smoke/public.hurl` read-only: move the submission creation to a
       new `scenario/submission-lifecycle.hurl` (completed in phase 5).

@@ -40,15 +40,23 @@ HTTP 404
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/ratings/{{fake_rating_id}}/city"
 
-# Get the first city ID in order to attache a new ratings to it.
-GET {{host}}/cities
-HTTP 200
+# Create a city for this run, so the new rating does not alter shared data.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "{{country_name}}",
+  "state": "{{region}}",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 201
 [Captures]
-city_id: jsonpath "$[0].id"
+city_id: jsonpath "$.id"
 
-# Post a new city rating
+# Post a new city rating.
 POST {{host}}/ratings
 Authorization: Bearer {{token}}
+content-type: application/json
 {
   "city_id": "{{city_id}}",
   "core_services": {
@@ -92,3 +100,33 @@ Authorization: Bearer {{token}}
   "score": 8.93
 }
 HTTP 201
+[Captures]
+new_rating_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+
+# Read the new rating back: the stored values match the posted ones.
+GET {{host}}/ratings/{{new_rating_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+jsonpath "$.score" == 8.93
+jsonpath "$.version" == "24.12"
+jsonpath "$.core_services.grocery" == 1.69
+jsonpath "$.core_services.score" == 3.24
+jsonpath "$.infrastructure.low_stress_miles" == 9.3
+jsonpath "$.infrastructure.high_stress_miles" == 64.5
+jsonpath "$.opportunity.k12_education" == 8.31
+jsonpath "$.opportunity.score" == 8.29
+jsonpath "$.people.people" == 19.17
+jsonpath "$.recreation.parks" == 7.13
+jsonpath "$.recreation.score" == 7.13
+jsonpath "$.retail.retail" == 0
+jsonpath "$.transit.transit" == 0
+
+# The new rating is listed with its city.
+GET {{host}}/ratings/{{new_rating_id}}/city
+HTTP 200
+[Asserts]
+jsonpath "$.rating.id" == "{{new_rating_id}}"
+jsonpath "$.city.id" == "{{city_id}}"
