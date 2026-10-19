@@ -146,7 +146,7 @@ resetting the database.
 - [x] 5.10 M-15, M-16: return 400 for an unknown country, on create and on read.
 - [x] 5.11 M-19: return 400 for out-of-range `year` and `count` on
       `/cities/top/{year}/{count}`.
-- [ ] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
+- [x] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
       lists; stricter `sort_by`, `status`, country, year, and count validation.
 
 ## Phase 6: Ratings (M-20, M-29)

@@ -153,6 +153,12 @@ the release notes.
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.
+- **M-35 Latest summaries count cities without a rating.**
+  `GET /cities/summary/latest` counts every city in `x-total`, then drops the
+  cities without a rating from the page, so pages can hold fewer items than
+  `page_size` and the totals overcount. Found while adding city creation tests,
+  which create cities without ratings. Proposed: **Code**, count and page only
+  the cities with a rating. **Pending approval.**
 - **M-19 Top cities bounds.** `/cities/top/{year}/{count}` returns 404 for years
   outside 2017–2029 and accepts `count=0` and `count=101` despite the
   specification's bounds. Proposed: **Code**, return 400 for any out-of-range
@@ -423,6 +429,7 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-- Approve, change, or reject M-28 (pipeline steps), M-29 (measures), and M-32
-  (partial submission update), found during implementation. M-28 needs the
-  pipeline owners to confirm whether the `Save` step is used.
+- Approve, change, or reject M-28 (pipeline steps), M-29 (measures), M-32
+  (partial submission update), and M-35 (latest summaries count), found during
+  implementation. M-28 needs the pipeline owners to confirm whether the `Save`
+  step is used.
