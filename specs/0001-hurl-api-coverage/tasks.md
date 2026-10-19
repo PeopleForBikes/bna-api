@@ -118,7 +118,7 @@ resetting the database.
 - [x] 4.4 M-08: fix the total counts of `GET /cities` and `GET /usstates`.
   - `lambdas/src/core/resource/cities/db.rs`,
     `lambdas/src/core/resource/usstates/db.rs`.
-- [ ] 4.5 M-09: return pagination headers from `GET /pipelines/bna`.
+- [x] 4.5 M-09: return pagination headers from `GET /pipelines/bna`.
   - `lambdas/src/core/resource/pipelines/endpoint.rs`.
 - [ ] 4.6 M-10: document that a page past the end returns an empty list.
 - [ ] 4.7 `CHANGELOG.md`: 1-based pages; out-of-range `page`/`page_size` now

@@ -1,5 +1,17 @@
 # BNA pipelines.
 
+# Lists the pipelines with the pagination headers.
+GET {{host}}/pipelines/bna?page_size=1
+HTTP 200
+[Captures]
+pipelines_total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-per-page" == "1"
+header "x-total" toInt >= 3
+header "x-total-pages" == "{{pipelines_total}}"
+header "link" exists
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/pipelines/bna?page=abc
 HTTP 400

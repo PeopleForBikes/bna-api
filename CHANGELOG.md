@@ -24,3 +24,6 @@ and this project adheres to
 
 - `GET /cities` and `GET /usstates` now report the real number of items in the
   `x-total` and `x-total-pages` headers, which were always `1`.
+- `GET /pipelines/bna` now returns the pagination headers (`x-page`,
+  `x-per-page`, `x-total`, `x-total-pages`, `x-next-page`, `x-prev-page`), like
+  every other list.

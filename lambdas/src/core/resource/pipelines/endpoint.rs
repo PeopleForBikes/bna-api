@@ -7,11 +7,10 @@ use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::database_connect_or_init;
 use crate::{
     core::resource::schema::{ErrorResponses, PaginationParameters},
-    Context, ExecutionError,
+    Context, ExecutionError, PageFlow,
 };
 use axum::{http::StatusCode, Json};
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
-use serde_json::{json, Value};
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -63,11 +62,9 @@ async fn get_pipelines_bna(
   ))]
 async fn get_pipelines_bnas(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
-) -> Result<Json<Value>, ExecutionError> {
+) -> Result<PageFlow<Vec<entity::bna_pipeline::Model>>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size())
-        .await
-        .map(|v| Json(json!(v.payload())))
+    get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size()).await
 }
 
 #[utoipa::path(
