@@ -64,7 +64,7 @@ contains every item of the design's "Test data" section.
       `localhost.vars` and `staging.vars`; use it in request bodies.
 - [x] 2.3 T-06: remove the unused `city_id` from `localhost.vars` and
       `staging.vars`; remove the stale `rating_id` from `staging.vars`.
-- [ ] 2.4 Add a `token` variable, empty in `localhost.vars`, never committed for
+- [x] 2.4 Add a `token` variable, empty in `localhost.vars`, never committed for
       staging; send `Authorization: Bearer {{token}}` on every write request.
 - [ ] 2.5 T-02 and run-unique data in `scenario/bna-pipeline.hurl`: use
       `{{newUuid}}` for `state_machine_id`, create its own city, and fix

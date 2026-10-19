@@ -2,6 +2,18 @@
 
 The integration tests use [Hurl] and [Schemathesis].
 
+## Authentication
+
+Write requests send `Authorization: Bearer {{token}}`. Locally, authentication
+is disabled and `localhost.vars` sets an empty token. Against staging, provide a
+token through the environment; it is never committed:
+
+```bash
+HURL_VARIABLE_token=<token> just test staging
+```
+
+Without it, Hurl stops with an "Undefined variable" error.
+
 ## Test data
 
 The tests run against a database loaded from `database-with-test-data.sql`. This

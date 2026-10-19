@@ -42,6 +42,7 @@ city_id: jsonpath "$[0].id"
 
 # Post a new city rating
 POST {{host}}/ratings
+Authorization: Bearer {{token}}
 {
   "city_id": "{{city_id}}",
   "core_services": {

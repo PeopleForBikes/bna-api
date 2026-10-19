@@ -38,6 +38,7 @@ jsonpath "$" count <= 10
 
 # Create a new submission.
 POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
 content-type: application/json
 
 {

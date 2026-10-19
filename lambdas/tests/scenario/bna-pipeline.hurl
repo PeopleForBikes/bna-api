@@ -4,6 +4,7 @@
 
 # Create a new BNA pipeline
 POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "s3_bucket": "united states/{{region}}/{{name}}/25.06",
@@ -21,6 +22,7 @@ state_machine_id: jsonpath "$.state_machine_id"
 
 # Update pipeline with additional information
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "fargate_task_arn": "arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0",
@@ -37,6 +39,7 @@ city_id: jsonpath "$.id"
 
 # Post the city rating.
 POST {{host}}/ratings
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "city_id": "{{city_id}}",
@@ -84,6 +87,7 @@ HTTP 201
 
 # Update the pipeline and mark it as complete.
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "cost": "0.63749",
