@@ -7,8 +7,8 @@ Feature #0001: hurl-api-coverage
 A Hurl test suite that exercises the behavior of every operation and every
 documented status code in the OpenAPI specification. It runs locally and in CI
 on every pull request, provides the evidence for release approval, and fails the
-build when an operation or status code has no test. Any disagreement between
-the specification and the implementation is treated as a bug and reconciled.
+build when an operation or status code has no test. Any disagreement between the
+specification and the implementation is treated as a bug and reconciled.
 
 ## Problem Frame
 
@@ -22,8 +22,8 @@ tests are not valid:
 - `scenario/pagination.hurl` asserts that the first page is page `0`, while the
   specification declares `page` with a minimum of `1`. Two of its comments
   describe the opposite of what is asserted.
-- Several requests only check the status code, have empty assertion sections,
-  or capture values that are never used.
+- Several requests only check the status code, have empty assertion sections, or
+  capture values that are never used.
 - `smoke/public.hurl` creates a submission, so the smoke test writes data.
 - Never tested: `POST /cities`, `PATCH /cities/submissions/{submission_id}`,
   `GET /pipelines/bna`, `GET /pipelines/bna/{pipeline_id}`, the `sort_by`,
@@ -146,8 +146,8 @@ confidence.
 
 Acceptance criteria:
 
-- The full Hurl suite and the coverage check run against the ephemeral local
-  API in CI on every pull request.
+- The full Hurl suite and the coverage check run against the ephemeral local API
+  in CI on every pull request.
 - The release remains a deliberate team decision: a senior engineer or manager
   reviews the results of the suite and the coverage check for the release
   commit, plus any manual verifications, and approves the release.
@@ -157,8 +157,8 @@ Acceptance criteria:
   without depending on the state of a local database.
 - The test database dump contains enough data for every read-only assertion:
   pipelines in several states, one submission per status, several Fargate
-  prices, ratings with measures, a city in a country without regions, at least
-  5 rated cities for each year used in top-cities tests, and the city referenced
+  prices, ratings with measures, a city in a country without regions, at least 5
+  rated cities for each year used in top-cities tests, and the city referenced
   by the variables files.
 
 ## Non-Functional Requirements

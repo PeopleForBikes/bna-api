@@ -40,14 +40,13 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
   - 3 submissions (`Pending`, `Approved`, `Rejected`).
   - 3 Fargate prices with distinct dates and values.
   - Measures on at least 2 ratings.
-  - 1 city in a country without regions (region equals the country name), with
-    a rating.
+  - 1 city in a country without regions (region equals the country name), with a
+    rating.
   - Ratings for at least 5 cities in one early year (for example 2019).
 - [x] 1.3 Replace the `dbdump` recipe with a reproducible one.
-  - `lambdas/tests/justfile`: a recipe that, against a dedicated database
-    (never the working one), runs the migrations from scratch, then
-    `baseline.sql`, then `fixtures.sql`, then `pg_dump` into
-    `database-with-test-data.sql`.
+  - `lambdas/tests/justfile`: a recipe that, against a dedicated database (never
+    the working one), runs the migrations from scratch, then `baseline.sql`,
+    then `fixtures.sql`, then `pg_dump` into `database-with-test-data.sql`.
 - [x] 1.4 Regenerate `lambdas/tests/database-with-test-data.sql` with the new
       recipe and commit it.
 - [x] 1.5 Document the recipe in `lambdas/tests/README.md` (replaces the
@@ -98,8 +97,8 @@ resetting the database.
   - `effortless/src/error.rs`, `lambdas/src/lib.rs`
     (`impl IntoResponse for ExecutionError`), and the extractors used in
     `lambdas/src/core/resource/*/endpoint.rs`.
-- [ ] 3.3 Code: database errors caused by client input must never surface as
-      500 (enforced resource by resource in phases 5 to 7).
+- [ ] 3.3 Code: database errors caused by client input must never surface as 500
+      (enforced resource by resource in phases 5 to 7).
 - [ ] 3.4 `CHANGELOG.md`: JSON error bodies everywhere; 400 replaces 422.
 
 ## Phase 4: Pagination (M-05 to M-10)
@@ -128,8 +127,8 @@ resetting the database.
 ## Phase 5: Query Parameters, Cities, and Submissions (M-11 to M-19)
 
 - [ ] 5.1 Hurl: new `scenario/sorting.hurl` covering `sort_by` and
-      `order_direction` on every operation that accepts them, using fixture
-      data with known order.
+      `order_direction` on every operation that accepts them, using fixture data
+      with known order.
 - [ ] 5.2 M-11: declare the allowed `sort_by` values per operation as an enum;
       reject others with 400.
 - [ ] 5.3 M-12: remove `latest` from `GET /cities` and
@@ -138,8 +137,7 @@ resetting the database.
       `Approved`, `Rejected`); reject unknown values with 400.
 - [ ] 5.5 Hurl: complete `scenario/submission-lifecycle.hurl`: create, read,
       filter by status, update the status, check the filter results change.
-- [ ] 5.6 M-17: read `submission_id` from the path in
-      `patch_cities_submission`.
+- [ ] 5.6 M-17: read `submission_id` from the path in `patch_cities_submission`.
   - `lambdas/src/core/resource/cities/endpoint.rs`.
 - [ ] 5.7 M-18: fix the `status` query extractor of `get_cities_submission`.
 - [ ] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with
@@ -206,8 +204,8 @@ resetting the database.
 
 - [ ] 10.1 New script `lambdas/tests/coverage.py`: read `openapi-3.1.yaml` and
       the Hurl JSON report; match requests to operations (literal segments win
-      over parameters); print uncovered pairs, undocumented pairs (including
-      any 500), unknown paths, and a summary; exit non-zero if any list is not
+      over parameters); print uncovered pairs, undocumented pairs (including any
+      500), unknown paths, and a summary; exit non-zero if any list is not
       empty.
 - [ ] 10.2 Add the YAML parser to `lambdas/tests/pyproject.toml`; update
       `uv.lock`.

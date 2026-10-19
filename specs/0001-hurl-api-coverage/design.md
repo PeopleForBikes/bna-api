@@ -49,9 +49,9 @@ Each entry lists the observed behavior, the specification, and its resolution.
 proposed (the alternative noted under M-07 was not retained). M-28 and M-29 were
 found during implementation and are pending approval. `Code` means the
 implementation changes; `Spec` means the specification changes (through the
-`utoipa` annotations, then
-`just regenerate-all-no-cargo`). Entries marked **client-visible** change
-behavior for API consumers and must be called out in the release notes.
+`utoipa` annotations, then `just regenerate-all-no-cargo`). Entries marked
+**client-visible** change behavior for API consumers and must be called out in
+the release notes.
 
 ### Cross-cutting
 
@@ -62,10 +62,10 @@ behavior for API consumers and must be called out in the release notes.
   `source.parameter` for query errors and `source.pointer` for body or path
   errors. Client-visible.
 - **M-02 Status for invalid bodies.** Missing or mistyped body fields return
-  422; syntactically invalid JSON returns 400. The specification only documents
-  400. Proposed: **Code**, return 400 for both, matching the specification's
-  existing 400 description ("formatted incorrectly or missing required
-  parameters"). Client-visible.
+  422; syntactically invalid JSON returns 400. The specification only
+  documents 400. Proposed: **Code**, return 400 for both, matching the
+  specification's existing 400 description ("formatted incorrectly or missing
+  required parameters"). Client-visible.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never
@@ -79,20 +79,21 @@ behavior for API consumers and must be called out in the release notes.
 ### Pagination
 
 - **M-05 First page index.** The code is zero-based (`page=0` and `page=1`
-  return different items) while the specification declares `minimum: 1` and
-  the code comments say pages start at 1. The navigation headers already assume
+  return different items) while the specification declares `minimum: 1` and the
+  code comments say pages start at 1. The navigation headers already assume
   1-based pages (`x-prev-page: 1` on page 0). Proposed: **Code**, make pages
   1-based, default `page=1`, reject `page=0` with 400. Client-visible.
 - **M-06 Out-of-range `page`.** `page=70000` is accepted although the
   specification sets `maximum: 65536`. Proposed: **Code**, reject with 400.
 - **M-07 Out-of-range `page_size`.** `page_size=0` silently becomes 1 and
-  `page_size=150` silently becomes 100, while the specification declares 1 to
-  100. Proposed: **Code**, reject out-of-range values with 400. Client-visible.
-  Alternative: keep clamping and remove the bounds from the specification.
-- **M-08 Wrong totals.** `GET /cities` and `GET /usstates` return
-  `x-total: 1` and `x-total-pages: 1` while the database holds 11 cities and 52
-  US states (including District of Columbia and Puerto Rico). Proposed:
-  **Code**, fix the counts.
+  `page_size=150` silently becomes 100, while the specification declares 1
+  to 100. Proposed: **Code**, reject out-of-range values with 400.
+  Client-visible. Alternative: keep clamping and remove the bounds from the
+  specification.
+- **M-08 Wrong totals.** `GET /cities` and `GET /usstates` return `x-total: 1`
+  and `x-total-pages: 1` while the database holds 11 cities and 52 US states
+  (including District of Columbia and Puerto Rico). Proposed: **Code**, fix the
+  counts.
 - **M-09 Missing pagination headers.** `GET /pipelines/bna` accepts `page` and
   `page_size` but returns no `x-*` pagination headers or `link` header, unlike
   every other list. Proposed: **Code**, return the standard headers.
@@ -137,8 +138,7 @@ behavior for API consumers and must be called out in the release notes.
 ### Ratings
 
 - **M-20 Rating for an unknown city.** `POST /ratings` with an unknown `city_id`
-  returns 500. Proposed: **Code**, return 400 with `source.pointer`
-  `/city_id`.
+  returns 500. Proposed: **Code**, return 400 with `source.pointer` `/city_id`.
 - **M-29 Measures never returned.** `GET /ratings/{rating_id}` (and every other
   rating read) returns `measure` with all fields `null`, even when the rating
   has a measure row: the read queries join the seven other rating detail tables
@@ -151,12 +151,11 @@ behavior for API consumers and must be called out in the release notes.
 
 - **M-21 `sqs_message` type.** The specification declares a string. The API
   stores JSON: an object sent in the request is stored and returned as a
-  stringified object, and a string sent in the request is double-encoded
-  (`"{}"` comes back as `"\"{}\""`). Proposed: **Code + Spec**, declare and
-  return `sqs_message` as a JSON object, in requests and responses.
-  Client-visible.
-- **M-22 Duplicate pipeline.** Posting an existing `state_machine_id` returns
-  500. Proposed: **Code + Spec**, return and document 409 Conflict.
+  stringified object, and a string sent in the request is double-encoded (`"{}"`
+  comes back as `"\"{}\""`). Proposed: **Code + Spec**, declare and return
+  `sqs_message` as a JSON object, in requests and responses. Client-visible.
+- **M-22 Duplicate pipeline.** Posting an existing `state_machine_id`
+  returns 500. Proposed: **Code + Spec**, return and document 409 Conflict.
 - **M-23 Unknown pipeline on update.** `PATCH /pipelines/bna/{id}` for an
   unknown ID returns 500. Proposed: **Code**, return 404.
 - **M-24 Invalid enum on update.** An unknown `status` value in the PATCH body
@@ -179,8 +178,8 @@ behavior for API consumers and must be called out in the release notes.
 ### Reports and US states
 
 - **M-26 Report year bounds.** `/reports/{year}` returns 200 with an empty body
-  for years outside 2017–2029. Proposed: **Code + Spec**, return and document
-  400.
+  for years outside 2017–2029. Proposed: **Code + Spec**, return and
+  document 400.
 - **M-27 Case-sensitive state names.** `/usstates/texas` returns 404; only
   `Texas` matches. Proposed: **Spec**, document that the name is case sensitive
   (keep the behavior).
@@ -254,8 +253,8 @@ Repeatability).
 ### Variables and authentication
 
 - `localhost.vars` and `staging.vars` keep the environment values. URL-encoded
-  values used in paths (`country`) get a separate plain value for request
-  bodies (T-01).
+  values used in paths (`country`) get a separate plain value for request bodies
+  (T-01).
 - A `token` variable is sent as `Authorization: Bearer {{token}}` on write
   requests. It is never committed: CI and developers pass it with
   `--variable token=...` or the `HURL_VARIABLE_token` environment variable.
@@ -302,8 +301,8 @@ database) and is exposed as a `just` recipe in `lambdas/tests`, replacing
 `dbdump`. CI keeps loading the generated dump, so test runs stay fast.
 
 Tests that create data (run-unique) do not depend on these fixtures; the
-fixtures exist only for read-only assertions, such as filters and sorting,
-whose expected results must be known in advance.
+fixtures exist only for read-only assertions, such as filters and sorting, whose
+expected results must be known in advance.
 
 ## 3. Coverage Check
 
