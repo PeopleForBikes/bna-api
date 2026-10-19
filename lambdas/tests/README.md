@@ -14,6 +14,27 @@ HURL_VARIABLE_token=<token> just test staging
 
 Without it, Hurl stops with an "Undefined variable" error.
 
+## Coverage
+
+`just test` writes a JSON report of the run in `reports/`. `just coverage`
+compares it with `openapi-3.1.yaml`:
+
+```bash
+just test localhost
+just coverage
+```
+
+Every operation documents the status codes it can return. The check matches each
+request of the run to its operation and fails when:
+
+- a documented status code of an operation was never observed (uncovered);
+- an observed status code is not documented for its operation, including any
+  `500` (undocumented);
+- a request matches no operation (unknown path).
+
+A new endpoint or status code therefore needs a Hurl request before the check
+passes again.
+
 ## Test data
 
 The tests run against a database loaded from `database-with-test-data.sql`. This

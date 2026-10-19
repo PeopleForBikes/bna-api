@@ -26,6 +26,12 @@ test *env:
     endpoints/*.hurl \
     scenario/*.hurl
 
+# Compare the report of the last test run with the OpenAPI specification.
+# Fails when a documented status code was never observed, when an observed one
+# is not documented, or when a request matches no operation.
+coverage:
+  uv run python coverage.py
+
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-public *env:
   hurl --test --variables-file $1.vars smoke/public.hurl
