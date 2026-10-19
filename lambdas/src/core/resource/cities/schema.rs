@@ -26,8 +26,9 @@ pub(crate) struct CityListParameters {
     #[param(minimum = 1, maximum = 100, example = 25)]
     #[serde(default, deserialize_with = "deserialize_page_size")]
     page_size: Option<u64>,
-    #[param(example = "created_at")]
-    sort_by: Option<String>,
+    /// Field to sort the cities by
+    #[param(inline, example = "created_at")]
+    sort_by: Option<CitySortBy>,
     #[param(example = "desc")]
     order_direction: Option<OrderDirection>,
 }
@@ -42,11 +43,32 @@ impl CityListParameters {
     }
 
     pub fn sort_by(&self) -> String {
-        self.sort_by.clone().unwrap_or("created_at".to_string())
+        self.sort_by.clone().unwrap_or_default().to_string()
     }
 
     pub fn order_direction(&self) -> OrderDirection {
         self.order_direction.clone().unwrap_or_default()
+    }
+}
+
+/// Fields the city lists can be sorted by.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum CitySortBy {
+    Name,
+    Country,
+    State,
+    StateAbbrev,
+    Region,
+    FipsCode,
+    #[default]
+    CreatedAt,
+}
+
+impl std::fmt::Display for CitySortBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
     }
 }
 

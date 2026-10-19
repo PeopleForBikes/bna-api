@@ -129,7 +129,7 @@ resetting the database.
 - [x] 5.1 Hurl: new `scenario/sorting.hurl` covering `sort_by` and
       `order_direction` on every operation that accepts them, using fixture data
       with known order.
-- [ ] 5.2 M-11: declare the allowed `sort_by` values per operation as an enum;
+- [x] 5.2 M-11: declare the allowed `sort_by` values per operation as an enum;
       reject others with 400.
 - [x] 5.3 M-12: remove `latest` from `GET /cities` and
       `GET /cities/summary/latest`; keep and test it on `GET /prices/fargate`.

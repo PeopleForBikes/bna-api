@@ -2,8 +2,8 @@ use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adapto
 use crate::core::extract::{ApiPath, ApiQuery};
 use crate::{
     core::resource::{
-        price::schema::{FargatePrice, FargatePrices},
-        schema::{ErrorResponses, ListParameters},
+        price::schema::{FargatePrice, FargatePrices, PriceListParameters},
+        schema::ErrorResponses,
     },
     database_connect_or_init, PageFlow, Paginatron,
 };
@@ -26,13 +26,13 @@ pub fn routes() -> OpenApiRouter {
   description = "Get all the AWS Fargate prices used to compute analysis costs.",
   tag = TAG,
   params(
-    ListParameters
+    PriceListParameters
   ),
   responses(
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
   ))]
 pub(crate) async fn get_prices_fargate(
-    ApiQuery(list): ApiQuery<ListParameters>,
+    ApiQuery(list): ApiQuery<PriceListParameters>,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) = get_prices_fargate_adaptor(

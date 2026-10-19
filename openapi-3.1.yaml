@@ -45,9 +45,19 @@ paths:
         example: 25
       - name: sort_by
         in: query
+        description: Field to sort the cities by
         required: false
         schema:
           type: string
+          description: Fields the city lists can be sorted by.
+          enum:
+          - name
+          - country
+          - state
+          - state_abbrev
+          - region
+          - fips_code
+          - created_at
         example: created_at
       - name: order_direction
         in: query
@@ -522,9 +532,19 @@ paths:
         example: 25
       - name: sort_by
         in: query
+        description: Field to sort the cities by
         required: false
         schema:
           type: string
+          description: Fields the city lists can be sorted by.
+          enum:
+          - name
+          - country
+          - state
+          - state_abbrev
+          - region
+          - fips_code
+          - created_at
         example: created_at
       - name: order_direction
         in: query
@@ -1198,6 +1218,7 @@ paths:
         example: 5
       - name: page_size
         in: query
+        description: The number of items per page
         required: false
         schema:
           type: integer
@@ -1207,9 +1228,14 @@ paths:
         example: 25
       - name: sort_by
         in: query
+        description: Field to sort the prices by
         required: false
         schema:
           type: string
+          description: Fields the Fargate prices can be sorted by.
+          enum:
+          - per_second
+          - created_at
         example: created_at
       - name: order_direction
         in: query
@@ -1219,6 +1245,7 @@ paths:
         example: desc
       - name: latest
         in: query
+        description: Only return the latest price
         required: false
         schema:
           type: boolean

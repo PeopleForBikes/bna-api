@@ -66,3 +66,21 @@ HTTP 200
 [Asserts]
 jsonpath "$" count == 1
 jsonpath "$[0].id" == {{newest_price_id}}
+
+# Rejects an unknown sort field for the cities.
+GET {{host}}/cities?sort_by=bogus
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "sort_by"
+
+# Rejects an unknown sort field for the latest city summaries.
+GET {{host}}/cities/summary/latest?sort_by=bogus
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "sort_by"
+
+# Rejects an unknown sort field for the Fargate prices.
+GET {{host}}/prices/fargate?sort_by=bogus
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "sort_by"

@@ -2416,6 +2416,293 @@ pub mod types {
         }
     }
 
+    ///Fields the city lists can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the city lists can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "name",
+    ///    "country",
+    ///    "state",
+    ///    "state_abbrev",
+    ///    "region",
+    ///    "fips_code",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetCitiesLatestSummarySortBy {
+        #[serde(rename = "name")]
+        Name,
+        #[serde(rename = "country")]
+        Country,
+        #[serde(rename = "state")]
+        State,
+        #[serde(rename = "state_abbrev")]
+        StateAbbrev,
+        #[serde(rename = "region")]
+        Region,
+        #[serde(rename = "fips_code")]
+        FipsCode,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetCitiesLatestSummarySortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Name => f.write_str("name"),
+                Self::Country => f.write_str("country"),
+                Self::State => f.write_str("state"),
+                Self::StateAbbrev => f.write_str("state_abbrev"),
+                Self::Region => f.write_str("region"),
+                Self::FipsCode => f.write_str("fips_code"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetCitiesLatestSummarySortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "name" => Ok(Self::Name),
+                "country" => Ok(Self::Country),
+                "state" => Ok(Self::State),
+                "state_abbrev" => Ok(Self::StateAbbrev),
+                "region" => Ok(Self::Region),
+                "fips_code" => Ok(Self::FipsCode),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    ///Fields the city lists can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the city lists can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "name",
+    ///    "country",
+    ///    "state",
+    ///    "state_abbrev",
+    ///    "region",
+    ///    "fips_code",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetCitiesSortBy {
+        #[serde(rename = "name")]
+        Name,
+        #[serde(rename = "country")]
+        Country,
+        #[serde(rename = "state")]
+        State,
+        #[serde(rename = "state_abbrev")]
+        StateAbbrev,
+        #[serde(rename = "region")]
+        Region,
+        #[serde(rename = "fips_code")]
+        FipsCode,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetCitiesSortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Name => f.write_str("name"),
+                Self::Country => f.write_str("country"),
+                Self::State => f.write_str("state"),
+                Self::StateAbbrev => f.write_str("state_abbrev"),
+                Self::Region => f.write_str("region"),
+                Self::FipsCode => f.write_str("fips_code"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetCitiesSortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "name" => Ok(Self::Name),
+                "country" => Ok(Self::Country),
+                "state" => Ok(Self::State),
+                "state_abbrev" => Ok(Self::StateAbbrev),
+                "region" => Ok(Self::Region),
+                "fips_code" => Ok(Self::FipsCode),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    ///Fields the Fargate prices can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the Fargate prices can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "per_second",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetPricesFargateSortBy {
+        #[serde(rename = "per_second")]
+        PerSecond,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetPricesFargateSortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PerSecond => f.write_str("per_second"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetPricesFargateSortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "per_second" => Ok(Self::PerSecond),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
     ///`Infrastructure`
     ///
     /// <details><summary>JSON schema</summary>
@@ -7288,7 +7575,7 @@ impl Client {
     ///   last one
     ///returns an empty list.
     /// - `page_size`: The number of items per page
-    /// - `sort_by`
+    /// - `sort_by`: Field to sort the cities by
     ///```ignore
     /// let response = client.get_cities()
     ///    .order_direction(order_direction)
@@ -7398,7 +7685,7 @@ impl Client {
     ///   last one
     ///returns an empty list.
     /// - `page_size`: The number of items per page
-    /// - `sort_by`
+    /// - `sort_by`: Field to sort the cities by
     ///```ignore
     /// let response = client.get_cities_latest_summary()
     ///    .order_direction(order_direction)
@@ -7569,13 +7856,13 @@ impl Client {
     ///Sends a `GET` request to `/prices/fargate`
     ///
     ///Arguments:
-    /// - `latest`
+    /// - `latest`: Only return the latest price
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
     ///   last one
     ///returns an empty list.
-    /// - `page_size`
-    /// - `sort_by`
+    /// - `page_size`: The number of items per page
+    /// - `sort_by`: Field to sort the prices by
     ///```ignore
     /// let response = client.get_prices_fargate()
     ///    .latest(latest)
@@ -7757,7 +8044,7 @@ pub mod builder {
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetCitiesSortBy>, String>,
     }
 
     impl<'a> GetCities<'a> {
@@ -7803,11 +8090,12 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCitiesSortBy>,
         {
-            self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
-            });
+            self.sort_by = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `GetCitiesSortBy` for sort_by failed".to_string());
             self
         }
 
@@ -8364,7 +8652,7 @@ pub mod builder {
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetCitiesLatestSummarySortBy>, String>,
     }
 
     impl<'a> GetCitiesLatestSummary<'a> {
@@ -8410,10 +8698,10 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCitiesLatestSummarySortBy>,
         {
             self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+                "conversion to `GetCitiesLatestSummarySortBy` for sort_by failed".to_string()
             });
             self
         }
@@ -9240,7 +9528,7 @@ pub mod builder {
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetPricesFargateSortBy>, String>,
     }
 
     impl<'a> GetPricesFargate<'a> {
@@ -9298,10 +9586,10 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetPricesFargateSortBy>,
         {
             self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+                "conversion to `GetPricesFargateSortBy` for sort_by failed".to_string()
             });
             self
         }

@@ -41,6 +41,11 @@ and this project adheres to
 - The `latest` query parameter is no longer documented on `GET /cities` and
   `GET /cities/summary/latest`: it never had any effect there. It remains on
   `GET /prices/fargate`.
+- `sort_by` now only accepts the documented fields, declared as enums in the
+  OpenAPI specification: `name`, `country`, `state`, `state_abbrev`, `region`,
+  `fips_code`, or `created_at` for the city lists, and `per_second` or
+  `created_at` for the Fargate prices. Other values are rejected with
+  `400 Bad Request` instead of being silently ignored.
 
 ### Fixed
 
