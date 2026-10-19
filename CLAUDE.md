@@ -29,7 +29,7 @@ just db-reset                  # fresh + generate-models + seed
 just debug-axum                # run the Axum server locally in watch mode (bacon)
 just generate-oas-31           # regenerate openapi-3.1.yaml from the Axum source (utoipa)
 just generate-oas-30           # down-convert 3.1 -> openapi-3.0.yaml
-just regenerate-all            # regenerate both OAS files + the bnaclient
+just regenerate-all-no-cargo   # regenerate both OAS files + bnaclient (preferred; keeps bnaclient/Cargo.toml)
 ```
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
@@ -116,5 +116,20 @@ on the Axum handlers/schemas in `lambdas/src/core/resource/**` are the source of
 truth. The flow is `generate-oas-31` (runs the Axum binary with
 `BNA_API_GENERATE_ONLY=1` to emit `openapi-3.1.yaml`) → `generate-oas-30`
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
-`bnaclient` from the 3.0 spec). Run `just regenerate-all` after changing any
-endpoint/schema shape.
+`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after changing
+any endpoint/schema shape or the workspace version. It ends with
+`git restore bnaclient/Cargo.toml`, which discards *uncommitted* edits to that
+file, so back it up first if you've changed it. The `bnaclient` CI job
+regenerates and fails on any diff.
+
+### Versioning and deployment
+
+- One version for the whole workspace: `[workspace.package] version` in the root
+  `Cargo.toml`. Every crate uses `version.workspace = true`, and OpenAPI
+  `info.version` comes from `CARGO_PKG_VERSION`. Never set per-crate versions.
+- Between releases `main` carries a pre-release version (e.g. `1.6.0-alpha.1`).
+- Staging deploys on every push to `main`. Production deploys only on a bare
+  semver tag (`1.6.0`, no `v`) that must equal the workspace version.
+  Pre-release tags never deploy production.
+- `cargo check -p entity` fails on its own (it needs sea-orm features that the
+  rest of the workspace turns on); check it together with the other crates.

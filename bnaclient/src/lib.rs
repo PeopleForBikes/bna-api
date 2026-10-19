@@ -7143,7 +7143,7 @@ pub mod types {
 ///
 ///Provides a way to retrieve the BNA results programmatically.
 ///
-///Version: 1.0.0
+///Version: 1.6.0-alpha.1
 pub struct Client {
     pub(crate) baseurl: String,
     pub(crate) client: reqwest::Client,
@@ -7184,7 +7184,7 @@ impl Client {
 
 impl ClientInfo<()> for Client {
     fn api_version() -> &'static str {
-        "1.0.0"
+        "1.6.0-alpha.1"
     }
 
     fn baseurl(&self) -> &str {

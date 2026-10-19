@@ -1,4 +1,9 @@
 binstall
 bnaclient
+clippy
+dbml
+Paginatron
+pgadmin
 Schemathesis
 usstates
+utoipa
