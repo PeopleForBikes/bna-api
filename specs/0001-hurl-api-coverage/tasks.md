@@ -21,7 +21,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
     specification change, the regenerated `openapi-*.yaml` and `bnaclient` when
     the specification changes, and its `CHANGELOG.md` entry;
   - one commit per test bug (T-xx);
-  - one commit per infrastructure step (seeder, fixtures, dump recipe,
+  - one commit per infrastructure step (baseline, fixtures, dump recipe,
     regenerated dump, coverage script, `just` recipes, CI wiring);
   - the test and its fix go in the same commit, so every commit builds and
     passes on its own;
@@ -29,11 +29,13 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
 
 ## Phase 1: Reproducible Test Data
 
-- [ ] 1.1 Make the seeder input explicit.
-  - `examples/seeder.rs`: read the CSV path from an argument or environment
-    variable, defaulting to the current `examples/sample.csv`.
+- [ ] 1.1 Extract the baseline data.
+  - New: `lambdas/tests/baseline.sql`, a data-only export of `city`, `summary`,
+    and the seven rating detail tables from the current
+    `database-with-test-data.sql`.
 - [ ] 1.2 Write the fixtures file.
-  - New: `lambdas/tests/fixtures.sql`.
+  - New: `lambdas/tests/fixtures.sql`, with fixed identifiers and timestamps.
+  - Pin the `created_at` of the Fargate price inserted by the migrations.
   - 3 pipelines (`Pending`, `Processing`, `Completed` with cost and end time).
   - 3 submissions (`Pending`, `Approved`, `Rejected`).
   - 3 Fargate prices with distinct dates and values.
@@ -43,9 +45,9 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
   - Ratings for at least 5 cities in one early year (for example 2019).
 - [ ] 1.3 Replace the `dbdump` recipe with a reproducible one.
   - `lambdas/tests/justfile`: a recipe that, against a dedicated database
-    (never the working one), runs the migrations from scratch, the seeder with
-    `lambdas/tests/sample-all-25.01.csv`, then `fixtures.sql`, then `pg_dump`
-    into `database-with-test-data.sql`.
+    (never the working one), runs the migrations from scratch, then
+    `baseline.sql`, then `fixtures.sql`, then `pg_dump` into
+    `database-with-test-data.sql`.
 - [ ] 1.4 Regenerate `lambdas/tests/database-with-test-data.sql` with the new
       recipe and commit it.
 - [ ] 1.5 Document the recipe in `lambdas/tests/README.md` (replaces the

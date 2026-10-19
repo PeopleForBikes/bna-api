@@ -256,11 +256,12 @@ database held, so it cannot be reproduced.
 
 The dump becomes the output of a committed, reproducible recipe:
 
-1. `db-fresh`: create the schema from the migrations.
-2. Seeder: load `lambdas/tests/sample-all-25.01.csv` with the existing
-   `examples/seeder.rs`. The seeder currently reads a hard-coded
-   `examples/sample.csv`, which is not in the repository; the recipe supplies
-   the file or the seeder accepts a path.
+1. Migrations: create the schema from scratch. The migrations already fill the
+   lookup tables (countries, regions, US states, crosswalk, statuses, steps,
+   bike lane types) and the first Fargate price.
+2. Baseline: load a committed, data-only SQL file holding the current dump's
+   test data (`city`, `summary`, and the seven rating detail tables). It is
+   extracted once from today's dump and then maintained by hand.
 3. Fixtures: apply a small, hand-written SQL file committed next to the dump,
    adding only what read-only tests need:
    - 3 pipelines: one `Pending`, one `Processing`, one `Completed` with cost and
@@ -271,6 +272,13 @@ The dump becomes the output of a committed, reproducible recipe:
    - 1 city in a country without regions (region equals the country name).
    - Enough cities rated in one early year to test top-N with N of 5.
 4. `pg_dump` into `database-with-test-data.sql`.
+
+The seeder (`examples/seeder.rs`) is not used: it keeps only the latest rating
+per city, so it cannot reproduce the rating history the tests rely on (seeding
+`sample-all-25.01.csv` yields 20 cities with one rating each and no 2025
+ratings). Every row in the baseline and fixtures uses fixed identifiers and
+timestamps, and the fixtures pin the `created_at` of the Fargate price inserted
+by the migrations, so two runs of the recipe produce identical data.
 
 The recipe runs against a dedicated database (never the developer's working
 database) and is exposed as a `just` recipe in `lambdas/tests`, replacing
