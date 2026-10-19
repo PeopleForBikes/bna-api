@@ -2,19 +2,32 @@
 
 The integration tests use [Hurl] and [Schemathesis].
 
-## Preparing the assets
+## Test data
 
-The assets created for the tests are prepared using the 2024 historical data and
-the [xsv] tool.
+The tests run against a database loaded from `database-with-test-data.sql`. This
+dump is generated, never edited by hand:
 
 ```bash
-xsv search -i -s country 'United States' city-ratings-all-historical-results-v24.07.csv | xsv sample 10 > sample-us.csv
-xsv search -i -v -s country 'United States' city-ratings-all-historical-results-v24.07.csv | xsv sample 10 > sample-non-us.csv
-xsv cat rows sample-us.csv sample-non-us.csv > sample-all-25.01.csv
+just dump-test-data
 ```
 
-##
+The recipe recreates a dedicated database (`bna_test_data` by default), then:
+
+1. applies the migrations, which fill the lookup tables (countries, regions, US
+   states, statuses, steps, bike lane types) and the first Fargate price;
+2. loads `baseline.sql`, the cities and their rating history;
+3. loads `fixtures.sql`, the extra rows the read-only tests rely on (prices,
+   pipelines, submissions, measures, and a few more cities and ratings);
+4. dumps the result into `database-with-test-data.sql`, then drops the database.
+
+Two runs produce identical output. To change the test data, edit `baseline.sql`
+or `fixtures.sql` with fixed identifiers and timestamps, run the recipe, and
+commit both the SQL file and the regenerated dump.
+
+The recipe connects to `postgresql://postgres:postgres@localhost:5432/postgres`
+by default (the local `docker compose` database). Pass another server with
+`just dump-test-data <admin_url>`. It requires `sea-orm-cli`, `psql`, and
+`pg_dump` 17.6 or later.
 
 [Hurl]: https://hurl.dev
 [Schemathesis]: https://github.com/schemathesis/schemathesis
-[xsv]: https://github.com/BurntSushi/xsv

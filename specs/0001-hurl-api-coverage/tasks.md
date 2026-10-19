@@ -50,7 +50,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
     `database-with-test-data.sql`.
 - [x] 1.4 Regenerate `lambdas/tests/database-with-test-data.sql` with the new
       recipe and commit it.
-- [ ] 1.5 Document the recipe in `lambdas/tests/README.md` (replaces the
+- [x] 1.5 Document the recipe in `lambdas/tests/README.md` (replaces the
       "Preparing the assets" section).
 
 Done when: running the recipe twice produces the same data, and the dump
