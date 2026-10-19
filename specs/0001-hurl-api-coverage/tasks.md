@@ -43,7 +43,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
   - 1 city in a country without regions (region equals the country name), with
     a rating.
   - Ratings for at least 5 cities in one early year (for example 2019).
-- [ ] 1.3 Replace the `dbdump` recipe with a reproducible one.
+- [x] 1.3 Replace the `dbdump` recipe with a reproducible one.
   - `lambdas/tests/justfile`: a recipe that, against a dedicated database
     (never the working one), runs the migrations from scratch, then
     `baseline.sql`, then `fixtures.sql`, then `pg_dump` into
