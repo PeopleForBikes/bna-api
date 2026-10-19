@@ -43,3 +43,90 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/state_machine_id"
+
+# Reading a pipeline that does not exist is not found.
+GET {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/00000000-0000-4000-8000-000000000000"
+
+# Creates a pipeline for this run. A new pipeline starts pending, at the setup
+# step.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "cost": "1.25",
+  "fargate_price_id": 1,
+  "fargate_task_arn": "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl",
+  "s3_bucket": "united states/tennessee/hurl/25.06",
+  "start_time": "2025-06-20T14:11:32Z",
+  "state_machine_id": "{{newUuid}}"
+}
+HTTP 201
+[Captures]
+pipeline_id: jsonpath "$.state_machine_id"
+[Asserts]
+jsonpath "$.status" == "Pending"
+jsonpath "$.step" == "Setup"
+
+# Reads the new pipeline back.
+GET {{host}}/pipelines/bna/{{pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.state_machine_id" == "{{pipeline_id}}"
+jsonpath "$.cost" == "1.25"
+jsonpath "$.fargate_price_id" == 1
+jsonpath "$.fargate_task_arn" == "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl"
+jsonpath "$.s3_bucket" == "united states/tennessee/hurl/25.06"
+jsonpath "$.start_time" == "2025-06-20T14:11:32Z"
+jsonpath "$.end_time" == null
+jsonpath "$.status" == "Pending"
+jsonpath "$.step" == "Setup"
+
+# Updates the pipeline.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "cost": "0.63749",
+  "end_time": "2025-06-20T14:16:11Z",
+  "fargate_task_arn": "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl-2",
+  "s3_bucket": "united states/tennessee/hurl/25.07",
+  "status": "Completed",
+  "step": "Cleanup"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.state_machine_id" == "{{pipeline_id}}"
+jsonpath "$.status" == "Completed"
+
+# Reads the updated pipeline back: the update changed only the sent fields.
+GET {{host}}/pipelines/bna/{{pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.cost" == "0.63749"
+jsonpath "$.end_time" == "2025-06-20T14:16:11Z"
+jsonpath "$.fargate_price_id" == 1
+jsonpath "$.fargate_task_arn" == "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl-2"
+jsonpath "$.s3_bucket" == "united states/tennessee/hurl/25.07"
+jsonpath "$.start_time" == "2025-06-20T14:11:32Z"
+jsonpath "$.status" == "Completed"
+jsonpath "$.step" == "Cleanup"
+
+# Rejects an update body with a field of the wrong type.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+{"fargate_price_id": "one"}
+```
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/fargate_price_id"
