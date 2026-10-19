@@ -22,7 +22,6 @@ use crate::{
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{http::StatusCode, Json};
-use axum_extra::extract::OptionalQuery;
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
 use tracing::debug;
@@ -231,11 +230,11 @@ async fn post_city(
   ))]
 async fn get_cities_submission(
     ApiPath(submission_id): ApiPath<i32>,
-    OptionalQuery(status): OptionalQuery<String>,
+    ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
     ctx: Context,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_cities_submission_adaptor(db, submission_id, status, ctx)
+    get_cities_submission_adaptor(db, submission_id, submission_params.status, ctx)
         .await
         .map(Submission::from)
         .map(Json)

@@ -42,3 +42,5 @@ and this project adheres to
   request was rejected.
 - Updating a submission that does not exist now returns `404 Not Found` instead
   of `500 Internal Server Error`.
+- `GET /cities/submissions/{submission_id}` accepts the documented `status`
+  filter again. Any query string used to be rejected.

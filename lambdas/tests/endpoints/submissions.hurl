@@ -44,3 +44,16 @@ HTTP 404
 header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "404"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions/999999"
+
+# Reads a submission filtered by its own status.
+GET {{host}}/cities/submissions/1?status=Pending
+HTTP 200
+[Asserts]
+jsonpath "$.id" == 1
+jsonpath "$.status" == "Pending"
+
+# Filtering a submission by another status finds nothing.
+GET {{host}}/cities/submissions/1?status=Approved
+HTTP 404
+[Asserts]
+jsonpath "$.errors[0].status" == "404"
