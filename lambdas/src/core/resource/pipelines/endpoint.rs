@@ -6,7 +6,7 @@ use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::database_connect_or_init;
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParameters},
+    core::resource::schema::{ConflictResponse, ErrorResponses, PaginationParameters},
     Context, ExecutionError, PageFlow,
 };
 use axum::{http::StatusCode, Json};
@@ -76,12 +76,14 @@ async fn get_pipelines_bnas(
   responses(
     (status = CREATED, description = "Creates a new city submission", body = BnaPipeline),
     ErrorResponses,
+    ConflictResponse,
   ))]
 async fn post_pipelines_bna(
+    ctx: Context,
     ApiJson(bna_pipeline): ApiJson<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<BnaPipeline>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_pipelines_bna_adaptor(db, bna_pipeline)
+    post_pipelines_bna_adaptor(db, bna_pipeline, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

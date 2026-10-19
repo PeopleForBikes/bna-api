@@ -167,7 +167,7 @@ resetting the database.
 - [x] 7.2 M-21: declare and return `sqs_message` as a JSON object.
   - `lambdas/src/core/resource/pipelines/schema.rs`,
     `entity/src/wrappers/bna_pipeline.rs`.
-- [ ] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.
+- [x] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.
 - [ ] 7.4 M-23: return 404 when updating an unknown pipeline.
 - [ ] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
 - [ ] 7.6 M-25: apply `start_time` on update.

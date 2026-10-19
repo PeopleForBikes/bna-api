@@ -79,6 +79,20 @@ pipeline_id: jsonpath "$.state_machine_id"
 jsonpath "$.status" == "Pending"
 jsonpath "$.step" == "Setup"
 
+# Creating a pipeline that already exists is a conflict.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "state_machine_id": "{{pipeline_id}}"
+}
+HTTP 409
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "409"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
+
 # Reads the new pipeline back.
 GET {{host}}/pipelines/bna/{{pipeline_id}}
 HTTP 200

@@ -4,7 +4,7 @@ use entity::{
     bna_pipeline,
     wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost},
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel, SqlErr};
 use tracing::info;
 use uuid::Uuid;
 
@@ -43,8 +43,10 @@ pub async fn get_pipelines_bnas_adaptor(
 pub async fn post_pipelines_bna_adaptor(
     db: &DatabaseConnection,
     bna_pipeline: BNAPipelinePost,
+    ctx: Context,
 ) -> Result<entity::bna_pipeline::Model, ExecutionError> {
     // Turn the post model into an active model.
+    let state_machine_id = bna_pipeline.state_machine_id;
     let active_model = bna_pipeline.into_active_model();
 
     // And insert a new entry.
@@ -52,8 +54,17 @@ pub async fn post_pipelines_bna_adaptor(
         "inserting Brokenspoke pipeline into database: {:?}",
         active_model
     );
-    let model = active_model.insert(db).await?;
-    Ok(model)
+    match active_model.insert(db).await {
+        Ok(model) => Ok(model),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::UniqueConstraintViolation(_))) => {
+            Err(ExecutionError::Conflict(
+                ctx.request_id(),
+                ctx.source(),
+                format!("the pipeline {state_machine_id} already exists"),
+            ))
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub async fn patch_pipelines_bna_adaptor(

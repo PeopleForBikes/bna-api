@@ -84,3 +84,5 @@ and this project adheres to
   `500 Internal Server Error`.
 - Creating a rating for a city that does not exist now returns `400 Bad Request`
   pointing at `/city_id`, instead of `500 Internal Server Error`.
+- Creating a pipeline whose `state_machine_id` already exists now returns the
+  documented `409 Conflict` instead of `500 Internal Server Error`.
