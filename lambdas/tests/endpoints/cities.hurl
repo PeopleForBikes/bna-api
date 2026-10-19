@@ -163,6 +163,38 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].status" == "400"
 
+# Rejects the top cities for a year before the first BNA.
+GET {{host}}/cities/top/2016/5
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/2016/5"
+
+# Rejects the top cities for a year after the last supported one.
+GET {{host}}/cities/top/2030/5
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/2030/5"
+
+# Rejects the top cities for an empty count.
+GET {{host}}/cities/top/2025/0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/2025/0"
+
+# Rejects the top cities for a count above the maximum.
+GET {{host}}/cities/top/2025/101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/2025/101"
+
+# Accepts the bounds of the top cities parameters.
+GET {{host}}/cities/top/2017/100
+HTTP 200
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc
 HTTP 400

@@ -467,6 +467,27 @@ pub(crate) enum ErrorResponses {
 /// Highest page number a client can request.
 const MAX_PAGE: u64 = 65536;
 
+/// First year with BNA results.
+pub(crate) const FIRST_BNA_YEAR: i32 = 2017;
+
+/// Last year that can be requested.
+pub(crate) const LAST_BNA_YEAR: i32 = 2029;
+
+/// Deserializes a BNA year, between `FIRST_BNA_YEAR` and `LAST_BNA_YEAR`.
+pub(crate) fn deserialize_bna_year<'de, D>(deserializer: D) -> Result<i32, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let year = i32::deserialize(deserializer)?;
+    if (FIRST_BNA_YEAR..=LAST_BNA_YEAR).contains(&year) {
+        Ok(year)
+    } else {
+        Err(serde::de::Error::custom(format!(
+            "the year must be between {FIRST_BNA_YEAR} and {LAST_BNA_YEAR}"
+        )))
+    }
+}
+
 /// Response for an operation creating a resource that may already exist.
 #[allow(dead_code)]
 #[derive(IntoResponses)]

@@ -140,11 +140,11 @@ resetting the database.
 - [x] 5.6 M-17: read `submission_id` from the path in `patch_cities_submission`.
   - `lambdas/src/core/resource/cities/endpoint.rs`.
 - [x] 5.7 M-18: fix the `status` query extractor of `get_cities_submission`.
-- [ ] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with
+- [x] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with
       read-back, 400, 409) and unknown countries on read.
 - [x] 5.9 M-14: return and document 409 for a duplicate city.
 - [x] 5.10 M-15, M-16: return 400 for an unknown country, on create and on read.
-- [ ] 5.11 M-19: return 400 for out-of-range `year` and `count` on
+- [x] 5.11 M-19: return 400 for out-of-range `year` and `count` on
       `/cities/top/{year}/{count}`.
 - [ ] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
       lists; stricter `sort_by`, `status`, country, year, and count validation.

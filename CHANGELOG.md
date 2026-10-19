@@ -34,6 +34,10 @@ and this project adheres to
   returning an empty list.
 - Reading a city, or its ratings, in a country outside the documented `Country`
   enum now returns `400 Bad Request` instead of `404 Not Found`.
+- `GET /cities/top/{year}/{count}` now rejects a year outside 2017 to 2029 or a
+  count outside 1 to 100, the documented bounds, with `400 Bad Request`. An
+  out-of-range year used to return `404 Not Found`, and an out-of-range count
+  was silently changed to 1 or 100.
 
 ### Fixed
 

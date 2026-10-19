@@ -17,7 +17,10 @@ use crate::{
             schema::{CityParams, CityWithSummary},
             CitiesPathParameters,
         },
-        schema::{City, ConflictResponse, ErrorResponses, ListParameters, PaginationParameters},
+        schema::{
+            deserialize_bna_year, City, ConflictResponse, ErrorResponses, ListParameters,
+            PaginationParameters,
+        },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
@@ -247,6 +250,30 @@ async fn get_cities_submission(
     .map(Json)
 }
 
+/// Path parameters of the top cities, within the documented bounds.
+#[derive(Deserialize)]
+struct TopCitiesPath {
+    #[serde(deserialize_with = "deserialize_bna_year")]
+    year: i32,
+    #[serde(deserialize_with = "deserialize_top_cities_count")]
+    count: u64,
+}
+
+/// Deserializes the number of top cities, between 1 and `TOP_CITIES_MAX_COUNT`.
+fn deserialize_top_cities_count<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let count = u64::deserialize(deserializer)?;
+    if (1..=TOP_CITIES_MAX_COUNT).contains(&count) {
+        Ok(count)
+    } else {
+        Err(serde::de::Error::custom(format!(
+            "the count must be between 1 and {TOP_CITIES_MAX_COUNT}"
+        )))
+    }
+}
+
 #[derive(Deserialize)]
 struct SubmissionParameters {
     pub status: Option<ApprovalStatus>,
@@ -357,11 +384,10 @@ async fn patch_cities_submission(
     ErrorResponses,
   ))]
 async fn get_top_cities(
-    ApiPath((year, count)): ApiPath<(i32, u64)>,
+    ApiPath(TopCitiesPath { year, count }): ApiPath<TopCitiesPath>,
     ctx: Context,
 ) -> Result<Json<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let count = count.clamp(1, TOP_CITIES_MAX_COUNT);
     let models = get_top_cities_adaptor(db, year, count, ctx).await?;
 
     let payload = models
