@@ -200,7 +200,11 @@ the release notes.
   the API. Found while loading the fixtures. Proposed: **Code**, a migration so
   the table holds exactly the API's steps, unless the pipeline state machine
   really uses `Save`, in which case the API gains it instead. **Pending
-  approval; needs confirmation from the pipeline owners.**
+  approval; needs confirmation from the pipeline owners.** Since M-24, the
+  update body is checked against the API's steps (the unused `BNAPipelineStep`
+  enum in `entity/src/wrappers/mod.rs` now lists them), so `Save` is rejected
+  with 400 instead of being stored, which would break every later read of the
+  pipeline. `SqsMessage` still fails on the foreign key.
 - **M-25 Ignored `start_time` on update.** `BnaPipelinePatch` documents
   `start_time`, but the update never applies it (verified:
   `start_time: ActiveValue::NotSet` in `entity/src/wrappers/bna_pipeline.rs`).

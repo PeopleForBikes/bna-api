@@ -43,12 +43,20 @@ impl FromStr for BNAPipelineStatus {
     }
 }
 
+impl Display for BNAPipelineStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
+    }
+}
+
+/// Pipeline steps, as documented by the API.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BNAPipelineStep {
+    SqsMessage,
+    Setup,
     Analysis,
     Cleanup,
-    Setup,
-    Save,
 }
 
 impl FromStr for BNAPipelineStep {
@@ -56,6 +64,13 @@ impl FromStr for BNAPipelineStep {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         serde_plain::from_str::<Self>(s)
+    }
+}
+
+impl Display for BNAPipelineStep {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
     }
 }
 

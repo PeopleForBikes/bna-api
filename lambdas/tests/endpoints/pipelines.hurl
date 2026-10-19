@@ -191,3 +191,31 @@ content-type: application/json
 HTTP 404
 [Asserts]
 jsonpath "$.errors[0].status" == "404"
+
+# Rejects an update with an unknown status.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "status": "Bogus"
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/status"
+
+# Rejects an update with an unknown step.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "step": "Bogus"
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/step"

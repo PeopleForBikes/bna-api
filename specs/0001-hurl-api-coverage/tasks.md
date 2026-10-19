@@ -169,7 +169,7 @@ resetting the database.
     `entity/src/wrappers/bna_pipeline.rs`.
 - [x] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.
 - [x] 7.4 M-23: return 404 when updating an unknown pipeline.
-- [ ] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
+- [x] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
 - [ ] 7.6 M-25: apply `start_time` on update.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
 - [ ] 7.7 Tell the owners of the pipeline state machine that `sqs_message` must

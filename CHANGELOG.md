@@ -88,3 +88,5 @@ and this project adheres to
   documented `409 Conflict` instead of `500 Internal Server Error`.
 - Updating a pipeline that does not exist now returns `404 Not Found` instead of
   `500 Internal Server Error`.
+- Updating a pipeline with an unknown `status` or `step` now returns
+  `400 Bad Request` instead of `500 Internal Server Error`.

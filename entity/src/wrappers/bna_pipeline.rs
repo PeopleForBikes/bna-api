@@ -1,4 +1,7 @@
-use crate::entities::bna_pipeline;
+use crate::{
+    entities::bna_pipeline,
+    wrappers::{BNAPipelineStatus, BNAPipelineStep},
+};
 use sea_orm::{
     prelude::{DateTimeWithTimeZone, Decimal, Json, Uuid},
     sqlx::types::chrono::{FixedOffset, Utc},
@@ -54,8 +57,8 @@ pub struct BNAPipelinePatch {
     pub s3_bucket: Option<Option<String>>,
     pub sqs_message: Option<Option<JsonObject>>,
     pub start_time: Option<Option<DateTimeWithTimeZone>>,
-    pub status: Option<String>,
-    pub step: Option<String>,
+    pub status: Option<BNAPipelineStatus>,
+    pub step: Option<BNAPipelineStep>,
     pub torn_down: Option<Option<bool>>,
 }
 
@@ -64,7 +67,9 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
         bna_pipeline::ActiveModel {
             state_machine_id: ActiveValue::NotSet,
             cost: self.cost.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            step: self.step.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            step: self
+                .step
+                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s.to_string())),
             sqs_message: self.sqs_message.map_or(ActiveValue::NotSet, |v| {
                 ActiveValue::Set(v.map(Json::Object))
             }),
@@ -78,7 +83,9 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
             fargate_price_id: self
                 .fargate_price_id
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
-            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            status: self
+                .status
+                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s.to_string())),
         }
     }
 }
