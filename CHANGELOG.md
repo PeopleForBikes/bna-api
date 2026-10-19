@@ -50,3 +50,6 @@ and this project adheres to
   filter again. Any query string used to be rejected.
 - Updating a submission with an unknown `status` now returns `400 Bad Request`
   instead of `500 Internal Server Error`.
+- `POST /cities` now stores the BNA region of a US city (for example `South` for
+  Tennessee). It used to store `United States`. Cities created before this fix
+  keep the wrong region.

@@ -117,6 +117,13 @@ the release notes.
 
 - **M-14 Duplicate city.** Posting an existing city returns 500. Proposed:
   **Code + Spec**, return and document 409 Conflict.
+- **M-33 Wrong region for new US cities.** `POST /cities` for a US city stores
+  the country name (`United States`) as its region instead of the BNA region
+  from the state crosswalk (for example `South` for Tennessee): the crosswalk
+  region is set, then overwritten because the request has no region. Found while
+  testing city creation. Resolution: **Code**, only default the region to the
+  country for non-US cities. Cities created before the fix keep the wrong
+  region.
 - **M-15 Unknown country on create.** `POST /cities` with an unknown country
   returns 500. Proposed: **Code**, return 400.
 - **M-16 Unknown country on read.** `GET /cities/{country}/...` with a country

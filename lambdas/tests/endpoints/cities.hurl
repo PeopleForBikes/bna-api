@@ -12,6 +12,8 @@ jsonpath "$[0].name" exists
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}
 
 HTTP 200
+[Captures]
+reference_bna_region: jsonpath "$.region"
 [Asserts]
 jsonpath "$.country" == "{{country_name}}"
 jsonpath "$.state" == "{{region}}"
@@ -90,6 +92,7 @@ new_city_name: jsonpath "$.name"
 [Asserts]
 jsonpath "$.country" == "{{country_name}}"
 jsonpath "$.state" == "{{region}}"
+jsonpath "$.region" == "{{reference_bna_region}}"
 jsonpath "$.created_at" exists
 
 # Reads the new city back.

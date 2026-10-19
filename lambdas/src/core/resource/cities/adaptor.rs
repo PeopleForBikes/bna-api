@@ -96,7 +96,8 @@ pub async fn post_cities_adaptor(
     // Assign a city_id.
     active_model.id = ActiveValue::Set(Uuid::new_v4());
 
-    // If the country is the United States, set the BNA region.
+    // If the country is the United States, set the BNA region. Otherwise, if
+    // the region is not set, ensure it is equal to the country.
     if country.to_lowercase().eq("united states") {
         match fetch_state_region_crosswalk(db, &state).await? {
             Some(model) => {
@@ -104,10 +105,7 @@ pub async fn post_cities_adaptor(
             }
             None => return Err(ExecutionError::InvalidUSState(state)),
         }
-    }
-
-    // If the region is not set, ensure it is equal to the country.
-    if region.is_none() {
+    } else if region.is_none() {
         active_model.region = ActiveValue::Set(Some(country));
     }
 
