@@ -126,7 +126,7 @@ resetting the database.
 
 ## Phase 5: Query Parameters, Cities, and Submissions (M-11 to M-19)
 
-- [ ] 5.1 Hurl: new `scenario/sorting.hurl` covering `sort_by` and
+- [x] 5.1 Hurl: new `scenario/sorting.hurl` covering `sort_by` and
       `order_direction` on every operation that accepts them, using fixture data
       with known order.
 - [ ] 5.2 M-11: declare the allowed `sort_by` values per operation as an enum;
