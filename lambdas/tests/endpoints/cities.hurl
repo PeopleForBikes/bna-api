@@ -4,16 +4,19 @@ GET {{host}}/cities
 HTTP 200
 [Asserts]
 jsonpath "$" count > 0
+jsonpath "$[0].id" exists
+jsonpath "$[0].name" exists
 
 
 # Queries a specific city.
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}
 
 HTTP 200
-[Captures]
-country: jsonpath "$.country" urlEncode
-region: jsonpath "$.state"
-name: jsonpath "$.name"
+[Asserts]
+jsonpath "$.country" == "{{country_name}}"
+jsonpath "$.state" == "{{region}}"
+jsonpath "$.name" == "{{name}}"
+jsonpath "$.id" exists
 
 # Queries a non-existing city.
 GET {{host}}/cities/{{country}}/{{region}}/unknown_city
@@ -27,8 +30,12 @@ jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/{{region}}/unk
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
 
 HTTP 200
+[Captures]
+city_id: jsonpath "$.city.id"
 [Asserts]
+jsonpath "$.city.name" == "{{name}}"
 jsonpath "$.ratings" count > 0
+jsonpath "$.ratings[0].city_id" == "{{city_id}}"
 
 # Queries all the BNAs of a non-existing city.
 GET {{host}}/cities/{{country}}/{{region}}/unknown_city/ratings
@@ -38,12 +45,11 @@ HTTP 404
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/{{region}}/unknown_city/ratings"
 
-# Query the top 5 cities for 2025
+# Query the top 5 cities for 2025, ordered by descending score.
 GET {{host}}/cities/top/2025/5
 
 HTTP 200
 [Captures]
-score_0: jsonpath "$[0].summary.score"
 score_1: jsonpath "$[1].summary.score"
 score_2: jsonpath "$[2].summary.score"
 score_3: jsonpath "$[3].summary.score"
@@ -55,7 +61,12 @@ jsonpath "$[1].summary.score" >= {{score_2}}
 jsonpath "$[2].summary.score" >= {{score_3}}
 jsonpath "$[3].summary.score" >= {{score_4}}
 
-# Queries the latest city summaries.
+# Queries the latest city summaries; each summary belongs to its city.
 GET {{host}}/cities/summary/latest
 
 HTTP 200
+[Captures]
+summary_city_id: jsonpath "$[0].city.id"
+[Asserts]
+jsonpath "$" count > 0
+jsonpath "$[0].summary.city_id" == "{{summary_city_id}}"
