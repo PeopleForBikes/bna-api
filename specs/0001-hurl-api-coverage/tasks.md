@@ -29,7 +29,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
 
 ## Phase 1: Reproducible Test Data
 
-- [ ] 1.1 Extract the baseline data.
+- [x] 1.1 Extract the baseline data.
   - New: `lambdas/tests/baseline.sql`, a data-only export of `city`, `summary`,
     and the seven rating detail tables from the current
     `database-with-test-data.sql`.
