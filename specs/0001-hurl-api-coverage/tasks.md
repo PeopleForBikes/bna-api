@@ -48,7 +48,7 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
     (never the working one), runs the migrations from scratch, then
     `baseline.sql`, then `fixtures.sql`, then `pg_dump` into
     `database-with-test-data.sql`.
-- [ ] 1.4 Regenerate `lambdas/tests/database-with-test-data.sql` with the new
+- [x] 1.4 Regenerate `lambdas/tests/database-with-test-data.sql` with the new
       recipe and commit it.
 - [ ] 1.5 Document the recipe in `lambdas/tests/README.md` (replaces the
       "Preparing the assets" section).
