@@ -482,12 +482,27 @@ where
     }
 }
 
+/// Deserializes a page size, between 1 and `MAX_PAGE_SIZE`.
+fn deserialize_page_size<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let page_size = Option::<u64>::deserialize(deserializer)?;
+    match page_size {
+        Some(s) if !(1..=MAX_PAGE_SIZE).contains(&s) => Err(serde::de::Error::custom(format!(
+            "the page size must be between 1 and {MAX_PAGE_SIZE}"
+        ))),
+        _ => Ok(page_size),
+    }
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
 pub(crate) struct PaginationParameters {
     /// The number of items per page
     #[param(minimum = 1, maximum = 100, example = 25)]
+    #[serde(default, deserialize_with = "deserialize_page_size")]
     page_size: Option<u64>,
     /// The result page being returned
     #[param(minimum = 1, maximum = 65536, example = 5)]
@@ -506,14 +521,7 @@ impl Default for PaginationParameters {
 
 impl PaginationParameters {
     pub fn page_size(&self) -> u64 {
-        match self.page_size {
-            Some(value) => match value {
-                0 => 1,
-                1..=MAX_PAGE_SIZE => value,
-                _ => MAX_PAGE_SIZE,
-            },
-            None => DEFAULT_PAGE_SIZE,
-        }
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
     }
 
     pub fn page(&self) -> u64 {
@@ -597,6 +605,7 @@ pub(crate) struct ListParameters {
     #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,
     #[param(minimum = 1, maximum = 100, example = 25)]
+    #[serde(default, deserialize_with = "deserialize_page_size")]
     page_size: Option<u64>,
     #[param(example = "created_at")]
     sort_by: Option<String>,
@@ -612,14 +621,7 @@ impl ListParameters {
     }
 
     pub fn page_size(&self) -> u64 {
-        match self.page_size {
-            Some(value) => match value {
-                0 => 1,
-                1..=MAX_PAGE_SIZE => value,
-                _ => MAX_PAGE_SIZE,
-            },
-            None => DEFAULT_PAGE_SIZE,
-        }
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
     }
 
     pub fn sort_by(&self) -> String {

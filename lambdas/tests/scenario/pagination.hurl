@@ -50,14 +50,27 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page"
 
-# Queries the first page of the ratings with a page_size too big.
-# Ensures at most MAX_PAGE_SIZE is returned.
-GET {{host}}/ratings?page_size=150
+# Queries the first page of the ratings with the largest page_size.
+GET {{host}}/ratings?page_size={{max_page_size}}
 
 HTTP 200
 [Asserts]
 header "X-Per-Page" == "{{max_page_size}}"
 jsonpath "$" count <= {{max_page_size}}
+
+# Rejects a page_size above the maximum.
+GET {{host}}/ratings?page_size=101
+
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects an empty page_size.
+GET {{host}}/ratings?page_size=0
+
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
 
 # Queries the ratings with a negative page number.
 # Should be rejected as a bad request.

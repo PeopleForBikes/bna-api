@@ -25,6 +25,9 @@ and this project adheres to
   `x-prev-page`, and `x-next-page` headers use the same numbering.
 - A `page` above 65536, the maximum documented in the OpenAPI specification, is
   now rejected with `400 Bad Request`.
+- A `page_size` outside 1 to 100, the range documented in the OpenAPI
+  specification, is now rejected with `400 Bad Request`. It used to be silently
+  changed to 1 or 100.
 
 ### Fixed
 
