@@ -1,7 +1,8 @@
 pub mod core;
 
 use axum::{
-    extract::{FromRequest, OriginalUri},
+    extract::{FromRequestParts, OriginalUri},
+    http::request::Parts,
     response::IntoResponse,
 };
 use bnacore::aws::get_aws_secrets_value;
@@ -423,15 +424,15 @@ pub struct Context {
     source: String,
 }
 
-impl<S> FromRequest<S> for Context
+impl<S> FromRequestParts<S> for Context
 where
     S: Send + Sync,
 {
     type Rejection = (StatusCode, &'static str);
 
-    async fn from_request(req: axum::extract::Request, _: &S) -> Result<Self, Self::Rejection> {
-        let request_context = req
-            .extensions()
+    async fn from_request_parts(parts: &mut Parts, _: &S) -> Result<Self, Self::Rejection> {
+        let request_context = parts
+            .extensions
             .get::<lambda_http::request::RequestContext>();
         let request_id = match request_context {
             Some(lambda_http::request::RequestContext::ApiGatewayV2(ref ctx)) => {
@@ -439,10 +440,10 @@ where
             }
             _ => None,
         };
-        let uri = req.extensions().get::<OriginalUri>();
+        let uri = parts.extensions.get::<OriginalUri>();
         let source = match uri {
             Some(path) => path.0.path().to_owned(),
-            None => req.uri().path().to_owned(),
+            None => parts.uri.path().to_owned(),
         };
 
         Ok(Self { request_id, source })

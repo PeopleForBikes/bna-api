@@ -327,10 +327,11 @@ async fn post_cities_submission(
   ))]
 async fn patch_cities_submission(
     ApiPath(submission_id): ApiPath<i32>,
+    ctx: Context,
     ApiJson(submission): ApiJson<submission::SubmissionPatch>,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    patch_cities_submission_adaptor(db, submission_id, submission)
+    patch_cities_submission_adaptor(db, submission_id, submission, ctx)
         .await
         .map(Submission::from)
         .map(Json)

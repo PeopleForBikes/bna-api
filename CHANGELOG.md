@@ -40,3 +40,5 @@ and this project adheres to
 - `PATCH /cities/submissions/{submission_id}` works again. It read the
   submission identifier from the query string instead of the path, so every
   request was rejected.
+- Updating a submission that does not exist now returns `404 Not Found` instead
+  of `500 Internal Server Error`.

@@ -127,6 +127,10 @@ the release notes.
   the path (verified: `Query(submission_id)` in
   `lambdas/src/core/resource/cities/endpoint.rs`). The operation is currently
   unusable. Proposed: **Code**, read the path parameter.
+- **M-30 Unknown submission on update.** Updating a submission that does not
+  exist returns 500 "Database error". Found once M-17 made the operation usable.
+  Resolution: **Code**, return 404, as documented. Covered by the approved M-03
+  rule (client mistakes never produce 500).
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.

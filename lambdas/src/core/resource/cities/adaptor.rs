@@ -11,7 +11,7 @@ use entity::{
         submission::{SubmissionPatch, SubmissionPost},
     },
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel};
 use tracing::info;
 use uuid::Uuid;
 
@@ -149,13 +149,21 @@ pub async fn patch_cities_submission_adaptor(
     db: &DatabaseConnection,
     submission_id: i32,
     submission: SubmissionPatch,
+    ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Turn the wrapper into an active model.
     let mut active_model = submission.into_active_model();
     active_model.id = ActiveValue::Unchanged(submission_id);
 
-    let model = active_model.update(db).await?;
-    Ok(model)
+    match active_model.update(db).await {
+        Ok(model) => Ok(model),
+        Err(DbErr::RecordNotUpdated) => Err(ExecutionError::NotFound(
+            ctx.request_id(),
+            ctx.source(),
+            format!("cannot find submission with id {submission_id}"),
+        )),
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub async fn post_cities_submission_adaptor(
