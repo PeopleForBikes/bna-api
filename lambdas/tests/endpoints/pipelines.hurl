@@ -219,3 +219,19 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/step"
+
+# Updates the start time of the pipeline, and reads it back.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "start_time": "2025-06-20T14:00:00Z"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.start_time" == "2025-06-20T14:00:00Z"
+
+GET {{host}}/pipelines/bna/{{pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.start_time" == "2025-06-20T14:00:00Z"

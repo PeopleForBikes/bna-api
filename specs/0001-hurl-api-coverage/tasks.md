@@ -161,7 +161,7 @@ resetting the database.
 
 ## Phase 7: Pipelines (M-21 to M-25, M-28)
 
-- [ ] 7.1 Hurl: new `endpoints/pipelines.hurl` covering list, read (200, 404,
+- [x] 7.1 Hurl: new `endpoints/pipelines.hurl` covering list, read (200, 404,
       400 on an invalid UUID), create (201, 400, 409), and update (200, 400,
       404), with read-back of every written field.
 - [x] 7.2 M-21: declare and return `sqs_message` as a JSON object.
@@ -170,7 +170,7 @@ resetting the database.
 - [x] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.
 - [x] 7.4 M-23: return 404 when updating an unknown pipeline.
 - [x] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
-- [ ] 7.6 M-25: apply `start_time` on update.
+- [x] 7.6 M-25: apply `start_time` on update.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
 - [ ] 7.7 Tell the owners of the pipeline state machine that `sqs_message` must
       be sent as an object; note it in `CHANGELOG.md`.

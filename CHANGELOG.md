@@ -90,3 +90,5 @@ and this project adheres to
   `500 Internal Server Error`.
 - Updating a pipeline with an unknown `status` or `step` now returns
   `400 Bad Request` instead of `500 Internal Server Error`.
+- Updating a pipeline now applies the documented `start_time`, which was
+  silently ignored.

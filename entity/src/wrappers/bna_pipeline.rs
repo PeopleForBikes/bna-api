@@ -56,7 +56,7 @@ pub struct BNAPipelinePatch {
     pub result_posted: Option<Option<bool>>,
     pub s3_bucket: Option<Option<String>>,
     pub sqs_message: Option<Option<JsonObject>>,
-    pub start_time: Option<Option<DateTimeWithTimeZone>>,
+    pub start_time: Option<DateTimeWithTimeZone>,
     pub status: Option<BNAPipelineStatus>,
     pub step: Option<BNAPipelineStep>,
     pub torn_down: Option<Option<bool>>,
@@ -78,7 +78,9 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
                 .fargate_task_arn
                 .map_or(ActiveValue::NotSet, ActiveValue::Set),
             s3_bucket: self.s3_bucket.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            start_time: ActiveValue::NotSet,
+            start_time: self
+                .start_time
+                .map_or(ActiveValue::NotSet, ActiveValue::Set),
             end_time: self.end_time.map_or(ActiveValue::NotSet, ActiveValue::Set),
             fargate_price_id: self
                 .fargate_price_id
