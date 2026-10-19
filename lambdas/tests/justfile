@@ -52,7 +52,7 @@ test-staging-schemathesis:
     {{top_dir}}/openapi-3.0.yaml \
     --exclude-method 'POST' \
     --exclude-method 'PATCH' \
-    --base-url https://api.peopleforbikes.xyz/
+    --base-url https://api.staging.bna.peopleforbikes.org/
 
 # Generate the test database dump from the migrations, baseline.sql and fixtures.sql.
 # Uses a dedicated database, dropped and recreated on each run.

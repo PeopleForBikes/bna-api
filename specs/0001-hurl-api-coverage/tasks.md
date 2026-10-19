@@ -57,7 +57,7 @@ contains every item of the design's "Test data" section.
 
 ## Phase 2: Fix the Existing Tests (no API change)
 
-- [ ] 2.1 T-07: point `lambdas/tests/staging.vars` and the
+- [x] 2.1 T-07: point `lambdas/tests/staging.vars` and the
       `test-staging-schemathesis` recipe in `lambdas/tests/justfile` at
       `https://api.staging.bna.peopleforbikes.org`.
 - [ ] 2.2 T-01: add a plain (not URL-encoded) country variable to
