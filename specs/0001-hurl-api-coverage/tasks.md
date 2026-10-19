@@ -69,7 +69,7 @@ contains every item of the design's "Test data" section.
 - [x] 2.5 T-02 and run-unique data in `scenario/bna-pipeline.hurl`: use
       `{{newUuid}}` for `state_machine_id`, create its own city, and fix
       `start_time`/`end_time` order.
-- [ ] 2.6 T-03: rewrite the comments of `scenario/pagination.hurl` to match the
+- [x] 2.6 T-03: rewrite the comments of `scenario/pagination.hurl` to match the
       assertions.
 - [ ] 2.7 T-04: fix the comment in `endpoints/system.hurl`; assert the `OK` body
       and `text/plain` content type.

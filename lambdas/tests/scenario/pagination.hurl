@@ -9,7 +9,7 @@ HTTP 200
 header "X-Per-Page" == "{{default_page_size}}"
 header "X-page" == "0"
 
-# Queries the first page of the BNA with a page_size too big.
+# Queries the first page of the ratings with a page_size too big.
 # Ensures at most MAX_PAGE_SIZE is returned.
 GET {{host}}/ratings?page_size=150
 
@@ -18,14 +18,14 @@ HTTP 200
 header "X-Per-Page" == "{{max_page_size}}"
 jsonpath "$" count <= {{max_page_size}}
 
-# Queries the BNA with an invalid page number.
-# Should return the first page of results.
+# Queries the ratings with a negative page number.
+# Should be rejected as a bad request.
 GET {{host}}/ratings?page=-5
 
 HTTP 400
 
-# Queries the BNA with a valid page number but which does not exist.
-# Should return the last page of results.
+# Queries the ratings with a page number past the last page.
+# Should return an empty list.
 GET {{host}}/ratings?page=5000
 
 HTTP 200
@@ -35,7 +35,7 @@ jsonpath "$" count == 0
 # ################
 # Cities
 # ################
-# Query the first ratings page.
+# Query the first cities page.
 GET {{host}}/cities
 
 HTTP 200
