@@ -218,6 +218,14 @@ the release notes.
 - **M-27 Case-sensitive state names.** `/usstates/texas` returns 404; only
   `Texas` matches. Proposed: **Spec**, document that the name is case sensitive
   (keep the behavior).
+- **M-36 Empty scores in the reports.** Both reports leave the
+  `coreservices_score`, `people`, `retail`, and `transit` columns empty on every
+  row: the queries name these scores `core_services_score`, `people_score`,
+  `retail_score`, and `transit_score`, which match no field of the report row.
+  Found while checking the report format. Resolution: **Code**, name the query
+  columns after the CSV header, which is unchanged. Fixed under the rule that
+  the implementation must match its own documentation (the header promises the
+  values).
 
 ### Test bugs (no API change)
 

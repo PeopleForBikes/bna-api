@@ -92,3 +92,5 @@ and this project adheres to
   `400 Bad Request` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was
   silently ignored.
+- `GET /reports` and `GET /reports/{year}` now fill the `coreservices_score`,
+  `people`, `retail`, and `transit` columns, which were always empty.
