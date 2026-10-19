@@ -4,6 +4,7 @@ bnaclient
 clippy
 dbdump
 dbml
+fips
 Paginatron
 peopleforbikes
 pgadmin
