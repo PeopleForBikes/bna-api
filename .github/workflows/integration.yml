@@ -9,7 +9,8 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Hurl's .deb needs libxml2, which Ubuntu 26.04 no longer provides.
+    runs-on: ubuntu-24.04
 
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -22,9 +23,7 @@ jobs:
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
         ports:
           - 5432:5432
@@ -37,42 +36,32 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - name: Install HURL
         run: |
-          HURL_VERSION=8.0.1
+          HURL_VERSION=8.1.0
           curl --location --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$HURL_VERSION/hurl_${HURL_VERSION}_amd64.deb
-          sudo apt install ./hurl_${HURL_VERSION}_amd64.deb
+          sudo apt install -y ./hurl_${HURL_VERSION}_amd64.deb
       - name: Seed the database
         run: psql $DATABASE_URL < lambdas/tests/database-with-test-data.sql
       - name: Build the API server
         run: cargo build --release -p lambdas --bin axumed
       - name: Start the standalone API server
         run: >
-          BNA_API_LOG_LEVEL=debug
-          BNA_API_STANDALONE=1
-          cargo run --release -p lambdas --bin axumed &
+          BNA_API_LOG_LEVEL=debug BNA_API_STANDALONE=1 cargo run --release -p lambdas
+          --bin axumed &
       - run: sleep 5
       - name: Run the public smoke-tests
         run: >
-          hurl
-          --test
-          --variables-file lambdas/tests/localhost.vars
+          hurl --test --variables-file lambdas/tests/localhost.vars
           lambdas/tests/smoke/public.hurl
       - name: Run the scenarios tests
         run: >
-          hurl
-          --test
-          --variables-file lambdas/tests/localhost.vars
+          hurl --test --variables-file lambdas/tests/localhost.vars
           lambdas/tests/scenario/pagination.hurl
       - name: Run the endpoint tests
         run: >
-          hurl
-          --test
-          --variables-file lambdas/tests/localhost.vars
-          lambdas/tests/endpoints/cities.hurl
-          lambdas/tests/endpoints/pricing.hurl
-          lambdas/tests/endpoints/ratings.hurl
-          lambdas/tests/endpoints/reports.hurl
-          lambdas/tests/endpoints/system.hurl
-          lambdas/tests/endpoints/usstates.hurl
+          hurl --test --variables-file lambdas/tests/localhost.vars
+          lambdas/tests/endpoints/cities.hurl lambdas/tests/endpoints/pricing.hurl
+          lambdas/tests/endpoints/ratings.hurl lambdas/tests/endpoints/reports.hurl
+          lambdas/tests/endpoints/system.hurl lambdas/tests/endpoints/usstates.hurl
 
       # - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
       #   with:
