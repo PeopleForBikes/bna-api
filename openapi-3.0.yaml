@@ -3186,9 +3186,8 @@ components:
           example: Antwerp
           nullable: true
         status:
-          type: string
-          description: Submission status, e.g. "Pending"
-          example: Pending
+          $ref: '#/components/schemas/ApprovalStatus'
+          description: Submission status
     SubmissionPost:
       type: object
       required:

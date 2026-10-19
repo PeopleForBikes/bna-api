@@ -3011,10 +3011,8 @@ components:
           examples:
           - Antwerp
         status:
-          type: string
-          description: Submission status, e.g. "Pending"
-          examples:
-          - Pending
+          $ref: '#/components/schemas/ApprovalStatus'
+          description: Submission status
     SubmissionPost:
       type: object
       required:

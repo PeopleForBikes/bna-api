@@ -48,3 +48,5 @@ and this project adheres to
   of `500 Internal Server Error`.
 - `GET /cities/submissions/{submission_id}` accepts the documented `status`
   filter again. Any query string used to be rejected.
+- Updating a submission with an unknown `status` now returns `400 Bad Request`
+  instead of `500 Internal Server Error`.

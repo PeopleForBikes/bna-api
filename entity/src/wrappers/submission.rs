@@ -1,4 +1,4 @@
-use crate::entities::submission;
+use crate::{entities::submission, wrappers::ApprovalStatus};
 use sea_orm::{ActiveValue, IntoActiveModel};
 use serde::{Deserialize, Serialize};
 
@@ -49,7 +49,7 @@ pub struct SubmissionPatch {
     pub region: Option<Option<String>>,
     pub fips_code: Option<String>,
     pub consent: Option<bool>,
-    pub status: Option<String>,
+    pub status: Option<ApprovalStatus>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
@@ -72,7 +72,9 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
             region: self.region.map_or(ActiveValue::NotSet, ActiveValue::Set),
             fips_code: self.fips_code.map_or(ActiveValue::NotSet, ActiveValue::Set),
             consent: self.consent.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            status: self
+                .status
+                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s.to_string())),
             created_at: ActiveValue::NotSet,
         }
     }
@@ -205,5 +207,27 @@ mod tests {
             created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
+    }
+
+    #[test]
+    fn test_submission_patch_status_into_model() {
+        let wrapper = SubmissionPatch {
+            first_name: None,
+            last_name: None,
+            occupation: None,
+            organization: None,
+            email: None,
+            country: None,
+            city: None,
+            region: None,
+            fips_code: None,
+            consent: None,
+            status: Some(ApprovalStatus::Approved),
+        };
+        let active_model = wrapper.into_active_model();
+        assert_eq!(
+            active_model.status,
+            ActiveValue::Set("Approved".to_string())
+        );
     }
 }

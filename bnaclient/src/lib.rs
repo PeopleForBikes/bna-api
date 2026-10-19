@@ -3664,11 +3664,7 @@ pub mod types {
     ///      ]
     ///    },
     ///    "status": {
-    ///      "description": "Submission status, e.g. \"Pending\"",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
+    ///      "$ref": "#/components/schemas/ApprovalStatus"
     ///    }
     ///  }
     ///}
@@ -3701,8 +3697,7 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///Submission status, e.g. "Pending"
-        pub status: ::std::string::String,
+        pub status: ApprovalStatus,
     }
 
     impl SubmissionPatch {
@@ -6718,7 +6713,7 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<::std::string::String, ::std::string::String>,
+            status: ::std::result::Result<super::ApprovalStatus, ::std::string::String>,
         }
 
         impl ::std::default::Default for SubmissionPatch {
@@ -6842,7 +6837,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<super::ApprovalStatus>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value

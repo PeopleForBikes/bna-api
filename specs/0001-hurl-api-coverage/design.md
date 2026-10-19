@@ -131,6 +131,11 @@ the release notes.
   exist returns 500 "Database error". Found once M-17 made the operation usable.
   Resolution: **Code**, return 404, as documented. Covered by the approved M-03
   rule (client mistakes never produce 500).
+- **M-31 Unknown status on submission update.** Updating a submission with a
+  `status` outside `Approved`, `Pending`, `Rejected` returns 500 "Database
+  error". Resolution: **Code + Spec**, type the status as the `ApprovalStatus`
+  enum (M-13) so unknown values are rejected with 400. Covered by the approved
+  M-03 rule.
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.
@@ -405,5 +410,5 @@ specification and enforced by the suite:
 ## Open Questions
 
 - Approve, change, or reject M-28 (pipeline steps) and M-29 (measures), found
-  during implementation. M-28 needs the pipeline owners to confirm whether the
-  `Save` step is used.
+  during implementation. M-28 needs the
+  pipeline owners to confirm whether the `Save` step is used.

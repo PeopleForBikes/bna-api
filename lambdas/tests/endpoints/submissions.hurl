@@ -76,3 +76,16 @@ GET {{host}}/cities/submissions/1?status=Bogus
 HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "status"
+
+# Rejects an unknown status when updating a submission.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "status": "Bogus"
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/status"

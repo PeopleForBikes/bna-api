@@ -267,9 +267,9 @@ pub(crate) struct SubmissionPatch {
     /// Consent status
     #[schema(examples("true"))]
     consent: bool,
-    /// Submission status, e.g. "Pending"
+    /// Submission status
     #[schema(examples("Pending"))]
-    status: String,
+    status: ApprovalStatus,
 }
 
 #[derive(ToSchema, Serialize)]
