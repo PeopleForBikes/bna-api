@@ -139,7 +139,9 @@ the release notes.
   unusable. Proposed: **Code**, read the path parameter.
 - **M-30 Unknown submission on update.** Updating a submission that does not
   exist returns 500 "Database error". Found once M-17 made the operation usable.
-  Resolution: **Code**, return 404, as documented. Covered by the approved M-03
+  Resolution: **Code**, return 404, as documented, including for an update
+  without any change (SeaORM then reports the row as not found rather than not
+  updated; the same applies to pipelines, M-23). Covered by the approved M-03
   rule (client mistakes never produce 500).
 - **M-31 Unknown status on submission update.** Updating a submission with a
   `status` outside `Approved`, `Pending`, `Rejected` returns 500 "Database

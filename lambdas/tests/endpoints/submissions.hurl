@@ -45,6 +45,15 @@ header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "404"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions/999999"
 
+# Updating a submission that does not exist is not found, even without changes.
+PATCH {{host}}/cities/submissions/999999
+Authorization: Bearer {{token}}
+content-type: application/json
+{}
+HTTP 404
+[Asserts]
+jsonpath "$.errors[0].status" == "404"
+
 # Reads a submission filtered by its own status.
 GET {{host}}/cities/submissions/1?status=Pending
 HTTP 200

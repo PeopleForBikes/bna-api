@@ -164,9 +164,11 @@ pub async fn patch_cities_submission_adaptor(
     let mut active_model = submission.into_active_model();
     active_model.id = ActiveValue::Unchanged(submission_id);
 
+    // An update without any change only looks the entry up, and reports a
+    // missing entry as not found instead of not updated.
     match active_model.update(db).await {
         Ok(model) => Ok(model),
-        Err(DbErr::RecordNotUpdated) => Err(ExecutionError::NotFound(
+        Err(DbErr::RecordNotUpdated | DbErr::RecordNotFound(_)) => Err(ExecutionError::NotFound(
             ctx.request_id(),
             ctx.source(),
             format!("cannot find submission with id {submission_id}"),
