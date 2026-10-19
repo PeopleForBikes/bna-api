@@ -104,34 +104,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -217,34 +189,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -291,34 +235,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -376,34 +292,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -459,34 +347,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -607,34 +467,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -701,34 +533,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -817,34 +621,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -922,34 +698,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -996,34 +744,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1087,34 +807,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1169,34 +861,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1306,34 +970,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1416,34 +1052,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1493,34 +1101,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1570,34 +1150,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:
@@ -1729,34 +1281,6 @@ paths:
                     parameter: status
                   status: '400'
                   title: Bad Request
-        '401':
-          description: The request has not been fulfilled because it lacks valid authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: invalid authentication credentials to access the specified resource
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '401'
-                  title: Unauthorized
-        '403':
-          description: Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                - details: access to the requested resource is forbidden
-                  id: blfwkg8nvHcEJnQ=
-                  source:
-                    pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                  status: '403'
-                  title: Forbidden
         '404':
           description: The particular resource requested was not found. This occurs, for example, when the id of the requested  resource does not exist.
           content:

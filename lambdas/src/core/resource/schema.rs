@@ -414,38 +414,6 @@ pub(crate) enum ErrorResponses {
         ]})
     )]
     BadRequest(APIErrors),
-    /// Unauthorized
-    #[response(
-      status = 401,
-      description = "The request has not been fulfilled because it lacks valid authentication credentials for the target resource.",
-      example = json!({
-        "errors": [
-        {
-          "details": "invalid authentication credentials to access the specified resource",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-          "status": "401",
-          "title": "Unauthorized"
-        }
-      ]})
-  )]
-    Unauthorized(APIErrors),
-    /// Forbidden
-    #[response(
-      status = 403,
-      description = "Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.",
-      example = json!({
-        "errors": [
-        {
-          "details": "access to the requested resource is forbidden",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-          "status": "403",
-          "title": "Forbidden"
-        }
-      ]})
-  )]
-    Forbidden(APIErrors),
     /// Item Not Found
     #[response(
         status = 404,

@@ -57,6 +57,10 @@ and this project adheres to
   must send the message as an object. Messages stored double-encoded are
   returned decoded.
 
+- The OpenAPI specification no longer documents `401 Unauthorized` and
+  `403 Forbidden` responses. They are produced by API Gateway, not by the
+  application, and will be documented separately.
+
 ### Fixed
 
 - `GET /cities`, `GET /prices/fargate`, and `GET /usstates` now report the real

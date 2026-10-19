@@ -192,7 +192,7 @@ resetting the database.
 
 ## Phase 9: Documented Status Codes (M-04)
 
-- [ ] 9.1 Remove 401 and 403 from every operation.
+- [x] 9.1 Remove 401 and 403 from every operation.
   - The shared `ErrorResponses` in `lambdas/src/core/resource/schema.rs` and
     each endpoint's `utoipa` `responses`.
 - [ ] 9.2 For each operation, keep exactly the codes it can return after phases
