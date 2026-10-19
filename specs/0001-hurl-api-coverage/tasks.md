@@ -16,6 +16,16 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
   suite against localhost (`cd lambdas/tests && just test localhost`).
 - Each client-visible change gets an entry under `## [Unreleased]` in
   `CHANGELOG.md` in the same commit.
+- **One change per commit**, so each one is easy to review and revert:
+  - one commit per mismatch (M-xx), containing its Hurl test, the code or
+    specification change, the regenerated `openapi-*.yaml` and `bnaclient` when
+    the specification changes, and its `CHANGELOG.md` entry;
+  - one commit per test bug (T-xx);
+  - one commit per infrastructure step (seeder, fixtures, dump recipe,
+    regenerated dump, coverage script, `just` recipes, CI wiring);
+  - the test and its fix go in the same commit, so every commit builds and
+    passes on its own;
+  - never mix a fix with unrelated cleanup.
 
 ## Phase 1: Reproducible Test Data
 
