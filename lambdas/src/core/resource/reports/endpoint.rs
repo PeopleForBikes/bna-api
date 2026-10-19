@@ -1,7 +1,7 @@
 use crate::{database_connect_or_init, ExecutionError};
 
 use super::adaptor::{get_report_adaptor, get_reports_adaptor};
-use axum::extract::Path;
+use crate::core::extract::ApiPath;
 use axum_streams::*;
 use futures::{stream, StreamExt};
 use utoipa_axum::router::OpenApiRouter;
@@ -46,7 +46,9 @@ async fn get_reports() -> Result<StreamBodyAs<'static>, ExecutionError> {
     (status = OK, description = "Fetches the latest rating reports for a specific year in csv format", content_type = "text/csv"),
   )
 )]
-async fn get_reports_year(Path(year): Path<u32>) -> Result<StreamBodyAs<'static>, ExecutionError> {
+async fn get_reports_year(
+    ApiPath(year): ApiPath<u32>,
+) -> Result<StreamBodyAs<'static>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let ratings = get_report_adaptor(db, year).await.expect("reports");
     let stream = stream::iter(ratings);

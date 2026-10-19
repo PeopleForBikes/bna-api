@@ -1,3 +1,4 @@
+use crate::core::extract::{ApiPath, ApiQuery};
 use crate::{
     core::resource::{
         schema::{ErrorResponses, PaginationParameters},
@@ -8,10 +9,7 @@ use crate::{
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    Json,
-};
+use axum::Json;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "usstate";
@@ -35,7 +33,7 @@ pub fn routes() -> OpenApiRouter {
     ErrorResponses,
   ))]
 async fn get_us_state(
-    Path(name): Path<String>,
+    ApiPath(name): ApiPath<String>,
     ctx: Context,
 ) -> Result<Json<UsState>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -58,7 +56,7 @@ async fn get_us_state(
     (status = OK, description = "Fetches US states", body = UsStates),
   ))]
 async fn get_us_states(
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
 ) -> Result<PageFlow<UsStates>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_us_states_adaptor(db, pagination.page(), pagination.page_size()).await?;

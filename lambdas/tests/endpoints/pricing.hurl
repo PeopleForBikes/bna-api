@@ -17,3 +17,21 @@ HTTP 200
 jsonpath "$.id" == {{price_id}}
 jsonpath "$.per_second" == "{{price_per_second}}"
 jsonpath "$.created_at" exists
+
+# Rejects an invalid query string parameter with a JSON error.
+GET {{host}}/prices/fargate?page=abc
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects an invalid path parameter with a JSON error.
+GET {{host}}/prices/fargate/abc
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/prices/fargate/abc"

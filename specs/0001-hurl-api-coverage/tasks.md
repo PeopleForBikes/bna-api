@@ -92,7 +92,7 @@ resetting the database.
 - [ ] 3.1 Hurl: add requests for malformed path, query, and body inputs on each
       resource, asserting 400 with an `APIErrors` JSON body and the right
       `source`.
-- [ ] 3.2 Code: map every Axum extractor rejection (path, query, JSON) to an
+- [x] 3.2 Code: map every Axum extractor rejection (path, query, JSON) to an
       `APIErrors` response with status 400.
   - `effortless/src/error.rs`, `lambdas/src/lib.rs`
     (`impl IntoResponse for ExecutionError`), and the extractors used in

@@ -7,3 +7,11 @@ and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Changed
+
+- Requests with an invalid path parameter, query string parameter, or body now
+  get a JSON `APIErrors` document, as documented in the OpenAPI specification,
+  instead of a plain text message. The error `source` names the failing query
+  parameter, the request path, the JSON pointer of the failing body field, or
+  the `content-type` header.

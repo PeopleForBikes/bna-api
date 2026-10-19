@@ -4,15 +4,12 @@ use super::{
     },
     schema::{Rating, RatingPost, RatingWithCity, Ratings},
 };
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::{
     core::resource::schema::{ErrorResponses, PaginationParameters},
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
+use axum::{http::StatusCode, Json};
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -40,7 +37,7 @@ pub fn routes() -> OpenApiRouter {
     ErrorResponses,
   ))]
 async fn get_rating(
-    Path(rating_id): Path<Uuid>,
+    ApiPath(rating_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<Rating>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -66,7 +63,7 @@ async fn get_rating(
     (status = OK, description = "Fetches the city ratings", body = Ratings),
   ))]
 async fn get_ratings(
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
 ) -> Result<PageFlow<Ratings>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) =
@@ -90,7 +87,7 @@ async fn get_ratings(
     ErrorResponses,
   ))]
 async fn post_rating(
-    Json(bna): Json<RatingPost>,
+    ApiJson(bna): ApiJson<RatingPost>,
 ) -> Result<(StatusCode, Json<Rating>), ExecutionError> {
     let db = database_connect_or_init().await?;
     post_ratings_adaptor(db, bna)
@@ -116,7 +113,7 @@ async fn post_rating(
     ErrorResponses,
   ))]
 async fn get_ratings_city(
-    Path(rating_id): Path<Uuid>,
+    ApiPath(rating_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<RatingWithCity>, ExecutionError> {
     let db = database_connect_or_init().await?;

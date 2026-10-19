@@ -18,6 +18,11 @@ jsonpath "$.city_id" == "{{rating_city_id}}"
 # Queries a specific rating with an invalid id.
 GET {{host}}/ratings/1
 HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/ratings/1"
 
 # Queries a non-existing rating.
 GET {{host}}/ratings/{{fake_rating_id}}
@@ -130,3 +135,26 @@ HTTP 200
 [Asserts]
 jsonpath "$.rating.id" == "{{new_rating_id}}"
 jsonpath "$.city.id" == "{{city_id}}"
+
+# Rejects an invalid query string parameter with a JSON error.
+GET {{host}}/ratings?page_size=abc
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects a body with a field of the wrong type.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+{"city_id": "11111111-2222-3333-4444-555555555555", "score": "high"}
+```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/score"

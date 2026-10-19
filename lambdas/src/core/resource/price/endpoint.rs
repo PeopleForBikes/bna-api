@@ -1,4 +1,5 @@
 use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor};
+use crate::core::extract::{ApiPath, ApiQuery};
 use crate::{
     core::resource::{
         price::schema::{FargatePrice, FargatePrices},
@@ -7,10 +8,7 @@ use crate::{
     database_connect_or_init, PageFlow, Paginatron,
 };
 use crate::{Context, ExecutionError};
-use axum::{
-    extract::{Path, Query},
-    Json,
-};
+use axum::Json;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "price";
@@ -34,7 +32,7 @@ pub fn routes() -> OpenApiRouter {
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
   ))]
 pub(crate) async fn get_prices_fargate(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<ListParameters>,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) = get_prices_fargate_adaptor(
@@ -66,7 +64,7 @@ pub(crate) async fn get_prices_fargate(
     ErrorResponses,
   ))]
 pub(crate) async fn get_price_fargate(
-    Path(price_id): Path<i32>,
+    ApiPath(price_id): ApiPath<i32>,
     ctx: Context,
 ) -> Result<Json<FargatePrice>, ExecutionError> {
     let db = database_connect_or_init().await?;

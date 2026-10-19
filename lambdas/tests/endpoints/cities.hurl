@@ -70,3 +70,62 @@ summary_city_id: jsonpath "$[0].city.id"
 [Asserts]
 jsonpath "$" count > 0
 jsonpath "$[0].summary.city_id" == "{{summary_city_id}}"
+
+# Rejects an invalid query string parameter with a JSON error.
+GET {{host}}/cities?page=abc
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects an invalid path parameter with a JSON error.
+GET {{host}}/cities/top/abc/5
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/abc/5"
+
+# Rejects a body that is not valid JSON.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/"
+
+# Rejects a body missing a required field.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+{"name": "Y"}
+```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/country"
+
+# Rejects a body sent without the JSON content type.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+```
+{"name": "Y"}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"

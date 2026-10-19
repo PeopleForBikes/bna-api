@@ -3,16 +3,13 @@ use super::adaptor::{
     post_pipelines_bna_adaptor,
 };
 use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines};
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::database_connect_or_init;
 use crate::{
     core::resource::schema::{ErrorResponses, PaginationParameters},
     Context, ExecutionError,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
+use axum::{http::StatusCode, Json};
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
 use serde_json::{json, Value};
 use tracing::debug;
@@ -42,7 +39,7 @@ pub fn routes() -> OpenApiRouter {
     ErrorResponses,
   ))]
 async fn get_pipelines_bna(
-    Path(pipeline_id): Path<Uuid>,
+    ApiPath(pipeline_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -65,7 +62,7 @@ async fn get_pipelines_bna(
     ErrorResponses,
   ))]
 async fn get_pipelines_bnas(
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
 ) -> Result<Json<Value>, ExecutionError> {
     let db = database_connect_or_init().await?;
     get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size())
@@ -84,7 +81,7 @@ async fn get_pipelines_bnas(
     ErrorResponses,
   ))]
 async fn post_pipelines_bna(
-    Json(bna_pipeline): Json<BNAPipelinePost>,
+    ApiJson(bna_pipeline): ApiJson<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<BnaPipeline>), ExecutionError> {
     let db = database_connect_or_init().await?;
     post_pipelines_bna_adaptor(db, bna_pipeline)
@@ -111,8 +108,8 @@ async fn post_pipelines_bna(
     ErrorResponses,
   ))]
 async fn patch_pipelines_bna(
-    Path(analysis_id): Path<Uuid>,
-    Json(bna_pipeline): Json<BNAPipelinePatch>,
+    ApiPath(analysis_id): ApiPath<Uuid>,
+    ApiJson(bna_pipeline): ApiJson<BNAPipelinePatch>,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
     let db = database_connect_or_init().await?;
     patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id)

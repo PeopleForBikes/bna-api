@@ -9,6 +9,7 @@ use super::{
         SubmissionPatch, SubmissionPost, Submissions,
     },
 };
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::{
     core::resource::{
         cities::{
@@ -20,11 +21,7 @@ use crate::{
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
+use axum::{extract::Query, http::StatusCode, Json};
 use axum_extra::extract::OptionalQuery;
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
@@ -61,7 +58,7 @@ pub fn routes() -> OpenApiRouter {
     ErrorResponses,
   ))]
 async fn get_city(
-    Path(params): Path<CitiesPathParameters>,
+    ApiPath(params): ApiPath<CitiesPathParameters>,
     ctx: Context,
 ) -> Result<Json<City>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -84,7 +81,7 @@ async fn get_city(
     (status = OK, description = "Fetches cities", body = Cities),
   ))]
 async fn get_cities(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<ListParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_adaptor(
@@ -113,7 +110,7 @@ async fn get_cities(
     (status = OK, description = "Fetches cities with their latest summary", body = CitiesWithSummary),
   ))]
 async fn get_cities_latest_summary(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<ListParameters>,
 ) -> Result<PageFlow<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_latest_summary_adaptor(
@@ -158,8 +155,8 @@ async fn get_cities_latest_summary(
     ErrorResponses,
   ))]
 async fn get_city_ratings(
-    Path(params): Path<CitiesPathParameters>,
-    Query(pagination): Query<PaginationParameters>,
+    ApiPath(params): ApiPath<CitiesPathParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
     ctx: Context,
 ) -> Result<PageFlow<CityRatings>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -206,7 +203,7 @@ async fn get_city_ratings(
     ErrorResponses,
   ))]
 async fn post_city(
-    Json(city): Json<city::CityPost>,
+    ApiJson(city): ApiJson<city::CityPost>,
 ) -> Result<(StatusCode, Json<City>), ExecutionError> {
     let db = database_connect_or_init().await?;
     post_cities_adaptor(db, city)
@@ -233,7 +230,7 @@ async fn post_city(
     ErrorResponses,
   ))]
 async fn get_cities_submission(
-    Path(submission_id): Path<i32>,
+    ApiPath(submission_id): ApiPath<i32>,
     OptionalQuery(status): OptionalQuery<String>,
     ctx: Context,
 ) -> Result<Json<Submission>, ExecutionError> {
@@ -263,8 +260,8 @@ struct SubmissionParameters {
       ErrorResponses,
     ))]
 async fn get_cities_submissions(
-    Query(submission_params): Query<SubmissionParameters>,
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let cities_submissions = get_cities_submissions_adaptor(
@@ -302,7 +299,7 @@ async fn get_cities_submissions(
     ErrorResponses,
   ))]
 async fn post_cities_submission(
-    Json(submission): Json<submission::SubmissionPost>,
+    ApiJson(submission): ApiJson<submission::SubmissionPost>,
 ) -> Result<(StatusCode, Json<Submission>), ExecutionError> {
     let db = database_connect_or_init().await?;
     post_cities_submission_adaptor(db, submission)
@@ -330,7 +327,7 @@ async fn post_cities_submission(
   ))]
 async fn patch_cities_submission(
     Query(submission_id): Query<i32>,
-    Json(submission): Json<submission::SubmissionPatch>,
+    ApiJson(submission): ApiJson<submission::SubmissionPatch>,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
     patch_cities_submission_adaptor(db, submission_id, submission)
@@ -353,7 +350,7 @@ async fn patch_cities_submission(
     ErrorResponses,
   ))]
 async fn get_top_cities(
-    Path((year, count)): Path<(i32, u64)>,
+    ApiPath((year, count)): ApiPath<(i32, u64)>,
     ctx: Context,
 ) -> Result<Json<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
