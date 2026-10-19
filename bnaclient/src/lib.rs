@@ -404,7 +404,7 @@ pub mod types {
     ///        }
     ///      ],
     ///      "type": [
-    ///        "string",
+    ///        "object",
     ///        "null"
     ///      ]
     ///    },
@@ -448,7 +448,8 @@ pub mod types {
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message:
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         ///Start time
         pub start_time: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Pipeline identifier
@@ -538,7 +539,7 @@ pub mod types {
     ///        }
     ///      ],
     ///      "type": [
-    ///        "string",
+    ///        "object",
     ///        "null"
     ///      ]
     ///    },
@@ -579,7 +580,8 @@ pub mod types {
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message:
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
@@ -665,7 +667,7 @@ pub mod types {
     ///        }
     ///      ],
     ///      "type": [
-    ///        "string",
+    ///        "object",
     ///        "null"
     ///      ]
     ///    },
@@ -706,7 +708,8 @@ pub mod types {
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message:
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
@@ -4486,7 +4489,9 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4570,7 +4575,11 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4678,7 +4687,9 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4760,7 +4771,11 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4858,7 +4873,9 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4938,7 +4955,11 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value

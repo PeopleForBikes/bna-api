@@ -2156,6 +2156,7 @@ version = "1.6.0-alpha.1"
 dependencies = [
  "sea-orm",
  "serde",
+ "serde_json",
  "serde_plain",
 ]
 

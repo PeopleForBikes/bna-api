@@ -5,6 +5,10 @@ use sea_orm::{
     ActiveValue, IntoActiveModel,
 };
 use serde::{Deserialize, Serialize};
+use serde_json::Map;
+
+/// A JSON object, as opposed to any JSON value.
+pub type JsonObject = Map<String, Json>;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct BNAPipelinePost {
@@ -14,7 +18,7 @@ pub struct BNAPipelinePost {
     pub fargate_task_arn: Option<String>,
     pub result_posted: Option<bool>,
     pub s3_bucket: Option<String>,
-    pub sqs_message: Option<Json>,
+    pub sqs_message: Option<JsonObject>,
     pub start_time: Option<DateTimeWithTimeZone>,
     pub state_machine_id: Uuid,
 }
@@ -27,7 +31,7 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePost {
             fargate_price_id: ActiveValue::Set(self.fargate_price_id),
             fargate_task_arn: ActiveValue::Set(self.fargate_task_arn),
             s3_bucket: ActiveValue::Set(self.s3_bucket),
-            sqs_message: ActiveValue::Set(self.sqs_message),
+            sqs_message: ActiveValue::Set(self.sqs_message.map(Json::Object)),
             start_time: ActiveValue::Set(
                 self.start_time.unwrap_or_else(|| {
                     Utc::now().with_timezone(&FixedOffset::east_opt(0).unwrap())
@@ -48,7 +52,7 @@ pub struct BNAPipelinePatch {
     pub fargate_task_arn: Option<Option<String>>,
     pub result_posted: Option<Option<bool>>,
     pub s3_bucket: Option<Option<String>>,
-    pub sqs_message: Option<Option<Json>>,
+    pub sqs_message: Option<Option<JsonObject>>,
     pub start_time: Option<Option<DateTimeWithTimeZone>>,
     pub status: Option<String>,
     pub step: Option<String>,
@@ -61,9 +65,9 @@ impl IntoActiveModel<bna_pipeline::ActiveModel> for BNAPipelinePatch {
             state_machine_id: ActiveValue::NotSet,
             cost: self.cost.map_or(ActiveValue::NotSet, ActiveValue::Set),
             step: self.step.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            sqs_message: self
-                .sqs_message
-                .map_or(ActiveValue::NotSet, ActiveValue::Set),
+            sqs_message: self.sqs_message.map_or(ActiveValue::NotSet, |v| {
+                ActiveValue::Set(v.map(Json::Object))
+            }),
 
             fargate_task_arn: self
                 .fargate_task_arn

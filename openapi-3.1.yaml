@@ -1891,7 +1891,7 @@ components:
           - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
+          - object
           - 'null'
           description: Copy of the JSON message that was sent for processing
           examples:
@@ -1956,7 +1956,7 @@ components:
           - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
+          - object
           - 'null'
           description: Copy of the JSON message that was sent for processing
           examples:
@@ -2016,7 +2016,7 @@ components:
           - united states/new mexico/santa rosa/24.05.4
         sqs_message:
           type:
-          - string
+          - object
           - 'null'
           description: Copy of the JSON message that was sent for processing
           examples:

@@ -164,7 +164,7 @@ resetting the database.
 - [ ] 7.1 Hurl: new `endpoints/pipelines.hurl` covering list, read (200, 404,
       400 on an invalid UUID), create (201, 400, 409), and update (200, 400,
       404), with read-back of every written field.
-- [ ] 7.2 M-21: declare and return `sqs_message` as a JSON object.
+- [x] 7.2 M-21: declare and return `sqs_message` as a JSON object.
   - `lambdas/src/core/resource/pipelines/schema.rs`,
     `entity/src/wrappers/bna_pipeline.rs`.
 - [ ] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.

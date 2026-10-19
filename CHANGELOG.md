@@ -46,6 +46,13 @@ and this project adheres to
   `fips_code`, or `created_at` for the city lists, and `per_second` or
   `created_at` for the Fargate prices. Other values are rejected with
   `400 Bad Request` instead of being silently ignored.
+- The pipeline `sqs_message` is now a JSON object in requests and responses, as
+  the OpenAPI specification now documents. It used to be documented as a string
+  and returned as a string holding the JSON object, and a string sent in a
+  request was stored double-encoded. A request with an `sqs_message` that is not
+  an object is now rejected with `400 Bad Request`. The pipeline state machine
+  must send the message as an object. Messages stored double-encoded are
+  returned decoded.
 
 ### Fixed
 

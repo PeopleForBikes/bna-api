@@ -63,6 +63,12 @@ content-type: application/json
   "fargate_price_id": 1,
   "fargate_task_arn": "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl",
   "s3_bucket": "united states/tennessee/hurl/25.06",
+  "sqs_message": {
+    "city": "hurl",
+    "country": "United States",
+    "fips_code": "4714000",
+    "region": "Tennessee"
+  },
   "start_time": "2025-06-20T14:11:32Z",
   "state_machine_id": "{{newUuid}}"
 }
@@ -82,6 +88,8 @@ jsonpath "$.cost" == "1.25"
 jsonpath "$.fargate_price_id" == 1
 jsonpath "$.fargate_task_arn" == "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl"
 jsonpath "$.s3_bucket" == "united states/tennessee/hurl/25.06"
+jsonpath "$.sqs_message.city" == "hurl"
+jsonpath "$.sqs_message.fips_code" == "4714000"
 jsonpath "$.start_time" == "2025-06-20T14:11:32Z"
 jsonpath "$.end_time" == null
 jsonpath "$.status" == "Pending"
@@ -113,6 +121,7 @@ jsonpath "$.end_time" == "2025-06-20T14:16:11Z"
 jsonpath "$.fargate_price_id" == 1
 jsonpath "$.fargate_task_arn" == "arn:aws:ecs:us-west-2:123456789012:task/bna/hurl-2"
 jsonpath "$.s3_bucket" == "united states/tennessee/hurl/25.07"
+jsonpath "$.sqs_message.city" == "hurl"
 jsonpath "$.start_time" == "2025-06-20T14:11:32Z"
 jsonpath "$.status" == "Completed"
 jsonpath "$.step" == "Cleanup"
@@ -130,3 +139,18 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/fargate_price_id"
+
+# Rejects an SQS message that is not a JSON object.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "sqs_message": "{\"city\": \"hurl\"}",
+  "state_machine_id": "{{newUuid}}"
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/sqs_message"

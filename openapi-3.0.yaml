@@ -2128,7 +2128,7 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
+          type: object
           description: Copy of the JSON message that was sent for processing
           example:
             city: santa rosa
@@ -2187,7 +2187,7 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
+          type: object
           description: Copy of the JSON message that was sent for processing
           example:
             city: santa rosa
@@ -2238,7 +2238,7 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
+          type: object
           description: Copy of the JSON message that was sent for processing
           example:
             city: santa rosa
