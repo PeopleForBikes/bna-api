@@ -202,12 +202,12 @@ resetting the database.
 
 ## Phase 10: Coverage Check (US-4)
 
-- [ ] 10.1 New script `lambdas/tests/coverage.py`: read `openapi-3.1.yaml` and
+- [x] 10.1 New script `lambdas/tests/coverage.py`: read `openapi-3.1.yaml` and
       the Hurl JSON report; match requests to operations (literal segments win
       over parameters); print uncovered pairs, undocumented pairs (including any
       500), unknown paths, and a summary; exit non-zero if any list is not
       empty.
-- [ ] 10.2 Add the YAML parser to `lambdas/tests/pyproject.toml`; update
+- [x] 10.2 Add the YAML parser to `lambdas/tests/pyproject.toml`; update
       `uv.lock`.
 - [ ] 10.3 New `just coverage` recipe in `lambdas/tests/justfile`.
 - [ ] 10.4 Fill every remaining uncovered pair with a Hurl request until
