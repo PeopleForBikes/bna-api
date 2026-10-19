@@ -18,7 +18,8 @@ use crate::{
             CitiesPathParameters,
         },
         schema::{
-            deserialize_bna_year, City, ConflictResponse, ErrorResponses, PaginationParameters,
+            deserialize_bna_year, BadRequestResponse, City, ConflictResponse, NotFoundResponse,
+            PaginationParameters,
         },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
@@ -56,7 +57,8 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches a city", body = City),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_city(
     ApiPath(params): ApiPath<CitiesPathParameters>,
@@ -80,6 +82,7 @@ async fn get_city(
   ),
   responses(
     (status = OK, description = "Fetches cities", body = Cities),
+    BadRequestResponse,
   ))]
 async fn get_cities(
     ApiQuery(list): ApiQuery<CityListParameters>,
@@ -109,6 +112,7 @@ async fn get_cities(
   ),
   responses(
     (status = OK, description = "Fetches cities with their latest summary", body = CitiesWithSummary),
+    BadRequestResponse,
   ))]
 async fn get_cities_latest_summary(
     ApiQuery(list): ApiQuery<CityListParameters>,
@@ -153,7 +157,8 @@ async fn get_cities_latest_summary(
   ),
   responses(
     (status = OK, description = "Fetches city ratings", body = CityRatings),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_city_ratings(
     ApiPath(params): ApiPath<CitiesPathParameters>,
@@ -190,7 +195,7 @@ async fn get_city_ratings(
   request_body = CityPost,
   responses(
     (status = CREATED, description = "Creates a new city", body = City),
-    ErrorResponses,
+    BadRequestResponse,
     ConflictResponse,
   ))]
 async fn post_city(
@@ -219,7 +224,8 @@ async fn post_city(
   ),
   responses(
     (status = OK, description = "Fetches a submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_cities_submission(
     ApiPath(submission_id): ApiPath<i32>,
@@ -278,7 +284,7 @@ struct SubmissionParameters {
     ),
     responses(
       (status = OK, description = "Fetches submissions", body = Submissions),
-      ErrorResponses,
+      BadRequestResponse,
     ))]
 async fn get_cities_submissions(
     ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
@@ -317,7 +323,7 @@ async fn get_cities_submissions(
   request_body = SubmissionPost,
   responses(
     (status = CREATED, description = "Creates a new city submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
   ))]
 async fn post_cities_submission(
     ApiJson(submission): ApiJson<submission::SubmissionPost>,
@@ -344,7 +350,8 @@ async fn post_cities_submission(
   request_body = SubmissionPatch,
   responses(
     (status = OK, description = "Updates a city submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn patch_cities_submission(
     ApiPath(submission_id): ApiPath<i32>,
@@ -369,7 +376,8 @@ async fn patch_cities_submission(
   ),
   responses(
     (status = OK, description = "Fetches cities with their respective summary", body = CitiesWithSummary),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_top_cities(
     ApiPath(TopCitiesPath { year, count }): ApiPath<TopCitiesPath>,

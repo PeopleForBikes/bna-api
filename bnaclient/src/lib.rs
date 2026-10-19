@@ -8122,7 +8122,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities`
-        pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 order_direction,
@@ -8166,6 +8166,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -8241,9 +8244,6 @@ pub mod builder {
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 409u16 => Err(Error::ErrorResponse(
@@ -8350,9 +8350,6 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -8430,9 +8427,6 @@ pub mod builder {
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -8699,7 +8693,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/cities/summary/latest`
-        pub async fn send(self) -> Result<ResponseValue<types::CitiesWithSummary>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::CitiesWithSummary>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 order_direction,
@@ -8743,6 +8739,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9197,9 +9196,6 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9277,9 +9273,6 @@ pub mod builder {
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 409u16 => Err(Error::ErrorResponse(
@@ -9548,7 +9541,9 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/prices/fargate`
-        pub async fn send(self) -> Result<ResponseValue<types::FargatePrices>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::FargatePrices>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 latest,
@@ -9595,6 +9590,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9713,7 +9711,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/ratings`
-        pub async fn send(self) -> Result<ResponseValue<types::Ratings>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Ratings>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -9748,6 +9746,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9823,9 +9824,6 @@ pub mod builder {
             match response.status().as_u16() {
                 201u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -10115,7 +10113,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/usstates`
-        pub async fn send(self) -> Result<ResponseValue<types::UsStates>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::UsStates>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -10150,6 +10148,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }

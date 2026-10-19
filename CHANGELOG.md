@@ -60,9 +60,10 @@ and this project adheres to
 - The OpenAPI specification no longer documents `401 Unauthorized` and
   `403 Forbidden` responses. They are produced by API Gateway, not by the
   application, and will be documented separately.
-
-### Fixed
-
+- Each operation in the OpenAPI specification now documents exactly the error
+  codes it can return: the lists now document `400 Bad Request` for invalid
+  query parameters, and the lists and creations no longer document
+  `404 Not Found`.
 - `GET /cities`, `GET /prices/fargate`, and `GET /usstates` now report the real
   number of items in the `x-total` and `x-total-pages` headers, which were
   always `1`.

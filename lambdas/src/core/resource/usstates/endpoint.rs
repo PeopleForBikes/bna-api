@@ -1,7 +1,7 @@
 use crate::core::extract::{ApiPath, ApiQuery};
 use crate::{
     core::resource::{
-        schema::{ErrorResponses, PaginationParameters},
+        schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
         usstates::{
             adaptor::{get_us_state_adaptor, get_us_states_adaptor},
             schema::{UsState, UsStates},
@@ -30,7 +30,8 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches a Us state", body = UsState),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_us_state(
     ApiPath(name): ApiPath<String>,
@@ -54,6 +55,7 @@ async fn get_us_state(
   ),
   responses(
     (status = OK, description = "Fetches US states", body = UsStates),
+    BadRequestResponse,
   ))]
 async fn get_us_states(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,

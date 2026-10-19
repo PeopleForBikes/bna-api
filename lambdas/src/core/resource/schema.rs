@@ -395,25 +395,10 @@ pub struct APIErrors {
     pub errors: Vec<APIError>,
 }
 
+/// Response for an operation reading or updating a resource that may not exist.
 #[allow(dead_code)]
-#[derive(Serialize, IntoResponses, ToSchema)]
-pub(crate) enum ErrorResponses {
-    /// Bad Request
-    #[response(
-        status = 400,
-        description = "The request was formatted incorrectly or missing required parameters.",
-        example = json!({
-          "errors": [
-          {
-            "details": "the request was formatted incorrectly or missing required parameters",
-            "id": "blfwkg8nvHcEJnQ=",
-            "source": {"parameter": "status"},
-            "status": "400",
-            "title": "Bad Request"
-          }
-        ]})
-    )]
-    BadRequest(APIErrors),
+#[derive(IntoResponses)]
+pub(crate) enum NotFoundResponse {
     /// Item Not Found
     #[response(
         status = 404,
@@ -478,7 +463,7 @@ pub(crate) enum ConflictResponse {
     Conflict(APIErrors),
 }
 
-/// Response for an operation whose only client error is an invalid request.
+/// Response for an operation receiving parameters or a body that may be invalid.
 #[allow(dead_code)]
 #[derive(IntoResponses)]
 pub(crate) enum BadRequestResponse {
@@ -489,11 +474,11 @@ pub(crate) enum BadRequestResponse {
         example = json!({
           "errors": [
           {
-            "details": "the year must be between 2017 and 2029",
+            "details": "the request was formatted incorrectly or missing required parameters",
             "id": "blfwkg8nvHcEJnQ=",
-            "source": {"pointer": "/reports/2016"},
+            "source": {"parameter": "status"},
             "status": "400",
-            "title": "Invalid Path Parameter"
+            "title": "Bad Request"
           }
         ]})
     )]

@@ -95,13 +95,15 @@ resources/endpoints should follow it too:
 - `adaptor.rs` — business logic sitting between DB and HTTP: calls `db.rs`
   functions, converts between entity models and `entity::wrappers` DTOs, does
   validation, returns `Context`/`ExecutionError`.
-- `endpoint.rs` — Axum handlers (`Path`/`Query`/`Json` extractors), calls the
-  adaptor, maps results to `APIResult<T>` / `ErrorResponses`, and carries the
-  `utoipa` OpenAPI annotations for that route.
+- `endpoint.rs` — Axum handlers (`ApiPath`/`ApiQuery`/`ApiJson` extractors from
+  `core/extract.rs`, which answer rejected requests with `APIErrors`), calls the
+  adaptor, and carries the `utoipa` OpenAPI annotations for that route. Each
+  operation documents exactly the error codes it can return, with
+  `BadRequestResponse`, `NotFoundResponse`, and `ConflictResponse`.
 - `schema.rs` — resource-local request/response types (`ToSchema`, `IntoParams`,
   `IntoResponses`) distinct from the cross-resource types in
-  `core/resource/schema.rs` (pagination params, `Country` enum, generic
-  `ErrorResponses`, etc.).
+  `core/resource/schema.rs` (pagination params, `Country` enum, the error
+  responses, etc.).
 
 Pagination follows a shared convention across resources:
 `ListParameters`/`PaginationParameters` from `core/resource/schema.rs`,
@@ -116,8 +118,8 @@ on the Axum handlers/schemas in `lambdas/src/core/resource/**` are the source of
 truth. The flow is `generate-oas-31` (runs the Axum binary with
 `BNA_API_GENERATE_ONLY=1` to emit `openapi-3.1.yaml`) → `generate-oas-30`
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
-`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after changing
-any endpoint/schema shape or the workspace version. It ends with
+`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after
+changing any endpoint/schema shape or the workspace version. It ends with
 `git restore bnaclient/Cargo.toml`, which discards *uncommitted* edits to that
 file, so back it up first if you've changed it. The `bnaclient` CI job
 regenerates and fails on any diff.

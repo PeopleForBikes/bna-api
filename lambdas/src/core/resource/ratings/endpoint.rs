@@ -6,7 +6,7 @@ use super::{
 };
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParameters},
+    core::resource::schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{http::StatusCode, Json};
@@ -34,7 +34,8 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches the details of a city rating", body = Rating ),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_rating(
     ApiPath(rating_id): ApiPath<Uuid>,
@@ -61,6 +62,7 @@ async fn get_rating(
   ),
   responses(
     (status = OK, description = "Fetches the city ratings", body = Ratings),
+    BadRequestResponse,
   ))]
 async fn get_ratings(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
@@ -84,7 +86,7 @@ async fn get_ratings(
   request_body = RatingPost,
   responses(
     (status = CREATED, description = "Creates a new city rating", body = Rating ),
-    ErrorResponses,
+    BadRequestResponse,
   ))]
 async fn post_rating(
     ApiJson(bna): ApiJson<RatingPost>,
@@ -110,7 +112,8 @@ async fn post_rating(
   ),
   responses(
     (status = OK, description = "Fetches a city rating and its associated city details" , body = RatingWithCity ),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_ratings_city(
     ApiPath(rating_id): ApiPath<Uuid>,

@@ -74,6 +74,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cities'
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
     post:
       tags:
         - city
@@ -110,22 +128,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
         '409':
           description: The resource already exists.
           content:
@@ -203,22 +205,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
     post:
       tags:
         - city
@@ -255,22 +241,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
   /cities/submissions/{submission_id}:
     get:
       tags:
@@ -455,6 +425,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CitiesWithSummary'
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /cities/top/{year}/{count}:
     get:
       tags:
@@ -768,22 +756,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
     post:
       tags:
         - pipeline
@@ -820,22 +792,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
         '409':
           description: The resource already exists.
           content:
@@ -1027,6 +983,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FargatePrices'
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /prices/fargate/{price_id}:
     get:
       tags:
@@ -1122,6 +1096,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ratings'
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
     post:
       tags:
         - rating
@@ -1158,22 +1150,6 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
   /ratings/{rating_id}:
     get:
       tags:
@@ -1326,12 +1302,14 @@ paths:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: the year must be between 2017 and 2029
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /reports/2016
+                      parameter: status
                     status: '400'
-                    title: Invalid Path Parameter
+                    title: Bad Request
   /usstates:
     get:
       tags:
@@ -1370,6 +1348,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsStates'
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: >-
+                      the request was formatted incorrectly or missing required
+                      parameters
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /usstates/{name}:
     get:
       tags:

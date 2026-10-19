@@ -3,7 +3,7 @@ use crate::core::extract::{ApiPath, ApiQuery};
 use crate::{
     core::resource::{
         price::schema::{FargatePrice, FargatePrices, PriceListParameters},
-        schema::ErrorResponses,
+        schema::{BadRequestResponse, NotFoundResponse},
     },
     database_connect_or_init, PageFlow, Paginatron,
 };
@@ -30,6 +30,7 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
+    BadRequestResponse,
   ))]
 pub(crate) async fn get_prices_fargate(
     ApiQuery(list): ApiQuery<PriceListParameters>,
@@ -61,7 +62,8 @@ pub(crate) async fn get_prices_fargate(
   ),
   responses(
     (status = OK, description = "Fetches a Fargate price used to estimate the cost of an analysis", body = FargatePrice),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 pub(crate) async fn get_price_fargate(
     ApiPath(price_id): ApiPath<i32>,

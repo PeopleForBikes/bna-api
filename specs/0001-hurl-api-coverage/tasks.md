@@ -195,9 +195,9 @@ resetting the database.
 - [x] 9.1 Remove 401 and 403 from every operation.
   - The shared `ErrorResponses` in `lambdas/src/core/resource/schema.rs` and
     each endpoint's `utoipa` `responses`.
-- [ ] 9.2 For each operation, keep exactly the codes it can return after phases
+- [x] 9.2 For each operation, keep exactly the codes it can return after phases
       3 to 8 (adding 409 where created, removing unreachable 400 or 404).
-- [ ] 9.3 Regenerate `openapi-3.1.yaml`, `openapi-3.0.yaml`, and `bnaclient`
+- [x] 9.3 Regenerate `openapi-3.1.yaml`, `openapi-3.0.yaml`, and `bnaclient`
       (`just regenerate-all-no-cargo`).
 
 ## Phase 10: Coverage Check (US-4)

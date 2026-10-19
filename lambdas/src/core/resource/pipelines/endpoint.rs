@@ -6,7 +6,9 @@ use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
 use crate::database_connect_or_init;
 use crate::{
-    core::resource::schema::{ConflictResponse, ErrorResponses, PaginationParameters},
+    core::resource::schema::{
+        BadRequestResponse, ConflictResponse, NotFoundResponse, PaginationParameters,
+    },
     Context, ExecutionError, PageFlow,
 };
 use axum::{http::StatusCode, Json};
@@ -35,7 +37,8 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches the details of a BNA pipeline", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_pipelines_bna(
     ApiPath(pipeline_id): ApiPath<Uuid>,
@@ -58,7 +61,7 @@ async fn get_pipelines_bna(
   ),
   responses(
     (status = OK, description = "Fetches the details of all BNA pipelines", body = BnaPipelines),
-    ErrorResponses,
+    BadRequestResponse,
   ))]
 async fn get_pipelines_bnas(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
@@ -75,7 +78,7 @@ async fn get_pipelines_bnas(
   request_body = BnaPipelinePost,
   responses(
     (status = CREATED, description = "Creates a new city submission", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
     ConflictResponse,
   ))]
 async fn post_pipelines_bna(
@@ -104,7 +107,8 @@ async fn post_pipelines_bna(
   ),
   responses(
     (status = OK, description = "Updates the details of a BNA pipeline", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn patch_pipelines_bna(
     ctx: Context,
