@@ -1,5 +1,10 @@
 //! Describes the Citi schemas.
-use crate::core::resource::schema::{City, Country};
+use crate::{
+    core::resource::schema::{
+        deserialize_page, deserialize_page_size, City, Country, OrderDirection,
+    },
+    DEFAULT_PAGE_SIZE,
+};
 use chrono::DateTime;
 use entity::{submission, summary};
 use sea_orm::FromQueryResult;
@@ -7,6 +12,43 @@ use serde::{Deserialize, Serialize};
 use std::vec::Vec;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
+
+/// Parameters of the city lists: pagination and sorting.
+#[derive(Debug, Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub(crate) struct CityListParameters {
+    /// The result page being returned, starting at 1. A page past the last one
+    /// returns an empty list.
+    #[param(minimum = 1, maximum = 65536, example = 5)]
+    #[serde(default, deserialize_with = "deserialize_page")]
+    page: Option<u64>,
+    /// The number of items per page
+    #[param(minimum = 1, maximum = 100, example = 25)]
+    #[serde(default, deserialize_with = "deserialize_page_size")]
+    page_size: Option<u64>,
+    #[param(example = "created_at")]
+    sort_by: Option<String>,
+    #[param(example = "desc")]
+    order_direction: Option<OrderDirection>,
+}
+
+impl CityListParameters {
+    pub fn page(&self) -> u64 {
+        self.page.unwrap_or(1)
+    }
+
+    pub fn page_size(&self) -> u64 {
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
+    }
+
+    pub fn sort_by(&self) -> String {
+        self.sort_by.clone().unwrap_or("created_at".to_string())
+    }
+
+    pub fn order_direction(&self) -> OrderDirection {
+        self.order_direction.clone().unwrap_or_default()
+    }
+}
 
 /// Approval status of a city submission.
 #[derive(ToSchema, Serialize, Deserialize, Clone, Debug)]

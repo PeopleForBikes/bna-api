@@ -5,8 +5,8 @@ use super::{
         patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
     },
     schema::{
-        ApprovalStatus, Cities, CitiesWithSummary, CityPost, CityRatings, RatingSummary,
-        Submission, SubmissionPatch, SubmissionPost, Submissions,
+        ApprovalStatus, Cities, CitiesWithSummary, CityListParameters, CityPost, CityRatings,
+        RatingSummary, Submission, SubmissionPatch, SubmissionPost, Submissions,
     },
 };
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
@@ -18,8 +18,7 @@ use crate::{
             CitiesPathParameters,
         },
         schema::{
-            deserialize_bna_year, City, ConflictResponse, ErrorResponses, ListParameters,
-            PaginationParameters,
+            deserialize_bna_year, City, ConflictResponse, ErrorResponses, PaginationParameters,
         },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
@@ -77,13 +76,13 @@ async fn get_city(
   description = "Get the details of all cities where an BNA analysis was performed.",
   tag = TAG,
   params(
-    ListParameters,
+    CityListParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities", body = Cities),
   ))]
 async fn get_cities(
-    ApiQuery(list): ApiQuery<ListParameters>,
+    ApiQuery(list): ApiQuery<CityListParameters>,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_adaptor(
@@ -106,13 +105,13 @@ async fn get_cities(
   description = "Get all cities with their latest summary.",
   tag = TAG,
   params(
-    ListParameters,
+    CityListParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities with their latest summary", body = CitiesWithSummary),
   ))]
 async fn get_cities_latest_summary(
-    ApiQuery(list): ApiQuery<ListParameters>,
+    ApiQuery(list): ApiQuery<CityListParameters>,
 ) -> Result<PageFlow<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_latest_summary_adaptor(

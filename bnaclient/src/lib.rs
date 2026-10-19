@@ -7283,16 +7283,14 @@ impl Client {
     ///Sends a `GET` request to `/cities`
     ///
     ///Arguments:
-    /// - `latest`
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
     ///   last one
     ///returns an empty list.
-    /// - `page_size`
+    /// - `page_size`: The number of items per page
     /// - `sort_by`
     ///```ignore
     /// let response = client.get_cities()
-    ///    .latest(latest)
     ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
@@ -7395,16 +7393,14 @@ impl Client {
     ///Sends a `GET` request to `/cities/summary/latest`
     ///
     ///Arguments:
-    /// - `latest`
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
     ///   last one
     ///returns an empty list.
-    /// - `page_size`
+    /// - `page_size`: The number of items per page
     /// - `sort_by`
     ///```ignore
     /// let response = client.get_cities_latest_summary()
-    ///    .latest(latest)
     ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
@@ -7758,7 +7754,6 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetCities<'a> {
         client: &'a super::Client,
-        latest: Result<Option<bool>, String>,
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
@@ -7769,23 +7764,11 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                latest: Ok(None),
                 order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
                 sort_by: Ok(None),
             }
-        }
-
-        pub fn latest<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<bool>,
-        {
-            self.latest = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `bool` for latest failed".to_string());
-            self
         }
 
         pub fn order_direction<V>(mut self, value: V) -> Self
@@ -7832,13 +7815,11 @@ pub mod builder {
         pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<()>> {
             let Self {
                 client,
-                latest,
                 order_direction,
                 page,
                 page_size,
                 sort_by,
             } = self;
-            let latest = latest.map_err(Error::InvalidRequest)?;
             let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
@@ -7857,7 +7838,6 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("latest", &latest))
                 .query(&progenitor_client::QueryParam::new(
                     "order_direction",
                     &order_direction,
@@ -8381,7 +8361,6 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetCitiesLatestSummary<'a> {
         client: &'a super::Client,
-        latest: Result<Option<bool>, String>,
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
@@ -8392,23 +8371,11 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                latest: Ok(None),
                 order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
                 sort_by: Ok(None),
             }
-        }
-
-        pub fn latest<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<bool>,
-        {
-            self.latest = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `bool` for latest failed".to_string());
-            self
         }
 
         pub fn order_direction<V>(mut self, value: V) -> Self
@@ -8455,13 +8422,11 @@ pub mod builder {
         pub async fn send(self) -> Result<ResponseValue<types::CitiesWithSummary>, Error<()>> {
             let Self {
                 client,
-                latest,
                 order_direction,
                 page,
                 page_size,
                 sort_by,
             } = self;
-            let latest = latest.map_err(Error::InvalidRequest)?;
             let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
@@ -8480,7 +8445,6 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("latest", &latest))
                 .query(&progenitor_client::QueryParam::new(
                     "order_direction",
                     &order_direction,

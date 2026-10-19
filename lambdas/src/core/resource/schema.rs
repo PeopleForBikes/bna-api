@@ -511,7 +511,7 @@ pub(crate) enum ConflictResponse {
 }
 
 /// Deserializes a page number, between 1 and `MAX_PAGE`.
-fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+pub(crate) fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
@@ -526,7 +526,7 @@ where
 }
 
 /// Deserializes a page size, between 1 and `MAX_PAGE_SIZE`.
-fn deserialize_page_size<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+pub(crate) fn deserialize_page_size<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {

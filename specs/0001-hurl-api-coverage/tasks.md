@@ -131,7 +131,7 @@ resetting the database.
       with known order.
 - [ ] 5.2 M-11: declare the allowed `sort_by` values per operation as an enum;
       reject others with 400.
-- [ ] 5.3 M-12: remove `latest` from `GET /cities` and
+- [x] 5.3 M-12: remove `latest` from `GET /cities` and
       `GET /cities/summary/latest`; keep and test it on `GET /prices/fargate`.
 - [x] 5.4 M-13: make the submission `status` filter an enum (`Pending`,
       `Approved`, `Rejected`); reject unknown values with 400.

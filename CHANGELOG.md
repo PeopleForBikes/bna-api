@@ -38,6 +38,9 @@ and this project adheres to
   count outside 1 to 100, the documented bounds, with `400 Bad Request`. An
   out-of-range year used to return `404 Not Found`, and an out-of-range count
   was silently changed to 1 or 100.
+- The `latest` query parameter is no longer documented on `GET /cities` and
+  `GET /cities/summary/latest`: it never had any effect there. It remains on
+  `GET /prices/fargate`.
 
 ### Fixed
 

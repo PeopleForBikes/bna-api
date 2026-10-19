@@ -37,6 +37,7 @@ paths:
           example: 5
         - name: page_size
           in: query
+          description: The number of items per page
           required: false
           schema:
             type: integer
@@ -56,12 +57,6 @@ paths:
           schema:
             $ref: '#/components/schemas/OrderDirection'
           example: desc
-        - name: latest
-          in: query
-          required: false
-          schema:
-            type: boolean
-          example: 'true'
       responses:
         '200':
           description: Fetches cities
@@ -583,6 +578,7 @@ paths:
           example: 5
         - name: page_size
           in: query
+          description: The number of items per page
           required: false
           schema:
             type: integer
@@ -602,12 +598,6 @@ paths:
           schema:
             $ref: '#/components/schemas/OrderDirection'
           example: desc
-        - name: latest
-          in: query
-          required: false
-          schema:
-            type: boolean
-          example: 'true'
       responses:
         '200':
           description: Fetches cities with their latest summary
