@@ -181,9 +181,9 @@ resetting the database.
 
 ## Phase 8: Reports and US States (M-26, M-27)
 
-- [ ] 8.1 Hurl: `endpoints/reports.hurl` asserts `text/csv` and the header line,
+- [x] 8.1 Hurl: `endpoints/reports.hurl` asserts `text/csv` and the header line,
       and 400 for years outside 2017–2029.
-- [ ] 8.2 M-26: validate the year range in
+- [x] 8.2 M-26: validate the year range in
       `lambdas/src/core/resource/reports/endpoint.rs`.
 - [ ] 8.3 Hurl: `endpoints/usstates.hurl` covers an unknown state (404) and the
       case sensitivity.

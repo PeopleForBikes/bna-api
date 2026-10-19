@@ -10138,7 +10138,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/reports/{year}`
-        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<types::ApiErrors>> {
             let Self { client, year } = self;
             let year = year.map_err(Error::InvalidRequest)?;
             let url = format!(
@@ -10162,6 +10162,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => Ok(ResponseValue::stream(response)),
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }

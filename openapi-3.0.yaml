@@ -1860,6 +1860,22 @@ paths:
           description: Fetches the latest rating reports for a specific year in csv format
           content:
             text/csv: {}
+        '400':
+          description: >-
+            The request was formatted incorrectly or missing required
+            parameters.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the year must be between 2017 and 2029
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /reports/2016
+                    status: '400'
+                    title: Invalid Path Parameter
   /usstates:
     get:
       tags:

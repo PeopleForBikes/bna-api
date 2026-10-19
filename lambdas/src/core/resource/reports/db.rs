@@ -3,7 +3,7 @@ use sea_orm::{DatabaseBackend, DatabaseConnection, FromQueryResult, Statement};
 
 pub(crate) async fn fetch_report_year(
     db: &DatabaseConnection,
-    year: u32,
+    year: i32,
 ) -> Result<Vec<BnaReport>, sea_orm::DbErr> {
     let query = format!(
         r#"

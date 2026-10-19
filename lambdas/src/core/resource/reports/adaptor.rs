@@ -8,7 +8,7 @@ use crate::ExecutionError;
 
 pub(crate) async fn get_report_adaptor(
     db: &DatabaseConnection,
-    year: u32,
+    year: i32,
 ) -> Result<Vec<BnaReport>, ExecutionError> {
     Ok(fetch_report_year(db, year).await?)
 }

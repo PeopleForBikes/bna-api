@@ -510,6 +510,28 @@ pub(crate) enum ConflictResponse {
     Conflict(APIErrors),
 }
 
+/// Response for an operation whose only client error is an invalid request.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum BadRequestResponse {
+    /// Bad Request
+    #[response(
+        status = 400,
+        description = "The request was formatted incorrectly or missing required parameters.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the year must be between 2017 and 2029",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"pointer": "/reports/2016"},
+            "status": "400",
+            "title": "Invalid Path Parameter"
+          }
+        ]})
+    )]
+    BadRequest(APIErrors),
+}
+
 /// Deserializes a page number, between 1 and `MAX_PAGE`.
 pub(crate) fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
 where
