@@ -135,7 +135,7 @@ resetting the database.
       `GET /cities/summary/latest`; keep and test it on `GET /prices/fargate`.
 - [x] 5.4 M-13: make the submission `status` filter an enum (`Pending`,
       `Approved`, `Rejected`); reject unknown values with 400.
-- [ ] 5.5 Hurl: complete `scenario/submission-lifecycle.hurl`: create, read,
+- [x] 5.5 Hurl: complete `scenario/submission-lifecycle.hurl`: create, read,
       filter by status, update the status, check the filter results change.
 - [x] 5.6 M-17: read `submission_id` from the path in `patch_cities_submission`.
   - `lambdas/src/core/resource/cities/endpoint.rs`.

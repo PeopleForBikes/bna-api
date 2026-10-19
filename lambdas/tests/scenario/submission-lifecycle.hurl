@@ -37,6 +37,10 @@ jsonpath "$.email" == "{{submission_email}}"
 jsonpath "$.city" == "santa rosa"
 jsonpath "$.status" == "Pending"
 
+# A new submission is pending.
+GET {{host}}/cities/submissions/{{submission_id}}?status=Pending
+HTTP 200
+
 # Approve the submission.
 PATCH {{host}}/cities/submissions/{{submission_id}}
 Authorization: Bearer {{token}}
@@ -55,3 +59,13 @@ GET {{host}}/cities/submissions/{{submission_id}}
 HTTP 200
 [Asserts]
 jsonpath "$.status" == "Approved"
+
+# The approved submission is no longer pending.
+GET {{host}}/cities/submissions/{{submission_id}}?status=Pending
+HTTP 404
+
+# The approved submission is found with the approved status.
+GET {{host}}/cities/submissions/{{submission_id}}?status=Approved
+HTTP 200
+[Asserts]
+jsonpath "$.id" == {{submission_id}}
