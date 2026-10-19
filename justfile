@@ -29,7 +29,7 @@ lint: lint-md lint-spellcheck
 
 # Lint markown files.
 lint-md:
-    npx --yes markdownlint-cli2 "**/*.md" "#.venv" "#docs/themes" "#target"
+    npx --yes markdownlint-cli2 "**/*.md" "#**/.venv" "#docs/themes" "#target"
 
 # Check spelling.
 lint-spellcheck:
