@@ -45,3 +45,12 @@ prices_total: header "x-total"
 [Asserts]
 header "x-total" toInt >= 3
 header "x-total-pages" == "{{prices_total}}"
+
+# Queries a fargate price that does not exist.
+GET {{host}}/prices/fargate/999999
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/prices/fargate/999999"

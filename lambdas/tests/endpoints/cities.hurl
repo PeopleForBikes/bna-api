@@ -198,6 +198,16 @@ HTTP 400
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/cities/top/2025/101"
 
+# The top cities of a year without any rating are not found. No rating is
+# created in 2029 before that year.
+GET {{host}}/cities/top/2029/5
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/cities/top/2029/5"
+
 # Accepts the bounds of the top cities parameters.
 GET {{host}}/cities/top/2017/100
 HTTP 200

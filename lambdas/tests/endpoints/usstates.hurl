@@ -39,6 +39,15 @@ HTTP 404
 jsonpath "$.errors[0].status" == "404"
 jsonpath "$.errors[0].source.pointer" == "/usstates/texas"
 
+# Rejects a state name that is not valid UTF-8.
+GET {{host}}/usstates/%FF
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/usstates/%FF"
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/usstates?page=abc
 HTTP 400

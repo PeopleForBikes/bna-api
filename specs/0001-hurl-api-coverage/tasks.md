@@ -210,7 +210,7 @@ resetting the database.
 - [x] 10.2 Add the YAML parser to `lambdas/tests/pyproject.toml`; update
       `uv.lock`.
 - [x] 10.3 New `just coverage` recipe in `lambdas/tests/justfile`.
-- [ ] 10.4 Fill every remaining uncovered pair with a Hurl request until
+- [x] 10.4 Fill every remaining uncovered pair with a Hurl request until
       `just coverage` passes.
 
 ## Phase 11: CI (US-6)
