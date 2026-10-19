@@ -80,7 +80,7 @@ contains every item of the design's "Test data" section.
       created rating back.
 - [x] 2.10 Make `smoke/public.hurl` read-only: move the submission creation to a
       new `scenario/submission-lifecycle.hurl` (completed in phase 5).
-- [ ] 2.11 Make `just test` run every Hurl file (including
+- [x] 2.11 Make `just test` run every Hurl file (including
       `scenario/bna-pipeline.hurl`) from one list, and add a `--report-json`
       output directory.
 

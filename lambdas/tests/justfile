@@ -17,16 +17,14 @@ openapi-export:
     openapi.yaml
 
 # Run the integration tests against an environment [localhost, staging].
+# Runs every endpoint and scenario file, and writes a JSON report in reports/.
 test *env:
+  rm -rf reports
   hurl --test \
     --variables-file $1.vars \
-    scenario/pagination.hurl \
-    endpoints/cities.hurl \
-    endpoints/pricing.hurl \
-    endpoints/ratings.hurl \
-    endpoints/reports.hurl \
-    endpoints/system.hurl \
-    endpoints/usstates.hurl
+    --report-json reports \
+    endpoints/*.hurl \
+    scenario/*.hurl
 
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-public *env:
