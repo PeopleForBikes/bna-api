@@ -1,11 +1,14 @@
 [package]
 name = "bna-api"
-version = "0.1.0"
+version.workspace = true
 edition = "2021"
 publish = false
 
 [workspace]
 members = ["bnaclient", "lambdas", "entity", "migration", "effortless"]
+
+[workspace.package]
+version = "1.6.0-alpha.1"
 
 [workspace.dependencies]
 async-std = "1.13.2"
