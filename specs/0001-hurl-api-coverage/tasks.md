@@ -137,7 +137,7 @@ resetting the database.
       `Approved`, `Rejected`); reject unknown values with 400.
 - [ ] 5.5 Hurl: complete `scenario/submission-lifecycle.hurl`: create, read,
       filter by status, update the status, check the filter results change.
-- [ ] 5.6 M-17: read `submission_id` from the path in `patch_cities_submission`.
+- [x] 5.6 M-17: read `submission_id` from the path in `patch_cities_submission`.
   - `lambdas/src/core/resource/cities/endpoint.rs`.
 - [ ] 5.7 M-18: fix the `status` query extractor of `get_cities_submission`.
 - [ ] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with

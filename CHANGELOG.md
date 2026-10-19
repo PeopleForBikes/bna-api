@@ -37,3 +37,6 @@ and this project adheres to
 - `GET /pipelines/bna` now returns the pagination headers (`x-page`,
   `x-per-page`, `x-total`, `x-total-pages`, `x-next-page`, `x-prev-page`), like
   every other list.
+- `PATCH /cities/submissions/{submission_id}` works again. It read the
+  submission identifier from the query string instead of the path, so every
+  request was rejected.

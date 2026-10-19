@@ -36,3 +36,22 @@ jsonpath "$.id" == {{submission_id}}
 jsonpath "$.email" == "{{submission_email}}"
 jsonpath "$.city" == "santa rosa"
 jsonpath "$.status" == "Pending"
+
+# Approve the submission.
+PATCH {{host}}/cities/submissions/{{submission_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "status": "Approved"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" == {{submission_id}}
+jsonpath "$.status" == "Approved"
+jsonpath "$.email" == "{{submission_email}}"
+
+# Read the approved submission back.
+GET {{host}}/cities/submissions/{{submission_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.status" == "Approved"
