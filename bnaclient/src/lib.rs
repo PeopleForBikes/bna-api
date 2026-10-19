@@ -7206,6 +7206,14 @@ impl Client {
     ///
     ///Sends a `GET` request to `/cities`
     ///
+    ///Arguments:
+    /// - `latest`
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
+    /// - `page_size`
+    /// - `sort_by`
     ///```ignore
     /// let response = client.get_cities()
     ///    .latest(latest)
@@ -7239,7 +7247,9 @@ impl Client {
     ///Sends a `GET` request to `/cities/submissions`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `status`: Filter for the submission status
     ///```ignore
@@ -7308,6 +7318,14 @@ impl Client {
     ///
     ///Sends a `GET` request to `/cities/summary/latest`
     ///
+    ///Arguments:
+    /// - `latest`
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
+    /// - `page_size`
+    /// - `sort_by`
     ///```ignore
     /// let response = client.get_cities_latest_summary()
     ///    .latest(latest)
@@ -7375,7 +7393,9 @@ impl Client {
     ///something similar depending on the country. If a country does not have
     ///this concept, then the country name is used.
     /// - `name`: City name
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_city_ratings()
@@ -7409,7 +7429,9 @@ impl Client {
     ///Sends a `GET` request to `/pipelines/bna`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_pipelines_bnas()
@@ -7474,6 +7496,14 @@ impl Client {
     ///
     ///Sends a `GET` request to `/prices/fargate`
     ///
+    ///Arguments:
+    /// - `latest`
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
+    /// - `page_size`
+    /// - `sort_by`
     ///```ignore
     /// let response = client.get_prices_fargate()
     ///    .latest(latest)
@@ -7510,7 +7540,9 @@ impl Client {
     ///Sends a `GET` request to `/ratings`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_ratings()
@@ -7603,7 +7635,9 @@ impl Client {
     ///Sends a `GET` request to `/usstates`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one
+    ///returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_us_states()
