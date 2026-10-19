@@ -168,3 +168,26 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/sqs_message"
+
+# Updating a pipeline that does not exist is not found.
+PATCH {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "status": "Processing"
+}
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/00000000-0000-4000-8000-000000000000"
+
+# Updating a pipeline that does not exist is not found, even without changes.
+PATCH {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
+Authorization: Bearer {{token}}
+content-type: application/json
+{}
+HTTP 404
+[Asserts]
+jsonpath "$.errors[0].status" == "404"

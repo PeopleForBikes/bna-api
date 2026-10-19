@@ -107,11 +107,12 @@ async fn post_pipelines_bna(
     ErrorResponses,
   ))]
 async fn patch_pipelines_bna(
+    ctx: Context,
     ApiPath(analysis_id): ApiPath<Uuid>,
     ApiJson(bna_pipeline): ApiJson<BNAPipelinePatch>,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id)
+    patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

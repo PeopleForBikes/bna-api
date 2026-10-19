@@ -86,3 +86,5 @@ and this project adheres to
   pointing at `/city_id`, instead of `500 Internal Server Error`.
 - Creating a pipeline whose `state_machine_id` already exists now returns the
   documented `409 Conflict` instead of `500 Internal Server Error`.
+- Updating a pipeline that does not exist now returns `404 Not Found` instead of
+  `500 Internal Server Error`.
