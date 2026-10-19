@@ -151,14 +151,17 @@ resetting the database.
 - [ ] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
       lists; stricter `sort_by`, `status`, country, year, and count validation.
 
-## Phase 6: Ratings (M-20)
+## Phase 6: Ratings (M-20, M-29)
 
 - [ ] 6.1 Hurl: `POST /ratings` with an unknown `city_id` returns 400 with
       `source.pointer` `/city_id`.
 - [ ] 6.2 Code: validate the city before inserting the rating.
   - `lambdas/src/core/resource/ratings/adaptor.rs`.
+- [ ] 6.3 M-29 (pending approval): Hurl asserts the fixture measures on
+      `GET /ratings/{rating_id}`; include the measure in every rating read.
+  - `lambdas/src/core/resource/ratings/db.rs`.
 
-## Phase 7: Pipelines (M-21 to M-25)
+## Phase 7: Pipelines (M-21 to M-25, M-28)
 
 - [ ] 7.1 Hurl: new `endpoints/pipelines.hurl` covering list, read (200, 404,
       400 on an invalid UUID), create (201, 400, 409), and update (200, 400,
@@ -173,6 +176,10 @@ resetting the database.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
 - [ ] 7.7 Tell the owners of the pipeline state machine that `sqs_message` must
       be sent as an object; note it in `CHANGELOG.md`.
+- [ ] 7.8 M-28 (pending approval): align the `bna_pipeline_step` table with the
+      API's steps through a new migration, then update the fixtures pipeline
+      using `Setup` back to `SqsMessage` and regenerate the dump.
+  - `migration/src/`, `lambdas/tests/fixtures.sql`.
 
 ## Phase 8: Reports and US States (M-26, M-27)
 

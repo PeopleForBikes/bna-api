@@ -46,7 +46,8 @@ fixed `state_machine_id`.
 
 Each entry lists the observed behavior, the specification, and its resolution.
 **All resolutions M-01 to M-27 were approved by the team on 2026-10-19**, as
-proposed (the alternative noted under M-07 was not retained). `Code` means the
+proposed (the alternative noted under M-07 was not retained). M-28 and M-29 were
+found during implementation and are pending approval. `Code` means the
 implementation changes; `Spec` means the specification changes (through the
 `utoipa` annotations, then
 `just regenerate-all-no-cargo`). Entries marked **client-visible** change
@@ -138,6 +139,13 @@ behavior for API consumers and must be called out in the release notes.
 - **M-20 Rating for an unknown city.** `POST /ratings` with an unknown `city_id`
   returns 500. Proposed: **Code**, return 400 with `source.pointer`
   `/city_id`.
+- **M-29 Measures never returned.** `GET /ratings/{rating_id}` (and every other
+  rating read) returns `measure` with all fields `null`, even when the rating
+  has a measure row: the read queries join the seven other rating detail tables
+  but not `measure` (verified in `lambdas/src/core/resource/ratings/db.rs`).
+  Only `POST /ratings` echoes the measure it inserted. Found while loading the
+  fixtures. Proposed: **Code**, include the measure in every rating read (left
+  join, since older ratings have none). Client-visible. **Pending approval.**
 
 ### Pipelines
 
@@ -154,6 +162,15 @@ behavior for API consumers and must be called out in the release notes.
 - **M-24 Invalid enum on update.** An unknown `status` value in the PATCH body
   returns 500. Proposed: **Code**, return 400 (covered by M-01/M-02 once the
   body is deserialized into the enum).
+- **M-28 Pipeline steps disagree with the database.** The specification and the
+  code define the steps `SqsMessage`, `Setup`, `Analysis`, `Cleanup`, while the
+  `bna_pipeline_step` table (filled by the migrations) holds `Setup`,
+  `Analysis`, `Save`, `Cleanup`. Creating or updating a pipeline with
+  `SqsMessage` fails on the foreign key, and `Save` cannot be expressed through
+  the API. Found while loading the fixtures. Proposed: **Code**, a migration so
+  the table holds exactly the API's steps, unless the pipeline state machine
+  really uses `Save`, in which case the API gains it instead. **Pending
+  approval; needs confirmation from the pipeline owners.**
 - **M-25 Ignored `start_time` on update.** `BnaPipelinePatch` documents
   `start_time`, but the update never applies it (verified:
   `start_time: ActiveValue::NotSet` in `entity/src/wrappers/bna_pipeline.rs`).
@@ -384,5 +401,6 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-None. All mismatch resolutions are approved; the staging host and the release
-process are confirmed.
+- Approve, change, or reject M-28 (pipeline steps) and M-29 (measures), found
+  during implementation. M-28 needs the pipeline owners to confirm whether the
+  `Save` step is used.
