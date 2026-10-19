@@ -99,11 +99,11 @@ resetting the database.
     `lambdas/src/core/resource/*/endpoint.rs`.
 - [ ] 3.3 Code: database errors caused by client input must never surface as 500
       (enforced resource by resource in phases 5 to 7).
-- [ ] 3.4 `CHANGELOG.md`: JSON error bodies everywhere; 400 replaces 422.
+- [x] 3.4 `CHANGELOG.md`: JSON error bodies everywhere; 400 replaces 422.
 
 ## Phase 4: Pagination (M-05 to M-10)
 
-- [ ] 4.1 Hurl: extend `scenario/pagination.hurl` to cover every list operation
+- [x] 4.1 Hurl: extend `scenario/pagination.hurl` to cover every list operation
       (`/cities`, `/cities/submissions`, `/cities/summary/latest`,
       `/cities/{country}/{region}/{name}/ratings`, `/pipelines/bna`,
       `/prices/fargate`, `/ratings`, `/usstates`): default page, explicit page,
@@ -121,7 +121,7 @@ resetting the database.
 - [x] 4.5 M-09: return pagination headers from `GET /pipelines/bna`.
   - `lambdas/src/core/resource/pipelines/endpoint.rs`.
 - [x] 4.6 M-10: document that a page past the end returns an empty list.
-- [ ] 4.7 `CHANGELOG.md`: 1-based pages; out-of-range `page`/`page_size` now
+- [x] 4.7 `CHANGELOG.md`: 1-based pages; out-of-range `page`/`page_size` now
       rejected.
 
 ## Phase 5: Query Parameters, Cities, and Submissions (M-11 to M-19)

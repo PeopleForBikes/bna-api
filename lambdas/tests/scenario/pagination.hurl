@@ -96,3 +96,120 @@ HTTP 200
 [Asserts]
 header "X-Per-Page" == "{{default_page_size}}"
 header "X-page" == "1"
+
+# ################
+# Every list
+# ################
+# Each list has at least 3 items in the test data, so page 2 of size 1 has a
+# previous and a next page.
+# Second page of the cities.
+GET {{host}}/cities?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the city submissions.
+GET {{host}}/cities/submissions?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the latest city summaries.
+GET {{host}}/cities/summary/latest?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$.ratings" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the BNA pipelines.
+GET {{host}}/pipelines/bna?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the Fargate prices.
+GET {{host}}/prices/fargate?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the ratings.
+GET {{host}}/ratings?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
+
+# Second page of the US states.
+GET {{host}}/usstates?page=2&page_size=1
+
+HTTP 200
+[Captures]
+total: header "x-total"
+[Asserts]
+jsonpath "$" count == 1
+header "x-page" == "2"
+header "x-per-page" == "1"
+header "x-prev-page" == "1"
+header "x-next-page" == "3"
+header "x-total-pages" == "{{total}}"
