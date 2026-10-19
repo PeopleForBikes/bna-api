@@ -9,7 +9,7 @@ content-type: application/json
   "s3_bucket": "united states/{{region}}/{{name}}/25.06",
   "sqs_message": {
     "city": "{{name}}",
-    "country": "{{country}}",
+    "country": "{{country_name}}",
     "fips_code": "3570670",
     "region": "{{region}}"
   },
