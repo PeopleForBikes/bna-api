@@ -185,7 +185,7 @@ resetting the database.
       and 400 for years outside 2017–2029.
 - [x] 8.2 M-26: validate the year range in
       `lambdas/src/core/resource/reports/endpoint.rs`.
-- [ ] 8.3 Hurl: `endpoints/usstates.hurl` covers an unknown state (404) and the
+- [x] 8.3 Hurl: `endpoints/usstates.hurl` covers an unknown state (404) and the
       case sensitivity.
 - [ ] 8.4 M-27: document in the specification that the state name is case
       sensitive.
