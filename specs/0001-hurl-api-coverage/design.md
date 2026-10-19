@@ -136,6 +136,10 @@ the release notes.
   error". Resolution: **Code + Spec**, type the status as the `ApprovalStatus`
   enum (M-13) so unknown values are rejected with 400. Covered by the approved
   M-03 rule.
+- **M-32 Partial submission update documented as full.** The `SubmissionPatch`
+  schema marks every field as required, while the API accepts any subset of
+  fields. Found with M-31. Proposed: **Spec**, make every field optional.
+  **Pending approval.**
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.
@@ -409,6 +413,6 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-- Approve, change, or reject M-28 (pipeline steps) and M-29 (measures), found
-  during implementation. M-28 needs the
+- Approve, change, or reject M-28 (pipeline steps), M-29 (measures), and M-32
+  (partial submission update), found during implementation. M-28 needs the
   pipeline owners to confirm whether the `Save` step is used.
