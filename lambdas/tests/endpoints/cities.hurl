@@ -149,6 +149,20 @@ header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/state"
 
+# Rejects a country that does not exist when reading a city.
+GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/cities/Narnia/Narnia/Cair%20Paravel"
+
+# Rejects a country that does not exist when reading the ratings of a city.
+GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel/ratings
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].status" == "400"
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc
 HTTP 400

@@ -32,6 +32,8 @@ and this project adheres to
   `Rejected`, declared as the `ApprovalStatus` enum in the OpenAPI
   specification. Other values are rejected with `400 Bad Request` instead of
   returning an empty list.
+- Reading a city, or its ratings, in a country outside the documented `Country`
+  enum now returns `400 Bad Request` instead of `404 Not Found`.
 
 ### Fixed
 
