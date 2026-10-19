@@ -395,6 +395,11 @@ impl From<ExecutionError> for APIError {
                 "/country",
                 &format!("the country is not covered by the BNA: {country}"),
             ),
+            ExecutionError::InvalidUSState(state) => APIError::with_pointer(
+                None,
+                "/state",
+                &format!("the state is not a valid US state: {state}"),
+            ),
             _ => APIError::internal_error(
                 None,
                 "Internal Error",

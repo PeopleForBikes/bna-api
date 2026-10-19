@@ -126,6 +126,9 @@ the release notes.
   region.
 - **M-15 Unknown country on create.** `POST /cities` with an unknown country
   returns 500. Proposed: **Code**, return 400.
+- **M-34 Unknown US state on create.** `POST /cities` for a US city with a state
+  outside the crosswalk returns 500. Found with M-15. Resolution: **Code**,
+  return 400 pointing at `/state`. Covered by the approved M-03 rule.
 - **M-16 Unknown country on read.** `GET /cities/{country}/...` with a country
   outside the `Country` enum returns 404. Proposed: **Code**, return 400, as for
   any other invalid enum value.

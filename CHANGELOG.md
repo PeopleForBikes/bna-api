@@ -58,3 +58,6 @@ and this project adheres to
 - Creating a city in a country the BNA does not cover now returns
   `400 Bad Request` pointing at `/country`, instead of
   `500 Internal Server Error`.
+- Creating a US city in a state that does not exist now returns
+  `400 Bad Request` pointing at `/state`, instead of
+  `500 Internal Server Error`.
