@@ -111,6 +111,17 @@ impl APIError {
         }
     }
 
+    /// Creates a new `APIError` for a resource that already exists.
+    pub fn conflict(id: Option<String>, source: &str, message: &str) -> Self {
+        Self {
+            id,
+            status: StatusCode::CONFLICT.as_u16().to_string(),
+            title: String::from("Conflict"),
+            source: Some(APIErrorSource::Pointer(source.into())),
+            details: message.into(),
+        }
+    }
+
     /// Returns the APIError status.
     pub fn status(&self) -> String {
         self.status.clone()

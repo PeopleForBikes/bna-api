@@ -367,6 +367,10 @@ pub enum ExecutionError {
     #[error("entry not found at {1}: {2}")]
     NotFound(Option<String>, String, String),
 
+    /// Entry already exists.
+    #[error("conflict at {1}: {2}")]
+    Conflict(Option<String>, String, String),
+
     /// Uncovered country.
     #[error("the country is not covered by the analyzer: {0}")]
     UncoveredCountry(String),
@@ -382,6 +386,9 @@ impl From<ExecutionError> for APIError {
             ExecutionError::DatabaseError(_) => APIError::db_error(None, "Unknown source", ""),
             ExecutionError::NotFound(id, source, message) => {
                 APIError::not_found(id, &source, &message)
+            }
+            ExecutionError::Conflict(id, source, message) => {
+                APIError::conflict(id, &source, &message)
             }
             _ => APIError::internal_error(
                 None,

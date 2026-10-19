@@ -17,7 +17,7 @@ use crate::{
             schema::{CityParams, CityWithSummary},
             CitiesPathParameters,
         },
-        schema::{City, ErrorResponses, ListParameters, PaginationParameters},
+        schema::{City, ConflictResponse, ErrorResponses, ListParameters, PaginationParameters},
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
@@ -200,12 +200,14 @@ async fn get_city_ratings(
   responses(
     (status = CREATED, description = "Creates a new city", body = City),
     ErrorResponses,
+    ConflictResponse,
   ))]
 async fn post_city(
+    ctx: Context,
     ApiJson(city): ApiJson<city::CityPost>,
 ) -> Result<(StatusCode, Json<City>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_cities_adaptor(db, city)
+    post_cities_adaptor(db, city, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

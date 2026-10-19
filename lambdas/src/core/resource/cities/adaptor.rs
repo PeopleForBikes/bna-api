@@ -11,7 +11,7 @@ use entity::{
         submission::{SubmissionPatch, SubmissionPost},
     },
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel, SqlErr};
 use tracing::info;
 use uuid::Uuid;
 
@@ -79,6 +79,7 @@ pub async fn get_cities_ratings_adaptor(
 pub async fn post_cities_adaptor(
     db: &DatabaseConnection,
     city: CityPost,
+    ctx: Context,
 ) -> Result<city::Model, ExecutionError> {
     // Ensure the country is a valid one.
     if fetch_country(db, &city.country).await?.is_none() {
@@ -88,6 +89,7 @@ pub async fn post_cities_adaptor(
     // extract some fields from the post model.
     let country = city.country.clone();
     let state = city.state.clone();
+    let name = city.name.clone();
     let region = city.region.clone();
 
     // Turn the post model into an active model.
@@ -106,12 +108,21 @@ pub async fn post_cities_adaptor(
             None => return Err(ExecutionError::InvalidUSState(state)),
         }
     } else if region.is_none() {
-        active_model.region = ActiveValue::Set(Some(country));
+        active_model.region = ActiveValue::Set(Some(country.clone()));
     }
 
     // And insert a new entry.
-    let model = active_model.insert(db).await?;
-    Ok(model)
+    match active_model.insert(db).await {
+        Ok(model) => Ok(model),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::UniqueConstraintViolation(_))) => {
+            Err(ExecutionError::Conflict(
+                ctx.request_id(),
+                ctx.source(),
+                format!("the city {name}, {state}, {country} already exists"),
+            ))
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub async fn get_cities_submission_adaptor(

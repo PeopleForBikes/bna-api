@@ -467,6 +467,28 @@ pub(crate) enum ErrorResponses {
 /// Highest page number a client can request.
 const MAX_PAGE: u64 = 65536;
 
+/// Response for an operation creating a resource that may already exist.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum ConflictResponse {
+    /// Conflict
+    #[response(
+        status = 409,
+        description = "The resource already exists.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the resource already exists",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"pointer": "/cities"},
+            "status": "409",
+            "title": "Conflict"
+          }
+        ]})
+    )]
+    Conflict(APIErrors),
+}
+
 /// Deserializes a page number, between 1 and `MAX_PAGE`.
 fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
 where

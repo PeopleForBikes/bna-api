@@ -53,3 +53,5 @@ and this project adheres to
 - `POST /cities` now stores the BNA region of a US city (for example `South` for
   Tennessee). It used to store `United States`. Cities created before this fix
   keep the wrong region.
+- Creating a city that already exists now returns the documented `409 Conflict`
+  instead of `500 Internal Server Error`.

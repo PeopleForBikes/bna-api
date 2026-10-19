@@ -142,7 +142,7 @@ resetting the database.
 - [x] 5.7 M-18: fix the `status` query extractor of `get_cities_submission`.
 - [ ] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with
       read-back, 400, 409) and unknown countries on read.
-- [ ] 5.9 M-14: return and document 409 for a duplicate city.
+- [x] 5.9 M-14: return and document 409 for a duplicate city.
 - [ ] 5.10 M-15, M-16: return 400 for an unknown country, on create and on read.
 - [ ] 5.11 M-19: return 400 for out-of-range `year` and `count` on
       `/cities/top/{year}/{count}`.

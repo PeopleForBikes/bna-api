@@ -104,6 +104,21 @@ jsonpath "$.latitude" == 35.1
 jsonpath "$.longitude" == -85.2
 jsonpath "$.residential_speed_limit" == 30
 
+# Creating a city that already exists is a conflict.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "{{country_name}}",
+  "state": "{{region}}",
+  "name": "{{new_city_name}}"
+}
+HTTP 409
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "409"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc
 HTTP 400
