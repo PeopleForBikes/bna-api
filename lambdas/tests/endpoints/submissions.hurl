@@ -57,3 +57,22 @@ GET {{host}}/cities/submissions/1?status=Approved
 HTTP 404
 [Asserts]
 jsonpath "$.errors[0].status" == "404"
+
+# Lists only the submissions with the requested status.
+GET {{host}}/cities/submissions?status=Rejected
+HTTP 200
+[Asserts]
+jsonpath "$" count > 0
+jsonpath "$[?(@.status != 'Rejected')]" not exists
+
+# Rejects an unknown status when listing submissions.
+GET {{host}}/cities/submissions?status=Bogus
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "status"
+
+# Rejects an unknown status when reading a submission.
+GET {{host}}/cities/submissions/1?status=Bogus
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "status"

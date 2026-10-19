@@ -133,7 +133,7 @@ resetting the database.
       reject others with 400.
 - [ ] 5.3 M-12: remove `latest` from `GET /cities` and
       `GET /cities/summary/latest`; keep and test it on `GET /prices/fargate`.
-- [ ] 5.4 M-13: make the submission `status` filter an enum (`Pending`,
+- [x] 5.4 M-13: make the submission `status` filter an enum (`Pending`,
       `Approved`, `Rejected`); reject unknown values with 400.
 - [ ] 5.5 Hurl: complete `scenario/submission-lifecycle.hurl`: create, read,
       filter by status, update the status, check the filter results change.

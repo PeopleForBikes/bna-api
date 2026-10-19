@@ -1,6 +1,7 @@
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
-    cities, pipelines, price, ratings, reports,
+    cities::{self, ApprovalStatus},
+    pipelines, price, ratings, reports,
     schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
     system, usstates,
 };
@@ -131,6 +132,13 @@ async fn main() -> Result<(), Error> {
                     schema!(
                         #[inline]
                         OrderDirection
+                    ),
+                )
+                .schema(
+                    "ApprovalStatus",
+                    schema!(
+                        #[inline]
+                        ApprovalStatus
                     ),
                 )
                 .build(),

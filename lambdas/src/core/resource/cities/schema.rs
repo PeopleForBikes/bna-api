@@ -8,6 +8,21 @@ use std::vec::Vec;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
 
+/// Approval status of a city submission.
+#[derive(ToSchema, Serialize, Deserialize, Clone, Debug)]
+pub enum ApprovalStatus {
+    Approved,
+    Pending,
+    Rejected,
+}
+
+impl std::fmt::Display for ApprovalStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
+    }
+}
+
 #[derive(ToSchema, Serialize)]
 pub(crate) struct Cities(Vec<City>);
 

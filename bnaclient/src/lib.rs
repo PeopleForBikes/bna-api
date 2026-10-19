@@ -248,6 +248,87 @@ pub mod types {
         }
     }
 
+    ///Approval status of a city submission.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Approval status of a city submission.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Approved",
+    ///    "Pending",
+    ///    "Rejected"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum ApprovalStatus {
+        Approved,
+        Pending,
+        Rejected,
+    }
+
+    impl ::std::fmt::Display for ApprovalStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Approved => f.write_str("Approved"),
+                Self::Pending => f.write_str("Pending"),
+                Self::Rejected => f.write_str("Rejected"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for ApprovalStatus {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Approved" => Ok(Self::Approved),
+                "Pending" => Ok(Self::Pending),
+                "Rejected" => Ok(Self::Rejected),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
     ///`BnaPipeline`
     ///
     /// <details><summary>JSON schema</summary>
@@ -7899,7 +7980,7 @@ pub mod builder {
         client: &'a super::Client,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        status: Result<Option<::std::string::String>, String>,
+        status: Result<Option<types::ApprovalStatus>, String>,
     }
 
     impl<'a> GetCitiesSubmissions<'a> {
@@ -7934,11 +8015,12 @@ pub mod builder {
 
         pub fn status<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::ApprovalStatus>,
         {
-            self.status = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for status failed".to_string()
-            });
+            self.status = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `ApprovalStatus` for status failed".to_string());
             self
         }
 
@@ -8095,7 +8177,7 @@ pub mod builder {
     pub struct GetCitiesSubmission<'a> {
         client: &'a super::Client,
         submission_id: Result<i32, String>,
-        status: Result<Option<::std::string::String>, String>,
+        status: Result<Option<types::ApprovalStatus>, String>,
     }
 
     impl<'a> GetCitiesSubmission<'a> {
@@ -8119,11 +8201,12 @@ pub mod builder {
 
         pub fn status<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::ApprovalStatus>,
         {
-            self.status = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for status failed".to_string()
-            });
+            self.status = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `ApprovalStatus` for status failed".to_string());
             self
         }
 

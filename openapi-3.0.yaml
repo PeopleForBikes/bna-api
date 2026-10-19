@@ -167,7 +167,7 @@ paths:
           description: Filter for the submission status
           required: false
           schema:
-            type: string
+            $ref: '#/components/schemas/ApprovalStatus'
           example: Pending
         - name: page_size
           in: query
@@ -374,7 +374,7 @@ paths:
           description: Filter for the submission status
           required: false
           schema:
-            type: string
+            $ref: '#/components/schemas/ApprovalStatus'
           example: Pending
       responses:
         '200':
@@ -2055,6 +2055,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/APIError'
+    ApprovalStatus:
+      type: string
+      description: Approval status of a city submission.
+      enum:
+        - Approved
+        - Pending
+        - Rejected
     BnaPipeline:
       type: object
       required:

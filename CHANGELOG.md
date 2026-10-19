@@ -28,6 +28,10 @@ and this project adheres to
 - A `page_size` outside 1 to 100, the range documented in the OpenAPI
   specification, is now rejected with `400 Bad Request`. It used to be silently
   changed to 1 or 100.
+- The submission `status` filter now only accepts `Approved`, `Pending`, or
+  `Rejected`, declared as the `ApprovalStatus` enum in the OpenAPI
+  specification. Other values are rejected with `400 Bad Request` instead of
+  returning an empty list.
 
 ### Fixed
 

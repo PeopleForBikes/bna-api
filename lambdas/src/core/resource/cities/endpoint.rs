@@ -5,8 +5,8 @@ use super::{
         patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
     },
     schema::{
-        Cities, CitiesWithSummary, CityPost, CityRatings, RatingSummary, Submission,
-        SubmissionPatch, SubmissionPost, Submissions,
+        ApprovalStatus, Cities, CitiesWithSummary, CityPost, CityRatings, RatingSummary,
+        Submission, SubmissionPatch, SubmissionPost, Submissions,
     },
 };
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
@@ -222,7 +222,7 @@ async fn post_city(
   tag = TAG,
   params(
     ("submission_id" = i32, Path, description = "Submission identifier", example = "1"),
-    ("status" = Option<str>, Query, description = "Filter for the submission status", example = "Pending"),
+    ("status" = Option<ApprovalStatus>, Query, description = "Filter for the submission status", example = "Pending"),
   ),
   responses(
     (status = OK, description = "Fetches a submission", body = Submission),
@@ -234,15 +234,20 @@ async fn get_cities_submission(
     ctx: Context,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_cities_submission_adaptor(db, submission_id, submission_params.status, ctx)
-        .await
-        .map(Submission::from)
-        .map(Json)
+    get_cities_submission_adaptor(
+        db,
+        submission_id,
+        submission_params.status.map(|s| s.to_string()),
+        ctx,
+    )
+    .await
+    .map(Submission::from)
+    .map(Json)
 }
 
 #[derive(Deserialize)]
 struct SubmissionParameters {
-    pub status: Option<String>,
+    pub status: Option<ApprovalStatus>,
 }
 
 #[utoipa::path(
@@ -251,7 +256,7 @@ struct SubmissionParameters {
     description = "Get the submissions details.",
     tag = TAG,
     params(
-      ("status" = Option<str>, Query, description = "Filter for the submission status", example = "Pending"),
+      ("status" = Option<ApprovalStatus>, Query, description = "Filter for the submission status", example = "Pending"),
       PaginationParameters,
     ),
     responses(
@@ -265,7 +270,7 @@ async fn get_cities_submissions(
     let db = database_connect_or_init().await?;
     let cities_submissions = get_cities_submissions_adaptor(
         db,
-        submission_params.status,
+        submission_params.status.map(|s| s.to_string()),
         pagination.page(),
         pagination.page_size(),
     )
