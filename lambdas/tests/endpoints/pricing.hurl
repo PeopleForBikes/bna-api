@@ -35,3 +35,13 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/prices/fargate/abc"
+
+# Counts every price in the pagination headers: with one price per page, there
+# are as many pages as prices.
+GET {{host}}/prices/fargate?page_size=1
+HTTP 200
+[Captures]
+prices_total: header "x-total"
+[Asserts]
+header "x-total" toInt >= 3
+header "x-total-pages" == "{{prices_total}}"
