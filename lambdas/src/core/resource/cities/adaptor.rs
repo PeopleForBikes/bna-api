@@ -186,14 +186,21 @@ pub async fn post_cities_submission_adaptor(
     // }
 
     // Turn the post model into an active model.
+    let country = submission.country.clone();
     let mut active_model: entity::submission::ActiveModel = submission.into_active_model();
 
     // Add the status.
     active_model.status = ActiveValue::Set("Pending".to_string());
 
-    // And insert a new entry.
-    let model = active_model.insert(db).await?;
-    Ok(model)
+    // And insert a new entry. The country is the only foreign key set by the
+    // client.
+    match active_model.insert(db).await {
+        Ok(model) => Ok(model),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
+            Err(ExecutionError::UncoveredCountry(country))
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub(crate) async fn get_top_cities_adaptor(

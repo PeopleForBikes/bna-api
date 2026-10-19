@@ -32,6 +32,26 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/first_name"
 
+# Rejects a submission in a country the BNA does not cover.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "jane.doe@example.com",
+  "country": "Narnia",
+  "city": "Cair Paravel",
+  "fips_code": "0",
+  "consent": true
+}
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/country"
+
 # Updating a submission that does not exist is not found.
 PATCH {{host}}/cities/submissions/999999
 Authorization: Bearer {{token}}
