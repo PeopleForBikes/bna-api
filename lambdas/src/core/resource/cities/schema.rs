@@ -299,11 +299,11 @@ pub(crate) struct SubmissionPost {
 #[derive(ToSchema)]
 pub(crate) struct SubmissionPatch {
     /// First name
-    #[schema(examples("Jane"))]
-    first_name: String,
+    #[schema(examples("Jane"), nullable = false)]
+    first_name: Option<String>,
     /// Last name
-    #[schema(examples("Doe"))]
-    last_name: String,
+    #[schema(examples("Doe"), nullable = false)]
+    last_name: Option<String>,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -311,28 +311,28 @@ pub(crate) struct SubmissionPatch {
     #[schema(examples("Organization LLC"))]
     organization: Option<String>,
     /// email address
-    #[schema(examples("jane.doe@orgllc.com"))]
-    email: String,
+    #[schema(examples("jane.doe@orgllc.com"), nullable = false)]
+    email: Option<String>,
     /// Country
-    #[schema(examples("Belgium"))]
-    country: Country,
+    #[schema(examples("Belgium"), nullable = false)]
+    country: Option<Country>,
     /// City name
-    #[schema(examples("Antwerp"))]
-    city: String,
+    #[schema(examples("Antwerp"), nullable = false)]
+    city: Option<String>,
     /// Region name. A region can be a state, a province, a community, or
     /// something similar depending on the country. If a country does not have
     /// this concept, then the country name is used.
     #[schema(examples("Antwerp"))]
     region: Option<String>,
     /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
-    #[schema(examples("4805000"))]
-    fips_code: String,
+    #[schema(examples("4805000"), nullable = false)]
+    fips_code: Option<String>,
     /// Consent status
-    #[schema(examples("true"))]
-    consent: bool,
+    #[schema(examples("true"), nullable = false)]
+    consent: Option<bool>,
     /// Submission status
-    #[schema(examples("Pending"))]
-    status: ApprovalStatus,
+    #[schema(examples("Pending"), nullable = false)]
+    status: Option<ApprovalStatus>,
 }
 
 #[derive(ToSchema, Serialize)]

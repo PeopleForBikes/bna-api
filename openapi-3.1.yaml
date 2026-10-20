@@ -2497,15 +2497,6 @@ components:
           - Pending
     SubmissionPatch:
       type: object
-      required:
-      - first_name
-      - last_name
-      - email
-      - country
-      - city
-      - fips_code
-      - consent
-      - status
       properties:
         city:
           type: string

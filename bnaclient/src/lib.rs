@@ -3884,16 +3884,6 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "consent",
-    ///    "country",
-    ///    "email",
-    ///    "fips_code",
-    ///    "first_name",
-    ///    "last_name",
-    ///    "status"
-    ///  ],
     ///  "properties": {
     ///    "city": {
     ///      "description": "City name",
@@ -3983,19 +3973,26 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPatch {
         ///City name
-        pub city: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
         ///Consent status
-        pub consent: bool,
-        pub country: Country,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub consent: ::std::option::Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///email address
-        pub email: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub email: ::std::option::Option<::std::string::String>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        pub fips_code: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///First name
-        pub first_name: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub first_name: ::std::option::Option<::std::string::String>,
         ///Last name
-        pub last_name: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_name: ::std::option::Option<::std::string::String>,
         ///Job title or position
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
@@ -4007,7 +4004,26 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        pub status: ApprovalStatus,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<ApprovalStatus>,
+    }
+
+    impl ::std::default::Default for SubmissionPatch {
+        fn default() -> Self {
+            Self {
+                city: Default::default(),
+                consent: Default::default(),
+                country: Default::default(),
+                email: Default::default(),
+                fips_code: Default::default(),
+                first_name: Default::default(),
+                last_name: Default::default(),
+                occupation: Default::default(),
+                organization: Default::default(),
+                region: Default::default(),
+                status: Default::default(),
+            }
+        }
     }
 
     impl SubmissionPatch {
@@ -7031,13 +7047,29 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct SubmissionPatch {
-            city: ::std::result::Result<::std::string::String, ::std::string::String>,
-            consent: ::std::result::Result<bool, ::std::string::String>,
-            country: ::std::result::Result<super::Country, ::std::string::String>,
-            email: ::std::result::Result<::std::string::String, ::std::string::String>,
-            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
-            first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
-            last_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            email: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            first_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            last_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
             occupation: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -7050,23 +7082,26 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<super::ApprovalStatus, ::std::string::String>,
+            status: ::std::result::Result<
+                ::std::option::Option<super::ApprovalStatus>,
+                ::std::string::String,
+            >,
         }
 
         impl ::std::default::Default for SubmissionPatch {
             fn default() -> Self {
                 Self {
-                    city: Err("no value supplied for city".to_string()),
-                    consent: Err("no value supplied for consent".to_string()),
-                    country: Err("no value supplied for country".to_string()),
-                    email: Err("no value supplied for email".to_string()),
-                    fips_code: Err("no value supplied for fips_code".to_string()),
-                    first_name: Err("no value supplied for first_name".to_string()),
-                    last_name: Err("no value supplied for last_name".to_string()),
+                    city: Ok(Default::default()),
+                    consent: Ok(Default::default()),
+                    country: Ok(Default::default()),
+                    email: Ok(Default::default()),
+                    fips_code: Ok(Default::default()),
+                    first_name: Ok(Default::default()),
+                    last_name: Ok(Default::default()),
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
+                    status: Ok(Default::default()),
                 }
             }
         }
@@ -7074,7 +7109,7 @@ pub mod types {
         impl SubmissionPatch {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.city = value
@@ -7084,7 +7119,7 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.consent = value
@@ -7094,7 +7129,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::Country>,
+                T: ::std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.country = value
@@ -7104,7 +7139,7 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.email = value
@@ -7114,7 +7149,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
@@ -7124,7 +7159,7 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.first_name = value
@@ -7134,7 +7169,7 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.last_name = value
@@ -7174,7 +7209,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::ApprovalStatus>,
+                T: ::std::convert::TryInto<::std::option::Option<super::ApprovalStatus>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value

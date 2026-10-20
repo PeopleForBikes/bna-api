@@ -69,6 +69,9 @@ and this project adheres to
 - The OpenAPI specification now documents every field of the pipeline update
   body (`BnaPipelinePatch`) as optional, as the API always accepted: `status`
   and `step` were documented as required.
+- The OpenAPI specification now documents every field of the submission update
+  body (`SubmissionPatch`) as optional, as the API always accepted: most fields
+  were documented as required.
 
 ### Fixed
 
