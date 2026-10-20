@@ -525,18 +525,32 @@ pub mod types {
     ///    },
     ///    "sqs_message": {
     ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
+    /// processing: a JSON object, or a string holding a JSON object. It is
+    /// stored and returned as a JSON object.",
+    ///      "oneOf": [
     ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
+    ///          "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///          "examples": [
+    ///            {
+    ///              "city": "santa rosa",
+    ///              "country": "United States",
+    ///              "fips_code": "3570670",
+    ///              "region": "new mexico"
+    ///            }
+    ///          ],
+    ///          "type": [
+    ///            "object",
+    ///            "null"
+    ///          ]
+    ///        },
+    ///        {
+    ///          "description": "A string holding a JSON object",
+    ///          "examples": [
+    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///          ],
+    ///          "type": "string"
     ///        }
-    ///      ],
-    ///      "type": [
-    ///        "object",
-    ///        "null"
     ///      ]
     ///    },
     ///    "start_time": {
@@ -574,10 +588,11 @@ pub mod types {
         ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
-        ///Copy of the JSON message that was sent for processing
+        ///Copy of the JSON message that was sent for processing: a JSON
+        /// object, or a string holding a JSON object. It is stored and returned
+        /// as a JSON object.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message:
-            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        pub sqs_message: ::std::option::Option<BnaPipelinePatchSqsMessage>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
@@ -606,6 +621,68 @@ pub mod types {
     impl BnaPipelinePatch {
         pub fn builder() -> builder::BnaPipelinePatch {
             Default::default()
+        }
+    }
+
+    ///Copy of the JSON message that was sent for processing: a JSON object, or
+    /// a string holding a JSON object. It is stored and returned as a JSON
+    /// object.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Copy of the JSON message that was sent for processing:
+    /// a JSON object, or a string holding a JSON object. It is stored and
+    /// returned as a JSON object.",
+    ///  "oneOf": [
+    ///    {
+    ///      "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///      "examples": [
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
+    ///      ],
+    ///      "type": [
+    ///        "object",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    {
+    ///      "description": "A string holding a JSON object",
+    ///      "examples": [
+    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(untagged)]
+    pub enum BnaPipelinePatchSqsMessage {
+        Variant0(
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ),
+        Variant1(::std::string::String),
+    }
+
+    impl
+        ::std::convert::From<
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        > for BnaPipelinePatchSqsMessage
+    {
+        fn from(
+            value: ::std::option::Option<
+                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            >,
+        ) -> Self {
+            Self::Variant0(value)
         }
     }
 
@@ -671,18 +748,32 @@ pub mod types {
     ///    },
     ///    "sqs_message": {
     ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
+    /// processing: a JSON object, or a string holding a JSON object. It is
+    /// stored and returned as a JSON object.",
+    ///      "oneOf": [
     ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
+    ///          "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///          "examples": [
+    ///            {
+    ///              "city": "santa rosa",
+    ///              "country": "United States",
+    ///              "fips_code": "3570670",
+    ///              "region": "new mexico"
+    ///            }
+    ///          ],
+    ///          "type": [
+    ///            "object",
+    ///            "null"
+    ///          ]
+    ///        },
+    ///        {
+    ///          "description": "A string holding a JSON object",
+    ///          "examples": [
+    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///          ],
+    ///          "type": "string"
     ///        }
-    ///      ],
-    ///      "type": [
-    ///        "object",
-    ///        "null"
     ///      ]
     ///    },
     ///    "start_time": {
@@ -720,10 +811,11 @@ pub mod types {
         ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
-        ///Copy of the JSON message that was sent for processing
+        ///Copy of the JSON message that was sent for processing: a JSON
+        /// object, or a string holding a JSON object. It is stored and returned
+        /// as a JSON object.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message:
-            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        pub sqs_message: ::std::option::Option<BnaPipelinePostSqsMessage>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
@@ -736,6 +828,68 @@ pub mod types {
     impl BnaPipelinePost {
         pub fn builder() -> builder::BnaPipelinePost {
             Default::default()
+        }
+    }
+
+    ///Copy of the JSON message that was sent for processing: a JSON object, or
+    /// a string holding a JSON object. It is stored and returned as a JSON
+    /// object.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Copy of the JSON message that was sent for processing:
+    /// a JSON object, or a string holding a JSON object. It is stored and
+    /// returned as a JSON object.",
+    ///  "oneOf": [
+    ///    {
+    ///      "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///      "examples": [
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
+    ///      ],
+    ///      "type": [
+    ///        "object",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    {
+    ///      "description": "A string holding a JSON object",
+    ///      "examples": [
+    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(untagged)]
+    pub enum BnaPipelinePostSqsMessage {
+        Variant0(
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ),
+        Variant1(::std::string::String),
+    }
+
+    impl
+        ::std::convert::From<
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        > for BnaPipelinePostSqsMessage
+    {
+        fn from(
+            value: ::std::option::Option<
+                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            >,
+        ) -> Self {
+            Self::Variant0(value)
         }
     }
 
@@ -4716,9 +4870,7 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<
-                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-                >,
+                ::std::option::Option<super::BnaPipelinePatchSqsMessage>,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4807,9 +4959,7 @@ pub mod types {
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
                 T: ::std::convert::TryInto<
-                    ::std::option::Option<
-                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-                    >,
+                    ::std::option::Option<super::BnaPipelinePatchSqsMessage>,
                 >,
                 T::Error: ::std::fmt::Display,
             {
@@ -4908,9 +5058,7 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<
-                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-                >,
+                ::std::option::Option<super::BnaPipelinePostSqsMessage>,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4990,11 +5138,7 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<
-                    ::std::option::Option<
-                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
-                    >,
-                >,
+                T: ::std::convert::TryInto<::std::option::Option<super::BnaPipelinePostSqsMessage>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value

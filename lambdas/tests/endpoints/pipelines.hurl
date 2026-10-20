@@ -154,12 +154,49 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/fargate_price_id"
 
-# Rejects an SQS message that is not a JSON object.
+# Accepts an SQS message sent as a string holding a JSON object, and returns
+# it as a JSON object.
 POST {{host}}/pipelines/bna
 Authorization: Bearer {{token}}
 content-type: application/json
 {
-  "sqs_message": "{\"city\": \"hurl\"}",
+  "sqs_message": "{\"city\": \"hurl\", \"fips_code\": \"4714000\"}",
+  "state_machine_id": "{{newUuid}}"
+}
+HTTP 201
+[Captures]
+string_pipeline_id: jsonpath "$.state_machine_id"
+[Asserts]
+jsonpath "$.sqs_message.city" == "hurl"
+
+GET {{host}}/pipelines/bna/{{string_pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.city" == "hurl"
+jsonpath "$.sqs_message.fips_code" == "4714000"
+
+# Updates the SQS message with a string holding a JSON object.
+PATCH {{host}}/pipelines/bna/{{string_pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "sqs_message": "{\"city\": \"hurl-2\"}"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.city" == "hurl-2"
+
+GET {{host}}/pipelines/bna/{{string_pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.city" == "hurl-2"
+
+# Rejects an SQS message that cannot be turned into a JSON object.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "sqs_message": "not json",
   "state_machine_id": "{{newUuid}}"
 }
 HTTP 400

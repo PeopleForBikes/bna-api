@@ -1914,14 +1914,22 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: object
-          description: Copy of the JSON message that was sent for processing
-          example:
-            city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
-          nullable: true
+          oneOf:
+            - type: object
+              description: Copy of the JSON message that was sent for processing
+              example:
+                city: santa rosa
+                country: United States
+                fips_code: '3570670'
+                region: new mexico
+              nullable: true
+            - type: string
+              description: A string holding a JSON object
+              example: '{"country": "United States", "city": "santa rosa"}'
+          description: >-
+            Copy of the JSON message that was sent for processing: a JSON
+            object, or a string holding a JSON object. It is stored and returned
+            as a JSON object.
         start_time:
           type: string
           format: date-time
@@ -1965,14 +1973,22 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: object
-          description: Copy of the JSON message that was sent for processing
-          example:
-            city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
-          nullable: true
+          oneOf:
+            - type: object
+              description: Copy of the JSON message that was sent for processing
+              example:
+                city: santa rosa
+                country: United States
+                fips_code: '3570670'
+                region: new mexico
+              nullable: true
+            - type: string
+              description: A string holding a JSON object
+              example: '{"country": "United States", "city": "santa rosa"}'
+          description: >-
+            Copy of the JSON message that was sent for processing: a JSON
+            object, or a string holding a JSON object. It is stored and returned
+            as a JSON object.
         start_time:
           type: string
           format: date-time

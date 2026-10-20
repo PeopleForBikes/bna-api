@@ -218,6 +218,11 @@ behavior for API consumers and must be called out in the release notes.
   stringified object, and a string sent in the request is double-encoded (`"{}"`
   comes back as `"\"{}\""`). Proposed: **Code + Spec**, declare and return
   `sqs_message` as a JSON object, in requests and responses. Client-visible.
+  Refined on 2026-10-20: the message lets the operator see what the pipeline
+  picked up from the SQS queue and reproduce the run, so it only has to turn
+  back into a JSON object. A request may send it as a JSON object or as a string
+  holding one; both are stored and returned as the object, and any other value
+  is rejected with 400. The pipeline state machine needs no change.
 - **M-22 Duplicate pipeline.** Posting an existing `state_machine_id`
   returns 500. Proposed: **Code + Spec**, return and document 409 Conflict.
 - **M-23 Unknown pipeline on update.** `PATCH /pipelines/bna/{id}` for an
@@ -473,8 +478,9 @@ specification and enforced by the suite:
 
 - **Client-visible changes** (M-01, M-02, M-05, M-07, M-19, M-21): clients
   relying on zero-based pages, clamped page sizes, plain-text errors, or a
-  string `sqs_message` will break. They must be listed in the release notes, and
-  the internal pipeline state machine must send `sqs_message` as an object.
+  string `sqs_message` in responses will break. They must be listed in the
+  release notes. The pipeline state machine may keep sending `sqs_message` as a
+  string, as long as it holds a JSON object.
 - **No schema validation until Schemathesis is fixed**: response shapes can
   still drift from the specification without failing the suite.
 - **`bnaclient` regeneration**: every specification change regenerates the

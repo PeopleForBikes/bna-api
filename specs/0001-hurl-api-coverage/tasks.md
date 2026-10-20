@@ -185,13 +185,20 @@ resetting the database.
 - [x] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
 - [x] 7.6 M-25: apply `start_time` on update.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
-- [ ] 7.7 Tell the owners of the pipeline state machine that `sqs_message` must
-      be sent as an object; note it in `CHANGELOG.md`.
+- [x] 7.7 ~~Tell the owners of the pipeline state machine that `sqs_message`
+      must be sent as an object.~~ Not needed since 7.10: a string holding a
+      JSON object is accepted.
 - [x] 7.8 M-28: add the `Save` step to the API and drop `SqsMessage`, so the
       API's steps match the `bna_pipeline_step` table; Hurl creates a pipeline
       at `Save`, rejects `SqsMessage`, and reads them back.
   - `entity/src/wrappers/mod.rs`, `lambdas/src/core/resource/pipelines/`.
 - [x] 7.9 M-39: make every `BnaPipelinePatch` field optional.
+- [x] 7.10 M-21, refined: accept `sqs_message` as a JSON object or a string
+      holding one, store and return it as the object, and reject any other value
+      with 400; Hurl creates and updates a pipeline with a string message and
+      reads the object back.
+  - `entity/src/wrappers/bna_pipeline.rs`,
+    `lambdas/src/core/resource/pipelines/schema.rs`.
 
 ## Phase 8: Reports and US States (M-26, M-27)
 

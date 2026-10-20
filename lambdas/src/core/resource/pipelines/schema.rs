@@ -6,7 +6,7 @@ use sea_orm::prelude::Decimal;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use utoipa::{
-    openapi::schema::{Object, ObjectBuilder, SchemaType, Type},
+    openapi::schema::{Object, ObjectBuilder, OneOfBuilder, Schema, SchemaType, Type},
     ToSchema,
 };
 use uuid::Uuid;
@@ -81,7 +81,29 @@ impl From<entity::bna_pipeline::Model> for BnaPipeline {
     }
 }
 
-/// Documents the SQS message: an optional JSON object.
+/// Documents the SQS message of a request: an optional JSON object, or a string
+/// holding one.
+fn sqs_message_request_schema() -> Schema {
+    let one_of = OneOfBuilder::new()
+        .item(sqs_message_schema())
+        .item(
+            ObjectBuilder::new()
+                .schema_type(Type::String)
+                .description(Some("A string holding a JSON object"))
+                .examples([json!(
+                    "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+                )]),
+        )
+        .description(Some(
+            "Copy of the JSON message that was sent for processing: a JSON object, \
+            or a string holding a JSON object. It is stored and returned as a JSON \
+            object.",
+        ))
+        .build();
+    Schema::OneOf(one_of)
+}
+
+/// Documents the SQS message of a response: an optional JSON object.
 fn sqs_message_schema() -> Object {
     ObjectBuilder::new()
         .schema_type(SchemaType::from_iter([Type::Object, Type::Null]))
@@ -128,7 +150,7 @@ pub(crate) struct BnaPipelinePost {
     #[schema(examples("united states/new mexico/santa rosa/24.05.4"))]
     s3_bucket: Option<String>,
     /// Copy of the JSON message that was sent for processing
-    #[schema(schema_with = sqs_message_schema)]
+    #[schema(schema_with = sqs_message_request_schema)]
     sqs_message: Option<Map<String, Value>>,
     /// Start time
     start_time: Option<DateTime<chrono::FixedOffset>>,
@@ -156,7 +178,7 @@ pub(crate) struct BnaPipelinePatch {
     #[schema(examples("united states/new mexico/santa rosa/24.05.4"))]
     s3_bucket: Option<String>,
     /// Copy of the JSON message that was sent for processing
-    #[schema(schema_with = sqs_message_schema)]
+    #[schema(schema_with = sqs_message_request_schema)]
     sqs_message: Option<Map<String, Value>>,
     /// Start time
     start_time: Option<DateTime<chrono::FixedOffset>>,

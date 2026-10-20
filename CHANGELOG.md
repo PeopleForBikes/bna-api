@@ -49,13 +49,13 @@ and this project adheres to
 - `GET /reports/{year}` now rejects a year outside 2017 to 2029, the documented
   bounds, with `400 Bad Request`, now documented. It used to return an empty
   report.
-- The pipeline `sqs_message` is now a JSON object in requests and responses, as
-  the OpenAPI specification now documents. It used to be documented as a string
-  and returned as a string holding the JSON object, and a string sent in a
-  request was stored double-encoded. A request with an `sqs_message` that is not
-  an object is now rejected with `400 Bad Request`. The pipeline state machine
-  must send the message as an object. Messages stored double-encoded are
-  returned decoded.
+- The pipeline `sqs_message` is now always returned as a JSON object, as the
+  OpenAPI specification now documents, so the operator can read it back and
+  reproduce a run. It used to be documented as a string and returned as a string
+  holding the JSON object. A request may send it as a JSON object or as a string
+  holding a JSON object; both are stored as the object, where a string used to
+  be stored double-encoded. Any other value is now rejected with
+  `400 Bad Request`. Messages stored double-encoded are returned decoded.
 - The OpenAPI specification no longer documents `401 Unauthorized` and
   `403 Forbidden` responses. They are produced by API Gateway, not by the
   application, and will be documented separately.
