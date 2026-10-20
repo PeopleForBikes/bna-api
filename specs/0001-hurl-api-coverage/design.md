@@ -152,9 +152,22 @@ the release notes.
   schema marks every field as required, while the API accepts any subset of
   fields. Found with M-31. Proposed: **Spec**, make every field optional.
   **Pending approval.**
+- **M-40 Ignored submission status on create.** The `SubmissionPost` schema
+  marks `status` as required, but the API ignores it and always creates the
+  submission as `Pending`; the tests omit it. Found while checking the request
+  bodies against the specification (phase 12). Proposed: **Spec**, remove
+  `status` from `SubmissionPost`. **Pending approval.**
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.
+- **M-41 Navigation headers.** Every list returns an empty `link` header, and
+  the navigation headers clamp instead of describing the requested page: page 1
+  reports `x-prev-page: 1`, the last page reports itself as `x-next-page`, and a
+  page past the last one reports `x-prev-page: 1` and the last page as
+  `x-next-page` (for example `x-page: 999`, `x-next-page: 1`). The specification
+  documents none of these headers. Proposed: decide whether to fill the `link`
+  header or remove it, then document the headers and their values at the edges.
+  **Pending decision.**
 - **M-35 Latest summaries count cities without a rating.**
   `GET /cities/summary/latest` counts every city in `x-total`, then drops the
   cities without a rating from the page, so pages can hold fewer items than
@@ -223,6 +236,11 @@ the release notes.
   `start_time`, but the update never applies it (verified:
   `start_time: ActiveValue::NotSet` in `entity/src/wrappers/bna_pipeline.rs`).
   Proposed: **Code**, apply it when provided.
+- **M-39 Partial pipeline update documented as full.** The `BnaPipelinePatch`
+  schema marks `status` and `step` as required, while the API accepts any subset
+  of fields (the tests update `start_time` alone). Found while checking the
+  request bodies against the specification (phase 12), like M-32. Proposed:
+  **Spec**, make every field optional. **Pending approval.**
 
 ### Reports and US states
 
@@ -457,7 +475,12 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-- Approve, change, or reject M-28 (pipeline steps), M-29 (measures), M-32
-  (partial submission update), and M-35 (latest summaries count), found during
-  implementation. M-28 needs the pipeline owners to confirm whether the `Save`
-  step is used.
+- Approve, change, or reject the resolutions found during implementation:
+  - M-28 (pipeline steps), which needs the pipeline owners to confirm whether
+    the `Save` step is used;
+  - M-29 (measures never returned);
+  - M-32, M-39, and M-40 (request schemas requiring fields the API does not
+    need): until they are resolved, some test bodies do not conform to the
+    request schemas (US-1);
+  - M-35 (latest summaries count);
+  - M-41 (navigation headers).
