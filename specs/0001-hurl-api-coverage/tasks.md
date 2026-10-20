@@ -97,7 +97,7 @@ resetting the database.
   - `effortless/src/error.rs`, `lambdas/src/lib.rs`
     (`impl IntoResponse for ExecutionError`), and the extractors used in
     `lambdas/src/core/resource/*/endpoint.rs`.
-- [ ] 3.3 Code: database errors caused by client input must never surface as 500
+- [x] 3.3 Code: database errors caused by client input must never surface as 500
       (enforced resource by resource in phases 5 to 7).
 - [x] 3.4 `CHANGELOG.md`: JSON error bodies everywhere; 400 replaces 422.
 
