@@ -111,6 +111,14 @@ jsonpath "$.latitude" == 35.1
 jsonpath "$.longitude" == -85.2
 jsonpath "$.residential_speed_limit" == 30
 
+# The latest summaries skip the new city, which has no rating: the newest page
+# of one summary is full and belongs to another city.
+GET {{host}}/cities/summary/latest?sort_by=created_at&order_direction=desc&page_size=1
+HTTP 200
+[Asserts]
+jsonpath "$" count == 1
+jsonpath "$[0].city.id" != "{{new_city_id}}"
+
 # Creating a city that already exists is a conflict.
 POST {{host}}/cities
 Authorization: Bearer {{token}}

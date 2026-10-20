@@ -122,5 +122,9 @@ and this project adheres to
   `404 Not Found`.
 - The rating reads (`GET /ratings` and `GET /ratings/{rating_id}`) now return
   the rating's `measure`. Its fields were always `null`.
+- `GET /cities/summary/latest` now counts and pages only the cities with a
+  rating. The cities without a rating were counted in `x-total` and
+  `x-total-pages`, then dropped from the page, so pages could hold fewer items
+  than `page_size`, or none.
 - `GET /reports` and `GET /reports/{year}` now fill the `coreservices_score`,
   `people`, `retail`, and `transit` columns, which were always empty.
