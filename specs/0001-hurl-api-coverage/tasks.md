@@ -218,7 +218,7 @@ resetting the database.
 - [x] 11.1 `.github/workflows/integration.yml`: install `just` and `uv`; load
       the regenerated dump; run the suite through `just test localhost` instead
       of listing files; run `just coverage`.
-- [ ] 11.2 Upload the Hurl report and coverage output as artifacts; write the
+- [x] 11.2 Upload the Hurl report and coverage output as artifacts; write the
       coverage summary to the job summary.
 - [ ] 11.3 Document the release check in `lambdas/tests/README.md`: before
       pushing a version tag, confirm the `integration` workflow passed on that

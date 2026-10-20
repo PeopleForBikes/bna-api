@@ -59,9 +59,31 @@ jobs:
       - name: Run the endpoint and scenario tests
         working-directory: lambdas/tests
         run: just test localhost
+      # The coverage check and the reports also run when the suite fails: the
+      # Hurl report records the failed run too.
       - name: Check the coverage of the OpenAPI specification
+        if: ${{ !cancelled() }}
         working-directory: lambdas/tests
-        run: just coverage
+        shell: bash
+        run: just coverage | tee reports/coverage.txt
+      - name: Write the coverage summary
+        if: ${{ !cancelled() }}
+        working-directory: lambdas/tests
+        shell: bash
+        run: |
+          {
+            echo "## OpenAPI coverage"
+            echo '```text'
+            cat reports/coverage.txt 2>/dev/null || echo "The coverage check did not run."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the Hurl report and the coverage output
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integration-reports
+          path: lambdas/tests/reports
+          if-no-files-found: warn
 
       # Schemathesis causes the server to crash somehow.
       # ```
