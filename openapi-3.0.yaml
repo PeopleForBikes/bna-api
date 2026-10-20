@@ -2561,6 +2561,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position
@@ -2626,6 +2627,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position
@@ -2690,6 +2692,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position

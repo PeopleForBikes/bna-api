@@ -200,8 +200,8 @@ pub(crate) struct Submission {
     #[schema(examples("Jane"))]
     first_name: String,
     /// Last name
-    last_name: String,
     #[schema(examples("Doe"))]
+    last_name: String,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -262,8 +262,8 @@ pub(crate) struct SubmissionPost {
     #[schema(examples("Jane"))]
     first_name: String,
     /// Last name
-    last_name: String,
     #[schema(examples("Doe"))]
+    last_name: String,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -302,8 +302,8 @@ pub(crate) struct SubmissionPatch {
     #[schema(examples("Jane"))]
     first_name: String,
     /// Last name
-    last_name: String,
     #[schema(examples("Doe"))]
+    last_name: String,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,

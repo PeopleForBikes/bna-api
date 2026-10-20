@@ -3788,6 +3788,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3933,6 +3936,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -4069,6 +4075,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {

@@ -2464,6 +2464,8 @@ components:
         last_name:
           type: string
           description: Last name
+          examples:
+          - Doe
         occupation:
           type:
           - string
@@ -2536,6 +2538,8 @@ components:
         last_name:
           type: string
           description: Last name
+          examples:
+          - Doe
         occupation:
           type:
           - string
@@ -2606,6 +2610,8 @@ components:
         last_name:
           type: string
           description: Last name
+          examples:
+          - Doe
         occupation:
           type:
           - string
