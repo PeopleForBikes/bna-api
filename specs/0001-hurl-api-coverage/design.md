@@ -46,12 +46,12 @@ fixed `state_machine_id`.
 
 Each entry lists the observed behavior, the specification, and its resolution.
 **All resolutions M-01 to M-27 were approved by the team on 2026-10-19**, as
-proposed (the alternative noted under M-07 was not retained). M-28 and M-29 were
-found during implementation and are pending approval. `Code` means the
-implementation changes; `Spec` means the specification changes (through the
-`utoipa` annotations, then `just regenerate-all-no-cargo`). Entries marked
-**client-visible** change behavior for API consumers and must be called out in
-the release notes.
+proposed (the alternative noted under M-07 was not retained). The resolutions
+found during implementation (M-28 to M-41) were decided on 2026-10-20, as
+recorded in each entry. `Code` means the implementation changes; `Spec` means
+the specification changes (through the `utoipa` annotations, then
+`just regenerate-all-no-cargo`). Entries marked **client-visible** change
+behavior for API consumers and must be called out in the release notes.
 
 ### Cross-cutting
 
@@ -150,13 +150,14 @@ the release notes.
   M-03 rule.
 - **M-32 Partial submission update documented as full.** The `SubmissionPatch`
   schema marks every field as required, while the API accepts any subset of
-  fields. Found with M-31. Proposed: **Spec**, make every field optional.
-  **Pending approval.**
+  fields. Found with M-31. Resolution: **Spec**, make every field optional.
+  Approved.
 - **M-40 Ignored submission status on create.** The `SubmissionPost` schema
   marks `status` as required, but the API ignores it and always creates the
   submission as `Pending`; the tests omit it. Found while checking the request
-  bodies against the specification (phase 12). Proposed: **Spec**, remove
-  `status` from `SubmissionPost`. **Pending approval.**
+  bodies against the specification (phase 12). Resolution: **Spec**, remove
+  `status` from `SubmissionPost`: a new submission is always `Pending`, so the
+  body does not carry it (a `status` sent anyway is ignored). Approved.
 - **M-18 Broken submission status filter.** `GET /cities/submissions/{id}` with
   `?status=...` always returns 400 (the whole query string is deserialized as a
   single string). Proposed: **Code**, fix the extractor.
@@ -165,15 +166,20 @@ the release notes.
   reports `x-prev-page: 1`, the last page reports itself as `x-next-page`, and a
   page past the last one reports `x-prev-page: 1` and the last page as
   `x-next-page` (for example `x-page: 999`, `x-next-page: 1`). The specification
-  documents none of these headers. Proposed: decide whether to fill the `link`
-  header or remove it, then document the headers and their values at the edges.
-  **Pending decision.**
+  documents none of these headers. Resolution: **Code + Spec**, fill the `link`
+  header, with the `first`, `prev`, `next`, and `last` relations pointing at the
+  same pages as the `x-` headers and keeping the other query parameters;
+  document every pagination header and its values at the edges. The clamping
+  itself is kept: `x-prev-page` and `x-next-page` stay between 1 and the last
+  page, and a page past the last one navigates like the last page. An empty list
+  now reports page 1 as its next and last navigation page instead of page 0,
+  which does not exist. Client-visible.
 - **M-35 Latest summaries count cities without a rating.**
   `GET /cities/summary/latest` counts every city in `x-total`, then drops the
   cities without a rating from the page, so pages can hold fewer items than
   `page_size` and the totals overcount. Found while adding city creation tests,
-  which create cities without ratings. Proposed: **Code**, count and page only
-  the cities with a rating. **Pending approval.**
+  which create cities without ratings. Resolution: **Code**, count and page only
+  the cities with a rating. Approved.
 - **M-37 City ratings past the last page.**
   `GET /cities/{country}/{region}/{name}/ratings` with a page past the last one
   returns 404 "cannot find a city", although the city exists and the
@@ -202,8 +208,8 @@ the release notes.
   has a measure row: the read queries join the seven other rating detail tables
   but not `measure` (verified in `lambdas/src/core/resource/ratings/db.rs`).
   Only `POST /ratings` echoes the measure it inserted. Found while loading the
-  fixtures. Proposed: **Code**, include the measure in every rating read (left
-  join, since older ratings have none). Client-visible. **Pending approval.**
+  fixtures. Resolution: **Code**, include the measure in every rating read (left
+  join, since older ratings have none). Client-visible. Approved.
 
 ### Pipelines
 
@@ -224,14 +230,15 @@ the release notes.
   `bna_pipeline_step` table (filled by the migrations) holds `Setup`,
   `Analysis`, `Save`, `Cleanup`. Creating or updating a pipeline with
   `SqsMessage` fails on the foreign key, and `Save` cannot be expressed through
-  the API. Found while loading the fixtures. Proposed: **Code**, a migration so
-  the table holds exactly the API's steps, unless the pipeline state machine
-  really uses `Save`, in which case the API gains it instead. **Pending
-  approval; needs confirmation from the pipeline owners.** Since M-24, the
-  update body is checked against the API's steps (the unused `BNAPipelineStep`
-  enum in `entity/src/wrappers/mod.rs` now lists them), so `Save` is rejected
-  with 400 instead of being stored, which would break every later read of the
-  pipeline. `SqsMessage` still fails on the foreign key.
+  the API. Found while loading the fixtures. Resolution: **Code + Spec**, the
+  `Save` step is required: it records that the results were saved in the
+  database. The API gains `Save` and drops `SqsMessage`, so its steps are
+  exactly the table's (`Setup`, `Analysis`, `Save`, `Cleanup`); no migration is
+  needed. `SqsMessage` never worked (the foreign key rejected it), so no client
+  can rely on it. Client-visible. The step is typed in both the request and the
+  response (`BNAPipelineStep` in `entity/src/wrappers/mod.rs` and
+  `BnaPipelineStep` in the pipelines schema), so an unknown step is rejected
+  with 400 (M-24).
 - **M-25 Ignored `start_time` on update.** `BnaPipelinePatch` documents
   `start_time`, but the update never applies it (verified:
   `start_time: ActiveValue::NotSet` in `entity/src/wrappers/bna_pipeline.rs`).
@@ -239,8 +246,8 @@ the release notes.
 - **M-39 Partial pipeline update documented as full.** The `BnaPipelinePatch`
   schema marks `status` and `step` as required, while the API accepts any subset
   of fields (the tests update `start_time` alone). Found while checking the
-  request bodies against the specification (phase 12), like M-32. Proposed:
-  **Spec**, make every field optional. **Pending approval.**
+  request bodies against the specification (phase 12), like M-32. Resolution:
+  **Spec**, make every field optional. Approved.
 
 ### Reports and US states
 
@@ -475,12 +482,5 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-- Approve, change, or reject the resolutions found during implementation:
-  - M-28 (pipeline steps), which needs the pipeline owners to confirm whether
-    the `Save` step is used;
-  - M-29 (measures never returned);
-  - M-32, M-39, and M-40 (request schemas requiring fields the API does not
-    need): until they are resolved, some test bodies do not conform to the
-    request schemas (US-1);
-  - M-35 (latest summaries count);
-  - M-41 (navigation headers).
+None. Every resolution, including those found during implementation (M-28 to
+M-41), was decided on 2026-10-20.

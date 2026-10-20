@@ -123,6 +123,11 @@ resetting the database.
 - [x] 4.6 M-10: document that a page past the end returns an empty list.
 - [x] 4.7 `CHANGELOG.md`: 1-based pages; out-of-range `page`/`page_size` now
       rejected.
+- [ ] 4.8 M-41: fill the `link` header of every list from the request URL;
+      document the pagination headers and their edge values in the
+      specification; Hurl asserts the `link` header on every list.
+  - `lambdas/src/lib.rs` (`Paginatron`), `lambdas/src/core/extract.rs`, each
+    list endpoint.
 
 ## Phase 5: Query Parameters, Cities, and Submissions (M-11 to M-19)
 
@@ -148,6 +153,13 @@ resetting the database.
       `/cities/top/{year}/{count}`.
 - [x] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
       lists; stricter `sort_by`, `status`, country, year, and count validation.
+- [ ] 5.13 M-32: make every `SubmissionPatch` field optional.
+- [ ] 5.14 M-40: remove `status` from `SubmissionPost`; Hurl checks that a
+      submission sent with another status is still created as `Pending`.
+- [ ] 5.15 M-35: count and page only the cities with a rating in
+      `GET /cities/summary/latest`; Hurl checks that a city without a rating is
+      not counted.
+  - `lambdas/src/core/resource/cities/db.rs`.
 
 ## Phase 6: Ratings (M-20, M-29)
 
@@ -155,8 +167,8 @@ resetting the database.
       `source.pointer` `/city_id`.
 - [x] 6.2 Code: validate the city before inserting the rating.
   - `lambdas/src/core/resource/ratings/adaptor.rs`.
-- [ ] 6.3 M-29 (pending approval): Hurl asserts the fixture measures on
-      `GET /ratings/{rating_id}`; include the measure in every rating read.
+- [ ] 6.3 M-29: Hurl asserts the fixture measures on `GET /ratings/{rating_id}`;
+      include the measure in every rating read.
   - `lambdas/src/core/resource/ratings/db.rs`.
 
 ## Phase 7: Pipelines (M-21 to M-25, M-28)
@@ -174,10 +186,11 @@ resetting the database.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
 - [ ] 7.7 Tell the owners of the pipeline state machine that `sqs_message` must
       be sent as an object; note it in `CHANGELOG.md`.
-- [ ] 7.8 M-28 (pending approval): align the `bna_pipeline_step` table with the
-      API's steps through a new migration, then update the fixtures pipeline
-      using `Setup` back to `SqsMessage` and regenerate the dump.
-  - `migration/src/`, `lambdas/tests/fixtures.sql`.
+- [ ] 7.8 M-28: add the `Save` step to the API and drop `SqsMessage`, so the
+      API's steps match the `bna_pipeline_step` table; Hurl creates a pipeline
+      at `Save`, rejects `SqsMessage`, and reads them back.
+  - `entity/src/wrappers/mod.rs`, `lambdas/src/core/resource/pipelines/`.
+- [ ] 7.9 M-39: make every `BnaPipelinePatch` field optional.
 
 ## Phase 8: Reports and US States (M-26, M-27)
 
@@ -237,7 +250,8 @@ resetting the database.
 - [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-02, M-05,
       M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26).
 - [ ] 12.5 Every acceptance criterion in `requirements.md` is checked off.
-  - Met, except for what the pending decisions block: US-1 (request bodies
-    conform to the request schemas) waits on M-32, M-39, and M-40; US-3 (every
-    resolution approved, consistent pagination headers) waits on M-28, M-29,
-    M-32, M-35, M-39, M-40, and M-41; US-5 (staging) waits on 12.2.
+  - Met, except for what the decisions of 2026-10-20 still need implemented:
+    US-1 (request bodies conform to the request schemas) waits on M-32, M-39,
+    and M-40; US-3 (every resolution implemented, consistent pagination headers)
+    waits on M-28, M-29, M-32, M-35, M-39, M-40, and M-41; US-5 (staging) waits
+    on 12.2.
