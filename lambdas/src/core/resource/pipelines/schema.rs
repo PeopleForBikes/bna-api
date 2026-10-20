@@ -161,9 +161,11 @@ pub(crate) struct BnaPipelinePatch {
     /// Start time
     start_time: Option<DateTime<chrono::FixedOffset>>,
     /// Pipeline status
-    status: PipelineStatus,
+    #[schema(nullable = false)]
+    status: Option<PipelineStatus>,
     /// Last pipeline step that was completed
-    step: BnaPipelineStep,
+    #[schema(nullable = false)]
+    step: Option<BnaPipelineStep>,
 }
 
 #[derive(ToSchema, Serialize, Deserialize)]

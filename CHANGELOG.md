@@ -66,6 +66,9 @@ and this project adheres to
 - The pipeline steps are now `Setup`, `Analysis`, `Save`, and `Cleanup`, the
   steps the database accepts. `Save` records that the results were saved in the
   database. `SqsMessage` is no longer a step: the database always rejected it.
+- The OpenAPI specification now documents every field of the pipeline update
+  body (`BnaPipelinePatch`) as optional, as the API always accepted: `status`
+  and `step` were documented as required.
 
 ### Fixed
 

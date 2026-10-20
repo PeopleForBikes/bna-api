@@ -473,10 +473,6 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
-    ///  "required": [
-    ///    "status",
-    ///    "step"
-    ///  ],
     ///  "properties": {
     ///    "cost": {
     ///      "description": "Cost of an analysis in USD",
@@ -585,8 +581,26 @@ pub mod types {
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
-        pub status: PipelineStatus,
-        pub step: BnaPipelineStep,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<PipelineStatus>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub step: ::std::option::Option<BnaPipelineStep>,
+    }
+
+    impl ::std::default::Default for BnaPipelinePatch {
+        fn default() -> Self {
+            Self {
+                cost: Default::default(),
+                end_time: Default::default(),
+                fargate_price_id: Default::default(),
+                fargate_task_arn: Default::default(),
+                s3_bucket: Default::default(),
+                sqs_message: Default::default(),
+                start_time: Default::default(),
+                status: Default::default(),
+                step: Default::default(),
+            }
+        }
     }
 
     impl BnaPipelinePatch {
@@ -4696,8 +4710,14 @@ pub mod types {
                 ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
-            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
+            status: ::std::result::Result<
+                ::std::option::Option<super::PipelineStatus>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<
+                ::std::option::Option<super::BnaPipelineStep>,
+                ::std::string::String,
+            >,
         }
 
         impl ::std::default::Default for BnaPipelinePatch {
@@ -4710,8 +4730,8 @@ pub mod types {
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
                     start_time: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
-                    step: Err("no value supplied for step".to_string()),
+                    status: Ok(Default::default()),
+                    step: Ok(Default::default()),
                 }
             }
         }
@@ -4797,7 +4817,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PipelineStatus>,
+                T: ::std::convert::TryInto<::std::option::Option<super::PipelineStatus>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -4807,7 +4827,7 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T: ::std::convert::TryInto<::std::option::Option<super::BnaPipelineStep>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.step = value

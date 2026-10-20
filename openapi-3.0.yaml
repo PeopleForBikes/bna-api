@@ -1590,9 +1590,6 @@ components:
           description: Last pipeline step that was completed
     BnaPipelinePatch:
       type: object
-      required:
-        - status
-        - step
       properties:
         cost:
           type: string
