@@ -733,9 +733,9 @@ pub mod types {
     ///{
     ///  "type": "string",
     ///  "enum": [
-    ///    "SqsMessage",
     ///    "Setup",
     ///    "Analysis",
+    ///    "Save",
     ///    "Cleanup"
     ///  ]
     ///}
@@ -754,18 +754,18 @@ pub mod types {
         PartialOrd,
     )]
     pub enum BnaPipelineStep {
-        SqsMessage,
         Setup,
         Analysis,
+        Save,
         Cleanup,
     }
 
     impl ::std::fmt::Display for BnaPipelineStep {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::SqsMessage => f.write_str("SqsMessage"),
                 Self::Setup => f.write_str("Setup"),
                 Self::Analysis => f.write_str("Analysis"),
+                Self::Save => f.write_str("Save"),
                 Self::Cleanup => f.write_str("Cleanup"),
             }
         }
@@ -775,9 +775,9 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "SqsMessage" => Ok(Self::SqsMessage),
                 "Setup" => Ok(Self::Setup),
                 "Analysis" => Ok(Self::Analysis),
+                "Save" => Ok(Self::Save),
                 "Cleanup" => Ok(Self::Cleanup),
                 _ => Err("invalid value".into()),
             }

@@ -168,9 +168,9 @@ pub(crate) struct BnaPipelinePatch {
 
 #[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) enum BnaPipelineStep {
-    SqsMessage,
     Setup,
     Analysis,
+    Save,
     Cleanup,
 }
 

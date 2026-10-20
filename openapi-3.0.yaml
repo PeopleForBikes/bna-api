@@ -1696,9 +1696,9 @@ components:
     BnaPipelineStep:
       type: string
       enum:
-        - SqsMessage
         - Setup
         - Analysis
+        - Save
         - Cleanup
     BnaPipelines:
       type: array

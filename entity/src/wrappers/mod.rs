@@ -53,9 +53,9 @@ impl Display for BNAPipelineStatus {
 /// Pipeline steps, as documented by the API.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum BNAPipelineStep {
-    SqsMessage,
     Setup,
     Analysis,
+    Save,
     Cleanup,
 }
 

@@ -63,6 +63,9 @@ and this project adheres to
   codes it can return: the lists now document `400 Bad Request` for invalid
   query parameters, and the lists and creations no longer document
   `404 Not Found`.
+- The pipeline steps are now `Setup`, `Analysis`, `Save`, and `Cleanup`, the
+  steps the database accepts. `Save` records that the results were saved in the
+  database. `SqsMessage` is no longer a step: the database always rejected it.
 
 ### Fixed
 

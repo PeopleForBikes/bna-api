@@ -220,6 +220,33 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/step"
 
+# Moves the pipeline to the save step, and reads it back.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "step": "Save"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.step" == "Save"
+
+GET {{host}}/pipelines/bna/{{pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.step" == "Save"
+
+# SqsMessage is not a pipeline step.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "step": "SqsMessage"
+}
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.pointer" == "/step"
+
 # Updates the start time of the pipeline, and reads it back.
 PATCH {{host}}/pipelines/bna/{{pipeline_id}}
 Authorization: Bearer {{token}}
