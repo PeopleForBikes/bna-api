@@ -3,6 +3,9 @@
 //! They wrap the Axum `Path`, `Query`, and `Json` extractors, so that a request
 //! with an invalid path parameter, query string, or body gets an `APIErrors`
 //! document instead of the plain text message produced by Axum.
+//!
+//! `PageUrl` never rejects a request: it provides the URL the `link` header of
+//! a list points at.
 use axum::{
     extract::{FromRequest, FromRequestParts, OriginalUri, Path, Query, Request},
     http::{header, request::Parts, Extensions, StatusCode},
@@ -12,6 +15,7 @@ use axum::{
 use effortless::error::{APIError, APIErrorSource, APIErrors};
 use serde::de::DeserializeOwned;
 use serde_json::json;
+use std::convert::Infallible;
 
 /// Path parameters, rejected with an `APIErrors` document.
 pub struct ApiPath<T>(pub T);
@@ -21,6 +25,13 @@ pub struct ApiQuery<T>(pub T);
 
 /// JSON request body, rejected with an `APIErrors` document.
 pub struct ApiJson<T>(pub T);
+
+/// URL of a list request, without the pagination query parameters.
+///
+/// The other query parameters, such as filters and sorting, are kept, so that
+/// the `link` header navigates the same list. It is `None` when the request
+/// does not say which host it was sent to.
+pub struct PageUrl(pub Option<String>);
 
 /// A rejected request, rendered as an `APIErrors` document.
 #[derive(Debug)]
@@ -126,6 +137,66 @@ where
     }
 }
 
+impl<S> FromRequestParts<S> for PageUrl
+where
+    S: Send + Sync,
+{
+    type Rejection = Infallible;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let uri = match parts.extensions.get::<OriginalUri>() {
+            Some(uri) => &uri.0,
+            None => &parts.uri,
+        };
+        // Lambda requests carry an absolute URI; local requests only carry a
+        // path, and name their host in the headers.
+        let header = |name| {
+            parts
+                .headers
+                .get(name)
+                .and_then(|v| v.to_str().ok())
+                .map(str::to_owned)
+        };
+        let Some(authority) = uri
+            .authority()
+            .map(|a| a.to_string())
+            .or_else(|| header(header::HOST))
+        else {
+            return Ok(Self(None));
+        };
+        let scheme = uri
+            .scheme_str()
+            .map(str::to_owned)
+            .or_else(|| header(header::HeaderName::from_static("x-forwarded-proto")))
+            .unwrap_or_else(|| String::from("http"));
+        Ok(Self(Some(page_url(
+            &scheme,
+            &authority,
+            uri.path(),
+            uri.query(),
+        ))))
+    }
+}
+
+/// Builds the URL of a list from the parts of its request URL, dropping the
+/// `page` and `page_size` query parameters.
+fn page_url(scheme: &str, authority: &str, path: &str, query: Option<&str>) -> String {
+    let kept = query
+        .unwrap_or_default()
+        .split('&')
+        .filter(|pair| {
+            let key = pair.split_once('=').map_or(*pair, |(key, _)| key);
+            !pair.is_empty() && key != "page" && key != "page_size"
+        })
+        .collect::<Vec<_>>()
+        .join("&");
+    if kept.is_empty() {
+        format!("{scheme}://{authority}{path}")
+    } else {
+        format!("{scheme}://{authority}{path}?{kept}")
+    }
+}
+
 /// Returns the API Gateway request ID, when the request came through it.
 fn request_id(extensions: &Extensions) -> Option<String> {
     match extensions.get::<lambda_http::request::RequestContext>() {
@@ -187,6 +258,40 @@ fn body_pointer(details: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_page_url_without_query() {
+        assert_eq!(
+            page_url("https", "api.example.org", "/ratings", None),
+            "https://api.example.org/ratings"
+        );
+    }
+
+    #[test]
+    fn test_page_url_keeps_other_parameters() {
+        assert_eq!(
+            page_url(
+                "http",
+                "localhost:3000",
+                "/cities/submissions",
+                Some("page=2&status=Pending&page_size=1&sort_by=name")
+            ),
+            "http://localhost:3000/cities/submissions?status=Pending&sort_by=name"
+        );
+    }
+
+    #[test]
+    fn test_page_url_only_pagination_parameters() {
+        assert_eq!(
+            page_url(
+                "http",
+                "localhost:3000",
+                "/usstates",
+                Some("page=2&page_size=1")
+            ),
+            "http://localhost:3000/usstates"
+        );
+    }
 
     #[test]
     fn test_error_path_query_parameter() {

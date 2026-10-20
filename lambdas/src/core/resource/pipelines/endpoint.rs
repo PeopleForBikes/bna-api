@@ -3,13 +3,13 @@ use super::adaptor::{
     post_pipelines_bna_adaptor,
 };
 use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines};
-use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::database_connect_or_init;
 use crate::{
     core::resource::schema::{
         BadRequestResponse, ConflictResponse, NotFoundResponse, PaginationParameters,
     },
-    Context, ExecutionError, PageFlow,
+    Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{http::StatusCode, Json};
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
@@ -65,9 +65,15 @@ async fn get_pipelines_bna(
   ))]
 async fn get_pipelines_bnas(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Vec<entity::bna_pipeline::Model>>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size()).await
+    let (total_items, models) =
+        get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size()).await?;
+    Ok(PageFlow::new(
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
+        models,
+    ))
 }
 
 #[utoipa::path(

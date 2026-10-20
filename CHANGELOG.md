@@ -72,6 +72,10 @@ and this project adheres to
 - The OpenAPI specification now documents every field of the submission update
   body (`SubmissionPatch`) as optional, as the API always accepted: most fields
   were documented as required.
+- The OpenAPI specification now documents the pagination headers of every list
+  (`link`, `x-page`, `x-per-page`, `x-total`, `x-total-pages`, `x-prev-page`,
+  and `x-next-page`) and their values at the edges. An empty list now reports
+  page 1 as its next page instead of page 0, which does not exist.
 - The submission creation body (`SubmissionPost`) no longer documents a
   `status`: a new submission is always `Pending`, and a `status` sent in the
   body is ignored, as it always was.
@@ -84,6 +88,8 @@ and this project adheres to
 - `GET /pipelines/bna` now returns the pagination headers (`x-page`,
   `x-per-page`, `x-total`, `x-total-pages`, `x-next-page`, `x-prev-page`), like
   every other list.
+- Every list now fills the `link` header with the URLs of its first, previous,
+  next, and last pages, keeping the other query parameters. It was always empty.
 - `PATCH /cities/submissions/{submission_id}` works again. It read the
   submission identifier from the query string instead of the path, so every
   request was rejected.

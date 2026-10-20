@@ -1,5 +1,5 @@
 use super::db::{fetch_bna_pipeline, fetch_bna_pipelines};
-use crate::{Context, ExecutionError, PageFlow, Paginatron};
+use crate::{Context, ExecutionError};
 use entity::{
     bna_pipeline,
     wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost},
@@ -29,15 +29,9 @@ pub async fn get_pipelines_bnas_adaptor(
     db: &DatabaseConnection,
     page: u64,
     page_size: u64,
-) -> Result<PageFlow<Vec<bna_pipeline::Model>>, ExecutionError> {
-    // Fetch a page of summary.
-    let (total_items, models) = fetch_bna_pipelines(db, page, page_size).await?;
-
-    // Return the paginated response.
-    Ok(PageFlow::new(
-        Paginatron::new(None, total_items, page, page_size),
-        models,
-    ))
+) -> Result<(u64, Vec<bna_pipeline::Model>), ExecutionError> {
+    // Fetch a page of pipelines.
+    Ok(fetch_bna_pipelines(db, page, page_size).await?)
 }
 
 pub async fn post_pipelines_bna_adaptor(

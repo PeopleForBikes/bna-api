@@ -6,7 +6,10 @@ use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::Into;
 use std::{fmt::Display, str::FromStr};
-use utoipa::{IntoParams, IntoResponses, ToSchema};
+use utoipa::{
+    openapi::{header::HeaderBuilder, path::ParameterIn, Object, OpenApi, RefOr, Type},
+    IntoParams, IntoResponses, ToSchema,
+};
 use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Deserialize)]
@@ -614,4 +617,71 @@ pub(crate) struct ListParams {
 
     #[serde(flatten)]
     sorting: Option<SortParameters>,
+}
+
+/// Pagination headers of every list, with their description.
+const PAGINATION_HEADERS: [(&str, &str, bool); 7] = [
+    (
+        "link",
+        "Links to the `first`, `prev`, `next`, and `last` pages (RFC 8288), \
+        pointing at the same pages as the `x-` headers and keeping the other query \
+        parameters.",
+        false,
+    ),
+    ("x-page", "The requested page, starting at 1.", true),
+    ("x-per-page", "The number of items per page.", true),
+    ("x-total", "The total number of items.", true),
+    (
+        "x-total-pages",
+        "The number of pages holding items, 0 for an empty list.",
+        true,
+    ),
+    (
+        "x-prev-page",
+        "The page before the requested one, at least 1. A page past the last one \
+        navigates like the last page.",
+        true,
+    ),
+    (
+        "x-next-page",
+        "The page after the requested one, at most the last page (1 for an empty \
+        list). A page past the last one navigates like the last page.",
+        true,
+    ),
+];
+
+/// Documents the pagination headers on the success response of every list.
+///
+/// A list is an operation accepting the `page` query parameter.
+pub fn document_pagination_headers(api: &mut OpenApi) {
+    for item in api.paths.paths.values_mut() {
+        let Some(operation) = item.get.as_mut() else {
+            continue;
+        };
+        let is_list = operation
+            .parameters
+            .iter()
+            .flatten()
+            .any(|p| p.name == "page" && matches!(p.parameter_in, ParameterIn::Query));
+        if !is_list {
+            continue;
+        }
+        let Some(RefOr::T(response)) = operation.responses.responses.get_mut("200") else {
+            continue;
+        };
+        for (name, description, is_integer) in PAGINATION_HEADERS {
+            let schema_type = if is_integer {
+                Type::Integer
+            } else {
+                Type::String
+            };
+            response.headers.insert(
+                name.to_string(),
+                HeaderBuilder::new()
+                    .schema(Object::with_type(schema_type))
+                    .description(Some(description))
+                    .build(),
+            );
+        }
+    }
 }

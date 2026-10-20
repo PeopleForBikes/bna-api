@@ -2,7 +2,7 @@ use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities::{self, ApprovalStatus},
     pipelines, price, ratings, reports,
-    schema::{APIError, APIErrorSource, APIErrors, OrderDirection},
+    schema::{document_pagination_headers, APIError, APIErrorSource, APIErrors, OrderDirection},
     system, usstates,
 };
 use std::{
@@ -146,7 +146,7 @@ async fn main() -> Result<(), Error> {
         .build();
 
     // Create the app router.
-    let (app, api) = OpenApiRouter::with_openapi(api)
+    let (app, mut api) = OpenApiRouter::with_openapi(api)
         .merge(cities::endpoint::routes())
         .merge(pipelines::endpoint::routes())
         .merge(price::endpoint::routes())
@@ -156,6 +156,7 @@ async fn main() -> Result<(), Error> {
         .merge(usstates::endpoint::routes())
         .layer(TraceLayer::new_for_http())
         .split_for_parts();
+    document_pagination_headers(&mut api);
 
     // Write the specification file to disk.
     if env::var("BNA_API_GENERATE_ONLY")

@@ -1,5 +1,5 @@
 use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor};
-use crate::core::extract::{ApiPath, ApiQuery};
+use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
         price::schema::{FargatePrice, FargatePrices, PriceListParameters},
@@ -34,6 +34,7 @@ pub fn routes() -> OpenApiRouter {
   ))]
 pub(crate) async fn get_prices_fargate(
     ApiQuery(list): ApiQuery<PriceListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) = get_prices_fargate_adaptor(
@@ -47,7 +48,7 @@ pub(crate) async fn get_prices_fargate(
     .await?;
     let payload: FargatePrices = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, list.page(), list.page_size()),
+        Paginatron::new(url, total_items, list.page(), list.page_size()),
         payload,
     ))
 }

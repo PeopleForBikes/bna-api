@@ -112,7 +112,7 @@ pub fn build_paginated_response(
         .header("x-per-page", page_size)
         .header("x-prev-page", nav.prev())
         .header("x-total", total_items)
-        .header("x-total-pages", nav.last())
+        .header("x-total-pages", paginatron.total_pages())
         .header(header::CONTENT_TYPE, "application/json")
         .body(body.to_string().into())
         .map_err(Box::new)?)
@@ -191,13 +191,32 @@ impl Paginatron {
     /// assert_eq!(nav.next(), 4);
     /// assert_eq!(nav.last(), 8);
     /// ```
+    ///
+    /// The previous and next pages stay between the first and the last page,
+    /// and a page past the last one navigates like the last page. An empty
+    /// list has a single, empty, page to navigate to.
+    ///
+    /// ```
+    /// use lambdas::Paginatron;
+    ///
+    /// let nav = Paginatron::new(None, 200, 999, 25).navigation();
+    /// assert_eq!((nav.prev(), nav.next(), nav.last()), (7, 8, 8));
+    ///
+    /// let nav = Paginatron::new(None, 0, 1, 25).navigation();
+    /// assert_eq!((nav.prev(), nav.next(), nav.last()), (1, 1, 1));
+    /// ```
     pub fn navigation(&self) -> NavigationPages {
         const FIRST: u64 = 1;
-        let last = self.total_items.div_ceil(self.page_size);
-        let page = if self.page >= last { last } else { self.page };
-        let previous = if page <= FIRST { FIRST } else { page - 1 };
-        let next = if page >= last { last } else { page + 1 };
+        let last = self.total_pages().max(FIRST);
+        let page = self.page.clamp(FIRST, last);
+        let previous = page.saturating_sub(1).max(FIRST);
+        let next = page.saturating_add(1).min(last);
         NavigationPages::new(FIRST, previous, next, last)
+    }
+
+    /// Returns the number of pages holding items, 0 for an empty list.
+    pub fn total_pages(&self) -> u64 {
+        self.total_items.div_ceil(self.page_size)
     }
 
     /// Generates the link header.
@@ -223,7 +242,7 @@ impl Paginatron {
             Some(url) => {
                 let nav = self.navigation();
                 let mut url = url.to_string();
-                url.push('?');
+                url.push(if url.contains('?') { '&' } else { '?' });
                 if let Some(default_page_size) = defaul_page_size {
                     if self.page_size != default_page_size {
                         url.push_str(format!("page_size={}&", self.page_size).as_str());
@@ -280,7 +299,7 @@ where
             .header("x-per-page", value.paginatron.page_size)
             .header("x-prev-page", nav.prev())
             .header("x-total", value.paginatron.total_items)
-            .header("x-total-pages", nav.last())
+            .header("x-total-pages", value.paginatron.total_pages())
             .header(header::CONTENT_TYPE, "application/json")
             .body(Body::from(
                 serde_json::to_string(&value.payload).expect("payload must serialize"),
@@ -302,7 +321,7 @@ where
             .header("x-per-page", self.paginatron.page_size)
             .header("x-prev-page", nav.prev())
             .header("x-total", self.paginatron.total_items)
-            .header("x-total-pages", nav.last())
+            .header("x-total-pages", self.paginatron.total_pages())
             .header(header::CONTENT_TYPE, "application/json")
             .body(axum::body::Body::from(
                 serde_json::to_string(&self.payload).expect("payload must serialize"),

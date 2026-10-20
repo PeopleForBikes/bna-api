@@ -68,6 +68,43 @@ paths:
       responses:
         '200':
           description: Fetches cities
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -179,6 +216,43 @@ paths:
       responses:
         '200':
           description: Fetches submissions
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -415,6 +489,43 @@ paths:
       responses:
         '200':
           description: Fetches cities with their latest summary
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -641,6 +752,43 @@ paths:
       responses:
         '200':
           description: Fetches city ratings
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -724,6 +872,43 @@ paths:
       responses:
         '200':
           description: Fetches the details of all BNA pipelines
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -967,6 +1152,43 @@ paths:
       responses:
         '200':
           description: Fetches a collection of Fargate prices
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -1078,6 +1300,43 @@ paths:
       responses:
         '200':
           description: Fetches the city ratings
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
@@ -1328,6 +1587,43 @@ paths:
       responses:
         '200':
           description: Fetches US states
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:

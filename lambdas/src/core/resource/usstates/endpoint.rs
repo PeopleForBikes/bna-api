@@ -1,4 +1,4 @@
-use crate::core::extract::{ApiPath, ApiQuery};
+use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
         schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
@@ -59,11 +59,12 @@ async fn get_us_state(
   ))]
 async fn get_us_states(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<UsStates>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_us_states_adaptor(db, pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
+        Paginatron::new(url, payload.0, pagination.page(), pagination.page_size()),
         payload.1.into(),
     ))
 }

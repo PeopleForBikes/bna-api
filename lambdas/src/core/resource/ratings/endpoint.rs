@@ -4,7 +4,7 @@ use super::{
     },
     schema::{Rating, RatingPost, RatingWithCity, Ratings},
 };
-use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
@@ -66,6 +66,7 @@ async fn get_rating(
   ))]
 async fn get_ratings(
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Ratings>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) =
@@ -73,7 +74,7 @@ async fn get_ratings(
 
     let payload: Ratings = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }

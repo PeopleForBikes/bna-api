@@ -109,7 +109,10 @@ Pagination follows a shared convention across resources:
 `ListParameters`/`PaginationParameters` from `core/resource/schema.rs`,
 `MAX_PAGE_SIZE`/`DEFAULT_PAGE_SIZE` from `lambdas/src/lib.rs`, and
 `Paginatron`/`PageFlow` helpers for building paginated responses with link
-headers (`core/link_header.rs`).
+headers. A list handler takes the `PageUrl` extractor (`core/extract.rs`) and
+passes its URL to `Paginatron::new`, so the `link` header gets filled. The
+pagination headers are documented on every operation taking a `page` query
+parameter by `document_pagination_headers` (`core/resource/schema.rs`).
 
 ### OpenAPI spec flow
 

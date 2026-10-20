@@ -9,7 +9,7 @@ use super::{
         RatingSummary, Submission, SubmissionPatch, SubmissionPost, Submissions,
     },
 };
-use crate::core::extract::{ApiJson, ApiPath, ApiQuery};
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
         cities::{
@@ -86,6 +86,7 @@ async fn get_city(
   ))]
 async fn get_cities(
     ApiQuery(list): ApiQuery<CityListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_adaptor(
@@ -97,7 +98,7 @@ async fn get_cities(
     )
     .await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, list.page(), list.page_size()),
+        Paginatron::new(url, payload.0, list.page(), list.page_size()),
         payload.1.into(),
     ))
 }
@@ -116,6 +117,7 @@ async fn get_cities(
   ))]
 async fn get_cities_latest_summary(
     ApiQuery(list): ApiQuery<CityListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_latest_summary_adaptor(
@@ -141,7 +143,7 @@ async fn get_cities_latest_summary(
         .collect::<Vec<CityWithSummary>>();
 
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, list.page(), list.page_size()),
+        Paginatron::new(url, payload.0, list.page(), list.page_size()),
         CitiesWithSummary(cities_with_summaries),
     ))
 }
@@ -163,6 +165,7 @@ async fn get_cities_latest_summary(
 async fn get_city_ratings(
     ApiPath(params): ApiPath<CitiesPathParameters>,
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
     ctx: Context,
 ) -> Result<PageFlow<CityRatings>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -182,7 +185,7 @@ async fn get_city_ratings(
         ratings: ratings.into_iter().map(RatingSummary::from).collect(),
     };
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }
@@ -289,6 +292,7 @@ struct SubmissionParameters {
 async fn get_cities_submissions(
     ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
     ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let cities_submissions = get_cities_submissions_adaptor(
@@ -306,7 +310,7 @@ async fn get_cities_submissions(
     let payload = Submissions(submissions);
     Ok(PageFlow::new(
         Paginatron::new(
-            None,
+            url,
             cities_submissions.0,
             pagination.page(),
             pagination.page_size(),

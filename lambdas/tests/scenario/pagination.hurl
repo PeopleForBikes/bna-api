@@ -79,12 +79,32 @@ GET {{host}}/ratings?page=-5
 HTTP 400
 
 # Queries the ratings with a page number past the last page.
-# Should return an empty list.
-GET {{host}}/ratings?page=5000
+# Should return an empty list, navigating like the last page.
+GET {{host}}/ratings?page=65536&page_size=1
+
+HTTP 200
+[Captures]
+last_page: header "x-total-pages"
+[Asserts]
+jsonpath "$" count == 0
+header "x-page" == "65536"
+header "x-next-page" == "{{last_page}}"
+header "link" contains "<{{host}}/ratings?page_size=1&page={{last_page}}>; rel=\"next\""
+
+# The first page has no page before it: its previous page is itself.
+GET {{host}}/ratings?page_size=1
 
 HTTP 200
 [Asserts]
-jsonpath "$" count == 0
+header "x-prev-page" == "1"
+header "link" startsWith "<{{host}}/ratings?page_size=1&page=1>; rel=\"first\", <{{host}}/ratings?page_size=1&page=1>; rel=\"prev\""
+
+# The links keep the other query parameters, and omit the default page size.
+GET {{host}}/cities/submissions?status=Pending&page=2
+
+HTTP 200
+[Asserts]
+header "link" startsWith "<{{host}}/cities/submissions?status=Pending&page=1>; rel=\"first\""
 
 # ################
 # Cities
@@ -115,6 +135,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/cities?page_size=1&page=1>; rel=\"first\", <{{host}}/cities?page_size=1&page=1>; rel=\"prev\", <{{host}}/cities?page_size=1&page=3>; rel=\"next\", <{{host}}/cities?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the city submissions.
 GET {{host}}/cities/submissions?page=2&page_size=1
@@ -129,6 +150,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/cities/submissions?page_size=1&page=1>; rel=\"first\", <{{host}}/cities/submissions?page_size=1&page=1>; rel=\"prev\", <{{host}}/cities/submissions?page_size=1&page=3>; rel=\"next\", <{{host}}/cities/submissions?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the latest city summaries.
 GET {{host}}/cities/summary/latest?page=2&page_size=1
@@ -143,6 +165,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/cities/summary/latest?page_size=1&page=1>; rel=\"first\", <{{host}}/cities/summary/latest?page_size=1&page=1>; rel=\"prev\", <{{host}}/cities/summary/latest?page_size=1&page=3>; rel=\"next\", <{{host}}/cities/summary/latest?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the ratings of a city.
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=2&page_size=1
@@ -157,6 +180,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=1&page=1>; rel=\"first\", <{{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=1&page=1>; rel=\"prev\", <{{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=1&page=3>; rel=\"next\", <{{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the BNA pipelines.
 GET {{host}}/pipelines/bna?page=2&page_size=1
@@ -171,6 +195,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/pipelines/bna?page_size=1&page=1>; rel=\"first\", <{{host}}/pipelines/bna?page_size=1&page=1>; rel=\"prev\", <{{host}}/pipelines/bna?page_size=1&page=3>; rel=\"next\", <{{host}}/pipelines/bna?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the Fargate prices.
 GET {{host}}/prices/fargate?page=2&page_size=1
@@ -185,6 +210,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/prices/fargate?page_size=1&page=1>; rel=\"first\", <{{host}}/prices/fargate?page_size=1&page=1>; rel=\"prev\", <{{host}}/prices/fargate?page_size=1&page=3>; rel=\"next\", <{{host}}/prices/fargate?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the ratings.
 GET {{host}}/ratings?page=2&page_size=1
@@ -199,6 +225,7 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/ratings?page_size=1&page=1>; rel=\"first\", <{{host}}/ratings?page_size=1&page=1>; rel=\"prev\", <{{host}}/ratings?page_size=1&page=3>; rel=\"next\", <{{host}}/ratings?page_size=1&page={{total}}>; rel=\"last\""
 
 # Second page of the US states.
 GET {{host}}/usstates?page=2&page_size=1
@@ -213,3 +240,4 @@ header "x-per-page" == "1"
 header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
+header "link" == "<{{host}}/usstates?page_size=1&page=1>; rel=\"first\", <{{host}}/usstates?page_size=1&page=1>; rel=\"prev\", <{{host}}/usstates?page_size=1&page=3>; rel=\"next\", <{{host}}/usstates?page_size=1&page={{total}}>; rel=\"last\""
