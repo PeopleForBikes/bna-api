@@ -215,7 +215,7 @@ resetting the database.
 
 ## Phase 11: CI (US-6)
 
-- [ ] 11.1 `.github/workflows/integration.yml`: install `just` and `uv`; load
+- [x] 11.1 `.github/workflows/integration.yml`: install `just` and `uv`; load
       the regenerated dump; run the suite through `just test localhost` instead
       of listing files; run `just coverage`.
 - [ ] 11.2 Upload the Hurl report and coverage output as artifacts; write the
