@@ -98,7 +98,13 @@ content-type: application/json
   "transit": {
     "transit": 0
   },
-  "measure": {},
+  "measure": {
+    "buffered_lane": 1.5,
+    "lane": 2.5,
+    "path": 3.5,
+    "sharrow": 4.5,
+    "track": 5.5
+  },
   "pop_size": 2,
   "population": 123456,
   "version": "24.12",
@@ -128,6 +134,11 @@ jsonpath "$.recreation.parks" == 7.13
 jsonpath "$.recreation.score" == 7.13
 jsonpath "$.retail.retail" == 0
 jsonpath "$.transit.transit" == 0
+jsonpath "$.measure.buffered_lane" == 1.5
+jsonpath "$.measure.lane" == 2.5
+jsonpath "$.measure.path" == 3.5
+jsonpath "$.measure.sharrow" == 4.5
+jsonpath "$.measure.track" == 5.5
 
 # The new rating is listed with its city.
 GET {{host}}/ratings/{{new_rating_id}}/city

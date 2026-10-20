@@ -167,8 +167,9 @@ resetting the database.
       `source.pointer` `/city_id`.
 - [x] 6.2 Code: validate the city before inserting the rating.
   - `lambdas/src/core/resource/ratings/adaptor.rs`.
-- [ ] 6.3 M-29: Hurl asserts the fixture measures on `GET /ratings/{rating_id}`;
-      include the measure in every rating read.
+- [x] 6.3 M-29: Hurl posts a rating with a measure and reads the measure back (a
+      fixture measure would not exist on staging); include the measure in every
+      rating read.
   - `lambdas/src/core/resource/ratings/db.rs`.
 
 ## Phase 7: Pipelines (M-21 to M-25, M-28)

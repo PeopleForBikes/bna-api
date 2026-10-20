@@ -128,6 +128,13 @@ pub async fn fetch_rating(
         .column_as(entity::people::Column::Score, "people_score")
         .column_as(entity::retail::Column::Score, "retail_score")
         .column_as(entity::transit::Column::Score, "transit_score")
+        .columns([
+            entity::measure::Column::BufferedLane,
+            entity::measure::Column::Lane,
+            entity::measure::Column::Path,
+            entity::measure::Column::Sharrow,
+            entity::measure::Column::Track,
+        ])
         .join(
             JoinType::InnerJoin,
             entity::summary::Relation::CoreServices.def(),
@@ -156,6 +163,8 @@ pub async fn fetch_rating(
             sea_orm::JoinType::InnerJoin,
             entity::summary::Relation::Transit.def(),
         )
+        // Older ratings have no measure.
+        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def())
         .into_model::<Bna>()
         .one(db)
         .await?;
@@ -197,6 +206,13 @@ pub async fn fetch_ratings(
         .column_as(entity::people::Column::Score, "people_score")
         .column_as(entity::retail::Column::Score, "retail_score")
         .column_as(entity::transit::Column::Score, "transit_score")
+        .columns([
+            entity::measure::Column::BufferedLane,
+            entity::measure::Column::Lane,
+            entity::measure::Column::Path,
+            entity::measure::Column::Sharrow,
+            entity::measure::Column::Track,
+        ])
         .join(
             JoinType::InnerJoin,
             entity::summary::Relation::CoreServices.def(),
@@ -224,7 +240,9 @@ pub async fn fetch_ratings(
         .join(
             sea_orm::JoinType::InnerJoin,
             entity::summary::Relation::Transit.def(),
-        );
+        )
+        // Older ratings have no measure.
+        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def());
     let models = select
         .clone()
         .into_model::<Bna>()

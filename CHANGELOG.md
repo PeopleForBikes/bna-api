@@ -120,5 +120,7 @@ and this project adheres to
 - `GET /cities/{country}/{region}/{name}/ratings` now returns the city with an
   empty `ratings` list for a page past the last one, as documented, instead of
   `404 Not Found`.
+- The rating reads (`GET /ratings` and `GET /ratings/{rating_id}`) now return
+  the rating's `measure`. Its fields were always `null`.
 - `GET /reports` and `GET /reports/{year}` now fill the `coreservices_score`,
   `people`, `retail`, and `transit` columns, which were always empty.
