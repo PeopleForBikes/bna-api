@@ -226,13 +226,18 @@ resetting the database.
 
 ## Phase 12: Final Verification
 
-- [ ] 12.1 Fresh database from the new dump: `just test localhost` passes twice
+- [x] 12.1 Fresh database from the new dump: `just test localhost` passes twice
       in a row; `just coverage` passes.
 - [ ] 12.2 `just test staging` passes against
       `https://api.staging.bna.peopleforbikes.org` with a token (after staging
       is deployed with the changes).
-- [ ] 12.3 `cargo test`, `cargo clippy`, `just lint` pass; `bnaclient` CI job
+  - Not done yet: needs the changes deployed to staging and a token.
+- [x] 12.3 `cargo test`, `cargo clippy`, `just lint` pass; `bnaclient` CI job
       shows no diff.
-- [ ] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-02, M-05,
+- [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-02, M-05,
       M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26).
 - [ ] 12.5 Every acceptance criterion in `requirements.md` is checked off.
+  - Met, except for what the pending decisions block: US-1 (request bodies
+    conform to the request schemas) waits on M-32, M-39, and M-40; US-3 (every
+    resolution approved, consistent pagination headers) waits on M-28, M-29,
+    M-32, M-35, M-39, M-40, and M-41; US-5 (staging) waits on 12.2.
