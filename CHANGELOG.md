@@ -72,6 +72,9 @@ and this project adheres to
 - The OpenAPI specification now documents every field of the submission update
   body (`SubmissionPatch`) as optional, as the API always accepted: most fields
   were documented as required.
+- The submission creation body (`SubmissionPost`) no longer documents a
+  `status`: a new submission is always `Pending`, and a `status` sent in the
+  body is ignored, as it always was.
 
 ### Fixed
 

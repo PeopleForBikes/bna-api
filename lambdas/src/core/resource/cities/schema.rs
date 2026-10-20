@@ -290,9 +290,6 @@ pub(crate) struct SubmissionPost {
     /// Consent status
     #[schema(examples("true"))]
     consent: bool,
-    /// Submission status, e.g. "Pending"
-    #[schema(examples("Pending"))]
-    status: String,
 }
 
 #[allow(dead_code)]

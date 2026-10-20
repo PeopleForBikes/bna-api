@@ -2568,7 +2568,6 @@ components:
       - city
       - fips_code
       - consent
-      - status
       properties:
         city:
           type: string
@@ -2627,11 +2626,6 @@ components:
             this concept, then the country name is used.
           examples:
           - Antwerp
-        status:
-          type: string
-          description: Submission status, e.g. "Pending"
-          examples:
-          - Pending
     Submissions:
       type: array
       items:

@@ -52,6 +52,32 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/country"
 
+# A new submission is always pending, whatever status the body sends.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "hurl-{{newUuid}}@example.com",
+  "country": "{{country_name}}",
+  "city": "Santa Rosa",
+  "region": "New Mexico",
+  "fips_code": "3570670",
+  "consent": true,
+  "status": "Approved"
+}
+HTTP 201
+[Captures]
+approved_submission_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.status" == "Pending"
+
+GET {{host}}/cities/submissions/{{approved_submission_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.status" == "Pending"
+
 # Updating a submission that does not exist is not found.
 PATCH {{host}}/cities/submissions/999999
 Authorization: Bearer {{token}}

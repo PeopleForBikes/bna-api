@@ -4046,8 +4046,7 @@ pub mod types {
     ///    "email",
     ///    "fips_code",
     ///    "first_name",
-    ///    "last_name",
-    ///    "status"
+    ///    "last_name"
     ///  ],
     ///  "properties": {
     ///    "city": {
@@ -4127,13 +4126,6 @@ pub mod types {
     ///        "string",
     ///        "null"
     ///      ]
-    ///    },
-    ///    "status": {
-    ///      "description": "Submission status, e.g. \"Pending\"",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
     ///    }
     ///  }
     ///}
@@ -4166,8 +4158,6 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///Submission status, e.g. "Pending"
-        pub status: ::std::string::String,
     }
 
     impl SubmissionPost {
@@ -7279,7 +7269,6 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
         impl ::std::default::Default for SubmissionPost {
@@ -7295,7 +7284,6 @@ pub mod types {
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
                 }
             }
         }
@@ -7401,16 +7389,6 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for region: {e}"));
                 self
             }
-            pub fn status<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::string::String>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.status = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for status: {e}"));
-                self
-            }
         }
 
         impl ::std::convert::TryFrom<SubmissionPost> for super::SubmissionPost {
@@ -7429,7 +7407,6 @@ pub mod types {
                     occupation: value.occupation?,
                     organization: value.organization?,
                     region: value.region?,
-                    status: value.status?,
                 })
             }
         }
@@ -7447,7 +7424,6 @@ pub mod types {
                     occupation: Ok(value.occupation),
                     organization: Ok(value.organization),
                     region: Ok(value.region),
-                    status: Ok(value.status),
                 }
             }
         }

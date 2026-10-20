@@ -187,10 +187,7 @@ pub async fn post_cities_submission_adaptor(
 
     // Turn the post model into an active model.
     let country = submission.country.clone();
-    let mut active_model: entity::submission::ActiveModel = submission.into_active_model();
-
-    // Add the status.
-    active_model.status = ActiveValue::Set("Pending".to_string());
+    let active_model: entity::submission::ActiveModel = submission.into_active_model();
 
     // And insert a new entry. The country is the only foreign key set by the
     // client.
