@@ -17,8 +17,7 @@ use uuid::Uuid;
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 pub(crate) struct CityListParameters {
-    /// The result page being returned, starting at 1. A page past the last one
-    /// returns an empty list.
+    /// The result page being returned, starting at 1. A page past the last one returns an empty list.
     #[param(minimum = 1, maximum = 65536, example = 5)]
     #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,

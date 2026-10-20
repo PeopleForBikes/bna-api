@@ -7593,8 +7593,7 @@ impl Client {
     ///Arguments:
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `sort_by`: Field to sort the cities by
     ///```ignore
@@ -7630,8 +7629,7 @@ impl Client {
     ///
     ///Arguments:
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `status`: Filter for the submission status
     ///```ignore
@@ -7703,8 +7701,7 @@ impl Client {
     ///Arguments:
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `sort_by`: Field to sort the cities by
     ///```ignore
@@ -7774,8 +7771,7 @@ impl Client {
     ///this concept, then the country name is used.
     /// - `name`: City name
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_city_ratings()
@@ -7810,8 +7806,7 @@ impl Client {
     ///
     ///Arguments:
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_pipelines_bnas()
@@ -7880,8 +7875,7 @@ impl Client {
     /// - `latest`: Only return the latest price
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `sort_by`: Field to sort the prices by
     ///```ignore
@@ -7921,8 +7915,7 @@ impl Client {
     ///
     ///Arguments:
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_ratings()
@@ -8016,8 +8009,7 @@ impl Client {
     ///
     ///Arguments:
     /// - `page`: The result page being returned, starting at 1. A page past the
-    ///   last one
-    ///returns an empty list.
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_us_states()

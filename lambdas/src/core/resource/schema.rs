@@ -522,8 +522,7 @@ pub(crate) struct PaginationParameters {
     #[param(minimum = 1, maximum = 100, example = 25)]
     #[serde(default, deserialize_with = "deserialize_page_size")]
     page_size: Option<u64>,
-    /// The result page being returned, starting at 1. A page past the last one
-    /// returns an empty list.
+    /// The result page being returned, starting at 1. A page past the last one returns an empty list.
     #[param(minimum = 1, maximum = 65536, example = 5)]
     #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,

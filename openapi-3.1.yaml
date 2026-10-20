@@ -23,9 +23,7 @@ paths:
       parameters:
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -158,9 +156,7 @@ paths:
         example: 25
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -342,9 +338,7 @@ paths:
       parameters:
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -576,9 +570,7 @@ paths:
         example: 25
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -653,9 +645,7 @@ paths:
         example: 25
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -842,9 +832,7 @@ paths:
       parameters:
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -975,9 +963,7 @@ paths:
         example: 25
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
@@ -1201,9 +1187,7 @@ paths:
         example: 25
       - name: page
         in: query
-        description: |-
-          The result page being returned, starting at 1. A page past the last one
-          returns an empty list.
+        description: The result page being returned, starting at 1. A page past the last one returns an empty list.
         required: false
         schema:
           type: integer
