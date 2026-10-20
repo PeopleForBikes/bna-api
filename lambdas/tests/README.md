@@ -35,6 +35,23 @@ request of the run to its operation and fails when:
 A new endpoint or status code therefore needs a Hurl request before the check
 passes again.
 
+## Continuous integration and releases
+
+On every pull request, the `integration` workflow
+(`.github/workflows/integration.yml`) loads `database-with-test-data.sql` in a
+fresh Postgres, starts the API with authentication disabled, then runs the smoke
+tests, `just test localhost`, and `just coverage`. The coverage output is shown
+on the job summary page, and the Hurl report is uploaded as the
+`integration-reports` artifact.
+
+Releases are approved manually: pushing the version tag deploys production.
+Before pushing it, the person releasing confirms that:
+
+1. the `integration` workflow passed on the commit being tagged, including the
+   coverage check (see its job summary);
+2. the manual verifications for the release are done, such as the checks against
+   staging (`HURL_VARIABLE_token=<token> just test staging`).
+
 ## Test data
 
 The tests run against a database loaded from `database-with-test-data.sql`. This

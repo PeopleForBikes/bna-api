@@ -220,7 +220,7 @@ resetting the database.
       of listing files; run `just coverage`.
 - [x] 11.2 Upload the Hurl report and coverage output as artifacts; write the
       coverage summary to the job summary.
-- [ ] 11.3 Document the release check in `lambdas/tests/README.md`: before
+- [x] 11.3 Document the release check in `lambdas/tests/README.md`: before
       pushing a version tag, confirm the `integration` workflow passed on that
       commit and complete any manual verifications.
 
