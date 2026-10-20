@@ -56,7 +56,6 @@ and this project adheres to
   an object is now rejected with `400 Bad Request`. The pipeline state machine
   must send the message as an object. Messages stored double-encoded are
   returned decoded.
-
 - The OpenAPI specification no longer documents `401 Unauthorized` and
   `403 Forbidden` responses. They are produced by API Gateway, not by the
   application, and will be documented separately.
@@ -64,6 +63,9 @@ and this project adheres to
   codes it can return: the lists now document `400 Bad Request` for invalid
   query parameters, and the lists and creations no longer document
   `404 Not Found`.
+
+### Fixed
+
 - `GET /cities`, `GET /prices/fargate`, and `GET /usstates` now report the real
   number of items in the `x-total` and `x-total-pages` headers, which were
   always `1`.
