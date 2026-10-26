@@ -241,9 +241,9 @@ resetting the database.
 
 ## Phase 11: CI (US-6)
 
-- [x] 11.1 `.github/workflows/integration.yml`: install `just` and `uv`; load
-      the regenerated dump; run the suite through `just test localhost` instead
-      of listing files; run `just coverage`.
+- [x] 11.1 `.github/workflows/integration.yml`: install `just`; load the
+      regenerated dump; run the suite through `just test localhost` instead of
+      listing files; run `just coverage`.
 - [x] 11.2 Upload the Hurl report and coverage output as artifacts; write the
       coverage summary to the job summary.
 - [x] 11.3 Document the release check in `lambdas/tests/README.md`: before
