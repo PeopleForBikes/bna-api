@@ -30,7 +30,7 @@ test *env:
 # Fails when a documented status code was never observed, when an observed one
 # is not documented, or when a request matches no operation.
 coverage:
-  uv run python coverage.py
+  cargo run -q -p hurl-coverage
 
 # Run the smoke tests against an environment [localhost, staging].
 test-smoke-public *env:

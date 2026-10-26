@@ -11,7 +11,8 @@ API Gateway, backed by PostgreSQL via SeaORM. The repo bundles the DB
 migrations, generated entities, the Axum-based Lambda API, the schema docs, and
 a generated Rust REST client (`bnaclient`).
 
-Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, `effortless`.
+Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, `effortless`,
+and `lambdas/tests/coverage` (`hurl-coverage`, the test coverage check).
 
 ## Common commands
 
@@ -52,6 +53,7 @@ own `justfile`:
 cd lambdas/tests
 just test localhost            # or `just test staging` — runs the hurl suites in endpoints/ and scenario/
 just test-smoke-public localhost
+just coverage                  # compare the last run's report with openapi-3.1.yaml (hurl-coverage)
 just test-localhost-schemathesis
 ```
 

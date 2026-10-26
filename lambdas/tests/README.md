@@ -35,6 +35,14 @@ request of the run to its operation and fails when:
 A new endpoint or status code therefore needs a Hurl request before the check
 passes again.
 
+The check is the `hurl-coverage` binary in `coverage/`, a member of the Cargo
+workspace; `just coverage` runs it through `cargo run`. Its options set other
+paths for the specification or the report:
+
+```bash
+cargo run -q -p hurl-coverage -- --spec ../../openapi-3.1.yaml --report reports/report.json
+```
+
 ## Continuous integration and releases
 
 On every pull request, the `integration` workflow

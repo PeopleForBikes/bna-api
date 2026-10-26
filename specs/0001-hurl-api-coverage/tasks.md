@@ -233,6 +233,11 @@ resetting the database.
 - [x] 10.3 New `just coverage` recipe in `lambdas/tests/justfile`.
 - [x] 10.4 Fill every remaining uncovered pair with a Hurl request until
       `just coverage` passes.
+- [x] 10.5 Review: port the check to Rust, so the repository stays a Rust
+      repository. New workspace crate `hurl-coverage` in
+      `lambdas/tests/coverage`, with the same output as the script; remove
+      `coverage.py` and the YAML parser from `pyproject.toml`, and point
+      `just coverage` at `cargo run`.
 
 ## Phase 11: CI (US-6)
 

@@ -427,9 +427,12 @@ It also prints a coverage summary (covered pairs / documented pairs).
 
 ### Implementation
 
-A Python script in `lambdas/tests`, run through `uv` (the project already has a
-`pyproject.toml` there), using only the standard library and a YAML parser. A
-`just` recipe runs the whole suite with the report enabled, then the check:
+A small Rust binary, `hurl-coverage`, in `lambdas/tests/coverage` (a workspace
+member, so it is not built or deployed with the Lambda functions), keeping the
+repository in Rust. It reads the specification with the YAML parser already in
+the dependency tree and runs through `cargo`. It first was a Python script; it
+was ported during the review, with the same output. A `just` recipe runs the
+whole suite with the report enabled, then the check:
 
 ```bash
 cd lambdas/tests
