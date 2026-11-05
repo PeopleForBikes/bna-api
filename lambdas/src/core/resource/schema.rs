@@ -705,48 +705,6 @@ impl From<OrderDirection> for sea_orm::Order {
     }
 }
 
-/// Sorting parameters shared across all list endpoints.
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[into_params(parameter_in = Query)]
-pub(crate) struct SortParameters {
-    /// Field to sort by.
-    #[param(example = "created_at")]
-    sort_by: Option<String>,
-
-    /// Sort direction (`asc` or `desc`).
-    #[param(example = "desc")]
-    order_direction: Option<OrderDirection>,
-
-    /// Fetch the latest entry.
-    /// When specified, it ignores the `sort_by` and `order_direction` parameters.
-    /// This parameter does not apply to all entities.
-    #[param(example = "true")]
-    latest: Option<bool>,
-}
-
-impl Default for SortParameters {
-    fn default() -> Self {
-        Self {
-            sort_by: Some(String::from("created_at")),
-            order_direction: Some(OrderDirection::default()),
-            latest: Some(false),
-        }
-    }
-}
-
-/// List parameters combining sorting and pagination.
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[schema(as = ListParameters)]
-pub(crate) struct ListParams {
-    #[serde(flatten)]
-    pagination: Option<PaginationParameters>,
-
-    #[serde(flatten)]
-    sorting: Option<SortParameters>,
-}
-
 /// Pagination headers of every list, with their description.
 const PAGINATION_HEADERS: [(&str, &str, bool); 7] = [
     (

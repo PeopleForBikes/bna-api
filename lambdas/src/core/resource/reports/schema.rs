@@ -46,8 +46,3 @@ pub struct BnaReport {
     // BNA Transit
     pub(crate) transit: Option<f64>,
 }
-
-#[allow(dead_code)]
-#[derive(ToSchema, Serialize)]
-#[schema(description = "A collection of city rating reports.")]
-pub(crate) struct BnaReports(Vec<BnaReport>);

@@ -1,5 +1,5 @@
 use super::{
-    db::{fetch_rating, fetch_ratings, fetch_ratings_city, fetch_ratings_summaries, Bna},
+    db::{fetch_rating, fetch_ratings, fetch_ratings_city, Bna},
     schema::RatingPost,
 };
 use crate::{Context, ExecutionError};
@@ -12,15 +12,6 @@ use sea_orm::{
 };
 use tracing::info;
 use uuid::Uuid;
-
-pub async fn get_ratings_summaries_adaptor(
-    db: &DatabaseConnection,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<summary::Model>), ExecutionError> {
-    // Fetch a page of summary.
-    Ok(fetch_ratings_summaries(db, page, page_size).await?)
-}
 
 pub(crate) async fn get_rating_adaptor(
     db: &DatabaseConnection,

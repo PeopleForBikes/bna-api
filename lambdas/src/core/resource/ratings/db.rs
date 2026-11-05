@@ -59,21 +59,6 @@ pub(crate) struct Bna {
     pub(crate) track: Option<f64>,
 }
 
-pub async fn fetch_ratings_summaries(
-    db: &DatabaseConnection,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<summary::Model>), sea_orm::DbErr> {
-    let select = summary::Entity::find();
-    let models = select
-        .clone()
-        .paginate(db, page_size)
-        .fetch_page(page.saturating_sub(1))
-        .await?;
-    let count = select.count(db).await?;
-    Ok((count, models))
-}
-
 pub async fn fetch_ratings_city(
     db: &DatabaseConnection,
     rating_id: Uuid,

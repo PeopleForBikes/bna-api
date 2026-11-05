@@ -1,4 +1,4 @@
-use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor};
+use super::adaptor::{get_price_fargate_adaptor, get_prices_fargate_adaptor};
 use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
@@ -71,7 +71,7 @@ pub(crate) async fn get_price_fargate(
     ctx: Context,
 ) -> Result<Json<FargatePrice>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_price_fargate_adaptor_model_(db, price_id, ctx)
+    get_price_fargate_adaptor(db, price_id, ctx)
         .await
         .map(FargatePrice::from)
         .map(Json)

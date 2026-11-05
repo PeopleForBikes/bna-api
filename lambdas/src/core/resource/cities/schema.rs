@@ -129,20 +129,6 @@ pub(crate) struct CityPost {
     residential_speed_limit: Option<i32>,
 }
 
-#[allow(dead_code)]
-#[derive(ToSchema)]
-pub(crate) struct CensusPost {
-    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
-    #[schema(examples("4805000"))]
-    fips_code: String,
-    /// City population size category (small (0), medium (1), large (2))
-    #[schema(examples("1"))]
-    pop_size: i32,
-    /// City population
-    #[schema(examples("907779"))]
-    population: i32,
-}
-
 #[derive(ToSchema, Serialize, FromQueryResult)]
 pub(crate) struct RatingSummary {
     /// Analysis identifier

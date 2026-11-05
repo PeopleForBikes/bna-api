@@ -222,10 +222,6 @@ where
             payload,
         }
     }
-
-    pub fn payload(&self) -> &T {
-        &self.payload
-    }
 }
 
 impl<T> IntoResponse for PageFlow<T>
@@ -356,10 +352,6 @@ where
 }
 
 impl Context {
-    pub fn new(request_id: Option<String>, source: String) -> Self {
-        Self { request_id, source }
-    }
-
     pub fn request_id(&self) -> Option<String> {
         self.request_id.clone()
     }
