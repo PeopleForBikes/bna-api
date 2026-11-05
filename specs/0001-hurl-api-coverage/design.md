@@ -303,9 +303,8 @@ out in the release notes.
   `lambdas/tests/justfile` target `https://api.peopleforbikes.xyz`, a domain
   that no longer exists. Staging lives at
   `https://api.staging.bna.peopleforbikes.org`, as the specification already
-  states. Doc tests in `lambdas/src/lib.rs` and an event fixture in
-  `lambdas/src/fixtures` also use the old domain, only as example URLs; updating
-  them is optional cleanup, outside this feature.
+  states. Doc tests in `lambdas/src/lib.rs` also use the old domain, only as
+  example URLs; updating them is optional cleanup, outside this feature.
 
 ## 2. Hurl Suite
 
