@@ -16,7 +16,6 @@ entity = { path = "../entity" }
 futures = { workspace = true }
 lambda_http = { workspace = true }
 lambda_runtime = { workspace = true }
-nom = { workspace = true }
 once_cell = { workspace = true }
 reqwest = { workspace = true, features = [
   "charset",
@@ -39,7 +38,6 @@ tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
 tracing-subscriber = { workspace = true, features = ["fmt"] }
 tracing-test = { workspace = true }
-url = { workspace = true }
 utoipa = { workspace = true, features = ["chrono", "decimal", "uuid", "yaml"] }
 utoipa-axum = { workspace = true }
 utoipa-swagger-ui = { workspace = true, features = ["axum"] }
@@ -59,7 +57,6 @@ path = "src/main.rs"
 
 [dev-dependencies]
 color-eyre = { workspace = true }
-rstest = { workspace = true }
 
 [package.metadata.lambda.deploy]
 memory = 128
