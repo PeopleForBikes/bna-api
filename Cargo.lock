@@ -642,31 +642,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "aws-sdk-sqs"
-version = "1.101.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d233788573ea7addc6d6642cc2efe356fbd1abea3241c765e3c4b47094cb5763"
-dependencies = [
- "arc-swap",
- "aws-credential-types",
- "aws-runtime",
- "aws-smithy-async",
- "aws-smithy-http",
- "aws-smithy-json",
- "aws-smithy-observability",
- "aws-smithy-runtime",
- "aws-smithy-runtime-api",
- "aws-smithy-types",
- "aws-types",
- "bytes",
- "fastrand",
- "http 0.2.12",
- "http 1.4.0",
- "regex-lite",
- "tracing",
-]
-
-[[package]]
 name = "aws-sdk-sso"
 version = "1.101.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3240,7 +3215,6 @@ version = "1.6.0-alpha.1"
 dependencies = [
  "aws-config",
  "aws-sdk-s3",
- "aws-sdk-sqs",
  "axum",
  "axum-streams",
  "bnacore",
@@ -3250,9 +3224,7 @@ dependencies = [
  "entity",
  "futures",
  "lambda_http",
- "lambda_runtime",
  "once_cell",
- "reqwest",
  "sea-orm",
  "serde",
  "serde_json",
@@ -3263,7 +3235,6 @@ dependencies = [
  "tower-http 0.7.1",
  "tracing",
  "tracing-subscriber",
- "tracing-test",
  "utoipa",
  "utoipa-axum",
  "utoipa-swagger-ui",

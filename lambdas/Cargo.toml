@@ -8,21 +8,13 @@ axum = { workspace = true, features = ["macros", "original-uri", "query"] }
 axum-streams = { workspace = true, features = ["csv"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
-aws-sdk-sqs = { workspace = true }
 bnacore = { workspace = true }
 chrono = { workspace = true }
 dotenvy = { workspace = true }
 entity = { path = "../entity" }
 futures = { workspace = true }
 lambda_http = { workspace = true }
-lambda_runtime = { workspace = true }
 once_cell = { workspace = true }
-reqwest = { workspace = true, features = [
-  "charset",
-  "http2",
-  "json",
-  "rustls",
-] }
 sea-orm = { workspace = true, features = [
   "sqlx-postgres",
   "runtime-tokio-rustls",
@@ -36,8 +28,7 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tower-http = { workspace = true, features = ["trace"] }
 tracing = { workspace = true, features = ["log"] }
-tracing-subscriber = { workspace = true, features = ["fmt"] }
-tracing-test = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["fmt", "tracing-log"] }
 utoipa = { workspace = true, features = ["chrono", "decimal", "uuid", "yaml"] }
 utoipa-axum = { workspace = true }
 utoipa-swagger-ui = { workspace = true, features = ["axum"] }
