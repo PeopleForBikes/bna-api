@@ -163,13 +163,40 @@ content-type: application/json
 ```
 {"city_id": "11111111-2222-3333-4444-555555555555", "score": "high"}
 ```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" contains "score"
+
+# Rejects a body that is not valid JSON.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
 HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/ratings"
-jsonpath "$.errors[0].details" contains "score"
+
+# Rejects a body sent without the JSON content type.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+```
+{}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"
 
 # Rejects a rating for a city that does not exist.
 POST {{host}}/ratings
@@ -190,11 +217,11 @@ content-type: application/json
   "version": "24.12",
   "score": 8.93
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/ratings"
 jsonpath "$.errors[0].details" contains "city_id"
 

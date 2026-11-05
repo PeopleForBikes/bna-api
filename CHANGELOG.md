@@ -15,10 +15,6 @@ and this project adheres to
   instead of a plain text message. The error `source` names the failing query
   parameter, the `content-type` header, or otherwise holds the request path in
   `pointer`. `details` names the invalid field; only the first one is reported.
-- Invalid request bodies now return `400 Bad Request`, as documented in the
-  OpenAPI specification. A body with missing or mistyped fields previously
-  returned `422 Unprocessable Entity`, and a body sent without the
-  `application/json` content type returned `415 Unsupported Media Type`.
 - Pages now start at 1, as documented in the OpenAPI specification. The first
   page used to be page 0, so `page=1` returned the second page. The default page
   is 1, `page=0` is rejected with `400 Bad Request`, and the `x-page`,
@@ -55,14 +51,18 @@ and this project adheres to
   holding the JSON object. A request may send it as a JSON object or as a string
   holding a JSON object; both are stored as the object, where a string used to
   be stored double-encoded. Any other value is now rejected with
-  `400 Bad Request`. Messages stored double-encoded are returned decoded.
+  `422 Unprocessable Entity`. Messages stored double-encoded are returned
+  decoded.
 - The OpenAPI specification no longer documents `401 Unauthorized` and
   `403 Forbidden` responses. They are produced by API Gateway, not by the
   application, and will be documented separately.
 - Each operation in the OpenAPI specification now documents exactly the error
   codes it can return: the lists now document `400 Bad Request` for invalid
   query parameters, and the lists and creations no longer document
-  `404 Not Found`.
+  `404 Not Found`. The operations taking a body now document
+  `415 Unsupported Media Type` for a missing content type and
+  `422 Unprocessable Entity` for rejected content, which they already returned;
+  `400 Bad Request` is for a body that is not valid JSON.
 - The pipeline steps are now `Setup`, `Analysis`, `Save`, and `Cleanup`, the
   steps the database accepts. `Save` records that the results were saved in the
   database. `SqsMessage` is no longer a step: the database always rejected it.
@@ -97,27 +97,27 @@ and this project adheres to
   of `500 Internal Server Error`.
 - `GET /cities/submissions/{submission_id}` accepts the documented `status`
   filter again. Any query string used to be rejected.
-- Updating a submission with an unknown `status` now returns `400 Bad Request`
-  instead of `500 Internal Server Error`.
+- Updating a submission with an unknown `status` now returns
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - `POST /cities` now stores the BNA region of a US city (for example `South` for
   Tennessee). It used to store `United States`. Cities created before this fix
   keep the wrong region.
 - Creating a city that already exists now returns the documented `409 Conflict`
   instead of `500 Internal Server Error`.
 - Creating a city in a country the BNA does not cover now returns
-  `400 Bad Request` instead of `500 Internal Server Error`.
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Creating a US city in a state that does not exist now returns
-  `400 Bad Request` instead of `500 Internal Server Error`.
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Creating a city submission in a country outside the documented `Country` enum
-  now returns `400 Bad Request` instead of `500 Internal Server Error`.
-- Creating a rating for a city that does not exist now returns `400 Bad Request`
-  instead of `500 Internal Server Error`.
+  now returns `422 Unprocessable Entity` instead of `500 Internal Server Error`.
+- Creating a rating for a city that does not exist now returns
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Creating a pipeline whose `state_machine_id` already exists now returns the
   documented `409 Conflict` instead of `500 Internal Server Error`.
 - Updating a pipeline that does not exist now returns `404 Not Found` instead of
   `500 Internal Server Error`.
 - Updating a pipeline with an unknown `status` or `step` now returns
-  `400 Bad Request` instead of `500 Internal Server Error`.
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was
   silently ignored.
 - `GET /cities/{country}/{region}/{name}/ratings` now returns the city with an

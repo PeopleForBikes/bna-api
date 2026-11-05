@@ -122,16 +122,21 @@ where
             Ok(Json(value)) => Ok(Self(value)),
             Err(rejection) => {
                 let details = rejection.body_text();
-                let source = if rejection.status() == StatusCode::UNSUPPORTED_MEDIA_TYPE {
+                // A missing content type is a 415 and valid JSON with rejected
+                // content is a 422. Any other body problem is a bad request.
+                let status = match rejection.status() {
+                    status @ (StatusCode::UNSUPPORTED_MEDIA_TYPE
+                    | StatusCode::UNPROCESSABLE_ENTITY) => status,
+                    _ => StatusCode::BAD_REQUEST,
+                };
+                let source = if status == StatusCode::UNSUPPORTED_MEDIA_TYPE {
                     APIErrorSource::Header(header::CONTENT_TYPE.to_string())
                 } else {
                     APIErrorSource::Pointer(path)
                 };
-                // Every body problem is a bad request, including the 415 and 422
-                // statuses Axum uses for a missing content type or invalid data.
                 Err(ExtractionError(APIError::new(
                     id,
-                    StatusCode::BAD_REQUEST,
+                    status,
                     "Invalid Request Body",
                     &details,
                     Some(source),

@@ -101,7 +101,10 @@ resources/endpoints should follow it too:
   `core/extract.rs`, which answer rejected requests with `APIErrors`), calls the
   adaptor, and carries the `utoipa` OpenAPI annotations for that route. Each
   operation documents exactly the error codes it can return, with
-  `BadRequestResponse`, `NotFoundResponse`, and `ConflictResponse`.
+  `BadRequestResponse`, `NotFoundResponse`, `ConflictResponse`, and, when it
+  takes a body, `UnsupportedMediaTypeResponse` and
+  `UnprocessableEntityResponse`. `source.pointer` is always the request path, and
+  `details` names the invalid field.
 - `schema.rs` — resource-local request/response types (`ToSchema`, `IntoParams`,
   `IntoResponses`) distinct from the cross-resource types in
   `core/resource/schema.rs` (pagination params, `Country` enum, the error

@@ -143,10 +143,10 @@ content-type: application/json
   "state": "Narnia",
   "name": "hurl-{{newUuid}}"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 jsonpath "$.errors[0].details" contains "country"
 
@@ -159,10 +159,10 @@ content-type: application/json
   "state": "Narnia",
   "name": "hurl-{{newUuid}}"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 jsonpath "$.errors[0].details" contains "state"
 
@@ -261,11 +261,11 @@ content-type: application/json
 ```
 {"name": "Y"}
 ```
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 jsonpath "$.errors[0].details" contains "country"
 
@@ -275,11 +275,11 @@ Authorization: Bearer {{token}}
 ```
 {"name": "Y"}
 ```
-HTTP 400
+HTTP 415
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "415"
 jsonpath "$.errors[0].source.header" == "content-type"
 
 # Counts every city in the pagination headers: with one city per page, there

@@ -19,7 +19,7 @@ use crate::{
         },
         schema::{
             deserialize_bna_year, BadRequestResponse, City, ConflictResponse, NotFoundResponse,
-            PaginationParameters,
+            PaginationParameters, UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
         },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
@@ -199,6 +199,8 @@ async fn get_city_ratings(
   responses(
     (status = CREATED, description = "Creates a new city", body = City),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
     ConflictResponse,
   ))]
 async fn post_city(
@@ -328,6 +330,8 @@ async fn get_cities_submissions(
   responses(
     (status = CREATED, description = "Creates a new city submission", body = Submission),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
   ))]
 async fn post_cities_submission(
     ctx: Context,
@@ -356,6 +360,8 @@ async fn post_cities_submission(
   responses(
     (status = OK, description = "Updates a city submission", body = Submission),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
     NotFoundResponse,
   ))]
 async fn patch_cities_submission(

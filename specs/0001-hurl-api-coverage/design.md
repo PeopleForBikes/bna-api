@@ -494,7 +494,7 @@ specification and enforced by the suite:
 
 ## Risks
 
-- **Client-visible changes** (M-01, M-02, M-05, M-07, M-19, M-21): clients
+- **Client-visible changes** (M-01, M-05, M-07, M-19, M-21, M-42): clients
   relying on zero-based pages, clamped page sizes, plain-text errors, or a
   string `sqs_message` in responses will break. They must be listed in the
   release notes. The pipeline state machine may keep sending `sqs_message` as a

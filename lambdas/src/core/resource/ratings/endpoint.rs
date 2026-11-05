@@ -6,7 +6,10 @@ use super::{
 };
 use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::{
-    core::resource::schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
+    core::resource::schema::{
+        BadRequestResponse, NotFoundResponse, PaginationParameters, UnprocessableEntityResponse,
+        UnsupportedMediaTypeResponse,
+    },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
 use axum::{http::StatusCode, Json};
@@ -88,6 +91,8 @@ async fn get_ratings(
   responses(
     (status = CREATED, description = "Creates a new city rating", body = Rating ),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
   ))]
 async fn post_rating(
     ctx: Context,

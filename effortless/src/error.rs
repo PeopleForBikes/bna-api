@@ -112,7 +112,7 @@ impl APIError {
     pub fn invalid_attribute(id: Option<String>, source: &str, message: &str) -> Self {
         Self {
             id,
-            status: StatusCode::BAD_REQUEST.as_u16().to_string(),
+            status: StatusCode::UNPROCESSABLE_ENTITY.as_u16().to_string(),
             title: String::from("Invalid Attribute"),
             source: Some(APIErrorSource::Pointer(source.into())),
             details: message.into(),

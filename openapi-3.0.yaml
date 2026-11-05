@@ -111,17 +111,15 @@ paths:
                 $ref: '#/components/schemas/Cities'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -147,17 +145,15 @@ paths:
                 $ref: '#/components/schemas/City'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -177,6 +173,39 @@ paths:
                       pointer: /cities
                     status: '409'
                     title: Conflict
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/submissions:
     get:
       tags:
@@ -259,17 +288,15 @@ paths:
                 $ref: '#/components/schemas/Submissions'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -295,22 +322,53 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/submissions/{submission_id}:
     get:
       tags:
@@ -342,17 +400,15 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -403,17 +459,15 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -435,6 +489,39 @@ paths:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/summary/latest:
     get:
       tags:
@@ -532,17 +619,15 @@ paths:
                 $ref: '#/components/schemas/CitiesWithSummary'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -584,17 +669,15 @@ paths:
                 $ref: '#/components/schemas/CitiesWithSummary'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -659,17 +742,15 @@ paths:
                 $ref: '#/components/schemas/City'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -795,17 +876,15 @@ paths:
                 $ref: '#/components/schemas/CityRatings'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -915,17 +994,15 @@ paths:
                 $ref: '#/components/schemas/BnaPipelines'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -951,17 +1028,15 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -981,6 +1056,39 @@ paths:
                       pointer: /cities
                     status: '409'
                     title: Conflict
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /pipelines/bna/{pipeline_id}:
     get:
       tags:
@@ -1004,17 +1112,15 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1064,17 +1170,15 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1096,6 +1200,39 @@ paths:
                       pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /prices/fargate:
     get:
       tags:
@@ -1195,17 +1332,15 @@ paths:
                 $ref: '#/components/schemas/FargatePrices'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1236,17 +1371,15 @@ paths:
                 $ref: '#/components/schemas/FargatePrice'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1343,17 +1476,15 @@ paths:
                 $ref: '#/components/schemas/Ratings'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1379,22 +1510,53 @@ paths:
                 $ref: '#/components/schemas/Rating'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /ratings/{rating_id}:
     get:
       tags:
@@ -1418,17 +1580,15 @@ paths:
                 $ref: '#/components/schemas/Rating'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1473,17 +1633,15 @@ paths:
                 $ref: '#/components/schemas/RatingWithCity'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1539,17 +1697,15 @@ paths:
             text/csv: {}
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1630,17 +1786,15 @@ paths:
                 $ref: '#/components/schemas/UsStates'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
@@ -1671,17 +1825,15 @@ paths:
                 $ref: '#/components/schemas/UsState'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status

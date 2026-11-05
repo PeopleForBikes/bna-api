@@ -8,6 +8,7 @@ use crate::database_connect_or_init;
 use crate::{
     core::resource::schema::{
         BadRequestResponse, ConflictResponse, NotFoundResponse, PaginationParameters,
+        UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
     },
     Context, ExecutionError, PageFlow, Paginatron,
 };
@@ -85,6 +86,8 @@ async fn get_pipelines_bnas(
   responses(
     (status = CREATED, description = "Creates a new city submission", body = BnaPipeline),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
     ConflictResponse,
   ))]
 async fn post_pipelines_bna(
@@ -114,6 +117,8 @@ async fn post_pipelines_bna(
   responses(
     (status = OK, description = "Updates the details of a BNA pipeline", body = BnaPipeline),
     BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
     NotFoundResponse,
   ))]
 async fn patch_pipelines_bna(

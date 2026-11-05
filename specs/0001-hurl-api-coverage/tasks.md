@@ -105,7 +105,7 @@ resetting the database.
       the invalid field; Hurl asserts both on every rejected body.
   - `lambdas/src/core/extract.rs`, `lambdas/src/lib.rs` (`ExecutionError`), the
     doc comments of `APIErrorSource`.
-- [ ] 3.6 M-02, revised: keep 415 and 422, and document them on the 6 operations
+- [x] 3.6 M-02, revised: keep 415 and 422, and document them on the 6 operations
       taking a body; an unknown `city_id`, `country`, or `state` returns 422;
       Hurl covers the 3 codes on each of these operations.
   - `lambdas/src/core/extract.rs`, `lambdas/src/core/resource/schema.rs`, each
@@ -273,7 +273,7 @@ resetting the database.
     and a token is available (`HURL_VARIABLE_token=<token> just test staging`).
 - [x] 12.3 `cargo test`, `cargo clippy`, `just lint` pass; `bnaclient` CI job
       shows no diff.
-- [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-02, M-05,
+- [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-05, M-42,
       M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26, M-28, M-29, M-41).
 - [ ] 12.5 **Deferred.** Every acceptance criterion in `requirements.md` is
       checked off.

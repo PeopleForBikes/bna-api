@@ -470,11 +470,11 @@ pub(crate) enum BadRequestResponse {
     /// Bad Request
     #[response(
         status = 400,
-        description = "The request was formatted incorrectly or missing required parameters.",
+        description = "The request was formatted incorrectly: an invalid path or query parameter, or a body that is not valid JSON.",
         example = json!({
           "errors": [
           {
-            "details": "the request was formatted incorrectly or missing required parameters",
+            "details": "the request was formatted incorrectly",
             "id": "blfwkg8nvHcEJnQ=",
             "source": {"parameter": "status"},
             "status": "400",
@@ -483,6 +483,50 @@ pub(crate) enum BadRequestResponse {
         ]})
     )]
     BadRequest(APIErrors),
+}
+
+/// Response for an operation receiving a body without the JSON content type.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum UnsupportedMediaTypeResponse {
+    /// Unsupported Media Type
+    #[response(
+        status = 415,
+        description = "The request body was not sent with the `application/json` content type.",
+        example = json!({
+          "errors": [
+          {
+            "details": "Expected request with `Content-Type: application/json`",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"header": "content-type"},
+            "status": "415",
+            "title": "Invalid Request Body"
+          }
+        ]})
+    )]
+    UnsupportedMediaType(APIErrors),
+}
+
+/// Response for an operation receiving a body whose content may be rejected.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum UnprocessableEntityResponse {
+    /// Unprocessable Entity
+    #[response(
+        status = 422,
+        description = "The request body is valid JSON, but its content is rejected: a missing or mistyped field, or a value that does not exist. `details` names the first invalid field.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the country is not covered by the BNA: Narnia",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"pointer": "/cities"},
+            "status": "422",
+            "title": "Invalid Attribute"
+          }
+        ]})
+    )]
+    UnprocessableEntity(APIErrors),
 }
 
 /// Deserializes a page number, between 1 and `MAX_PAGE`.

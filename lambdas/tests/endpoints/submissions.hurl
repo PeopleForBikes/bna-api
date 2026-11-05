@@ -25,13 +25,40 @@ content-type: application/json
 ```
 {"city": "x"}
 ```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
+jsonpath "$.errors[0].details" contains "first_name"
+
+# Rejects a body that is not valid JSON.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
 HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
-jsonpath "$.errors[0].details" contains "first_name"
+
+# Rejects a body sent without the JSON content type.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+```
+{}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"
 
 # Rejects a submission in a country the BNA does not cover.
 POST {{host}}/cities/submissions
@@ -46,11 +73,11 @@ content-type: application/json
   "fips_code": "0",
   "consent": true
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
 jsonpath "$.errors[0].details" contains "country"
 
@@ -141,9 +168,36 @@ content-type: application/json
 {
   "status": "Bogus"
 }
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
+jsonpath "$.errors[0].details" contains "status"
+
+# Rejects a body that is not valid JSON.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
 HTTP 400
 [Asserts]
 header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
-jsonpath "$.errors[0].details" contains "status"
+
+# Rejects a body sent without the JSON content type.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+```
+{}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"

@@ -37,13 +37,40 @@ content-type: application/json
 ```
 {}
 ```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
+jsonpath "$.errors[0].details" contains "state_machine_id"
+
+# Rejects a body that is not valid JSON.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
 HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
-jsonpath "$.errors[0].details" contains "state_machine_id"
+
+# Rejects a body sent without the JSON content type.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+```
+{}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"
 
 # Reading a pipeline that does not exist is not found.
 GET {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
@@ -148,13 +175,40 @@ content-type: application/json
 ```
 {"fargate_price_id": "one"}
 ```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "fargate_price_id"
+
+# Rejects a body that is not valid JSON.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+not json
+```
 HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
-jsonpath "$.errors[0].details" contains "fargate_price_id"
+
+# Rejects a body sent without the JSON content type.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+```
+{}
+```
+HTTP 415
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "415"
+jsonpath "$.errors[0].source.header" == "content-type"
 
 # Accepts an SQS message sent as a string holding a JSON object, and returns
 # it as a JSON object.
@@ -201,11 +255,11 @@ content-type: application/json
   "sqs_message": "not json",
   "state_machine_id": "{{newUuid}}"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
 jsonpath "$.errors[0].details" contains "sqs_message"
 
@@ -239,11 +293,11 @@ content-type: application/json
 {
   "status": "Bogus"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
 jsonpath "$.errors[0].details" contains "status"
 
@@ -254,11 +308,11 @@ content-type: application/json
 {
   "step": "Bogus"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
-jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
 jsonpath "$.errors[0].details" contains "step"
 
@@ -285,7 +339,7 @@ content-type: application/json
 {
   "step": "SqsMessage"
 }
-HTTP 400
+HTTP 422
 [Asserts]
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
 jsonpath "$.errors[0].details" contains "step"
