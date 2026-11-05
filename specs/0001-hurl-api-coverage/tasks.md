@@ -100,7 +100,16 @@ resetting the database.
     `lambdas/src/core/resource/*/endpoint.rs`.
 - [x] 3.3 Code: database errors caused by client input must never surface as 500
       (enforced resource by resource in phases 5 to 7).
-- [x] 3.4 `CHANGELOG.md`: JSON error bodies everywhere; 400 replaces 422.
+- [x] 3.4 `CHANGELOG.md`: JSON error bodies everywhere.
+- [ ] 3.5 M-42: `source.pointer` is always the request path, and `details` names
+      the invalid field; Hurl asserts both on every rejected body.
+  - `lambdas/src/core/extract.rs`, `lambdas/src/lib.rs` (`ExecutionError`), the
+    doc comments of `APIErrorSource`.
+- [ ] 3.6 M-02, revised: keep 415 and 422, and document them on the 6 operations
+      taking a body; an unknown `city_id`, `country`, or `state` returns 422;
+      Hurl covers the 3 codes on each of these operations.
+  - `lambdas/src/core/extract.rs`, `lambdas/src/core/resource/schema.rs`, each
+    `endpoint.rs`.
 
 ## Phase 4: Pagination (M-05 to M-10)
 

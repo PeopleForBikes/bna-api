@@ -47,11 +47,12 @@ fixed `state_machine_id`.
 Each entry lists the observed behavior, the specification, and its resolution.
 **All resolutions M-01 to M-27 were approved by the team on 2026-10-19**, as
 proposed (the alternative noted under M-07 was not retained). The resolutions
-found during implementation (M-28 to M-41) were decided on 2026-10-20, as
-recorded in each entry. `Code` means the implementation changes; `Spec` means
-the specification changes (through the `utoipa` annotations, then
-`just regenerate-all-no-cargo`). Entries marked **client-visible** change
-behavior for API consumers and must be called out in the release notes.
+found during implementation (M-28 to M-41) were decided on 2026-10-20, and M-02
+and M-42 during the review on 2026-11-05, as recorded in each entry. `Code`
+means the implementation changes; `Spec` means the specification changes
+(through the `utoipa` annotations, then `just regenerate-all-no-cargo`). Entries
+marked **client-visible** change behavior for API consumers and must be called
+out in the release notes.
 
 ### Cross-cutting
 
@@ -60,12 +61,26 @@ behavior for API consumers and must be called out in the release notes.
   The specification documents `APIErrors` JSON for every error. Proposed:
   **Code**, convert every extractor rejection into an `APIErrors` body, with
   `source.parameter` for query errors and `source.pointer` for body or path
-  errors. Client-visible.
+  errors (see M-42). Client-visible.
 - **M-02 Status for invalid bodies.** Missing or mistyped body fields return
-  422; syntactically invalid JSON returns 400. The specification only
-  documents 400. Proposed: **Code**, return 400 for both, matching the
-  specification's existing 400 description ("formatted incorrectly or missing
-  required parameters"). Client-visible.
+  422, a body without the JSON content type returns 415, and syntactically
+  invalid JSON returns 400, while the specification only documents 400.
+  Resolution, changed during the review on 2026-11-05: **Spec**, keep and
+  document the three codes, which tell a client what to fix. 415 is for the
+  `content-type` header. 400 is for malformed JSON and for invalid path or query
+  values. 422 is for valid JSON whose content is rejected, including values only
+  a check can reject: an unknown `city_id`, `country`, or `state` (M-15, M-20,
+  M-38). It first was **Code**, returning 400 for all of them; that was only
+  chosen to match the single code the specification documented.
+- **M-42 Meaning of `source.pointer`.** A rejected body field reports its
+  location (`/country`) in `source.pointer`, while every other error reports the
+  request path (`/ratings/{rating_id}`). The doc comments describe the JSON:API
+  definition, a pointer into the request document. Found during the review.
+  Resolution: **Code + Spec**, `source.pointer` is always the request path, and
+  `details` names the invalid field and the reason. `source.parameter` and
+  `source.header` keep naming a query parameter and a header. Only the first
+  invalid field is reported, since deserialization stops there; the `errors`
+  array holds a single error. Client-visible.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never
@@ -125,10 +140,10 @@ behavior for API consumers and must be called out in the release notes.
   country for non-US cities. Cities created before the fix keep the wrong
   region.
 - **M-15 Unknown country on create.** `POST /cities` with an unknown country
-  returns 500. Proposed: **Code**, return 400.
+  returns 500. Proposed: **Code**, return 422 (M-02).
 - **M-34 Unknown US state on create.** `POST /cities` for a US city with a state
   outside the crosswalk returns 500. Found with M-15. Resolution: **Code**,
-  return 400 pointing at `/state`. Covered by the approved M-03 rule.
+  return 422 (M-02). Covered by the approved M-03 rule.
 - **M-16 Unknown country on read.** `GET /cities/{country}/...` with a country
   outside the `Country` enum returns 404. Proposed: **Code**, return 400, as for
   any other invalid enum value.
@@ -146,7 +161,7 @@ behavior for API consumers and must be called out in the release notes.
 - **M-31 Unknown status on submission update.** Updating a submission with a
   `status` outside `Approved`, `Pending`, `Rejected` returns 500 "Database
   error". Resolution: **Code + Spec**, type the status as the `ApprovalStatus`
-  enum (M-13) so unknown values are rejected with 400. Covered by the approved
+  enum (M-13) so unknown values are rejected with 422. Covered by the approved
   M-03 rule.
 - **M-32 Partial submission update documented as full.** The `SubmissionPatch`
   schema marks every field as required, while the API accepts any subset of
@@ -191,9 +206,9 @@ behavior for API consumers and must be called out in the release notes.
 - **M-38 Unknown country on a new submission.** `POST /cities/submissions` with
   a country outside the `Country` enum returns 500: the insert fails on the
   country foreign key. Found while reviewing the documented codes (phase 9).
-  Resolution: **Code**, return 400 pointing at `/country`, like `POST /cities`
-  (M-15). Covered by the approved M-03 rule. The commented-out check on the
-  countries covered by the BNA, still under discussion, is left as is.
+  Resolution: **Code**, return 422 (M-02), like `POST /cities` (M-15). Covered
+  by the approved M-03 rule. The commented-out check on the countries covered by
+  the BNA, still under discussion, is left as is.
 - **M-19 Top cities bounds.** `/cities/top/{year}/{count}` returns 404 for years
   outside 2017–2029 and accepts `count=0` and `count=101` despite the
   specification's bounds. Proposed: **Code**, return 400 for any out-of-range
@@ -202,7 +217,7 @@ behavior for API consumers and must be called out in the release notes.
 ### Ratings
 
 - **M-20 Rating for an unknown city.** `POST /ratings` with an unknown `city_id`
-  returns 500. Proposed: **Code**, return 400 with `source.pointer` `/city_id`.
+  returns 500. Proposed: **Code**, return 422 (M-02).
 - **M-29 Measures never returned.** `GET /ratings/{rating_id}` (and every other
   rating read) returns `measure` with all fields `null`, even when the rating
   has a measure row: the read queries join the seven other rating detail tables
@@ -222,13 +237,13 @@ behavior for API consumers and must be called out in the release notes.
   picked up from the SQS queue and reproduce the run, so it only has to turn
   back into a JSON object. A request may send it as a JSON object or as a string
   holding one; both are stored and returned as the object, and any other value
-  is rejected with 400. The pipeline state machine needs no change.
+  is rejected with 422. The pipeline state machine needs no change.
 - **M-22 Duplicate pipeline.** Posting an existing `state_machine_id`
   returns 500. Proposed: **Code + Spec**, return and document 409 Conflict.
 - **M-23 Unknown pipeline on update.** `PATCH /pipelines/bna/{id}` for an
   unknown ID returns 500. Proposed: **Code**, return 404.
 - **M-24 Invalid enum on update.** An unknown `status` value in the PATCH body
-  returns 500. Proposed: **Code**, return 400 (covered by M-01/M-02 once the
+  returns 500. Proposed: **Code**, return 422 (covered by M-01/M-02 once the
   body is deserialized into the enum).
 - **M-28 Pipeline steps disagree with the database.** The specification and the
   code define the steps `SqsMessage`, `Setup`, `Analysis`, `Cleanup`, while the
@@ -243,7 +258,7 @@ behavior for API consumers and must be called out in the release notes.
   can rely on it. Client-visible. The step is typed in both the request and the
   response (`BNAPipelineStep` in `entity/src/wrappers/mod.rs` and
   `BnaPipelineStep` in the pipelines schema), so an unknown step is rejected
-  with 400 (M-24).
+  with 422 (M-24).
 - **M-25 Ignored `start_time` on update.** `BnaPipelinePatch` documents
   `start_time`, but the update never applies it (verified:
   `start_time: ActiveValue::NotSet` in `entity/src/wrappers/bna_pipeline.rs`).
