@@ -343,7 +343,7 @@ impl From<entity::city::Model> for City {
 
 /// An object containing references to the primary source of the error.
 ///
-/// It SHOULD include one of the following members or be omitted:
+/// It includes one of the following members:
 ///
 ///   - pointer: the path of the request that caused the error [e.g. "/ratings/1"]. The
 ///     error details name the invalid field, if any.
@@ -381,11 +381,7 @@ pub struct APIError {
     #[schema(examples("the entry was not found"))]
     details: String,
     /// An object containing references to the primary source of the error.
-    ///
-    /// This field may be omitted in some situation. For instance, if the server cannot
-    /// parse the request as valid JSON, including source doesn’t make sense
-    /// (because there’s no JSON document for source to refer to).
-    #[schema(examples(json!("pointer": "/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221")))]
+    #[schema(examples(json!("pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221")))]
     source: APIErrorSource,
 }
 
@@ -499,7 +495,7 @@ pub(crate) enum NotFoundResponse {
             {
               "details": "the resource was not found",
               "id": "blfwkg8nvHcEJnQ=",
-              "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
+              "source": {"pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
               "status": "404",
               "title": "Item Not Found"
             }

@@ -115,7 +115,7 @@ pub mod types {
 
     ///An object containing references to the primary source of the error.
     ///
-    ///It SHOULD include one of the following members or be omitted:
+    ///It includes one of the following members:
     ///
     ///  - pointer: the path of the request that caused the error [e.g.
     ///    "/ratings/1"]. The error details name the invalid field, if any.
@@ -129,9 +129,9 @@ pub mod types {
     /// ```json
     ///{
     ///  "description": "An object containing references to the primary source
-    /// of the error.\n\nIt SHOULD include one of the following members or be
-    /// omitted:\n\n  - pointer: the path of the request that caused the error
-    /// [e.g. \"/ratings/1\"]. The\n    error details name the invalid field, if
+    /// of the error.\n\nIt includes one of the following members:\n\n  -
+    /// pointer: the path of the request that caused the error [e.g.
+    /// \"/ratings/1\"]. The\n    error details name the invalid field, if
     /// any.\n  - parameter: a string indicating which URI query parameter
     /// caused the error.\n  - header: a string indicating the name of a single
     /// request header which caused the\n    error.",
