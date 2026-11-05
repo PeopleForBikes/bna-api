@@ -79,8 +79,7 @@ just test-localhost-schemathesis
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global
   `DB_CONN: OnceCell<DatabaseConnection>`, `database_connect*` helpers,
-  pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`), and the
-  `APIResult<T>` type.
+  and pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
   `just regenerate-all` (or `regenerate-all-no-cargo` to keep

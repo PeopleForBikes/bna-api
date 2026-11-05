@@ -9,7 +9,6 @@ axum-streams = { workspace = true, features = ["csv"] }
 aws-config = { workspace = true }
 aws-sdk-s3 = { workspace = true }
 aws-sdk-sqs = { workspace = true }
-aws_lambda_events = { workspace = true }
 bnacore = { workspace = true }
 chrono = { workspace = true }
 dotenvy = { workspace = true }

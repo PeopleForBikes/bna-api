@@ -6,20 +6,17 @@ use axum::{
     response::IntoResponse,
 };
 use bnacore::aws::get_aws_secrets_value;
-use effortless::{
-    error::{APIError, APIErrors},
-    fragment::BnaRequestExt,
-};
+use effortless::error::{APIError, APIErrors};
 use lambda_http::{
     http::{header, StatusCode},
-    Body, Error, Request, Response,
+    Response,
 };
 use once_cell::sync::OnceCell;
 use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::env;
-use tracing::{debug, error};
+use tracing::debug;
 
 /// Maximum number of items allowed to be returned by a query at once.
 pub const MAX_PAGE_SIZE: u64 = 100;
@@ -28,14 +25,6 @@ pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
 /// Global static database connection.
 pub static DB_CONN: OnceCell<DatabaseConnection> = OnceCell::new();
-
-/// The result type to return to the caller of the Lambda API handler.
-pub type APIResult<T> = std::result::Result<T, Response<Body>>;
-
-// /// Maximum number of items allowed to be returned by a query at once.
-// pub const MAX_PAGE_SIZE: u64 = 100;
-// /// Number of items to return per page if no argument was provided.
-// pub const DEFAULT_PAGE_SIZE: u64 = 50;
 
 /// Returns the database connection from a custom environment variable or secret.
 ///
@@ -72,50 +61,6 @@ pub(crate) async fn database_connect_or_init() -> Result<&'static DatabaseConnec
         DB_CONN.set(db.clone()).ok();
         Ok(DB_CONN.get().unwrap())
     }
-}
-
-/// Builds a paginated Response.
-///
-/// Builds a Response struct which contains the pagination information in the headers.
-///
-/// Implements pagination headers, similar to GitLab:
-/// <https://docs.gitlab.com/ee/api/rest/index.html#other-pagination-headers>
-///
-/// - x-next-page   The index of the next page.
-/// - x-page        The index of the current page (starting at 1).
-/// - x-per-page    The number of items per page.
-/// - x-prev-page   The index of the previous page.
-/// - x-total       The total number of items.
-/// - x-total-pages The total number of pages.
-///
-/// The link header is also added if the URL is provided by the request event.
-pub fn build_paginated_response(
-    body: Value,
-    total_items: u64,
-    page: u64,
-    page_size: u64,
-    event: &Request,
-) -> Result<Response<Body>, Error> {
-    let paginatron = Paginatron::new(
-        event.uri().host().map(|h| h.to_string()),
-        total_items,
-        page,
-        page_size,
-    );
-    let nav = paginatron.navigation();
-
-    // Build the response.
-    Ok(Response::builder()
-        .header("link", paginatron.link_header(Some(DEFAULT_PAGE_SIZE)))
-        .header("x-next-page", nav.next())
-        .header("x-page", page)
-        .header("x-per-page", page_size)
-        .header("x-prev-page", nav.prev())
-        .header("x-total", total_items)
-        .header("x-total-pages", paginatron.total_pages())
-        .header(header::CONTENT_TYPE, "application/json")
-        .body(body.to_string().into())
-        .map_err(Box::new)?)
 }
 
 /// Stores the page values required for pagination.
@@ -283,31 +228,6 @@ where
     }
 }
 
-impl<T> From<PageFlow<T>> for Response<Body>
-where
-    T: Serialize,
-{
-    fn from(value: PageFlow<T>) -> Self {
-        let nav = value.paginatron.navigation();
-        Response::builder()
-            .header(
-                "link",
-                value.paginatron.link_header(Some(DEFAULT_PAGE_SIZE)),
-            )
-            .header("x-next-page", nav.next())
-            .header("x-page", value.paginatron.page)
-            .header("x-per-page", value.paginatron.page_size)
-            .header("x-prev-page", nav.prev())
-            .header("x-total", value.paginatron.total_items)
-            .header("x-total-pages", value.paginatron.total_pages())
-            .header(header::CONTENT_TYPE, "application/json")
-            .body(Body::from(
-                serde_json::to_string(&value.payload).expect("payload must serialize"),
-            ))
-            .expect("failed to build response")
-    }
-}
-
 impl<T> IntoResponse for PageFlow<T>
 where
     T: Serialize,
@@ -353,23 +273,6 @@ macro_rules! nomstr {
             }
         }
     };
-}
-
-pub async fn api_database_connect(event: &Request) -> APIResult<DatabaseConnection> {
-    debug!("Connecting to the database...");
-    match database_connect().await {
-        Ok(db) => Ok(db),
-        Err(e) => {
-            let apigw_request_id = event.apigw_request_id();
-            let error_msg = "cannot connect to the database".to_string();
-            error!(
-                "{error_msg}: {e}. API GW Request ID: {:?}",
-                apigw_request_id
-            );
-            let api_error = APIError::db_error(apigw_request_id, event.uri().path(), &error_msg);
-            Err(APIErrors::new(&[api_error]).into())
-        }
-    }
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -493,11 +396,6 @@ impl Context {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use aws_lambda_events::http;
-    use effortless::api::{parse_path_parameter, parse_request_body};
-    use entity::wrappers::submission::SubmissionPost;
-    use lambda_http::RequestExt;
-    use std::collections::HashMap;
 
     #[test]
     fn test_paginatron_with_different_page_size() {
@@ -526,44 +424,5 @@ mod tests {
         assert_eq!(nav.prev(), 1);
         assert_eq!(nav.next(), 2);
         assert_eq!(nav.last(), 2);
-    }
-
-    #[test]
-    fn test_parse_path_parameter() {
-        let event = Request::default()
-            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]));
-        let p = parse_path_parameter::<i32>(&event, "id");
-        assert_eq!(p.unwrap(), Some(1));
-    }
-
-    #[test]
-    fn test_apigw_parse_path_parameter() {
-        let event = Request::default()
-            .with_path_parameters(HashMap::from([("id".to_string(), "1".to_string())]))
-            .with_request_context(lambda_http::request::RequestContext::ApiGatewayV2(
-                lambda_http::aws_lambda_events::apigw::ApiGatewayV2httpRequestContext::default(),
-            ));
-        let id_param = parse_path_parameter::<i32>(&event, "id").unwrap();
-        assert_eq!(id_param, Some(1));
-    }
-
-    #[test]
-    fn test_parse_request_body() {
-        let event = http::Request::builder()
-            .header(http::header::CONTENT_TYPE, "application/json")
-            .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
-            .expect("failed to build request");
-        let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
-        assert_eq!(submission.country, "usa")
-    }
-
-    #[test]
-    fn test_apigw_parse_request_body() {
-        let event = http::Request::builder()
-      .header(http::header::CONTENT_TYPE, "application/json")
-      .body(Body::from(r#"{"city": "santa rosa","country": "usa","email": "jane.dpe@orgllc.com","fips_code": "3570670","first_name": "Jane","last_name": "Doe","organization": "Organization LLC","region": "new mexico","title": "CTO","consent": true}"#))
-      .expect("failed to build request");
-        let submission = parse_request_body::<SubmissionPost>(&event).unwrap();
-        assert_eq!(submission.country, "usa")
     }
 }
