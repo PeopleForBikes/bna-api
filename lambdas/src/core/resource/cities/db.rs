@@ -1,8 +1,8 @@
 use crate::core::resource::schema::OrderDirection;
 use entity::{city, country, state_region_crosswalk, submission, summary};
 use sea_orm::{
-    ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr, EntityTrait, LoaderTrait,
-    PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
+    sea_query::Query, ColumnTrait, Condition, DatabaseBackend, DatabaseConnection, DbErr,
+    EntityTrait, LoaderTrait, PaginatorTrait, QueryFilter, QueryOrder, QuerySelect, Statement,
 };
 
 pub(crate) fn city_column(header: &str) -> city::Column {
@@ -37,18 +37,16 @@ pub(crate) async fn fetch_cities(
 ) -> Result<(u64, Vec<city::Model>), DbErr> {
     let sort_column = city_column(sort_by);
     let mut select = city::Entity::find();
-    let count = select
-        .clone()
-        .select_only()
-        .column_as(city::Column::Id.count(), "count")
-        .count(db)
-        .await?;
+    let count = select.clone().count(db).await?;
 
     // Build the filter.
     select = select.order_by(sort_column, sort_direction.into());
 
     // Retrieve the models.
-    let models = select.paginate(db, page_size).fetch_page(page).await?;
+    let models = select
+        .paginate(db, page_size)
+        .fetch_page(page.saturating_sub(1))
+        .await?;
     Ok((count, models))
 }
 
@@ -67,7 +65,7 @@ pub(crate) async fn fetch_cities_ratings(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
@@ -128,7 +126,7 @@ pub(crate) async fn fetch_cities_submissions(
     let models = select
         .clone()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))
@@ -210,15 +208,25 @@ pub(crate) async fn fetch_cities_with_latest_summary(
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<(city::Model, summary::Model)>), DbErr> {
-    // Query the total city count for pagination metadata.
-    let total_items = city::Entity::find().count(db).await?;
+    // Only the cities with a rating have a latest summary.
+    let rated_cities = city::Entity::find().filter(
+        city::Column::Id.in_subquery(
+            Query::select()
+                .column(summary::Column::CityId)
+                .from(summary::Entity)
+                .to_owned(),
+        ),
+    );
 
-    // Query one page of cities, alphabetically.
+    // Query the total rated city count for pagination metadata.
+    let total_items = rated_cities.clone().count(db).await?;
+
+    // Query one page of rated cities.
     let sort_column = city_column(sort_by);
-    let cities = city::Entity::find()
+    let cities = rated_cities
         .order_by(sort_column, sort_direction.into())
         .limit(page_size)
-        .offset(page * page_size)
+        .offset(page.saturating_sub(1) * page_size)
         .all(db)
         .await?;
 

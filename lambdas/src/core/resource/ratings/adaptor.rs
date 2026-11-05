@@ -1,24 +1,17 @@
 use super::{
-    db::{fetch_rating, fetch_ratings, fetch_ratings_city, fetch_ratings_summaries, Bna},
+    db::{fetch_rating, fetch_ratings, fetch_ratings_city, Bna},
     schema::RatingPost,
 };
 use crate::{Context, ExecutionError};
 use entity::{
-    core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
+    city, core_services, infrastructure, measure, opportunity, people, recreation, retail, summary,
     transit,
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection};
+use sea_orm::{
+    ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
+};
 use tracing::info;
 use uuid::Uuid;
-
-pub async fn get_ratings_summaries_adaptor(
-    db: &DatabaseConnection,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<summary::Model>), ExecutionError> {
-    // Fetch a page of summary.
-    Ok(fetch_ratings_summaries(db, page, page_size).await?)
-}
 
 pub(crate) async fn get_rating_adaptor(
     db: &DatabaseConnection,
@@ -66,7 +59,22 @@ pub(crate) async fn get_ratings_city_adaptor(
 pub(crate) async fn post_ratings_adaptor(
     db: &DatabaseConnection,
     rating: RatingPost,
+    ctx: Context,
 ) -> Result<Bna, ExecutionError> {
+    // Ensure the rated city exists.
+    if city::Entity::find()
+        .filter(city::Column::Id.eq(rating.city_id))
+        .one(db)
+        .await?
+        .is_none()
+    {
+        return Err(ExecutionError::InvalidAttribute(
+            ctx.request_id(),
+            ctx.source(),
+            format!("the city_id does not match any city: {}", rating.city_id),
+        ));
+    }
+
     // Generate a rating id.
     let rating_id = Uuid::new_v4();
 

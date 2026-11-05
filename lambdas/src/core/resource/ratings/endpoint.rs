@@ -4,15 +4,15 @@ use super::{
     },
     schema::{Rating, RatingPost, RatingWithCity, Ratings},
 };
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParameters},
+    core::resource::schema::{
+        BadRequestResponse, NotFoundResponse, PaginationParameters, UnprocessableEntityResponse,
+        UnsupportedMediaTypeResponse,
+    },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
+use axum::{http::StatusCode, Json};
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -37,10 +37,11 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches the details of a city rating", body = Rating ),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_rating(
-    Path(rating_id): Path<Uuid>,
+    ApiPath(rating_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<Rating>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -64,9 +65,11 @@ async fn get_rating(
   ),
   responses(
     (status = OK, description = "Fetches the city ratings", body = Ratings),
+    BadRequestResponse,
   ))]
 async fn get_ratings(
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Ratings>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) =
@@ -74,7 +77,7 @@ async fn get_ratings(
 
     let payload: Ratings = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, pagination.page(), pagination.page_size()),
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }
@@ -87,13 +90,16 @@ async fn get_ratings(
   request_body = RatingPost,
   responses(
     (status = CREATED, description = "Creates a new city rating", body = Rating ),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
   ))]
 async fn post_rating(
-    Json(bna): Json<RatingPost>,
+    ctx: Context,
+    ApiJson(bna): ApiJson<RatingPost>,
 ) -> Result<(StatusCode, Json<Rating>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_ratings_adaptor(db, bna)
+    post_ratings_adaptor(db, bna, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -113,10 +119,11 @@ async fn post_rating(
   ),
   responses(
     (status = OK, description = "Fetches a city rating and its associated city details" , body = RatingWithCity ),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_ratings_city(
-    Path(rating_id): Path<Uuid>,
+    ApiPath(rating_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<RatingWithCity>, ExecutionError> {
     let db = database_connect_or_init().await?;

@@ -11,7 +11,8 @@ API Gateway, backed by PostgreSQL via SeaORM. The repo bundles the DB
 migrations, generated entities, the Axum-based Lambda API, the schema docs, and
 a generated Rust REST client (`bnaclient`).
 
-Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, `effortless`.
+Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, and
+`lambdas/tests/coverage` (`hurl-coverage`, the test coverage check).
 
 ## Common commands
 
@@ -52,6 +53,7 @@ own `justfile`:
 cd lambdas/tests
 just test localhost            # or `just test staging` — runs the hurl suites in endpoints/ and scenario/
 just test-smoke-public localhost
+just coverage                  # compare the last run's report with openapi-3.1.yaml (hurl-coverage)
 just test-localhost-schemathesis
 ```
 
@@ -69,16 +71,11 @@ just test-localhost-schemathesis
   applied with `sea-orm-cli migrate`. Schema docs (`docs/database.dbml`,
   `docs/database.sql`, `docs/database.svg`) are derived from the DB via the
   `db-dump`/`dbml-*` just recipes.
-- **`effortless/`** — small shared helper crate for the Lambda API: `api`,
-  `error` (`APIError`/ `APIErrors`), `fragment` (request extension helpers like
-  `BnaRequestExt`), and `response` types. Import these instead of re-inventing
-  error/response shapes in `lambdas`.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
-  OpenAPI spec and runs it as a Lambda (via `lambda_http::run`);
-  `src/bin/ratings` is a separate binary. `src/lib.rs` exposes shared
-  infrastructure: the global `DB_CONN: OnceCell<DatabaseConnection>`,
-  `database_connect*` helpers, pagination constants (`MAX_PAGE_SIZE`,
-  `DEFAULT_PAGE_SIZE`), and the `APIResult<T>` type.
+  OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
+  exposes shared infrastructure: the global
+  `DB_CONN: OnceCell<DatabaseConnection>`, `database_connect*` helpers,
+  and pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
   `just regenerate-all` (or `regenerate-all-no-cargo` to keep
@@ -95,19 +92,27 @@ resources/endpoints should follow it too:
 - `adaptor.rs` — business logic sitting between DB and HTTP: calls `db.rs`
   functions, converts between entity models and `entity::wrappers` DTOs, does
   validation, returns `Context`/`ExecutionError`.
-- `endpoint.rs` — Axum handlers (`Path`/`Query`/`Json` extractors), calls the
-  adaptor, maps results to `APIResult<T>` / `ErrorResponses`, and carries the
-  `utoipa` OpenAPI annotations for that route.
+- `endpoint.rs` — Axum handlers (`ApiPath`/`ApiQuery`/`ApiJson` extractors from
+  `core/extract.rs`, which answer rejected requests with `APIErrors`), calls the
+  adaptor, and carries the `utoipa` OpenAPI annotations for that route. Each
+  operation documents exactly the error codes it can return, with
+  `BadRequestResponse`, `NotFoundResponse`, `ConflictResponse`, and, when it
+  takes a body, `UnsupportedMediaTypeResponse` and
+  `UnprocessableEntityResponse`. `source.pointer` is always the request path, and
+  `details` names the invalid field.
 - `schema.rs` — resource-local request/response types (`ToSchema`, `IntoParams`,
   `IntoResponses`) distinct from the cross-resource types in
-  `core/resource/schema.rs` (pagination params, `Country` enum, generic
-  `ErrorResponses`, etc.).
+  `core/resource/schema.rs` (pagination params, `Country` enum, the error types
+  and responses, etc.).
 
 Pagination follows a shared convention across resources:
 `ListParameters`/`PaginationParameters` from `core/resource/schema.rs`,
 `MAX_PAGE_SIZE`/`DEFAULT_PAGE_SIZE` from `lambdas/src/lib.rs`, and
 `Paginatron`/`PageFlow` helpers for building paginated responses with link
-headers (`core/link_header.rs`).
+headers. A list handler takes the `PageUrl` extractor (`core/extract.rs`) and
+passes its URL to `Paginatron::new`, so the `link` header gets filled. The
+pagination headers are documented on every operation taking a `page` query
+parameter by `document_pagination_headers` (`core/resource/schema.rs`).
 
 ### OpenAPI spec flow
 
@@ -116,8 +121,8 @@ on the Axum handlers/schemas in `lambdas/src/core/resource/**` are the source of
 truth. The flow is `generate-oas-31` (runs the Axum binary with
 `BNA_API_GENERATE_ONLY=1` to emit `openapi-3.1.yaml`) → `generate-oas-30`
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
-`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after changing
-any endpoint/schema shape or the workspace version. It ends with
+`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after
+changing any endpoint/schema shape or the workspace version. It ends with
 `git restore bnaclient/Cargo.toml`, which discards *uncommitted* edits to that
 file, so back it up first if you've changed it. The `bnaclient` CI job
 regenerates and fails on any diff.

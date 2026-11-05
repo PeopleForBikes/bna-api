@@ -115,14 +115,10 @@ pub mod types {
 
     ///An object containing references to the primary source of the error.
     ///
-    ///It SHOULD include one of the following members or be omitted:
+    ///It includes one of the following members:
     ///
-    ///  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901)
-    ///    to the value in the request document that caused the error [e.g.
-    ///    "/data" for a primary data object, or "/data/attributes/title" for a
-    ///    specific attribute]. This MUST point to a value in the request
-    ///    document that exists; if it doesn’t, the client SHOULD simply ignore
-    ///    the pointer.
+    ///  - pointer: the path of the request that caused the error [e.g.
+    ///    "/ratings/1"]. The error details name the invalid field, if any.
     ///  - parameter: a string indicating which URI query parameter caused the
     ///    error.
     ///  - header: a string indicating the name of a single request header which
@@ -132,14 +128,20 @@ pub mod types {
     ///
     /// ```json
     ///{
-    ///  "description": "An object containing references to the primary source of the error.\n\nIt SHOULD include one of the following members or be omitted:\n\n  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the\n    value in the request document that caused the error [e.g. \"/data\" for a primary\n    data object, or \"/data/attributes/title\" for a specific attribute].\n    This MUST point to a value in the request document that exists; if it doesn’t,\n    the client SHOULD simply ignore the pointer.\n  - parameter: a string indicating which URI query parameter caused the error.\n  - header: a string indicating the name of a single request header which caused the\n    error.",
+    ///  "description": "An object containing references to the primary source
+    /// of the error.\n\nIt includes one of the following members:\n\n  -
+    /// pointer: the path of the request that caused the error [e.g.
+    /// \"/ratings/1\"]. The\n    error details name the invalid field, if
+    /// any.\n  - parameter: a string indicating which URI query parameter
+    /// caused the error.\n  - header: a string indicating the name of a single
+    /// request header which caused the\n    error.",
     ///  "oneOf": [
     ///    {
-    ///      "description": "A JSON Pointer [RFC6901] to the value in the
-    /// request document that caused the error.",
+    ///      "description": "The path of the request that caused the error. The
+    /// error details name the invalid field, if any.",
     ///      "examples": [
     ///        {
-    ///          "pointer": "/data/attributes/title"
+    ///          "pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"
     ///        }
     ///      ],
     ///      "type": "object",
@@ -148,8 +150,8 @@ pub mod types {
     ///      ],
     ///      "properties": {
     ///        "pointer": {
-    ///          "description": "A JSON Pointer [RFC6901] to the value in the
-    /// request document that caused the error.",
+    ///          "description": "The path of the request that caused the error.
+    /// The error details name the invalid field, if any.",
     ///          "type": "string"
     ///        }
     ///      }
@@ -200,8 +202,8 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub enum ApiErrorSource {
-        ///A JSON Pointer [RFC6901] to the value in the request document that
-        /// caused the error.
+        ///The path of the request that caused the error. The error details
+        /// name the invalid field, if any.
         #[serde(rename = "pointer")]
         Pointer(::std::string::String),
         ///A string indicating which URI query parameter caused the error.
@@ -245,6 +247,87 @@ pub mod types {
     impl ApiErrors {
         pub fn builder() -> builder::ApiErrors {
             Default::default()
+        }
+    }
+
+    ///Approval status of a city submission.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Approval status of a city submission.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Approved",
+    ///    "Pending",
+    ///    "Rejected"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum ApprovalStatus {
+        Approved,
+        Pending,
+        Rejected,
+    }
+
+    impl ::std::fmt::Display for ApprovalStatus {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Approved => f.write_str("Approved"),
+                Self::Pending => f.write_str("Pending"),
+                Self::Rejected => f.write_str("Rejected"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for ApprovalStatus {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Approved" => Ok(Self::Approved),
+                "Pending" => Ok(Self::Pending),
+                "Rejected" => Ok(Self::Rejected),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for ApprovalStatus {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
 
@@ -323,7 +406,7 @@ pub mod types {
     ///        }
     ///      ],
     ///      "type": [
-    ///        "string",
+    ///        "object",
     ///        "null"
     ///      ]
     ///    },
@@ -367,7 +450,8 @@ pub mod types {
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message:
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         ///Start time
         pub start_time: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Pipeline identifier
@@ -391,10 +475,6 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
-    ///  "required": [
-    ///    "status",
-    ///    "step"
-    ///  ],
     ///  "properties": {
     ///    "cost": {
     ///      "description": "Cost of an analysis in USD",
@@ -447,18 +527,32 @@ pub mod types {
     ///    },
     ///    "sqs_message": {
     ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
+    /// processing: a JSON object, or a string holding a JSON object. It is
+    /// stored and returned as a JSON object.",
+    ///      "oneOf": [
     ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
+    ///          "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///          "examples": [
+    ///            {
+    ///              "city": "santa rosa",
+    ///              "country": "United States",
+    ///              "fips_code": "3570670",
+    ///              "region": "new mexico"
+    ///            }
+    ///          ],
+    ///          "type": [
+    ///            "object",
+    ///            "null"
+    ///          ]
+    ///        },
+    ///        {
+    ///          "description": "A string holding a JSON object",
+    ///          "examples": [
+    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///          ],
+    ///          "type": "string"
     ///        }
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
     ///      ]
     ///    },
     ///    "start_time": {
@@ -496,19 +590,101 @@ pub mod types {
         ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
-        ///Copy of the JSON message that was sent for processing
+        ///Copy of the JSON message that was sent for processing: a JSON
+        /// object, or a string holding a JSON object. It is stored and returned
+        /// as a JSON object.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message: ::std::option::Option<BnaPipelinePatchSqsMessage>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
-        pub status: PipelineStatus,
-        pub step: BnaPipelineStep,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<PipelineStatus>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub step: ::std::option::Option<BnaPipelineStep>,
+    }
+
+    impl ::std::default::Default for BnaPipelinePatch {
+        fn default() -> Self {
+            Self {
+                cost: Default::default(),
+                end_time: Default::default(),
+                fargate_price_id: Default::default(),
+                fargate_task_arn: Default::default(),
+                s3_bucket: Default::default(),
+                sqs_message: Default::default(),
+                start_time: Default::default(),
+                status: Default::default(),
+                step: Default::default(),
+            }
+        }
     }
 
     impl BnaPipelinePatch {
         pub fn builder() -> builder::BnaPipelinePatch {
             Default::default()
+        }
+    }
+
+    ///Copy of the JSON message that was sent for processing: a JSON object, or
+    /// a string holding a JSON object. It is stored and returned as a JSON
+    /// object.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Copy of the JSON message that was sent for processing:
+    /// a JSON object, or a string holding a JSON object. It is stored and
+    /// returned as a JSON object.",
+    ///  "oneOf": [
+    ///    {
+    ///      "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///      "examples": [
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
+    ///      ],
+    ///      "type": [
+    ///        "object",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    {
+    ///      "description": "A string holding a JSON object",
+    ///      "examples": [
+    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(untagged)]
+    pub enum BnaPipelinePatchSqsMessage {
+        Variant0(
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ),
+        Variant1(::std::string::String),
+    }
+
+    impl
+        ::std::convert::From<
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        > for BnaPipelinePatchSqsMessage
+    {
+        fn from(
+            value: ::std::option::Option<
+                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            >,
+        ) -> Self {
+            Self::Variant0(value)
         }
     }
 
@@ -574,18 +750,32 @@ pub mod types {
     ///    },
     ///    "sqs_message": {
     ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
+    /// processing: a JSON object, or a string holding a JSON object. It is
+    /// stored and returned as a JSON object.",
+    ///      "oneOf": [
     ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
+    ///          "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///          "examples": [
+    ///            {
+    ///              "city": "santa rosa",
+    ///              "country": "United States",
+    ///              "fips_code": "3570670",
+    ///              "region": "new mexico"
+    ///            }
+    ///          ],
+    ///          "type": [
+    ///            "object",
+    ///            "null"
+    ///          ]
+    ///        },
+    ///        {
+    ///          "description": "A string holding a JSON object",
+    ///          "examples": [
+    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///          ],
+    ///          "type": "string"
     ///        }
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
     ///      ]
     ///    },
     ///    "start_time": {
@@ -623,9 +813,11 @@ pub mod types {
         ///Path of the S3 bucket where the results were stored
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
-        ///Copy of the JSON message that was sent for processing
+        ///Copy of the JSON message that was sent for processing: a JSON
+        /// object, or a string holding a JSON object. It is stored and returned
+        /// as a JSON object.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
-        pub sqs_message: ::std::option::Option<::std::string::String>,
+        pub sqs_message: ::std::option::Option<BnaPipelinePostSqsMessage>,
         ///Start time
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
@@ -641,6 +833,68 @@ pub mod types {
         }
     }
 
+    ///Copy of the JSON message that was sent for processing: a JSON object, or
+    /// a string holding a JSON object. It is stored and returned as a JSON
+    /// object.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Copy of the JSON message that was sent for processing:
+    /// a JSON object, or a string holding a JSON object. It is stored and
+    /// returned as a JSON object.",
+    ///  "oneOf": [
+    ///    {
+    ///      "description": "Copy of the JSON message that was sent for
+    /// processing",
+    ///      "examples": [
+    ///        {
+    ///          "city": "santa rosa",
+    ///          "country": "United States",
+    ///          "fips_code": "3570670",
+    ///          "region": "new mexico"
+    ///        }
+    ///      ],
+    ///      "type": [
+    ///        "object",
+    ///        "null"
+    ///      ]
+    ///    },
+    ///    {
+    ///      "description": "A string holding a JSON object",
+    ///      "examples": [
+    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+    ///      ],
+    ///      "type": "string"
+    ///    }
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[serde(untagged)]
+    pub enum BnaPipelinePostSqsMessage {
+        Variant0(
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        ),
+        Variant1(::std::string::String),
+    }
+
+    impl
+        ::std::convert::From<
+            ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
+        > for BnaPipelinePostSqsMessage
+    {
+        fn from(
+            value: ::std::option::Option<
+                ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+            >,
+        ) -> Self {
+            Self::Variant0(value)
+        }
+    }
+
     ///`BnaPipelineStep`
     ///
     /// <details><summary>JSON schema</summary>
@@ -649,9 +903,9 @@ pub mod types {
     ///{
     ///  "type": "string",
     ///  "enum": [
-    ///    "SqsMessage",
     ///    "Setup",
     ///    "Analysis",
+    ///    "Save",
     ///    "Cleanup"
     ///  ]
     ///}
@@ -670,18 +924,18 @@ pub mod types {
         PartialOrd,
     )]
     pub enum BnaPipelineStep {
-        SqsMessage,
         Setup,
         Analysis,
+        Save,
         Cleanup,
     }
 
     impl ::std::fmt::Display for BnaPipelineStep {
         fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
             match *self {
-                Self::SqsMessage => f.write_str("SqsMessage"),
                 Self::Setup => f.write_str("Setup"),
                 Self::Analysis => f.write_str("Analysis"),
+                Self::Save => f.write_str("Save"),
                 Self::Cleanup => f.write_str("Cleanup"),
             }
         }
@@ -691,9 +945,9 @@ pub mod types {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             match value {
-                "SqsMessage" => Ok(Self::SqsMessage),
                 "Setup" => Ok(Self::Setup),
                 "Analysis" => Ok(Self::Analysis),
+                "Save" => Ok(Self::Save),
                 "Cleanup" => Ok(Self::Cleanup),
                 _ => Err("invalid value".into()),
             }
@@ -2335,6 +2589,293 @@ pub mod types {
         }
     }
 
+    ///Fields the city lists can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the city lists can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "name",
+    ///    "country",
+    ///    "state",
+    ///    "state_abbrev",
+    ///    "region",
+    ///    "fips_code",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetCitiesLatestSummarySortBy {
+        #[serde(rename = "name")]
+        Name,
+        #[serde(rename = "country")]
+        Country,
+        #[serde(rename = "state")]
+        State,
+        #[serde(rename = "state_abbrev")]
+        StateAbbrev,
+        #[serde(rename = "region")]
+        Region,
+        #[serde(rename = "fips_code")]
+        FipsCode,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetCitiesLatestSummarySortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Name => f.write_str("name"),
+                Self::Country => f.write_str("country"),
+                Self::State => f.write_str("state"),
+                Self::StateAbbrev => f.write_str("state_abbrev"),
+                Self::Region => f.write_str("region"),
+                Self::FipsCode => f.write_str("fips_code"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetCitiesLatestSummarySortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "name" => Ok(Self::Name),
+                "country" => Ok(Self::Country),
+                "state" => Ok(Self::State),
+                "state_abbrev" => Ok(Self::StateAbbrev),
+                "region" => Ok(Self::Region),
+                "fips_code" => Ok(Self::FipsCode),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCitiesLatestSummarySortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    ///Fields the city lists can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the city lists can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "name",
+    ///    "country",
+    ///    "state",
+    ///    "state_abbrev",
+    ///    "region",
+    ///    "fips_code",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetCitiesSortBy {
+        #[serde(rename = "name")]
+        Name,
+        #[serde(rename = "country")]
+        Country,
+        #[serde(rename = "state")]
+        State,
+        #[serde(rename = "state_abbrev")]
+        StateAbbrev,
+        #[serde(rename = "region")]
+        Region,
+        #[serde(rename = "fips_code")]
+        FipsCode,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetCitiesSortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::Name => f.write_str("name"),
+                Self::Country => f.write_str("country"),
+                Self::State => f.write_str("state"),
+                Self::StateAbbrev => f.write_str("state_abbrev"),
+                Self::Region => f.write_str("region"),
+                Self::FipsCode => f.write_str("fips_code"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetCitiesSortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "name" => Ok(Self::Name),
+                "country" => Ok(Self::Country),
+                "state" => Ok(Self::State),
+                "state_abbrev" => Ok(Self::StateAbbrev),
+                "region" => Ok(Self::Region),
+                "fips_code" => Ok(Self::FipsCode),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCitiesSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    ///Fields the Fargate prices can be sorted by.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Fields the Fargate prices can be sorted by.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "per_second",
+    ///    "created_at"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum GetPricesFargateSortBy {
+        #[serde(rename = "per_second")]
+        PerSecond,
+        #[serde(rename = "created_at")]
+        CreatedAt,
+    }
+
+    impl ::std::fmt::Display for GetPricesFargateSortBy {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::PerSecond => f.write_str("per_second"),
+                Self::CreatedAt => f.write_str("created_at"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for GetPricesFargateSortBy {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "per_second" => Ok(Self::PerSecond),
+                "created_at" => Ok(Self::CreatedAt),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetPricesFargateSortBy {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
     ///`Infrastructure`
     ///
     /// <details><summary>JSON schema</summary>
@@ -3403,6 +3944,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3496,16 +4040,6 @@ pub mod types {
     /// ```json
     ///{
     ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "consent",
-    ///    "country",
-    ///    "email",
-    ///    "fips_code",
-    ///    "first_name",
-    ///    "last_name",
-    ///    "status"
-    ///  ],
     ///  "properties": {
     ///    "city": {
     ///      "description": "City name",
@@ -3548,6 +4082,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3583,11 +4120,7 @@ pub mod types {
     ///      ]
     ///    },
     ///    "status": {
-    ///      "description": "Submission status, e.g. \"Pending\"",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
+    ///      "$ref": "#/components/schemas/ApprovalStatus"
     ///    }
     ///  }
     ///}
@@ -3596,19 +4129,26 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPatch {
         ///City name
-        pub city: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub city: ::std::option::Option<::std::string::String>,
         ///Consent status
-        pub consent: bool,
-        pub country: Country,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub consent: ::std::option::Option<bool>,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub country: ::std::option::Option<Country>,
         ///email address
-        pub email: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub email: ::std::option::Option<::std::string::String>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        pub fips_code: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///First name
-        pub first_name: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub first_name: ::std::option::Option<::std::string::String>,
         ///Last name
-        pub last_name: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub last_name: ::std::option::Option<::std::string::String>,
         ///Job title or position
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
@@ -3620,8 +4160,26 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///Submission status, e.g. "Pending"
-        pub status: ::std::string::String,
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub status: ::std::option::Option<ApprovalStatus>,
+    }
+
+    impl ::std::default::Default for SubmissionPatch {
+        fn default() -> Self {
+            Self {
+                city: Default::default(),
+                consent: Default::default(),
+                country: Default::default(),
+                email: Default::default(),
+                fips_code: Default::default(),
+                first_name: Default::default(),
+                last_name: Default::default(),
+                occupation: Default::default(),
+                organization: Default::default(),
+                region: Default::default(),
+                status: Default::default(),
+            }
+        }
     }
 
     impl SubmissionPatch {
@@ -3644,8 +4202,7 @@ pub mod types {
     ///    "email",
     ///    "fips_code",
     ///    "first_name",
-    ///    "last_name",
-    ///    "status"
+    ///    "last_name"
     ///  ],
     ///  "properties": {
     ///    "city": {
@@ -3689,6 +4246,9 @@ pub mod types {
     ///    },
     ///    "last_name": {
     ///      "description": "Last name",
+    ///      "examples": [
+    ///        "Doe"
+    ///      ],
     ///      "type": "string"
     ///    },
     ///    "occupation": {
@@ -3722,13 +4282,6 @@ pub mod types {
     ///        "string",
     ///        "null"
     ///      ]
-    ///    },
-    ///    "status": {
-    ///      "description": "Submission status, e.g. \"Pending\"",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
     ///    }
     ///  }
     ///}
@@ -3761,8 +4314,6 @@ pub mod types {
         /// have this concept, then the country name is used.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        ///Submission status, e.g. "Pending"
-        pub status: ::std::string::String,
     }
 
     impl SubmissionPost {
@@ -4123,7 +4674,9 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<
+                    ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                >,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4207,7 +4760,11 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<
+                        ::serde_json::Map<::std::string::String, ::serde_json::Value>,
+                    >,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4315,15 +4872,21 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<super::BnaPipelinePatchSqsMessage>,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
                 ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<super::PipelineStatus, ::std::string::String>,
-            step: ::std::result::Result<super::BnaPipelineStep, ::std::string::String>,
+            status: ::std::result::Result<
+                ::std::option::Option<super::PipelineStatus>,
+                ::std::string::String,
+            >,
+            step: ::std::result::Result<
+                ::std::option::Option<super::BnaPipelineStep>,
+                ::std::string::String,
+            >,
         }
 
         impl ::std::default::Default for BnaPipelinePatch {
@@ -4336,8 +4899,8 @@ pub mod types {
                     s3_bucket: Ok(Default::default()),
                     sqs_message: Ok(Default::default()),
                     start_time: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
-                    step: Err("no value supplied for step".to_string()),
+                    status: Ok(Default::default()),
+                    step: Ok(Default::default()),
                 }
             }
         }
@@ -4397,7 +4960,9 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<
+                    ::std::option::Option<super::BnaPipelinePatchSqsMessage>,
+                >,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
@@ -4419,7 +4984,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::PipelineStatus>,
+                T: ::std::convert::TryInto<::std::option::Option<super::PipelineStatus>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -4429,7 +4994,7 @@ pub mod types {
             }
             pub fn step<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::BnaPipelineStep>,
+                T: ::std::convert::TryInto<::std::option::Option<super::BnaPipelineStep>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.step = value
@@ -4495,7 +5060,7 @@ pub mod types {
                 ::std::string::String,
             >,
             sqs_message: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<super::BnaPipelinePostSqsMessage>,
                 ::std::string::String,
             >,
             start_time: ::std::result::Result<
@@ -4575,7 +5140,7 @@ pub mod types {
             }
             pub fn sqs_message<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<::std::option::Option<super::BnaPipelinePostSqsMessage>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.sqs_message = value
@@ -6618,13 +7183,29 @@ pub mod types {
 
         #[derive(Clone, Debug)]
         pub struct SubmissionPatch {
-            city: ::std::result::Result<::std::string::String, ::std::string::String>,
-            consent: ::std::result::Result<bool, ::std::string::String>,
-            country: ::std::result::Result<super::Country, ::std::string::String>,
-            email: ::std::result::Result<::std::string::String, ::std::string::String>,
-            fips_code: ::std::result::Result<::std::string::String, ::std::string::String>,
-            first_name: ::std::result::Result<::std::string::String, ::std::string::String>,
-            last_name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            city: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            consent: ::std::result::Result<::std::option::Option<bool>, ::std::string::String>,
+            country:
+                ::std::result::Result<::std::option::Option<super::Country>, ::std::string::String>,
+            email: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            first_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
+            last_name: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
             occupation: ::std::result::Result<
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
@@ -6637,23 +7218,26 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<::std::string::String, ::std::string::String>,
+            status: ::std::result::Result<
+                ::std::option::Option<super::ApprovalStatus>,
+                ::std::string::String,
+            >,
         }
 
         impl ::std::default::Default for SubmissionPatch {
             fn default() -> Self {
                 Self {
-                    city: Err("no value supplied for city".to_string()),
-                    consent: Err("no value supplied for consent".to_string()),
-                    country: Err("no value supplied for country".to_string()),
-                    email: Err("no value supplied for email".to_string()),
-                    fips_code: Err("no value supplied for fips_code".to_string()),
-                    first_name: Err("no value supplied for first_name".to_string()),
-                    last_name: Err("no value supplied for last_name".to_string()),
+                    city: Ok(Default::default()),
+                    consent: Ok(Default::default()),
+                    country: Ok(Default::default()),
+                    email: Ok(Default::default()),
+                    fips_code: Ok(Default::default()),
+                    first_name: Ok(Default::default()),
+                    last_name: Ok(Default::default()),
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
+                    status: Ok(Default::default()),
                 }
             }
         }
@@ -6661,7 +7245,7 @@ pub mod types {
         impl SubmissionPatch {
             pub fn city<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.city = value
@@ -6671,7 +7255,7 @@ pub mod types {
             }
             pub fn consent<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<bool>,
+                T: ::std::convert::TryInto<::std::option::Option<bool>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.consent = value
@@ -6681,7 +7265,7 @@ pub mod types {
             }
             pub fn country<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<super::Country>,
+                T: ::std::convert::TryInto<::std::option::Option<super::Country>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.country = value
@@ -6691,7 +7275,7 @@ pub mod types {
             }
             pub fn email<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.email = value
@@ -6701,7 +7285,7 @@ pub mod types {
             }
             pub fn fips_code<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.fips_code = value
@@ -6711,7 +7295,7 @@ pub mod types {
             }
             pub fn first_name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.first_name = value
@@ -6721,7 +7305,7 @@ pub mod types {
             }
             pub fn last_name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.last_name = value
@@ -6761,7 +7345,7 @@ pub mod types {
             }
             pub fn status<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<::std::option::Option<super::ApprovalStatus>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.status = value
@@ -6831,7 +7415,6 @@ pub mod types {
                 ::std::option::Option<::std::string::String>,
                 ::std::string::String,
             >,
-            status: ::std::result::Result<::std::string::String, ::std::string::String>,
         }
 
         impl ::std::default::Default for SubmissionPost {
@@ -6847,7 +7430,6 @@ pub mod types {
                     occupation: Ok(Default::default()),
                     organization: Ok(Default::default()),
                     region: Ok(Default::default()),
-                    status: Err("no value supplied for status".to_string()),
                 }
             }
         }
@@ -6953,16 +7535,6 @@ pub mod types {
                     .map_err(|e| format!("error converting supplied value for region: {e}"));
                 self
             }
-            pub fn status<T>(mut self, value: T) -> Self
-            where
-                T: ::std::convert::TryInto<::std::string::String>,
-                T::Error: ::std::fmt::Display,
-            {
-                self.status = value
-                    .try_into()
-                    .map_err(|e| format!("error converting supplied value for status: {e}"));
-                self
-            }
         }
 
         impl ::std::convert::TryFrom<SubmissionPost> for super::SubmissionPost {
@@ -6981,7 +7553,6 @@ pub mod types {
                     occupation: value.occupation?,
                     organization: value.organization?,
                     region: value.region?,
-                    status: value.status?,
                 })
             }
         }
@@ -6999,7 +7570,6 @@ pub mod types {
                     occupation: Ok(value.occupation),
                     organization: Ok(value.organization),
                     region: Ok(value.region),
-                    status: Ok(value.status),
                 }
             }
         }
@@ -7206,9 +7776,14 @@ impl Client {
     ///
     ///Sends a `GET` request to `/cities`
     ///
+    ///Arguments:
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
+    /// - `page_size`: The number of items per page
+    /// - `sort_by`: Field to sort the cities by
     ///```ignore
     /// let response = client.get_cities()
-    ///    .latest(latest)
     ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
@@ -7239,7 +7814,8 @@ impl Client {
     ///Sends a `GET` request to `/cities/submissions`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     /// - `status`: Filter for the submission status
     ///```ignore
@@ -7308,9 +7884,14 @@ impl Client {
     ///
     ///Sends a `GET` request to `/cities/summary/latest`
     ///
+    ///Arguments:
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
+    /// - `page_size`: The number of items per page
+    /// - `sort_by`: Field to sort the cities by
     ///```ignore
     /// let response = client.get_cities_latest_summary()
-    ///    .latest(latest)
     ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
@@ -7375,7 +7956,8 @@ impl Client {
     ///something similar depending on the country. If a country does not have
     ///this concept, then the country name is used.
     /// - `name`: City name
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_city_ratings()
@@ -7409,7 +7991,8 @@ impl Client {
     ///Sends a `GET` request to `/pipelines/bna`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_pipelines_bnas()
@@ -7474,6 +8057,13 @@ impl Client {
     ///
     ///Sends a `GET` request to `/prices/fargate`
     ///
+    ///Arguments:
+    /// - `latest`: Only return the latest price
+    /// - `order_direction`
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
+    /// - `page_size`: The number of items per page
+    /// - `sort_by`: Field to sort the prices by
     ///```ignore
     /// let response = client.get_prices_fargate()
     ///    .latest(latest)
@@ -7510,7 +8100,8 @@ impl Client {
     ///Sends a `GET` request to `/ratings`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_ratings()
@@ -7603,7 +8194,8 @@ impl Client {
     ///Sends a `GET` request to `/usstates`
     ///
     ///Arguments:
-    /// - `page`: The result page being returned
+    /// - `page`: The result page being returned, starting at 1. A page past the
+    ///   last one returns an empty list.
     /// - `page_size`: The number of items per page
     ///```ignore
     /// let response = client.get_us_states()
@@ -7621,7 +8213,8 @@ impl Client {
     ///Sends a `GET` request to `/usstates/{name}`
     ///
     ///Arguments:
-    /// - `name`: Full name of a US state
+    /// - `name`: Full name of a US state, case sensitive: `Texas` matches,
+    ///   `texas` does not
     ///```ignore
     /// let response = client.get_us_state()
     ///    .name(name)
@@ -7648,34 +8241,21 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetCities<'a> {
         client: &'a super::Client,
-        latest: Result<Option<bool>, String>,
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetCitiesSortBy>, String>,
     }
 
     impl<'a> GetCities<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                latest: Ok(None),
                 order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
                 sort_by: Ok(None),
             }
-        }
-
-        pub fn latest<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<bool>,
-        {
-            self.latest = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `bool` for latest failed".to_string());
-            self
         }
 
         pub fn order_direction<V>(mut self, value: V) -> Self
@@ -7710,25 +8290,24 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCitiesSortBy>,
         {
-            self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
-            });
+            self.sort_by = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `GetCitiesSortBy` for sort_by failed".to_string());
             self
         }
 
         ///Sends a `GET` request to `/cities`
-        pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Cities>, Error<types::ApiErrors>> {
             let Self {
                 client,
-                latest,
                 order_direction,
                 page,
                 page_size,
                 sort_by,
             } = self;
-            let latest = latest.map_err(Error::InvalidRequest)?;
             let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
@@ -7747,7 +8326,6 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("latest", &latest))
                 .query(&progenitor_client::QueryParam::new(
                     "order_direction",
                     &order_direction,
@@ -7766,6 +8344,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -7843,13 +8424,13 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
+                409u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                403u16 => Err(Error::ErrorResponse(
+                415u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                404u16 => Err(Error::ErrorResponse(
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -7865,7 +8446,7 @@ pub mod builder {
         client: &'a super::Client,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        status: Result<Option<::std::string::String>, String>,
+        status: Result<Option<types::ApprovalStatus>, String>,
     }
 
     impl<'a> GetCitiesSubmissions<'a> {
@@ -7900,11 +8481,12 @@ pub mod builder {
 
         pub fn status<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::ApprovalStatus>,
         {
-            self.status = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for status failed".to_string()
-            });
+            self.status = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `ApprovalStatus` for status failed".to_string());
             self
         }
 
@@ -7950,15 +8532,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -8040,13 +8613,10 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
+                415u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -8061,7 +8631,7 @@ pub mod builder {
     pub struct GetCitiesSubmission<'a> {
         client: &'a super::Client,
         submission_id: Result<i32, String>,
-        status: Result<Option<::std::string::String>, String>,
+        status: Result<Option<types::ApprovalStatus>, String>,
     }
 
     impl<'a> GetCitiesSubmission<'a> {
@@ -8085,11 +8655,12 @@ pub mod builder {
 
         pub fn status<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::ApprovalStatus>,
         {
-            self.status = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for status failed".to_string()
-            });
+            self.status = value
+                .try_into()
+                .map(Some)
+                .map_err(|_| "conversion to `ApprovalStatus` for status failed".to_string());
             self
         }
 
@@ -8135,12 +8706,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -8246,13 +8811,13 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                415u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -8266,34 +8831,21 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetCitiesLatestSummary<'a> {
         client: &'a super::Client,
-        latest: Result<Option<bool>, String>,
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetCitiesLatestSummarySortBy>, String>,
     }
 
     impl<'a> GetCitiesLatestSummary<'a> {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                latest: Ok(None),
                 order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
                 sort_by: Ok(None),
             }
-        }
-
-        pub fn latest<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<bool>,
-        {
-            self.latest = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `bool` for latest failed".to_string());
-            self
         }
 
         pub fn order_direction<V>(mut self, value: V) -> Self
@@ -8328,25 +8880,25 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCitiesLatestSummarySortBy>,
         {
             self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+                "conversion to `GetCitiesLatestSummarySortBy` for sort_by failed".to_string()
             });
             self
         }
 
         ///Sends a `GET` request to `/cities/summary/latest`
-        pub async fn send(self) -> Result<ResponseValue<types::CitiesWithSummary>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::CitiesWithSummary>, Error<types::ApiErrors>> {
             let Self {
                 client,
-                latest,
                 order_direction,
                 page,
                 page_size,
                 sort_by,
             } = self;
-            let latest = latest.map_err(Error::InvalidRequest)?;
             let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
@@ -8365,7 +8917,6 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("latest", &latest))
                 .query(&progenitor_client::QueryParam::new(
                     "order_direction",
                     &order_direction,
@@ -8384,6 +8935,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -8470,12 +9024,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -8580,12 +9128,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -8724,12 +9266,6 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
@@ -8856,15 +9392,6 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -8944,13 +9471,13 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
+                409u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                403u16 => Err(Error::ErrorResponse(
+                415u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                404u16 => Err(Error::ErrorResponse(
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -9024,12 +9551,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -9137,13 +9658,13 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 404u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                415u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -9161,7 +9682,7 @@ pub mod builder {
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
-        sort_by: Result<Option<::std::string::String>, String>,
+        sort_by: Result<Option<types::GetPricesFargateSortBy>, String>,
     }
 
     impl<'a> GetPricesFargate<'a> {
@@ -9219,16 +9740,18 @@ pub mod builder {
 
         pub fn sort_by<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetPricesFargateSortBy>,
         {
             self.sort_by = value.try_into().map(Some).map_err(|_| {
-                "conversion to `:: std :: string :: String` for sort_by failed".to_string()
+                "conversion to `GetPricesFargateSortBy` for sort_by failed".to_string()
             });
             self
         }
 
         ///Sends a `GET` request to `/prices/fargate`
-        pub async fn send(self) -> Result<ResponseValue<types::FargatePrices>, Error<()>> {
+        pub async fn send(
+            self,
+        ) -> Result<ResponseValue<types::FargatePrices>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 latest,
@@ -9275,6 +9798,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9345,12 +9871,6 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
                 404u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
@@ -9399,7 +9919,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/ratings`
-        pub async fn send(self) -> Result<ResponseValue<types::Ratings>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::Ratings>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -9434,6 +9954,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9511,13 +10034,10 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                401u16 => Err(Error::ErrorResponse(
+                415u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
-                403u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                404u16 => Err(Error::ErrorResponse(
+                422u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 _ => Err(Error::UnexpectedResponse(response)),
@@ -9586,12 +10106,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -9665,12 +10179,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(
@@ -9747,7 +10255,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/reports/{year}`
-        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<ByteStream>, Error<types::ApiErrors>> {
             let Self { client, year } = self;
             let year = year.map_err(Error::InvalidRequest)?;
             let url = format!(
@@ -9771,6 +10279,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => Ok(ResponseValue::stream(response)),
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9816,7 +10327,7 @@ pub mod builder {
         }
 
         ///Sends a `GET` request to `/usstates`
-        pub async fn send(self) -> Result<ResponseValue<types::UsStates>, Error<()>> {
+        pub async fn send(self) -> Result<ResponseValue<types::UsStates>, Error<types::ApiErrors>> {
             let Self {
                 client,
                 page,
@@ -9851,6 +10362,9 @@ pub mod builder {
             let response = result?;
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
+                400u16 => Err(Error::ErrorResponse(
+                    ResponseValue::from_response(response).await?,
+                )),
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }
@@ -9917,12 +10431,6 @@ pub mod builder {
             match response.status().as_u16() {
                 200u16 => ResponseValue::from_response(response).await,
                 400u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                401u16 => Err(Error::ErrorResponse(
-                    ResponseValue::from_response(response).await?,
-                )),
-                403u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
                 404u16 => Err(Error::ErrorResponse(

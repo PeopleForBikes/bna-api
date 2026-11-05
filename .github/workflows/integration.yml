@@ -34,6 +34,7 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
       - name: Install HURL
         run: |
           HURL_VERSION=8.1.0
@@ -49,26 +50,37 @@ jobs:
           --bin axumed &
       - run: sleep 5
       - name: Run the public smoke-tests
-        run: >
-          hurl --test --variables-file lambdas/tests/localhost.vars
-          lambdas/tests/smoke/public.hurl
-      - name: Run the scenarios tests
-        run: >
-          hurl --test --variables-file lambdas/tests/localhost.vars
-          lambdas/tests/scenario/pagination.hurl
-      - name: Run the endpoint tests
-        run: >
-          hurl --test --variables-file lambdas/tests/localhost.vars
-          lambdas/tests/endpoints/cities.hurl lambdas/tests/endpoints/pricing.hurl
-          lambdas/tests/endpoints/ratings.hurl lambdas/tests/endpoints/reports.hurl
-          lambdas/tests/endpoints/system.hurl lambdas/tests/endpoints/usstates.hurl
+        working-directory: lambdas/tests
+        run: just test-smoke-public localhost
+      - name: Run the endpoint and scenario tests
+        working-directory: lambdas/tests
+        run: just test localhost
+      # The coverage check and the reports also run when the suite fails: the
+      # Hurl report records the failed run too.
+      - name: Check the coverage of the OpenAPI specification
+        if: ${{ !cancelled() }}
+        working-directory: lambdas/tests
+        shell: bash
+        run: just coverage | tee reports/coverage.txt
+      - name: Write the coverage summary
+        if: ${{ !cancelled() }}
+        working-directory: lambdas/tests
+        shell: bash
+        run: |
+          {
+            echo "## OpenAPI coverage"
+            echo '```text'
+            cat reports/coverage.txt 2>/dev/null || echo "The coverage check did not run."
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the Hurl report and the coverage output
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integration-reports
+          path: lambdas/tests/reports
+          if-no-files-found: warn
 
-      # - uses: astral-sh/setup-uv@887a942a15af3a7626099df99e897a18d9e5ab3a #v5.1.0
-      #   with:
-      #     enable-cache: true
-      # - name: Set up Python
-      #   run: uv python install
-      #
       # Schemathesis causes the server to crash somehow.
       # ```
       # Network Error

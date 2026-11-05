@@ -29,7 +29,7 @@ lint: lint-md lint-spellcheck
 
 # Lint markown files.
 lint-md:
-    npx --yes markdownlint-cli2 "**/*.md" "#.venv" "#docs/themes" "#target"
+    npx --yes markdownlint-cli2 "**/*.md" "#**/.venv" "#docs/themes" "#target"
 
 # Check spelling.
 lint-spellcheck:
@@ -142,6 +142,5 @@ nono-claude profile="pfb-claude":
 nono-claude-danger profile="pfb-claude":
     nono run \
     --allow-cwd \
-    --allow-domain "registry.npmjs.org" \
     --profile {{ profile }} \
     -- claude --dangerously-skip-permissions

@@ -1,5 +1,10 @@
 //! Describes the Citi schemas.
-use crate::core::resource::schema::{City, Country};
+use crate::{
+    core::resource::schema::{
+        deserialize_page, deserialize_page_size, City, Country, OrderDirection,
+    },
+    DEFAULT_PAGE_SIZE,
+};
 use chrono::DateTime;
 use entity::{submission, summary};
 use sea_orm::FromQueryResult;
@@ -7,6 +12,79 @@ use serde::{Deserialize, Serialize};
 use std::vec::Vec;
 use utoipa::{IntoParams, ToSchema};
 use uuid::Uuid;
+
+/// Parameters of the city lists: pagination and sorting.
+#[derive(Debug, Deserialize, IntoParams)]
+#[into_params(parameter_in = Query)]
+pub(crate) struct CityListParameters {
+    /// The result page being returned, starting at 1. A page past the last one returns an empty list.
+    #[param(minimum = 1, maximum = 65536, example = 5)]
+    #[serde(default, deserialize_with = "deserialize_page")]
+    page: Option<u64>,
+    /// The number of items per page
+    #[param(minimum = 1, maximum = 100, example = 25)]
+    #[serde(default, deserialize_with = "deserialize_page_size")]
+    page_size: Option<u64>,
+    /// Field to sort the cities by
+    #[param(inline, example = "created_at")]
+    sort_by: Option<CitySortBy>,
+    #[param(example = "desc")]
+    order_direction: Option<OrderDirection>,
+}
+
+impl CityListParameters {
+    pub fn page(&self) -> u64 {
+        self.page.unwrap_or(1)
+    }
+
+    pub fn page_size(&self) -> u64 {
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
+    }
+
+    pub fn sort_by(&self) -> String {
+        self.sort_by.clone().unwrap_or_default().to_string()
+    }
+
+    pub fn order_direction(&self) -> OrderDirection {
+        self.order_direction.clone().unwrap_or_default()
+    }
+}
+
+/// Fields the city lists can be sorted by.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, ToSchema)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum CitySortBy {
+    Name,
+    Country,
+    State,
+    StateAbbrev,
+    Region,
+    FipsCode,
+    #[default]
+    CreatedAt,
+}
+
+impl std::fmt::Display for CitySortBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
+    }
+}
+
+/// Approval status of a city submission.
+#[derive(ToSchema, Serialize, Deserialize, Clone, Debug)]
+pub enum ApprovalStatus {
+    Approved,
+    Pending,
+    Rejected,
+}
+
+impl std::fmt::Display for ApprovalStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let value = serde_plain::to_string(&self).expect("cannot serialize value");
+        write!(f, "{value}")
+    }
+}
 
 #[derive(ToSchema, Serialize)]
 pub(crate) struct Cities(Vec<City>);
@@ -49,20 +127,6 @@ pub(crate) struct CityPost {
     /// Speed limit in kilometer per hour (km/h).
     #[schema(examples("50"))]
     residential_speed_limit: Option<i32>,
-}
-
-#[allow(dead_code)]
-#[derive(ToSchema)]
-pub(crate) struct CensusPost {
-    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
-    #[schema(examples("4805000"))]
-    fips_code: String,
-    /// City population size category (small (0), medium (1), large (2))
-    #[schema(examples("1"))]
-    pop_size: i32,
-    /// City population
-    #[schema(examples("907779"))]
-    population: i32,
 }
 
 #[derive(ToSchema, Serialize, FromQueryResult)]
@@ -122,8 +186,8 @@ pub(crate) struct Submission {
     #[schema(examples("Jane"))]
     first_name: String,
     /// Last name
-    last_name: String,
     #[schema(examples("Doe"))]
+    last_name: String,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -184,8 +248,8 @@ pub(crate) struct SubmissionPost {
     #[schema(examples("Jane"))]
     first_name: String,
     /// Last name
-    last_name: String,
     #[schema(examples("Doe"))]
+    last_name: String,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -212,20 +276,17 @@ pub(crate) struct SubmissionPost {
     /// Consent status
     #[schema(examples("true"))]
     consent: bool,
-    /// Submission status, e.g. "Pending"
-    #[schema(examples("Pending"))]
-    status: String,
 }
 
 #[allow(dead_code)]
 #[derive(ToSchema)]
 pub(crate) struct SubmissionPatch {
     /// First name
-    #[schema(examples("Jane"))]
-    first_name: String,
+    #[schema(examples("Jane"), nullable = false)]
+    first_name: Option<String>,
     /// Last name
-    last_name: String,
-    #[schema(examples("Doe"))]
+    #[schema(examples("Doe"), nullable = false)]
+    last_name: Option<String>,
     /// Job title or position
     #[schema(examples("CTO"))]
     occupation: Option<String>,
@@ -233,28 +294,28 @@ pub(crate) struct SubmissionPatch {
     #[schema(examples("Organization LLC"))]
     organization: Option<String>,
     /// email address
-    #[schema(examples("jane.doe@orgllc.com"))]
-    email: String,
+    #[schema(examples("jane.doe@orgllc.com"), nullable = false)]
+    email: Option<String>,
     /// Country
-    #[schema(examples("Belgium"))]
-    country: Country,
+    #[schema(examples("Belgium"), nullable = false)]
+    country: Option<Country>,
     /// City name
-    #[schema(examples("Antwerp"))]
-    city: String,
+    #[schema(examples("Antwerp"), nullable = false)]
+    city: Option<String>,
     /// Region name. A region can be a state, a province, a community, or
     /// something similar depending on the country. If a country does not have
     /// this concept, then the country name is used.
     #[schema(examples("Antwerp"))]
     region: Option<String>,
     /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
-    #[schema(examples("4805000"))]
-    fips_code: String,
+    #[schema(examples("4805000"), nullable = false)]
+    fips_code: Option<String>,
     /// Consent status
-    #[schema(examples("true"))]
-    consent: bool,
-    /// Submission status, e.g. "Pending"
-    #[schema(examples("Pending"))]
-    status: String,
+    #[schema(examples("true"), nullable = false)]
+    consent: Option<bool>,
+    /// Submission status
+    #[schema(examples("Pending"), nullable = false)]
+    status: Option<ApprovalStatus>,
 }
 
 #[derive(ToSchema, Serialize)]

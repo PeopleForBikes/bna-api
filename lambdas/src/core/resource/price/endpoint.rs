@@ -1,16 +1,14 @@
-use super::adaptor::{get_price_fargate_adaptor_model_, get_prices_fargate_adaptor};
+use super::adaptor::{get_price_fargate_adaptor, get_prices_fargate_adaptor};
+use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
-        price::schema::{FargatePrice, FargatePrices},
-        schema::{ErrorResponses, ListParameters},
+        price::schema::{FargatePrice, FargatePrices, PriceListParameters},
+        schema::{BadRequestResponse, NotFoundResponse},
     },
     database_connect_or_init, PageFlow, Paginatron,
 };
 use crate::{Context, ExecutionError};
-use axum::{
-    extract::{Path, Query},
-    Json,
-};
+use axum::Json;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "price";
@@ -28,13 +26,15 @@ pub fn routes() -> OpenApiRouter {
   description = "Get all the AWS Fargate prices used to compute analysis costs.",
   tag = TAG,
   params(
-    ListParameters
+    PriceListParameters
   ),
   responses(
     (status = OK, description = "Fetches a collection of Fargate prices", body = FargatePrices),
+    BadRequestResponse,
   ))]
 pub(crate) async fn get_prices_fargate(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<PriceListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<FargatePrices>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let (total_items, models) = get_prices_fargate_adaptor(
@@ -48,7 +48,7 @@ pub(crate) async fn get_prices_fargate(
     .await?;
     let payload: FargatePrices = models.into();
     Ok(PageFlow::new(
-        Paginatron::new(None, total_items, list.page(), list.page_size()),
+        Paginatron::new(url, total_items, list.page(), list.page_size()),
         payload,
     ))
 }
@@ -63,14 +63,15 @@ pub(crate) async fn get_prices_fargate(
   ),
   responses(
     (status = OK, description = "Fetches a Fargate price used to estimate the cost of an analysis", body = FargatePrice),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 pub(crate) async fn get_price_fargate(
-    Path(price_id): Path<i32>,
+    ApiPath(price_id): ApiPath<i32>,
     ctx: Context,
 ) -> Result<Json<FargatePrice>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_price_fargate_adaptor_model_(db, price_id, ctx)
+    get_price_fargate_adaptor(db, price_id, ctx)
         .await
         .map(FargatePrice::from)
         .map(Json)

@@ -1,8 +1,6 @@
 use crate::core::resource::schema::OrderDirection;
 use entity::fargate_price;
-use sea_orm::{
-    ColumnTrait, DatabaseConnection, EntityTrait, PaginatorTrait, QueryOrder, QuerySelect,
-};
+use sea_orm::{DatabaseConnection, EntityTrait, PaginatorTrait, QueryOrder, QuerySelect};
 
 pub async fn fetch_fargate_price(
     db: &DatabaseConnection,
@@ -25,12 +23,7 @@ pub async fn fetch_fargate_prices(
     };
 
     let mut select = fargate_price::Entity::find();
-    let count = select
-        .clone()
-        .select_only()
-        .column_as(fargate_price::Column::Id.count(), "count")
-        .count(db)
-        .await?;
+    let count = select.clone().count(db).await?;
 
     // Build the filter.
     select = match latest {
@@ -41,7 +34,12 @@ pub async fn fetch_fargate_prices(
     // Retrieve the models.
     let models = match latest {
         true => select.paginate(db, 1).fetch_page(0).await?,
-        false => select.paginate(db, page_size).fetch_page(page).await?,
+        false => {
+            select
+                .paginate(db, page_size)
+                .fetch_page(page.saturating_sub(1))
+                .await?
+        }
     };
     Ok((count, models))
 }

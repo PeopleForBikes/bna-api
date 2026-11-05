@@ -1,6 +1,7 @@
+use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
-        schema::{ErrorResponses, PaginationParameters},
+        schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
         usstates::{
             adaptor::{get_us_state_adaptor, get_us_states_adaptor},
             schema::{UsState, UsStates},
@@ -8,10 +9,7 @@ use crate::{
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    Json,
-};
+use axum::Json;
 use utoipa_axum::{router::OpenApiRouter, routes};
 
 const TAG: &str = "usstate";
@@ -28,14 +26,15 @@ pub fn routes() -> OpenApiRouter {
   description = "Get the details of a specific US state.",
   tag = TAG,
   params(
-    ("name" = String, Path, description = "Full name of a US state", example = "Texas"),
+    ("name" = String, Path, description = "Full name of a US state, case sensitive: `Texas` matches, `texas` does not", example = "Texas"),
   ),
   responses(
     (status = OK, description = "Fetches a Us state", body = UsState),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_us_state(
-    Path(name): Path<String>,
+    ApiPath(name): ApiPath<String>,
     ctx: Context,
 ) -> Result<Json<UsState>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -56,14 +55,16 @@ async fn get_us_state(
   ),
   responses(
     (status = OK, description = "Fetches US states", body = UsStates),
+    BadRequestResponse,
   ))]
 async fn get_us_states(
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<UsStates>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_us_states_adaptor(db, pagination.page(), pagination.page_size()).await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, pagination.page(), pagination.page_size()),
+        Paginatron::new(url, payload.0, pagination.page(), pagination.page_size()),
         payload.1.into(),
     ))
 }

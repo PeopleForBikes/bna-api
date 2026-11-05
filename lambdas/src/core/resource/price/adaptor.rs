@@ -6,26 +6,8 @@ use crate::{
     Context, ExecutionError,
 };
 use sea_orm::DatabaseConnection;
-use serde_json::{json, Value};
 
 pub async fn get_price_fargate_adaptor(
-    db: &DatabaseConnection,
-    id: i32,
-    ctx: Context,
-) -> Result<Value, ExecutionError> {
-    // Fetch the city model.
-    let model = fetch_fargate_price(db, id).await?;
-    match model {
-        Some(model) => Ok(json!(model)),
-        None => Err(ExecutionError::NotFound(
-            ctx.request_id(),
-            ctx.source(),
-            format!("cannot find a fargate price with ID {id}"),
-        )),
-    }
-}
-
-pub async fn get_price_fargate_adaptor_model_(
     db: &DatabaseConnection,
     id: i32,
     ctx: Context,

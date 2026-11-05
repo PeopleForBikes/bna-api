@@ -11,7 +11,7 @@ use entity::{
         submission::{SubmissionPatch, SubmissionPost},
     },
 };
-use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, IntoActiveModel};
+use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, IntoActiveModel, SqlErr};
 use tracing::info;
 use uuid::Uuid;
 
@@ -59,35 +59,43 @@ pub async fn get_cities_ratings_adaptor(
     page: u64,
     page_size: u64,
     ctx: Context,
-) -> Result<(u64, Vec<(city::Model, Option<summary::Model>)>), ExecutionError> {
-    // Fetch a page of city censuses.
+) -> Result<(city::Model, u64, Vec<summary::Model>), ExecutionError> {
+    // Ensure the city exists: a page past the last one has no ratings, but the
+    // city is still found.
+    let city = get_city_adaptor(db, country, region, name, ctx).await?;
+
+    // Fetch a page of city ratings. A city without ratings has a single row
+    // without summary.
     let (total_items, models) =
         fetch_cities_ratings(db, country, region, name, page, page_size).await?;
+    let ratings = models.into_iter().filter_map(|(_, s)| s).collect();
 
-    // If there is no model, the city resource does not exist.
-    if models.is_empty() {
-        return Err(ExecutionError::NotFound(
-            ctx.request_id(),
-            ctx.source(),
-            format!("cannot find a city matching {country}, {region}, {name}"),
-        ));
-    }
+    Ok((city, total_items, ratings))
+}
 
-    Ok((total_items, models))
+/// Rejects a request body naming a country the BNA does not cover.
+fn uncovered_country(ctx: &Context, country: &str) -> ExecutionError {
+    ExecutionError::InvalidAttribute(
+        ctx.request_id(),
+        ctx.source(),
+        format!("the country is not covered by the BNA: {country}"),
+    )
 }
 
 pub async fn post_cities_adaptor(
     db: &DatabaseConnection,
     city: CityPost,
+    ctx: Context,
 ) -> Result<city::Model, ExecutionError> {
     // Ensure the country is a valid one.
     if fetch_country(db, &city.country).await?.is_none() {
-        return Err(ExecutionError::UncoveredCountry(city.country));
+        return Err(uncovered_country(&ctx, &city.country));
     }
 
     // extract some fields from the post model.
     let country = city.country.clone();
     let state = city.state.clone();
+    let name = city.name.clone();
     let region = city.region.clone();
 
     // Turn the post model into an active model.
@@ -96,24 +104,37 @@ pub async fn post_cities_adaptor(
     // Assign a city_id.
     active_model.id = ActiveValue::Set(Uuid::new_v4());
 
-    // If the country is the United States, set the BNA region.
+    // If the country is the United States, set the BNA region. Otherwise, if
+    // the region is not set, ensure it is equal to the country.
     if country.to_lowercase().eq("united states") {
         match fetch_state_region_crosswalk(db, &state).await? {
             Some(model) => {
                 active_model.region = ActiveValue::Set(Some(model.region));
             }
-            None => return Err(ExecutionError::InvalidUSState(state)),
+            None => {
+                return Err(ExecutionError::InvalidAttribute(
+                    ctx.request_id(),
+                    ctx.source(),
+                    format!("the state is not a valid US state: {state}"),
+                ))
+            }
         }
-    }
-
-    // If the region is not set, ensure it is equal to the country.
-    if region.is_none() {
-        active_model.region = ActiveValue::Set(Some(country));
+    } else if region.is_none() {
+        active_model.region = ActiveValue::Set(Some(country.clone()));
     }
 
     // And insert a new entry.
-    let model = active_model.insert(db).await?;
-    Ok(model)
+    match active_model.insert(db).await {
+        Ok(model) => Ok(model),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::UniqueConstraintViolation(_))) => {
+            Err(ExecutionError::Conflict(
+                ctx.request_id(),
+                ctx.source(),
+                format!("the city {name}, {state}, {country} already exists"),
+            ))
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub async fn get_cities_submission_adaptor(
@@ -149,35 +170,50 @@ pub async fn patch_cities_submission_adaptor(
     db: &DatabaseConnection,
     submission_id: i32,
     submission: SubmissionPatch,
+    ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Turn the wrapper into an active model.
     let mut active_model = submission.into_active_model();
     active_model.id = ActiveValue::Unchanged(submission_id);
 
-    let model = active_model.update(db).await?;
-    Ok(model)
+    // An update without any change only looks the entry up, and reports a
+    // missing entry as not found instead of not updated.
+    match active_model.update(db).await {
+        Ok(model) => Ok(model),
+        Err(DbErr::RecordNotUpdated | DbErr::RecordNotFound(_)) => Err(ExecutionError::NotFound(
+            ctx.request_id(),
+            ctx.source(),
+            format!("cannot find submission with id {submission_id}"),
+        )),
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub async fn post_cities_submission_adaptor(
     db: &DatabaseConnection,
     submission: SubmissionPost,
+    ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // note(rgreinho): Leaving it commented out here because this check is still under
     // discussion.
     // Ensure the country is a valid one.
     // if fetch_country(&db, &submission.country).await?.is_none() {
-    //     return Err(ExecutionError::UncoveredCountry(submission.country));
+    //     return Err(uncovered_country(&ctx, &submission.country));
     // }
 
     // Turn the post model into an active model.
-    let mut active_model: entity::submission::ActiveModel = submission.into_active_model();
+    let country = submission.country.clone();
+    let active_model: entity::submission::ActiveModel = submission.into_active_model();
 
-    // Add the status.
-    active_model.status = ActiveValue::Set("Pending".to_string());
-
-    // And insert a new entry.
-    let model = active_model.insert(db).await?;
-    Ok(model)
+    // And insert a new entry. The country is the only foreign key set by the
+    // client.
+    match active_model.insert(db).await {
+        Ok(model) => Ok(model),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
+            Err(uncovered_country(&ctx, &country))
+        }
+        Err(e) => Err(e.into()),
+    }
 }
 
 pub(crate) async fn get_top_cities_adaptor(

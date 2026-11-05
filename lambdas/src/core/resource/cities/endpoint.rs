@@ -5,10 +5,11 @@ use super::{
         patch_cities_submission_adaptor, post_cities_adaptor, post_cities_submission_adaptor,
     },
     schema::{
-        Cities, CitiesWithSummary, CityPost, CityRatings, RatingSummary, Submission,
-        SubmissionPatch, SubmissionPost, Submissions,
+        ApprovalStatus, Cities, CitiesWithSummary, CityListParameters, CityPost, CityRatings,
+        RatingSummary, Submission, SubmissionPatch, SubmissionPost, Submissions,
     },
 };
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
         cities::{
@@ -16,16 +17,14 @@ use crate::{
             schema::{CityParams, CityWithSummary},
             CitiesPathParameters,
         },
-        schema::{City, ErrorResponses, ListParameters, PaginationParameters},
+        schema::{
+            deserialize_bna_year, BadRequestResponse, City, ConflictResponse, NotFoundResponse,
+            PaginationParameters, UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
+        },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
-use axum_extra::extract::OptionalQuery;
+use axum::{http::StatusCode, Json};
 use entity::wrappers::{city, submission};
 use serde::{self, Deserialize};
 use tracing::debug;
@@ -58,10 +57,11 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches a city", body = City),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_city(
-    Path(params): Path<CitiesPathParameters>,
+    ApiPath(params): ApiPath<CitiesPathParameters>,
     ctx: Context,
 ) -> Result<Json<City>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -78,13 +78,15 @@ async fn get_city(
   description = "Get the details of all cities where an BNA analysis was performed.",
   tag = TAG,
   params(
-    ListParameters,
+    CityListParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities", body = Cities),
+    BadRequestResponse,
   ))]
 async fn get_cities(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<CityListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Cities>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_adaptor(
@@ -96,7 +98,7 @@ async fn get_cities(
     )
     .await?;
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, list.page(), list.page_size()),
+        Paginatron::new(url, payload.0, list.page(), list.page_size()),
         payload.1.into(),
     ))
 }
@@ -107,13 +109,15 @@ async fn get_cities(
   description = "Get all cities with their latest summary.",
   tag = TAG,
   params(
-    ListParameters,
+    CityListParameters,
   ),
   responses(
     (status = OK, description = "Fetches cities with their latest summary", body = CitiesWithSummary),
+    BadRequestResponse,
   ))]
 async fn get_cities_latest_summary(
-    Query(list): Query<ListParameters>,
+    ApiQuery(list): ApiQuery<CityListParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let payload = get_cities_latest_summary_adaptor(
@@ -139,7 +143,7 @@ async fn get_cities_latest_summary(
         .collect::<Vec<CityWithSummary>>();
 
     Ok(PageFlow::new(
-        Paginatron::new(None, payload.0, list.page(), list.page_size()),
+        Paginatron::new(url, payload.0, list.page(), list.page_size()),
         CitiesWithSummary(cities_with_summaries),
     ))
 }
@@ -155,11 +159,13 @@ async fn get_cities_latest_summary(
   ),
   responses(
     (status = OK, description = "Fetches city ratings", body = CityRatings),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_city_ratings(
-    Path(params): Path<CitiesPathParameters>,
-    Query(pagination): Query<PaginationParameters>,
+    ApiPath(params): ApiPath<CitiesPathParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
     ctx: Context,
 ) -> Result<PageFlow<CityRatings>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -173,24 +179,13 @@ async fn get_city_ratings(
         ctx,
     )
     .await?;
-    let city = city_ratings.1.first().unwrap().0.clone();
-    let ratings = city_ratings
-        .1
-        .iter()
-        .filter_map(|e| e.1.clone())
-        .map(RatingSummary::from)
-        .collect::<Vec<RatingSummary>>();
+    let (city, total_items, ratings) = city_ratings;
     let payload = CityRatings {
         city: city.into(),
-        ratings,
+        ratings: ratings.into_iter().map(RatingSummary::from).collect(),
     };
     Ok(PageFlow::new(
-        Paginatron::new(
-            None,
-            city_ratings.0,
-            pagination.page(),
-            pagination.page_size(),
-        ),
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
         payload,
     ))
 }
@@ -203,13 +198,17 @@ async fn get_city_ratings(
   request_body = CityPost,
   responses(
     (status = CREATED, description = "Creates a new city", body = City),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
+    ConflictResponse,
   ))]
 async fn post_city(
-    Json(city): Json<city::CityPost>,
+    ctx: Context,
+    ApiJson(city): ApiJson<city::CityPost>,
 ) -> Result<(StatusCode, Json<City>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_cities_adaptor(db, city)
+    post_cities_adaptor(db, city, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -226,27 +225,57 @@ async fn post_city(
   tag = TAG,
   params(
     ("submission_id" = i32, Path, description = "Submission identifier", example = "1"),
-    ("status" = Option<str>, Query, description = "Filter for the submission status", example = "Pending"),
+    ("status" = Option<ApprovalStatus>, Query, description = "Filter for the submission status", example = "Pending"),
   ),
   responses(
     (status = OK, description = "Fetches a submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_cities_submission(
-    Path(submission_id): Path<i32>,
-    OptionalQuery(status): OptionalQuery<String>,
+    ApiPath(submission_id): ApiPath<i32>,
+    ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
     ctx: Context,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_cities_submission_adaptor(db, submission_id, status, ctx)
-        .await
-        .map(Submission::from)
-        .map(Json)
+    get_cities_submission_adaptor(
+        db,
+        submission_id,
+        submission_params.status.map(|s| s.to_string()),
+        ctx,
+    )
+    .await
+    .map(Submission::from)
+    .map(Json)
+}
+
+/// Path parameters of the top cities, within the documented bounds.
+#[derive(Deserialize)]
+struct TopCitiesPath {
+    #[serde(deserialize_with = "deserialize_bna_year")]
+    year: i32,
+    #[serde(deserialize_with = "deserialize_top_cities_count")]
+    count: u64,
+}
+
+/// Deserializes the number of top cities, between 1 and `TOP_CITIES_MAX_COUNT`.
+fn deserialize_top_cities_count<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let count = u64::deserialize(deserializer)?;
+    if (1..=TOP_CITIES_MAX_COUNT).contains(&count) {
+        Ok(count)
+    } else {
+        Err(serde::de::Error::custom(format!(
+            "the count must be between 1 and {TOP_CITIES_MAX_COUNT}"
+        )))
+    }
 }
 
 #[derive(Deserialize)]
 struct SubmissionParameters {
-    pub status: Option<String>,
+    pub status: Option<ApprovalStatus>,
 }
 
 #[utoipa::path(
@@ -255,21 +284,22 @@ struct SubmissionParameters {
     description = "Get the submissions details.",
     tag = TAG,
     params(
-      ("status" = Option<str>, Query, description = "Filter for the submission status", example = "Pending"),
+      ("status" = Option<ApprovalStatus>, Query, description = "Filter for the submission status", example = "Pending"),
       PaginationParameters,
     ),
     responses(
       (status = OK, description = "Fetches submissions", body = Submissions),
-      ErrorResponses,
+      BadRequestResponse,
     ))]
 async fn get_cities_submissions(
-    Query(submission_params): Query<SubmissionParameters>,
-    Query(pagination): Query<PaginationParameters>,
+    ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let cities_submissions = get_cities_submissions_adaptor(
         db,
-        submission_params.status,
+        submission_params.status.map(|s| s.to_string()),
         pagination.page(),
         pagination.page_size(),
     )
@@ -282,7 +312,7 @@ async fn get_cities_submissions(
     let payload = Submissions(submissions);
     Ok(PageFlow::new(
         Paginatron::new(
-            None,
+            url,
             cities_submissions.0,
             pagination.page(),
             pagination.page_size(),
@@ -299,13 +329,16 @@ async fn get_cities_submissions(
   request_body = SubmissionPost,
   responses(
     (status = CREATED, description = "Creates a new city submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
   ))]
 async fn post_cities_submission(
-    Json(submission): Json<submission::SubmissionPost>,
+    ctx: Context,
+    ApiJson(submission): ApiJson<submission::SubmissionPost>,
 ) -> Result<(StatusCode, Json<Submission>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_cities_submission_adaptor(db, submission)
+    post_cities_submission_adaptor(db, submission, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -326,14 +359,18 @@ async fn post_cities_submission(
   request_body = SubmissionPatch,
   responses(
     (status = OK, description = "Updates a city submission", body = Submission),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
+    NotFoundResponse,
   ))]
 async fn patch_cities_submission(
-    Query(submission_id): Query<i32>,
-    Json(submission): Json<submission::SubmissionPatch>,
+    ApiPath(submission_id): ApiPath<i32>,
+    ctx: Context,
+    ApiJson(submission): ApiJson<submission::SubmissionPatch>,
 ) -> Result<Json<Submission>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    patch_cities_submission_adaptor(db, submission_id, submission)
+    patch_cities_submission_adaptor(db, submission_id, submission, ctx)
         .await
         .map(Submission::from)
         .map(Json)
@@ -350,14 +387,14 @@ async fn patch_cities_submission(
   ),
   responses(
     (status = OK, description = "Fetches cities with their respective summary", body = CitiesWithSummary),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_top_cities(
-    Path((year, count)): Path<(i32, u64)>,
+    ApiPath(TopCitiesPath { year, count }): ApiPath<TopCitiesPath>,
     ctx: Context,
 ) -> Result<Json<CitiesWithSummary>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let count = count.clamp(1, TOP_CITIES_MAX_COUNT);
     let models = get_top_cities_adaptor(db, year, count, ctx).await?;
 
     let payload = models

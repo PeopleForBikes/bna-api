@@ -1,9 +1,15 @@
+axumed
 binstall
 bnaclient
 clippy
+coreservices
+dbdump
 dbml
+fips
 Paginatron
+peopleforbikes
 pgadmin
+pyproject
 Schemathesis
 usstates
 utoipa

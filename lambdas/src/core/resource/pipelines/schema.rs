@@ -4,7 +4,11 @@ use std::{fmt::Display, str::FromStr};
 use chrono::DateTime;
 use sea_orm::prelude::Decimal;
 use serde::{Deserialize, Serialize};
-use utoipa::ToSchema;
+use serde_json::{json, Map, Value};
+use utoipa::{
+    openapi::schema::{Object, ObjectBuilder, OneOfBuilder, Schema, SchemaType, Type},
+    ToSchema,
+};
 use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Deserialize)]
@@ -47,8 +51,8 @@ pub(crate) struct BnaPipeline {
     #[schema(examples("united states/new mexico/santa rosa/24.05.4"))]
     s3_bucket: Option<String>,
     /// Copy of the JSON message that was sent for processing
-    #[schema(examples(json!({"country":"United States","city":"santa rosa","region":"new mexico","fips_code":"3570670"})))]
-    sqs_message: Option<String>,
+    #[schema(schema_with = sqs_message_schema)]
+    sqs_message: Option<Map<String, Value>>,
     /// Start time
     start_time: DateTime<chrono::FixedOffset>,
     /// Pipeline identifier
@@ -68,14 +72,62 @@ impl From<entity::bna_pipeline::Model> for BnaPipeline {
             fargate_price_id: value.fargate_price_id,
             fargate_task_arn: value.fargate_task_arn,
             s3_bucket: value.s3_bucket,
-            sqs_message: value
-                .sqs_message
-                .and_then(|v| serde_json::to_string(&v).ok()),
+            sqs_message: value.sqs_message.and_then(decode_sqs_message),
             start_time: value.start_time,
             state_machine_id: value.state_machine_id,
             status: PipelineStatus::from_str(&value.status).expect("a valid status"),
             step: BnaPipelineStep::from_str(&value.step).expect("a valid step"),
         }
+    }
+}
+
+/// Documents the SQS message of a request: an optional JSON object, or a string
+/// holding one.
+fn sqs_message_request_schema() -> Schema {
+    let one_of = OneOfBuilder::new()
+        .item(sqs_message_schema())
+        .item(
+            ObjectBuilder::new()
+                .schema_type(Type::String)
+                .description(Some("A string holding a JSON object"))
+                .examples([json!(
+                    "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
+                )]),
+        )
+        .description(Some(
+            "Copy of the JSON message that was sent for processing: a JSON object, \
+            or a string holding a JSON object. It is stored and returned as a JSON \
+            object.",
+        ))
+        .build();
+    Schema::OneOf(one_of)
+}
+
+/// Documents the SQS message of a response: an optional JSON object.
+fn sqs_message_schema() -> Object {
+    ObjectBuilder::new()
+        .schema_type(SchemaType::from_iter([Type::Object, Type::Null]))
+        .description(Some(
+            "Copy of the JSON message that was sent for processing",
+        ))
+        .examples([json!({
+            "country": "United States",
+            "city": "santa rosa",
+            "region": "new mexico",
+            "fips_code": "3570670"
+        })])
+        .build()
+}
+
+/// Returns the SQS message as a JSON object.
+///
+/// Messages sent as a string were stored double-encoded: a string holding a
+/// JSON object is decoded. Any other value is not a message and is dropped.
+fn decode_sqs_message(value: Value) -> Option<Map<String, Value>> {
+    match value {
+        Value::Object(object) => Some(object),
+        Value::String(s) => serde_json::from_str::<Map<String, Value>>(&s).ok(),
+        _ => None,
     }
 }
 
@@ -98,8 +150,8 @@ pub(crate) struct BnaPipelinePost {
     #[schema(examples("united states/new mexico/santa rosa/24.05.4"))]
     s3_bucket: Option<String>,
     /// Copy of the JSON message that was sent for processing
-    #[schema(examples(json!({"country":"United States","city":"santa rosa","region":"new mexico","fips_code":"3570670"})))]
-    sqs_message: Option<String>,
+    #[schema(schema_with = sqs_message_request_schema)]
+    sqs_message: Option<Map<String, Value>>,
     /// Start time
     start_time: Option<DateTime<chrono::FixedOffset>>,
     /// Pipeline identifier
@@ -126,21 +178,23 @@ pub(crate) struct BnaPipelinePatch {
     #[schema(examples("united states/new mexico/santa rosa/24.05.4"))]
     s3_bucket: Option<String>,
     /// Copy of the JSON message that was sent for processing
-    #[schema(examples(json!({"country":"United States","city":"santa rosa","region":"new mexico","fips_code":"3570670"})))]
-    sqs_message: Option<String>,
+    #[schema(schema_with = sqs_message_request_schema)]
+    sqs_message: Option<Map<String, Value>>,
     /// Start time
     start_time: Option<DateTime<chrono::FixedOffset>>,
     /// Pipeline status
-    status: PipelineStatus,
+    #[schema(nullable = false)]
+    status: Option<PipelineStatus>,
     /// Last pipeline step that was completed
-    step: BnaPipelineStep,
+    #[schema(nullable = false)]
+    step: Option<BnaPipelineStep>,
 }
 
 #[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) enum BnaPipelineStep {
-    SqsMessage,
     Setup,
     Analysis,
+    Save,
     Cleanup,
 }
 
@@ -162,3 +216,30 @@ impl Display for BnaPipelineStep {
 #[allow(dead_code)]
 #[derive(ToSchema)]
 pub(crate) struct BnaPipelines(Vec<BnaPipeline>);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn utrecht() -> Option<Map<String, Value>> {
+        json!({"city": "Utrecht"}).as_object().cloned()
+    }
+
+    #[test]
+    fn test_decode_sqs_message_object() {
+        assert_eq!(decode_sqs_message(json!({"city": "Utrecht"})), utrecht());
+    }
+
+    #[test]
+    fn test_decode_sqs_message_double_encoded() {
+        assert_eq!(
+            decode_sqs_message(json!("{\"city\":\"Utrecht\"}")),
+            utrecht()
+        );
+    }
+
+    #[test]
+    fn test_decode_sqs_message_not_an_object() {
+        assert_eq!(decode_sqs_message(json!("Utrecht")), None);
+    }
+}
