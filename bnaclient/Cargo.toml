@@ -1,6 +1,6 @@
 [package]
 name = "bnaclient"
-version = "1.5.1"
+version.workspace = true
 edition = "2021"
 license = "MIT"
 

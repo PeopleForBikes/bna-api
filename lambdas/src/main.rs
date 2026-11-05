@@ -51,7 +51,7 @@ async fn main() -> Result<(), Error> {
         .info(
             Info::builder()
                 .title("BNA REST API")
-                .version("1.0.0")
+                .version(env!("CARGO_PKG_VERSION"))
                 .description(Some(
                     "Provides a way to retrieve the BNA results programmatically.",
                 ))
