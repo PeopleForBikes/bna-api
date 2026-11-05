@@ -32,7 +32,8 @@ Feature #0001: hurl-api-coverage. Implements [design.md](./design.md) for
 - [x] 1.1 Extract the baseline data.
   - New: `lambdas/tests/baseline.sql`, a data-only export of `city`, `summary`,
     and the seven rating detail tables from the current
-    `database-with-test-data.sql`.
+    `database-with-test-data.sql`. Converted from `COPY` to `INSERT` during the
+    review, since it is maintained by hand.
 - [x] 1.2 Write the fixtures file.
   - New: `lambdas/tests/fixtures.sql`, with fixed identifiers and timestamps.
   - Pin the `created_at` of the Fargate price inserted by the migrations.
