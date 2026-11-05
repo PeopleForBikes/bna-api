@@ -12,7 +12,6 @@ aws-sdk-sqs = { workspace = true }
 bnacore = { workspace = true }
 chrono = { workspace = true }
 dotenvy = { workspace = true }
-effortless = { path = "../effortless" }
 entity = { path = "../entity" }
 futures = { workspace = true }
 lambda_http = { workspace = true }

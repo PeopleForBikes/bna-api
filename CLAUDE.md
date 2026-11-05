@@ -11,8 +11,8 @@ API Gateway, backed by PostgreSQL via SeaORM. The repo bundles the DB
 migrations, generated entities, the Axum-based Lambda API, the schema docs, and
 a generated Rust REST client (`bnaclient`).
 
-Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, `effortless`,
-and `lambdas/tests/coverage` (`hurl-coverage`, the test coverage check).
+Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, and
+`lambdas/tests/coverage` (`hurl-coverage`, the test coverage check).
 
 ## Common commands
 
@@ -71,8 +71,6 @@ just test-localhost-schemathesis
   applied with `sea-orm-cli migrate`. Schema docs (`docs/database.dbml`,
   `docs/database.sql`, `docs/database.svg`) are derived from the DB via the
   `db-dump`/`dbml-*` just recipes.
-- **`effortless/`** — small shared crate holding the API error types (`APIError`,
-  `APIErrors`). Import these instead of re-inventing error shapes in `lambdas`.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global
@@ -104,8 +102,8 @@ resources/endpoints should follow it too:
   `details` names the invalid field.
 - `schema.rs` — resource-local request/response types (`ToSchema`, `IntoParams`,
   `IntoResponses`) distinct from the cross-resource types in
-  `core/resource/schema.rs` (pagination params, `Country` enum, the error
-  responses, etc.).
+  `core/resource/schema.rs` (pagination params, `Country` enum, the error types
+  and responses, etc.).
 
 Pagination follows a shared convention across resources:
 `ListParameters`/`PaginationParameters` from `core/resource/schema.rs`,

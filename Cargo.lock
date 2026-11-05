@@ -2066,15 +2066,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "effortless"
-version = "1.6.0-alpha.1"
-dependencies = [
- "lambda_http",
- "serde",
- "serde_with",
-]
-
-[[package]]
 name = "either"
 version = "1.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3262,7 +3253,6 @@ dependencies = [
  "chrono",
  "color-eyre",
  "dotenvy",
- "effortless",
  "entity",
  "futures",
  "lambda_http",

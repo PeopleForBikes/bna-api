@@ -6,13 +6,13 @@
 //!
 //! `PageUrl` never rejects a request: it provides the URL the `link` header of
 //! a list points at.
+use crate::core::resource::schema::{APIError, APIErrorSource, APIErrors};
 use axum::{
     extract::{FromRequest, FromRequestParts, OriginalUri, Path, Query, Request},
     http::{header, request::Parts, Extensions, StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
 };
-use effortless::error::{APIError, APIErrorSource, APIErrors};
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::convert::Infallible;
@@ -71,10 +71,7 @@ where
                 rejection.status(),
                 "Invalid Path Parameter",
                 &rejection.body_text(),
-                Some(APIErrorSource::Pointer(request_path(
-                    &parts.uri,
-                    &parts.extensions,
-                ))),
+                APIErrorSource::Pointer(request_path(&parts.uri, &parts.extensions)),
             ))),
         }
     }
@@ -101,7 +98,7 @@ where
                     rejection.status(),
                     "Invalid Query String Parameter",
                     &details,
-                    Some(source),
+                    source,
                 )))
             }
         }
@@ -139,7 +136,7 @@ where
                     status,
                     "Invalid Request Body",
                     &details,
-                    Some(source),
+                    source,
                 )))
             }
         }

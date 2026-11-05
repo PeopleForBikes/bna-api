@@ -11,7 +11,6 @@ members = [
   "lambdas/tests/coverage",
   "entity",
   "migration",
-  "effortless",
 ]
 
 [workspace.package]

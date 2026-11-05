@@ -2,6 +2,7 @@
 use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
 use entity::city;
+use lambda_http::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::Into;
@@ -349,7 +350,7 @@ impl From<entity::city::Model> for City {
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Clone, Debug, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum APIErrorSource {
     /// The path of the request that caused the error. The error details name the invalid field, if any.
@@ -365,7 +366,7 @@ pub enum APIErrorSource {
 
 /// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Clone, Debug, ToSchema)]
 pub struct APIError {
     /// A unique identifier for this particular occurrence of the problem.
     #[schema(examples("blfwkg8nvHcEJnQ="))]
@@ -388,11 +389,101 @@ pub struct APIError {
     source: APIErrorSource,
 }
 
+impl APIError {
+    /// Creates a new `APIError`.
+    pub fn new(
+        id: Option<String>,
+        status: StatusCode,
+        title: &str,
+        details: &str,
+        source: APIErrorSource,
+    ) -> Self {
+        Self {
+            id,
+            status: status.as_u16().to_string(),
+            title: title.to_string(),
+            details: details.to_string(),
+            source,
+        }
+    }
+
+    // Creates a new `APIError` for internal errors.
+    pub fn internal_error(id: Option<String>, title: &str, details: &str, source: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::INTERNAL_SERVER_ERROR,
+            title,
+            details,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for database issues.
+    pub fn db_error(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::internal_error(id, "Database error", message, source)
+    }
+
+    /// Creates a new `APIError` for no-content issues.
+    pub fn not_found(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::NOT_FOUND,
+            "Content Not Found",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for a request body whose content is rejected.
+    pub fn invalid_attribute(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "Invalid Attribute",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for a resource that already exists.
+    pub fn conflict(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::CONFLICT,
+            "Conflict",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Returns the APIError status.
+    pub fn status(&self) -> String {
+        self.status.clone()
+    }
+}
+
 /// Error objects MUST be returned as an array keyed by errors in the top level of a
 /// JSON:API document.
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct APIErrors {
     pub errors: Vec<APIError>,
+}
+
+impl APIErrors {
+    /// Creates a new `APIErrors`.
+    pub fn new(errors: &[APIError]) -> Self {
+        Self {
+            errors: errors.to_vec(),
+        }
+    }
+}
+
+impl From<APIError> for APIErrors {
+    fn from(value: APIError) -> Self {
+        APIErrors {
+            errors: vec![value],
+        }
+    }
 }
 
 /// Response for an operation reading or updating a resource that may not exist.

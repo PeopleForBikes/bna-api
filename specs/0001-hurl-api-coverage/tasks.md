@@ -95,7 +95,7 @@ resetting the database.
       `source`.
 - [x] 3.2 Code: map every Axum extractor rejection (path, query, JSON) to an
       `APIErrors` response with status 400.
-  - `effortless/src/error.rs`, `lambdas/src/lib.rs`
+  - `lambdas/src/core/resource/schema.rs`, `lambdas/src/lib.rs`
     (`impl IntoResponse for ExecutionError`), and the extractors used in
     `lambdas/src/core/resource/*/endpoint.rs`.
 - [x] 3.3 Code: database errors caused by client input must never surface as 500
