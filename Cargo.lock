@@ -1182,7 +1182,7 @@ dependencies = [
  "clang-sys",
  "itertools 0.12.1",
  "log",
- "prettyplease 0.2.25",
+ "prettyplease",
  "proc-macro2",
  "quote",
  "regex",
@@ -1315,29 +1315,6 @@ dependencies = [
  "url",
  "walkdir",
  "zip 7.2.0",
-]
-
-[[package]]
-name = "bon"
-version = "3.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a05442cd7005532d0cfedec676b5b9333d2b4c7c3afabe2b1a9ce2742fbe2ee6"
-dependencies = [
- "bon-macros",
-]
-
-[[package]]
-name = "bon-macros"
-version = "3.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "93833e97ac7c46ba97045afcf247238c27057538fcf2f06344662ddd5f567be6"
-dependencies = [
- "darling 0.24.1",
- "ident_case",
- "prettyplease 0.3.0",
- "proc-macro2",
- "quote",
- "syn 3.0.5",
 ]
 
 [[package]]
@@ -2092,14 +2069,9 @@ dependencies = [
 name = "effortless"
 version = "1.6.0-alpha.1"
 dependencies = [
- "bon",
- "http-serde",
  "lambda_http",
  "serde",
- "serde_json",
  "serde_with",
- "thiserror 2.0.21",
- "urlencoding",
 ]
 
 [[package]]
@@ -4047,16 +4019,6 @@ checksum = "64d1ec885c64d0457d564db4ec299b2dae3f9c02808b8ad9c3a089c591b18033"
 dependencies = [
  "proc-macro2",
  "syn 2.0.117",
-]
-
-[[package]]
-name = "prettyplease"
-version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2bfe0f4c752e450fc2faf62654f1c134747922825d5b04ca717b8874f41a40c0"
-dependencies = [
- "proc-macro2",
- "syn 3.0.5",
 ]
 
 [[package]]
@@ -6702,7 +6664,7 @@ dependencies = [
  "anyhow",
  "heck 0.5.0",
  "indexmap 2.14.2",
- "prettyplease 0.2.25",
+ "prettyplease",
  "syn 2.0.117",
  "wasm-metadata",
  "wit-bindgen-core",
@@ -6716,7 +6678,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c0f9bfd77e6a48eccf51359e3ae77140a7f50b1e2ebfe62422d8afdaffab17a"
 dependencies = [
  "anyhow",
- "prettyplease 0.2.25",
+ "prettyplease",
  "proc-macro2",
  "quote",
  "syn 2.0.117",

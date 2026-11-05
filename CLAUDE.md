@@ -71,10 +71,8 @@ just test-localhost-schemathesis
   applied with `sea-orm-cli migrate`. Schema docs (`docs/database.dbml`,
   `docs/database.sql`, `docs/database.svg`) are derived from the DB via the
   `db-dump`/`dbml-*` just recipes.
-- **`effortless/`** — small shared helper crate for the Lambda API: `api`,
-  `error` (`APIError`/ `APIErrors`), `fragment` (request extension helpers like
-  `BnaRequestExt`), and `response` types. Import these instead of re-inventing
-  error/response shapes in `lambdas`.
+- **`effortless/`** — small shared crate holding the API error types (`APIError`,
+  `APIErrors`). Import these instead of re-inventing error shapes in `lambdas`.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global
