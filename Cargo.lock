@@ -1289,7 +1289,7 @@ dependencies = [
 
 [[package]]
 name = "bna-api"
-version = "0.1.0"
+version = "1.6.0-alpha.1"
 dependencies = [
  "bnacore",
  "chrono",
@@ -1315,7 +1315,7 @@ dependencies = [
 
 [[package]]
 name = "bnaclient"
-version = "1.5.1"
+version = "1.6.0-alpha.1"
 dependencies = [
  "bytes",
  "chrono",
@@ -2125,7 +2125,7 @@ dependencies = [
 
 [[package]]
 name = "effortless"
-version = "0.1.0"
+version = "1.6.0-alpha.1"
 dependencies = [
  "bon",
  "http-serde",
@@ -2177,7 +2177,7 @@ dependencies = [
 
 [[package]]
 name = "entity"
-version = "0.1.0"
+version = "1.6.0-alpha.1"
 dependencies = [
  "sea-orm",
  "serde",
@@ -3302,7 +3302,7 @@ dependencies = [
 
 [[package]]
 name = "lambdas"
-version = "1.1.0"
+version = "1.6.0-alpha.1"
 dependencies = [
  "aws-config",
  "aws-sdk-s3",
@@ -3633,7 +3633,7 @@ dependencies = [
 
 [[package]]
 name = "migration"
-version = "0.1.0"
+version = "1.6.0-alpha.1"
 dependencies = [
  "async-std",
  "sea-orm-migration",
