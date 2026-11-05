@@ -76,11 +76,11 @@ just test-localhost-schemathesis
   `BnaRequestExt`), and `response` types. Import these instead of re-inventing
   error/response shapes in `lambdas`.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
-  OpenAPI spec and runs it as a Lambda (via `lambda_http::run`);
-  `src/bin/ratings` is a separate binary. `src/lib.rs` exposes shared
-  infrastructure: the global `DB_CONN: OnceCell<DatabaseConnection>`,
-  `database_connect*` helpers, pagination constants (`MAX_PAGE_SIZE`,
-  `DEFAULT_PAGE_SIZE`), and the `APIResult<T>` type.
+  OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
+  exposes shared infrastructure: the global
+  `DB_CONN: OnceCell<DatabaseConnection>`, `database_connect*` helpers,
+  pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`), and the
+  `APIResult<T>` type.
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
   `just regenerate-all` (or `regenerate-all-no-cargo` to keep
