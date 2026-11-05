@@ -147,7 +147,8 @@ HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/country"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "country"
 
 # Rejects a US city in a state that does not exist.
 POST {{host}}/cities
@@ -162,7 +163,8 @@ HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/state"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "state"
 
 # Rejects a country that does not exist when reading a city.
 GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel
@@ -250,7 +252,7 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/"
+jsonpath "$.errors[0].source.pointer" == "/cities"
 
 # Rejects a body missing a required field.
 POST {{host}}/cities
@@ -264,7 +266,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/country"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "country"
 
 # Rejects a body sent without the JSON content type.
 POST {{host}}/cities

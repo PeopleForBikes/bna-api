@@ -8,7 +8,7 @@
 //! a list points at.
 use axum::{
     extract::{FromRequest, FromRequestParts, OriginalUri, Path, Query, Request},
-    http::{header, request::Parts, Extensions, StatusCode},
+    http::{header, request::Parts, Extensions, StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
 };
@@ -71,7 +71,10 @@ where
                 rejection.status(),
                 "Invalid Path Parameter",
                 &rejection.body_text(),
-                Some(APIErrorSource::Pointer(request_path(parts))),
+                Some(APIErrorSource::Pointer(request_path(
+                    &parts.uri,
+                    &parts.extensions,
+                ))),
             ))),
         }
     }
@@ -91,7 +94,7 @@ where
                 let details = rejection.body_text();
                 let source = match error_path(&details) {
                     Some(parameter) => APIErrorSource::Parameter(parameter),
-                    None => APIErrorSource::Pointer(request_path(parts)),
+                    None => APIErrorSource::Pointer(request_path(&parts.uri, &parts.extensions)),
                 };
                 Err(ExtractionError(APIError::new(
                     request_id(&parts.extensions),
@@ -114,6 +117,7 @@ where
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         let id = request_id(req.extensions());
+        let path = request_path(req.uri(), req.extensions());
         match Json::<T>::from_request(req, state).await {
             Ok(Json(value)) => Ok(Self(value)),
             Err(rejection) => {
@@ -121,7 +125,7 @@ where
                 let source = if rejection.status() == StatusCode::UNSUPPORTED_MEDIA_TYPE {
                     APIErrorSource::Header(header::CONTENT_TYPE.to_string())
                 } else {
-                    APIErrorSource::Pointer(body_pointer(&details))
+                    APIErrorSource::Pointer(path)
                 };
                 // Every body problem is a bad request, including the 415 and 422
                 // statuses Axum uses for a missing content type or invalid data.
@@ -206,10 +210,10 @@ fn request_id(extensions: &Extensions) -> Option<String> {
 }
 
 /// Returns the path of the request as sent by the client.
-fn request_path(parts: &Parts) -> String {
-    match parts.extensions.get::<OriginalUri>() {
-        Some(uri) => uri.0.path().to_owned(),
-        None => parts.uri.path().to_owned(),
+fn request_path(uri: &Uri, extensions: &Extensions) -> String {
+    match extensions.get::<OriginalUri>() {
+        Some(original) => original.0.path().to_owned(),
+        None => uri.path().to_owned(),
     }
 }
 
@@ -233,26 +237,6 @@ fn error_path(details: &str) -> Option<String> {
             .chars()
             .all(|c| c.is_ascii_alphanumeric() || matches!(c, '_' | '.' | '[' | ']'));
     is_path.then(|| path.to_string())
-}
-
-/// Converts the failing field of a JSON body error into a JSON pointer.
-///
-/// `core_services.score` becomes `/core_services/score` and `items[0]` becomes
-/// `/items/0`. Errors without a field point at the whole document (`/`).
-fn body_pointer(details: &str) -> String {
-    match error_path(details) {
-        Some(path) => {
-            let segments = path
-                .replace('[', ".")
-                .replace(']', "")
-                .split('.')
-                .filter(|s| !s.is_empty())
-                .collect::<Vec<_>>()
-                .join("/");
-            format!("/{segments}")
-        }
-        None => String::from("/"),
-    }
 }
 
 #[cfg(test)]
@@ -316,34 +300,6 @@ mod tests {
                 "Failed to parse the request body as JSON: expected ident at line 1 column 2"
             ),
             None
-        );
-    }
-
-    #[test]
-    fn test_body_pointer_nested() {
-        assert_eq!(
-            body_pointer("Failed to deserialize the JSON body into the target type: core_services.score: invalid type: string \"a\", expected f64 at line 1 column 40"),
-            "/core_services/score"
-        );
-    }
-
-    #[test]
-    fn test_body_pointer_index() {
-        assert_eq!(
-            body_pointer(
-                "Failed to deserialize the JSON body into the target type: items[0]: invalid type"
-            ),
-            "/items/0"
-        );
-    }
-
-    #[test]
-    fn test_body_pointer_root() {
-        assert_eq!(
-            body_pointer(
-                "Failed to parse the request body as JSON: expected ident at line 1 column 2"
-            ),
-            "/"
         );
     }
 }

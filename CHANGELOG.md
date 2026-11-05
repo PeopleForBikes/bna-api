@@ -13,8 +13,8 @@ and this project adheres to
 - Requests with an invalid path parameter, query string parameter, or body now
   get a JSON `APIErrors` document, as documented in the OpenAPI specification,
   instead of a plain text message. The error `source` names the failing query
-  parameter, the request path, the JSON pointer of the failing body field, or
-  the `content-type` header.
+  parameter, the `content-type` header, or otherwise holds the request path in
+  `pointer`. `details` names the invalid field; only the first one is reported.
 - Invalid request bodies now return `400 Bad Request`, as documented in the
   OpenAPI specification. A body with missing or mistyped fields previously
   returned `422 Unprocessable Entity`, and a body sent without the
@@ -105,16 +105,13 @@ and this project adheres to
 - Creating a city that already exists now returns the documented `409 Conflict`
   instead of `500 Internal Server Error`.
 - Creating a city in a country the BNA does not cover now returns
-  `400 Bad Request` pointing at `/country`, instead of
-  `500 Internal Server Error`.
+  `400 Bad Request` instead of `500 Internal Server Error`.
 - Creating a US city in a state that does not exist now returns
-  `400 Bad Request` pointing at `/state`, instead of
-  `500 Internal Server Error`.
+  `400 Bad Request` instead of `500 Internal Server Error`.
 - Creating a city submission in a country outside the documented `Country` enum
-  now returns `400 Bad Request` pointing at `/country`, instead of
-  `500 Internal Server Error`.
+  now returns `400 Bad Request` instead of `500 Internal Server Error`.
 - Creating a rating for a city that does not exist now returns `400 Bad Request`
-  pointing at `/city_id`, instead of `500 Internal Server Error`.
+  instead of `500 Internal Server Error`.
 - Creating a pipeline whose `state_machine_id` already exists now returns the
   documented `409 Conflict` instead of `500 Internal Server Error`.
 - Updating a pipeline that does not exist now returns `404 Not Found` instead of

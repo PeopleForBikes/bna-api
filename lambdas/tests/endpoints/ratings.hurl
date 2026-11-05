@@ -168,7 +168,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/score"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" contains "score"
 
 # Rejects a rating for a city that does not exist.
 POST {{host}}/ratings
@@ -194,7 +195,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/city_id"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" contains "city_id"
 
 # Queries the city of a rating with an invalid id.
 GET {{host}}/ratings/1/city

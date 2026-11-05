@@ -73,6 +73,15 @@ pub async fn get_cities_ratings_adaptor(
     Ok((city, total_items, ratings))
 }
 
+/// Rejects a request body naming a country the BNA does not cover.
+fn uncovered_country(ctx: &Context, country: &str) -> ExecutionError {
+    ExecutionError::InvalidAttribute(
+        ctx.request_id(),
+        ctx.source(),
+        format!("the country is not covered by the BNA: {country}"),
+    )
+}
+
 pub async fn post_cities_adaptor(
     db: &DatabaseConnection,
     city: CityPost,
@@ -80,7 +89,7 @@ pub async fn post_cities_adaptor(
 ) -> Result<city::Model, ExecutionError> {
     // Ensure the country is a valid one.
     if fetch_country(db, &city.country).await?.is_none() {
-        return Err(ExecutionError::UncoveredCountry(city.country));
+        return Err(uncovered_country(&ctx, &city.country));
     }
 
     // extract some fields from the post model.
@@ -102,7 +111,13 @@ pub async fn post_cities_adaptor(
             Some(model) => {
                 active_model.region = ActiveValue::Set(Some(model.region));
             }
-            None => return Err(ExecutionError::InvalidUSState(state)),
+            None => {
+                return Err(ExecutionError::InvalidAttribute(
+                    ctx.request_id(),
+                    ctx.source(),
+                    format!("the state is not a valid US state: {state}"),
+                ))
+            }
         }
     } else if region.is_none() {
         active_model.region = ActiveValue::Set(Some(country.clone()));
@@ -177,12 +192,13 @@ pub async fn patch_cities_submission_adaptor(
 pub async fn post_cities_submission_adaptor(
     db: &DatabaseConnection,
     submission: SubmissionPost,
+    ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // note(rgreinho): Leaving it commented out here because this check is still under
     // discussion.
     // Ensure the country is a valid one.
     // if fetch_country(&db, &submission.country).await?.is_none() {
-    //     return Err(ExecutionError::UncoveredCountry(submission.country));
+    //     return Err(uncovered_country(&ctx, &submission.country));
     // }
 
     // Turn the post model into an active model.
@@ -194,7 +210,7 @@ pub async fn post_cities_submission_adaptor(
     match active_model.insert(db).await {
         Ok(model) => Ok(model),
         Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
-            Err(ExecutionError::UncoveredCountry(country))
+            Err(uncovered_country(&ctx, &country))
         }
         Err(e) => Err(e.into()),
     }

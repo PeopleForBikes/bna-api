@@ -117,12 +117,8 @@ pub mod types {
     ///
     ///It SHOULD include one of the following members or be omitted:
     ///
-    ///  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901)
-    ///    to the value in the request document that caused the error [e.g.
-    ///    "/data" for a primary data object, or "/data/attributes/title" for a
-    ///    specific attribute]. This MUST point to a value in the request
-    ///    document that exists; if it doesn’t, the client SHOULD simply ignore
-    ///    the pointer.
+    ///  - pointer: the path of the request that caused the error [e.g.
+    ///    "/ratings/1"]. The error details name the invalid field, if any.
     ///  - parameter: a string indicating which URI query parameter caused the
     ///    error.
     ///  - header: a string indicating the name of a single request header which
@@ -132,14 +128,20 @@ pub mod types {
     ///
     /// ```json
     ///{
-    ///  "description": "An object containing references to the primary source of the error.\n\nIt SHOULD include one of the following members or be omitted:\n\n  - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the\n    value in the request document that caused the error [e.g. \"/data\" for a primary\n    data object, or \"/data/attributes/title\" for a specific attribute].\n    This MUST point to a value in the request document that exists; if it doesn’t,\n    the client SHOULD simply ignore the pointer.\n  - parameter: a string indicating which URI query parameter caused the error.\n  - header: a string indicating the name of a single request header which caused the\n    error.",
+    ///  "description": "An object containing references to the primary source
+    /// of the error.\n\nIt SHOULD include one of the following members or be
+    /// omitted:\n\n  - pointer: the path of the request that caused the error
+    /// [e.g. \"/ratings/1\"]. The\n    error details name the invalid field, if
+    /// any.\n  - parameter: a string indicating which URI query parameter
+    /// caused the error.\n  - header: a string indicating the name of a single
+    /// request header which caused the\n    error.",
     ///  "oneOf": [
     ///    {
-    ///      "description": "A JSON Pointer [RFC6901] to the value in the
-    /// request document that caused the error.",
+    ///      "description": "The path of the request that caused the error. The
+    /// error details name the invalid field, if any.",
     ///      "examples": [
     ///        {
-    ///          "pointer": "/data/attributes/title"
+    ///          "pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"
     ///        }
     ///      ],
     ///      "type": "object",
@@ -148,8 +150,8 @@ pub mod types {
     ///      ],
     ///      "properties": {
     ///        "pointer": {
-    ///          "description": "A JSON Pointer [RFC6901] to the value in the
-    /// request document that caused the error.",
+    ///          "description": "The path of the request that caused the error.
+    /// The error details name the invalid field, if any.",
     ///          "type": "string"
     ///        }
     ///      }
@@ -200,8 +202,8 @@ pub mod types {
     /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub enum ApiErrorSource {
-        ///A JSON Pointer [RFC6901] to the value in the request document that
-        /// caused the error.
+        ///The path of the request that caused the error. The error details
+        /// name the invalid field, if any.
         #[serde(rename = "pointer")]
         Pointer(::std::string::String),
         ///A string indicating which URI query parameter caused the error.

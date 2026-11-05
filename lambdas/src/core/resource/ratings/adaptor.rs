@@ -68,6 +68,7 @@ pub(crate) async fn get_ratings_city_adaptor(
 pub(crate) async fn post_ratings_adaptor(
     db: &DatabaseConnection,
     rating: RatingPost,
+    ctx: Context,
 ) -> Result<Bna, ExecutionError> {
     // Ensure the rated city exists.
     if city::Entity::find()
@@ -76,7 +77,11 @@ pub(crate) async fn post_ratings_adaptor(
         .await?
         .is_none()
     {
-        return Err(ExecutionError::UnknownCity(rating.city_id.to_string()));
+        return Err(ExecutionError::InvalidAttribute(
+            ctx.request_id(),
+            ctx.source(),
+            format!("the city_id does not match any city: {}", rating.city_id),
+        ));
     }
 
     // Generate a rating id.

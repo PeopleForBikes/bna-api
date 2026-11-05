@@ -344,19 +344,16 @@ impl From<entity::city::Model> for City {
 ///
 /// It SHOULD include one of the following members or be omitted:
 ///
-///   - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
-///     value in the request document that caused the error [e.g. "/data" for a primary
-///     data object, or "/data/attributes/title" for a specific attribute].
-///     This MUST point to a value in the request document that exists; if it doesn’t,
-///     the client SHOULD simply ignore the pointer.
+///   - pointer: the path of the request that caused the error [e.g. "/ratings/1"]. The
+///     error details name the invalid field, if any.
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
 #[derive(Deserialize, Serialize, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum APIErrorSource {
-    /// A JSON Pointer [RFC6901] to the value in the request document that caused the error.
-    #[schema(examples(json!({"pointer": "/data/attributes/title"})))]
+    /// The path of the request that caused the error. The error details name the invalid field, if any.
+    #[schema(examples(json!({"pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"})))]
     Pointer(String),
     /// A string indicating which URI query parameter caused the error.
     #[schema(examples(json!({ "parameter": "include" })))]

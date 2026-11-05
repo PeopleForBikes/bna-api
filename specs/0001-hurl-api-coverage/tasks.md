@@ -101,7 +101,7 @@ resetting the database.
 - [x] 3.3 Code: database errors caused by client input must never surface as 500
       (enforced resource by resource in phases 5 to 7).
 - [x] 3.4 `CHANGELOG.md`: JSON error bodies everywhere.
-- [ ] 3.5 M-42: `source.pointer` is always the request path, and `details` names
+- [x] 3.5 M-42: `source.pointer` is always the request path, and `details` names
       the invalid field; Hurl asserts both on every rejected body.
   - `lambdas/src/core/extract.rs`, `lambdas/src/lib.rs` (`ExecutionError`), the
     doc comments of `APIErrorSource`.

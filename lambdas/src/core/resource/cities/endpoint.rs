@@ -330,10 +330,11 @@ async fn get_cities_submissions(
     BadRequestResponse,
   ))]
 async fn post_cities_submission(
+    ctx: Context,
     ApiJson(submission): ApiJson<submission::SubmissionPost>,
 ) -> Result<(StatusCode, Json<Submission>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_cities_submission_adaptor(db, submission)
+    post_cities_submission_adaptor(db, submission, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

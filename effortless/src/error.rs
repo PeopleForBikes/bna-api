@@ -8,11 +8,8 @@ use serde_with::skip_serializing_none;
 ///
 /// It SHOULD include one of the following members or be omitted:
 ///
-///   - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
-///     value in the request document that caused the error [e.g. "/data" for a primary
-///     data object, or "/data/attributes/title" for a specific attribute].
-///     This MUST point to a value in the request document that exists; if it doesn’t,
-///     the client SHOULD simply ignore the pointer.
+///   - pointer: the path of the request that caused the error [e.g. "/ratings/1"]. The
+///     error details name the invalid field, if any.
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
@@ -106,6 +103,17 @@ impl APIError {
             id,
             status: StatusCode::NOT_FOUND.as_u16().to_string(),
             title: String::from("Content Not Found"),
+            source: Some(APIErrorSource::Pointer(source.into())),
+            details: message.into(),
+        }
+    }
+
+    /// Creates a new `APIError` for a request body whose content is rejected.
+    pub fn invalid_attribute(id: Option<String>, source: &str, message: &str) -> Self {
+        Self {
+            id,
+            status: StatusCode::BAD_REQUEST.as_u16().to_string(),
+            title: String::from("Invalid Attribute"),
             source: Some(APIErrorSource::Pointer(source.into())),
             details: message.into(),
         }

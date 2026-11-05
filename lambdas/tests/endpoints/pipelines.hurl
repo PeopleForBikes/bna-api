@@ -42,7 +42,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/state_machine_id"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
+jsonpath "$.errors[0].details" contains "state_machine_id"
 
 # Reading a pipeline that does not exist is not found.
 GET {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
@@ -152,7 +153,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/fargate_price_id"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "fargate_price_id"
 
 # Accepts an SQS message sent as a string holding a JSON object, and returns
 # it as a JSON object.
@@ -204,7 +206,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/sqs_message"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
+jsonpath "$.errors[0].details" contains "sqs_message"
 
 # Updating a pipeline that does not exist is not found.
 PATCH {{host}}/pipelines/bna/00000000-0000-4000-8000-000000000000
@@ -241,7 +244,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/status"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "status"
 
 # Rejects an update with an unknown step.
 PATCH {{host}}/pipelines/bna/{{pipeline_id}}
@@ -255,7 +259,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/step"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "step"
 
 # Moves the pipeline to the save step, and reads it back.
 PATCH {{host}}/pipelines/bna/{{pipeline_id}}
@@ -282,7 +287,8 @@ content-type: application/json
 }
 HTTP 400
 [Asserts]
-jsonpath "$.errors[0].source.pointer" == "/step"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "step"
 
 # Updates the start time of the pipeline, and reads it back.
 PATCH {{host}}/pipelines/bna/{{pipeline_id}}

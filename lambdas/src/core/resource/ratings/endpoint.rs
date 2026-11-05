@@ -90,10 +90,11 @@ async fn get_ratings(
     BadRequestResponse,
   ))]
 async fn post_rating(
+    ctx: Context,
     ApiJson(bna): ApiJson<RatingPost>,
 ) -> Result<(StatusCode, Json<Rating>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_ratings_adaptor(db, bna)
+    post_ratings_adaptor(db, bna, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

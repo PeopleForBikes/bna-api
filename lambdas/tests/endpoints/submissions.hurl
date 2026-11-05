@@ -30,7 +30,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/first_name"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
+jsonpath "$.errors[0].details" contains "first_name"
 
 # Rejects a submission in a country the BNA does not cover.
 POST {{host}}/cities/submissions
@@ -50,7 +51,8 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/country"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
+jsonpath "$.errors[0].details" contains "country"
 
 # A new submission is always pending, whatever status the body sends.
 POST {{host}}/cities/submissions
@@ -143,4 +145,5 @@ HTTP 400
 [Asserts]
 header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
-jsonpath "$.errors[0].source.pointer" == "/status"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
+jsonpath "$.errors[0].details" contains "status"

@@ -390,17 +390,10 @@ pub enum ExecutionError {
     #[error("conflict at {1}: {2}")]
     Conflict(Option<String>, String, String),
 
-    /// Uncovered country.
-    #[error("the country is not covered by the analyzer: {0}")]
-    UncoveredCountry(String),
-
-    /// Invalid US State.
-    #[error("the state is not a valid US state: {0}")]
-    InvalidUSState(String),
-
-    /// Unknown city referenced by a request body.
-    #[error("the city does not exist: {0}")]
-    UnknownCity(String),
+    /// A request body whose content is rejected, such as an unknown country,
+    /// US state, or city.
+    #[error("{2}")]
+    InvalidAttribute(Option<String>, String, String),
 }
 
 impl From<ExecutionError> for APIError {
@@ -413,21 +406,9 @@ impl From<ExecutionError> for APIError {
             ExecutionError::Conflict(id, source, message) => {
                 APIError::conflict(id, &source, &message)
             }
-            ExecutionError::UncoveredCountry(country) => APIError::with_pointer(
-                None,
-                "/country",
-                &format!("the country is not covered by the BNA: {country}"),
-            ),
-            ExecutionError::InvalidUSState(state) => APIError::with_pointer(
-                None,
-                "/state",
-                &format!("the state is not a valid US state: {state}"),
-            ),
-            ExecutionError::UnknownCity(city_id) => APIError::with_pointer(
-                None,
-                "/city_id",
-                &format!("cannot find a city with the ID {city_id}"),
-            ),
+            ExecutionError::InvalidAttribute(id, source, message) => {
+                APIError::invalid_attribute(id, &source, &message)
+            }
             _ => APIError::internal_error(
                 None,
                 "Internal Error",
