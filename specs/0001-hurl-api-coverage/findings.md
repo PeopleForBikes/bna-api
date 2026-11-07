@@ -39,6 +39,18 @@ the first invalid field is reported, because deserialization stops there.
 
 **Caught by**: the team, reviewing the error responses.
 
+### 1.4 The `Country` enum and the `country` table must hold the same values
+
+The API documents the enum (`core/resource/schema.rs`), and the foreign key and
+`POST /cities` check the table, so nothing else keeps them equal: adding a
+country takes both a migration and the enum. They differ by nothing since
+`m20261107_200000_all_countries`.
+
+**Caught by**: the specification review (R-03), and a comparison of the two
+lists.
+
+**Cost**: 177 documented countries were rejected with a 422.
+
 ## 2. Library and tooling traps
 
 ### 2.1 Updating a row with no changes reports it as not found

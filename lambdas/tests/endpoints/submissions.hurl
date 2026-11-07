@@ -75,6 +75,23 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "415"
 jsonpath "$.errors[0].source.header" == "content-type"
 
+# Creates a submission in a country only the API enum used to list.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "first_name": "Jane",
+  "last_name": "Doe",
+  "email": "hurl-{{newUuid}}@example.com",
+  "country": "Albania",
+  "city": "Tirana",
+  "fips_code": "0",
+  "consent": true
+}
+HTTP 201
+[Asserts]
+jsonpath "$.country" == "Albania"
+
 # Rejects a submission in a country the BNA does not cover.
 POST {{host}}/cities/submissions
 Authorization: Bearer {{token}}

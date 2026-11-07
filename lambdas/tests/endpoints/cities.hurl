@@ -134,6 +134,40 @@ header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "409"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 
+# Creates a city in a country that needs its name renamed in the API enum, and
+# reads it back: every documented country is accepted.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "The Bahamas",
+  "state": "New Providence",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 201
+[Captures]
+bahamas_city_name: jsonpath "$.name"
+[Asserts]
+jsonpath "$.country" == "The Bahamas"
+
+GET {{host}}/cities/The%20Bahamas/New%20Providence/{{bahamas_city_name}}
+HTTP 200
+[Asserts]
+jsonpath "$.name" == "{{bahamas_city_name}}"
+
+# Creates a city in a country only the API enum used to list.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Albania",
+  "state": "Tirana",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 201
+[Asserts]
+jsonpath "$.country" == "Albania"
+
 # Rejects a city in a country the BNA does not cover.
 POST {{host}}/cities
 Authorization: Bearer {{token}}

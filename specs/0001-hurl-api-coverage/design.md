@@ -100,6 +100,11 @@ behavior for API consumers and must be called out in the release notes.
   Resolution: out of this feature. The team decided on 2026-11-07 to remove the
   confusion in a dedicated branch for v2, breaking changes included, so these
   descriptions stay as they are here.
+- **M-45 Documented countries the API rejects.** The `Country` enum lists 204
+  countries, while the `country` table holds 27, so a documented country such as
+  `Albania` gets a 422. Found during the review (R-03). Resolution: **Code**, a
+  new migration adds the missing countries, so the table and the enum hold the
+  same values. Client-visible.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never

@@ -83,6 +83,9 @@ and this project adheres to
   schemas, so `bnaclient` provides them too. `entity::wrappers::BikeLaneType`
   now uses the names of the `bike_lane_type` table (for example `buffered_lane`
   instead of `BufferedLane`) and can be converted from and to a string.
+- Every country of the documented `Country` enum is now accepted. The `country`
+  table held only 27 of the 204, so the others were rejected with
+  `422 Unprocessable Entity`. A new migration adds them.
 
 ### Fixed
 

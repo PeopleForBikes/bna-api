@@ -14,7 +14,7 @@ reproduced against the local API.
 | ---- | -------- | ------------------------------------------------- | ----------------------- |
 | R-01 | Major    | Client input still produces 500                   | Fixed                   |
 | R-02 | Major    | `GET /pipelines/bna` skips the message decoding   | Fixed                   |
-| R-03 | Major    | `Country` enum offers values the API rejects      | Open                    |
+| R-03 | Major    | `Country` enum offers values the API rejects      | Fixed                   |
 | R-04 | Major    | City `state` and `region` fields are confusing    | Moved to its own branch |
 | R-05 | Major    | No test run exists for a tagged commit            | Open                    |
 | R-06 | Major    | The suite cannot pass on staging                  | Deferred: to discuss    |
