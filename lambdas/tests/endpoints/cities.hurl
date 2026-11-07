@@ -150,6 +150,7 @@ bahamas_city_name: jsonpath "$.name"
 [Asserts]
 jsonpath "$.country" == "The Bahamas"
 
+# Reads the new city back.
 GET {{host}}/cities/The%20Bahamas/New%20Providence/{{bahamas_city_name}}
 HTTP 200
 [Asserts]
@@ -255,6 +256,8 @@ jsonpath "$.errors[0].source.pointer" == "/cities/top/2029/5"
 # Accepts the bounds of the top cities parameters.
 GET {{host}}/cities/top/2017/100
 HTTP 200
+[Asserts]
+jsonpath "$" count <= 100
 
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/cities?page=abc

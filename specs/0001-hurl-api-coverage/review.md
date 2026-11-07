@@ -26,7 +26,7 @@ reproduced against the local API.
 | R-12 | Minor    | `latest=true` reports misleading headers          | Open                    |
 | R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |
 | R-14 | Minor    | 500 sources and report failures break the rule    | Open                    |
-| R-15 | Minor    | Some requests lack a comment or a value assertion | Open                    |
+| R-15 | Minor    | Some requests lack a comment or a value assertion | Fixed                   |
 | R-16 | Minor    | The suite will start failing from 2029            | Open                    |
 | R-17 | Minor    | The verification records predate the latest code  | Open                    |
 | R-18 | Minor    | Removals outside the scope of the specification   | Fixed                   |
@@ -131,6 +131,8 @@ instead of returning `APIErrors` (`reports/endpoint.rs`), against M-01.
 - No comment: `pipelines.hurl`, `reports.hurl`, `submissions.hurl`.
 - Status only, with a body: `cities.hurl`, `reports.hurl`, `pagination.hurl`,
   `submission-lifecycle.hurl`.
+
+The smoke tests stay status-only on purpose: they check that the API is alive.
 
 ### R-16 The suite will start failing from 2029
 

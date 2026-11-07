@@ -134,6 +134,7 @@ approved_submission_id: jsonpath "$.id"
 [Asserts]
 jsonpath "$.status" == "Pending"
 
+# Reads the new submission back: it is still pending.
 GET {{host}}/cities/submissions/{{approved_submission_id}}
 HTTP 200
 [Asserts]

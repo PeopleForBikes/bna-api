@@ -18,6 +18,7 @@ HTTP 200
 [Asserts]
 jsonpath "$[?(@.state_machine_id == 'f0000000-0000-4000-8000-00000000b004')].sqs_message.city" == "Oshawa"
 
+# The read of that pipeline does too.
 GET {{host}}/pipelines/bna/f0000000-0000-4000-8000-00000000b004
 HTTP 200
 [Asserts]
@@ -267,6 +268,7 @@ string_pipeline_id: jsonpath "$.state_machine_id"
 [Asserts]
 jsonpath "$.sqs_message.city" == "hurl"
 
+# Reads the pipeline created from a string message back.
 GET {{host}}/pipelines/bna/{{string_pipeline_id}}
 HTTP 200
 [Asserts]
@@ -284,6 +286,7 @@ HTTP 200
 [Asserts]
 jsonpath "$.sqs_message.city" == "hurl-2"
 
+# Reads the updated message back.
 GET {{host}}/pipelines/bna/{{string_pipeline_id}}
 HTTP 200
 [Asserts]
@@ -369,6 +372,7 @@ HTTP 200
 [Asserts]
 jsonpath "$.step" == "Save"
 
+# Reads the save step back.
 GET {{host}}/pipelines/bna/{{pipeline_id}}
 HTTP 200
 [Asserts]
@@ -397,6 +401,7 @@ HTTP 200
 [Asserts]
 jsonpath "$.start_time" == "2025-06-20T14:00:00Z"
 
+# Reads the start time back.
 GET {{host}}/pipelines/bna/{{pipeline_id}}
 HTTP 200
 [Asserts]

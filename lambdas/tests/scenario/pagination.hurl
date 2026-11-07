@@ -42,6 +42,8 @@ jsonpath "$.errors[0].source.parameter" == "page"
 GET {{host}}/ratings?page=65536
 
 HTTP 200
+[Asserts]
+header "x-page" == "65536"
 
 # Pages past 65536 are rejected.
 GET {{host}}/ratings?page=65537
@@ -77,6 +79,8 @@ jsonpath "$.errors[0].source.parameter" == "page_size"
 GET {{host}}/ratings?page=-5
 
 HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
 
 # Queries the ratings with a page number past the last page.
 # Should return an empty list, navigating like the last page.

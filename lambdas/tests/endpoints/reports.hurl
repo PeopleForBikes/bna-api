@@ -33,9 +33,14 @@ jsonpath "$.errors[0].source.pointer" == "/reports/2030"
 # Accepts the bounds of the years.
 GET {{host}}/reports/2017
 HTTP 200
+[Asserts]
+header "content-type" contains "text/csv"
 
+# Accepts the last year of the bounds.
 GET {{host}}/reports/2029
 HTTP 200
+[Asserts]
+header "content-type" contains "text/csv"
 
 # Rejects an invalid path parameter with a JSON error.
 GET {{host}}/reports/abc
@@ -59,6 +64,8 @@ HTTP 201
 [Captures]
 report_city_id: jsonpath "$.id"
 report_year: jsonpath "$.created_at" regex "^(\\d{4})-"
+[Asserts]
+jsonpath "$.id" exists
 
 POST {{host}}/ratings
 Authorization: Bearer {{token}}
@@ -107,6 +114,8 @@ content-type: application/json
   "score": 8.1
 }
 HTTP 201
+[Asserts]
+jsonpath "$.id" exists
 
 # The report of the current year has every value of the rating.
 GET {{host}}/reports/{{report_year}}

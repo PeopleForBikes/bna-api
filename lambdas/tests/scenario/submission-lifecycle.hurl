@@ -40,6 +40,8 @@ jsonpath "$.status" == "Pending"
 # A new submission is pending.
 GET {{host}}/cities/submissions/{{submission_id}}?status=Pending
 HTTP 200
+[Asserts]
+jsonpath "$.status" == "Pending"
 
 # Approve the submission.
 PATCH {{host}}/cities/submissions/{{submission_id}}
@@ -63,6 +65,8 @@ jsonpath "$.status" == "Approved"
 # The approved submission is no longer pending.
 GET {{host}}/cities/submissions/{{submission_id}}?status=Pending
 HTTP 404
+[Asserts]
+jsonpath "$.errors[0].status" == "404"
 
 # The approved submission is found with the approved status.
 GET {{host}}/cities/submissions/{{submission_id}}?status=Approved

@@ -57,6 +57,8 @@ content-type: application/json
 HTTP 201
 [Captures]
 city_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.id" exists
 
 # Post a new city rating.
 POST {{host}}/ratings
