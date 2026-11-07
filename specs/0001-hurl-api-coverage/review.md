@@ -18,7 +18,7 @@ reproduced against the local API.
 | R-04 | Major    | City `state` and `region` fields are confusing    | Moved to its own branch |
 | R-05 | Major    | No test run exists for a tagged commit            | Fixed                   |
 | R-06 | Major    | The suite cannot pass on staging                  | Deferred: to discuss    |
-| R-07 | Major    | The pipeline scenario reads nothing back          | Open                    |
+| R-07 | Major    | The pipeline scenario reads nothing back          | Fixed                   |
 | R-08 | Major    | Task 4.1 is only partly done                      | Open                    |
 | R-09 | Minor    | The specification contradicts itself on codes     | Fixed                   |
 | R-10 | Minor    | Bodies accept undocumented fields                 | Open                    |

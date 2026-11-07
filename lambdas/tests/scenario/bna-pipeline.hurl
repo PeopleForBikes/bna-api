@@ -3,8 +3,9 @@
 # ############
 #
 # Runs a city through a full BNA pipeline: create the city, start the pipeline,
-# report progress, post the rating, and complete the pipeline. Every run uses
-# its own city and pipeline identifier, so the scenario can run repeatedly.
+# move it through its steps, post the rating, complete the pipeline, and read
+# everything back. Every run uses its own city and pipeline identifier, so the
+# scenario can run repeatedly.
 
 # Create a new city for this run.
 POST {{host}}/cities
@@ -19,6 +20,9 @@ HTTP 201
 [Captures]
 city_id: jsonpath "$.id"
 city_name: jsonpath "$.name"
+[Asserts]
+jsonpath "$.country" == "{{country_name}}"
+jsonpath "$.state" == "{{region}}"
 
 # Create a new BNA pipeline for this city.
 POST {{host}}/pipelines/bna
@@ -37,6 +41,10 @@ content-type: application/json
 HTTP 201
 [Captures]
 state_machine_id: jsonpath "$.state_machine_id"
+[Asserts]
+jsonpath "$.status" == "Pending"
+jsonpath "$.step" == "Setup"
+jsonpath "$.sqs_message.city" == "{{city_name}}"
 
 # Update the pipeline with the Fargate task running the analysis.
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
@@ -48,6 +56,9 @@ content-type: application/json
   "step": "Analysis"
 }
 HTTP 200
+[Asserts]
+jsonpath "$.status" == "Processing"
+jsonpath "$.step" == "Analysis"
 
 # Post the city rating.
 POST {{host}}/ratings
@@ -96,6 +107,22 @@ content-type: application/json
   "score": 8.93
 }
 HTTP 201
+[Captures]
+rating_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+
+# The results are saved: move the pipeline to the save step.
+PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "step": "Save"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.status" == "Processing"
+jsonpath "$.step" == "Save"
 
 # Update the pipeline and mark it as complete.
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
@@ -109,3 +136,35 @@ content-type: application/json
   "step": "Cleanup"
 }
 HTTP 200
+[Asserts]
+jsonpath "$.status" == "Completed"
+jsonpath "$.step" == "Cleanup"
+
+# Read the pipeline back: it holds what every step wrote.
+GET {{host}}/pipelines/bna/{{state_machine_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.cost" == "0.63749"
+jsonpath "$.end_time" == "2025-06-20T14:16:11.133641Z"
+jsonpath "$.fargate_task_arn" contains "task/bna/"
+jsonpath "$.s3_bucket" == "united states/{{region}}/{{city_name}}/25.06"
+jsonpath "$.sqs_message.city" == "{{city_name}}"
+jsonpath "$.start_time" == "2025-06-20T14:11:32.395437Z"
+jsonpath "$.status" == "Completed"
+jsonpath "$.step" == "Cleanup"
+
+# Read the rating back.
+GET {{host}}/ratings/{{rating_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+jsonpath "$.score" == 8.93
+jsonpath "$.version" == "24.12"
+
+# The city now has this rating.
+GET {{host}}/cities/{{country}}/{{region}}/{{city_name}}/ratings
+HTTP 200
+[Asserts]
+jsonpath "$.city.name" == "{{city_name}}"
+jsonpath "$.ratings" count == 1
+jsonpath "$.ratings[0].id" == "{{rating_id}}"
