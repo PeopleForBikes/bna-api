@@ -89,6 +89,15 @@ behavior for API consumers and must be called out in the release notes.
   keep them at `entity::wrappers`, as the single definition generating the
   `BnaRegion` and `BikeLaneType` schemas, and use the names of the tables. No
   operation uses them yet. Client-visible.
+- **M-44 Meaning of the city `state` and `region` fields.** The region of a city
+  (a state in the US, a province in Canada, a comunidad in Spain) and the BNA
+  region (US only, one of the `BnaRegion` values) are different things. The
+  region of a city is stored in the `state` column and is the `{region}` path
+  parameter. The `region` column holds the BNA region of a US city, and
+  otherwise the value sent in the request or, by default, the country name. The
+  specification describes the `region` field as the region of the city, and the
+  `state` field as a short version of the state name. Found during the review.
+  **Pending decision.**
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never
@@ -513,5 +522,5 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-None. Every resolution, including those found during implementation (M-28 to
-M-41), was decided on 2026-10-20.
+- M-44: whether to only correct the description of the city `state` and `region`
+  fields, or also rename them.

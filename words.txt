@@ -2,6 +2,7 @@ axumed
 binstall
 bnaclient
 clippy
+comunidad
 coreservices
 dbdump
 dbml
