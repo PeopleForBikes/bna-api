@@ -28,7 +28,7 @@ reproduced against the local API.
 | R-14 | Minor    | 500 sources and report failures break the rule    | Open                    |
 | R-15 | Minor    | Some requests lack a comment or a value assertion | Fixed                   |
 | R-16 | Minor    | The suite will start failing from 2029            | Open                    |
-| R-17 | Minor    | The verification records predate the latest code  | Open                    |
+| R-17 | Minor    | The verification records predate the latest code  | Fixed                   |
 | R-18 | Minor    | Removals outside the scope of the specification   | Fixed                   |
 
 ### R-01 Client input still produces 500

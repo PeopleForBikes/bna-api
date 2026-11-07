@@ -267,8 +267,9 @@ resetting the database.
 
 - [x] 12.1 Fresh database from the new dump: `just test localhost` passes twice
       in a row; `just coverage` passes.
-  - Rerun on 2026-10-20 after the last decisions: 12 files and 146 requests pass
-    twice; coverage 61/61; the smoke test and each file run alone pass.
+  - Rerun on 2026-11-07 after the review fixes: 12 files and 217 requests pass
+    twice; coverage 73/73; the smoke test and each file run alone pass; the dump
+    regenerates byte-identical.
 - [ ] 12.2 **Deferred.** `just test staging` passes against
       `https://api.staging.bna.peopleforbikes.org` with a token (after staging
       is deployed with the changes).
@@ -277,9 +278,10 @@ resetting the database.
 - [x] 12.3 `cargo test`, `cargo clippy`, `just lint` pass; `bnaclient` CI job
       shows no diff.
 - [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-05, M-42,
-      M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26, M-28, M-29, M-41, M-43).
+      M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26, M-28, M-29, M-41, M-43,
+      M-45).
 - [ ] 12.5 **Deferred.** Every acceptance criterion in `requirements.md` is
       checked off.
-  - Deferred on 2026-10-20 with 12.2: met, except US-5 (staging), which waits on
-    the staging run. Every request body of the suite now conforms to its request
-    schema (US-1), and every resolution is decided and implemented (US-3).
+  - Deferred with 12.2. As of the review of 2026-11-07, US-5 and the Austin
+    clause of US-6 are not met (the staging run, R-06), and US-3 keeps the open
+    findings of [review.md](./review.md).
