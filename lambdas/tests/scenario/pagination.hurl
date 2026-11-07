@@ -241,3 +241,274 @@ header "x-prev-page" == "1"
 header "x-next-page" == "3"
 header "x-total-pages" == "{{total}}"
 header "link" == "<{{host}}/usstates?page_size=1&page=1>; rel=\"first\", <{{host}}/usstates?page_size=1&page=1>; rel=\"prev\", <{{host}}/usstates?page_size=1&page=3>; rel=\"next\", <{{host}}/usstates?page_size=1&page={{total}}>; rel=\"last\""
+
+# ################
+# Out-of-range values on every list
+# ################
+# The lists use different parameter types, so each is checked.
+
+# The default page of the cities.
+GET {{host}}/cities
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the cities.
+GET {{host}}/cities?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the cities.
+GET {{host}}/cities?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the cities.
+GET {{host}}/cities?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the cities.
+GET {{host}}/cities?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the cities is empty.
+GET {{host}}/cities?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
+
+# The default page of the city submissions.
+GET {{host}}/cities/submissions
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the city submissions.
+GET {{host}}/cities/submissions?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the city submissions.
+GET {{host}}/cities/submissions?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the city submissions.
+GET {{host}}/cities/submissions?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the city submissions.
+GET {{host}}/cities/submissions?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the city submissions is empty.
+GET {{host}}/cities/submissions?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
+
+# The default page of the latest city summaries.
+GET {{host}}/cities/summary/latest
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the latest city summaries.
+GET {{host}}/cities/summary/latest?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the latest city summaries.
+GET {{host}}/cities/summary/latest?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the latest city summaries.
+GET {{host}}/cities/summary/latest?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the latest city summaries.
+GET {{host}}/cities/summary/latest?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the latest city summaries is empty.
+GET {{host}}/cities/summary/latest?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
+
+# The default page of the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the ratings of a city is empty.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$.ratings" count == 0
+
+# The default page of the BNA pipelines.
+GET {{host}}/pipelines/bna
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the BNA pipelines.
+GET {{host}}/pipelines/bna?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the BNA pipelines.
+GET {{host}}/pipelines/bna?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the BNA pipelines.
+GET {{host}}/pipelines/bna?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the BNA pipelines.
+GET {{host}}/pipelines/bna?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the BNA pipelines is empty.
+GET {{host}}/pipelines/bna?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
+
+# The default page of the Fargate prices.
+GET {{host}}/prices/fargate
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the Fargate prices.
+GET {{host}}/prices/fargate?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the Fargate prices.
+GET {{host}}/prices/fargate?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the Fargate prices.
+GET {{host}}/prices/fargate?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the Fargate prices.
+GET {{host}}/prices/fargate?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the Fargate prices is empty.
+GET {{host}}/prices/fargate?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
+
+# The default page of the US states.
+GET {{host}}/usstates
+HTTP 200
+[Asserts]
+header "x-page" == "1"
+header "x-per-page" == "{{default_page_size}}"
+
+# Rejects page=0 on the US states.
+GET {{host}}/usstates?page=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page=65537 on the US states.
+GET {{host}}/usstates?page=65537
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page"
+
+# Rejects page_size=0 on the US states.
+GET {{host}}/usstates?page_size=0
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects page_size=101 on the US states.
+GET {{host}}/usstates?page_size=101
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# A page past the last one of the US states is empty.
+GET {{host}}/usstates?page=65536&page_size=1
+HTTP 200
+[Asserts]
+header "x-page" == "65536"
+jsonpath "$" count == 0
