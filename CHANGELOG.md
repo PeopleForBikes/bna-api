@@ -79,6 +79,10 @@ and this project adheres to
 - The submission creation body (`SubmissionPost`) no longer documents a
   `status`: a new submission is always `Pending`, and a `status` sent in the
   body is ignored, as it always was.
+- The OpenAPI specification now documents the `BnaRegion` and `BikeLaneType`
+  schemas, so `bnaclient` provides them too. `entity::wrappers::BikeLaneType`
+  now uses the names of the `bike_lane_type` table (for example `buffered_lane`
+  instead of `BufferedLane`) and can be converted from and to a string.
 
 ### Fixed
 

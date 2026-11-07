@@ -230,6 +230,9 @@ resetting the database.
       3 to 8 (adding 409 where created, removing unreachable 400 or 404).
 - [x] 9.3 Regenerate `openapi-3.1.yaml`, `openapi-3.0.yaml`, and `bnaclient`
       (`just regenerate-all-no-cargo`).
+- [x] 9.4 M-43: document the `BnaRegion` and `BikeLaneType` schemas from the
+      `entity::wrappers` enums, using the names of their tables.
+  - `entity/src/wrappers/mod.rs`, `lambdas/src/main.rs`.
 
 ## Phase 10: Coverage Check (US-4)
 

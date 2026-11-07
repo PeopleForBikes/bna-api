@@ -331,6 +331,101 @@ pub mod types {
         }
     }
 
+    ///Bike lane types, as stored in the `bike_lane_type` table.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "Bike lane types, as stored in the `bike_lane_type`
+    /// table.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "buffered_lane",
+    ///    "lane",
+    ///    "path",
+    ///    "sharrow",
+    ///    "track"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum BikeLaneType {
+        #[serde(rename = "buffered_lane")]
+        BufferedLane,
+        #[serde(rename = "lane")]
+        Lane,
+        #[serde(rename = "path")]
+        Path,
+        #[serde(rename = "sharrow")]
+        Sharrow,
+        #[serde(rename = "track")]
+        Track,
+    }
+
+    impl ::std::fmt::Display for BikeLaneType {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::BufferedLane => f.write_str("buffered_lane"),
+                Self::Lane => f.write_str("lane"),
+                Self::Path => f.write_str("path"),
+                Self::Sharrow => f.write_str("sharrow"),
+                Self::Track => f.write_str("track"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for BikeLaneType {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "buffered_lane" => Ok(Self::BufferedLane),
+                "lane" => Ok(Self::Lane),
+                "path" => Ok(Self::Path),
+                "sharrow" => Ok(Self::Sharrow),
+                "track" => Ok(Self::Track),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for BikeLaneType {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for BikeLaneType {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for BikeLaneType {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
     ///`BnaPipeline`
     ///
     /// <details><summary>JSON schema</summary>
@@ -1011,6 +1106,102 @@ pub mod types {
     impl ::std::convert::From<::std::vec::Vec<BnaPipeline>> for BnaPipelines {
         fn from(value: ::std::vec::Vec<BnaPipeline>) -> Self {
             Self(value)
+        }
+    }
+
+    ///BNA regions of the United States, as stored in the `bna_region` table.
+    ///
+    /// <details><summary>JSON schema</summary>
+    ///
+    /// ```json
+    ///{
+    ///  "description": "BNA regions of the United States, as stored in the
+    /// `bna_region` table.",
+    ///  "type": "string",
+    ///  "enum": [
+    ///    "Mid-Atlantic",
+    ///    "New England",
+    ///    "Midwest",
+    ///    "Mountain",
+    ///    "Pacific",
+    ///    "South"
+    ///  ]
+    ///}
+    /// ```
+    /// </details>
+    #[derive(
+        :: serde :: Deserialize,
+        :: serde :: Serialize,
+        Clone,
+        Copy,
+        Debug,
+        Eq,
+        Hash,
+        Ord,
+        PartialEq,
+        PartialOrd,
+    )]
+    pub enum BnaRegion {
+        #[serde(rename = "Mid-Atlantic")]
+        MidAtlantic,
+        #[serde(rename = "New England")]
+        NewEngland,
+        Midwest,
+        Mountain,
+        Pacific,
+        South,
+    }
+
+    impl ::std::fmt::Display for BnaRegion {
+        fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+            match *self {
+                Self::MidAtlantic => f.write_str("Mid-Atlantic"),
+                Self::NewEngland => f.write_str("New England"),
+                Self::Midwest => f.write_str("Midwest"),
+                Self::Mountain => f.write_str("Mountain"),
+                Self::Pacific => f.write_str("Pacific"),
+                Self::South => f.write_str("South"),
+            }
+        }
+    }
+
+    impl ::std::str::FromStr for BnaRegion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            match value {
+                "Mid-Atlantic" => Ok(Self::MidAtlantic),
+                "New England" => Ok(Self::NewEngland),
+                "Midwest" => Ok(Self::Midwest),
+                "Mountain" => Ok(Self::Mountain),
+                "Pacific" => Ok(Self::Pacific),
+                "South" => Ok(Self::South),
+                _ => Err("invalid value".into()),
+            }
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for BnaRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<&::std::string::String> for BnaRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: &::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for BnaRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
         }
     }
 

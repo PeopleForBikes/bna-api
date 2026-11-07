@@ -48,11 +48,11 @@ Each entry lists the observed behavior, the specification, and its resolution.
 **All resolutions M-01 to M-27 were approved by the team on 2026-10-19**, as
 proposed (the alternative noted under M-07 was not retained). The resolutions
 found during implementation (M-28 to M-41) were decided on 2026-10-20, and M-02
-and M-42 during the review on 2026-11-05, as recorded in each entry. `Code`
-means the implementation changes; `Spec` means the specification changes
-(through the `utoipa` annotations, then `just regenerate-all-no-cargo`). Entries
-marked **client-visible** change behavior for API consumers and must be called
-out in the release notes.
+and M-42 during the review on 2026-11-05, and M-43 on 2026-11-07, as recorded in
+each entry. `Code` means the implementation changes; `Spec` means the
+specification changes (through the `utoipa` annotations, then
+`just regenerate-all-no-cargo`). Entries marked **client-visible** change
+behavior for API consumers and must be called out in the release notes.
 
 ### Cross-cutting
 
@@ -81,6 +81,15 @@ out in the release notes.
   `source.header` keep naming a query parameter and a header. Only the first
   invalid field is reported, since deserialization stops there; the `errors`
   array holds a single error. Client-visible.
+- **M-43 Regions and bike lane types.** The `bna_region` and `bike_lane_type`
+  tables have no counterpart in the specification, and the
+  `entity::wrappers::BikeLaneType` enum serializes `BufferedLane`, while the
+  table holds `buffered_lane`. Found during the review. Lambda functions outside
+  this repository are expected to use both enums. Resolution: **Code + Spec**,
+  keep them at `entity::wrappers`, as the single definition generating the
+  `BnaRegion` and `BikeLaneType` schemas, and use the names of the tables. No
+  operation uses them yet: `region` stays free text, since it also holds non-US
+  regions. Client-visible.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never

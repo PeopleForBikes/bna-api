@@ -1,3 +1,4 @@
+use entity::wrappers::{BikeLaneType, BnaRegion};
 use lambda_http::{run, tracing, Error};
 use lambdas::core::resource::{
     cities::{self, ApprovalStatus},
@@ -139,6 +140,20 @@ async fn main() -> Result<(), Error> {
                     schema!(
                         #[inline]
                         ApprovalStatus
+                    ),
+                )
+                .schema(
+                    "BnaRegion",
+                    schema!(
+                        #[inline]
+                        BnaRegion
+                    ),
+                )
+                .schema(
+                    "BikeLaneType",
+                    schema!(
+                        #[inline]
+                        BikeLaneType
                     ),
                 )
                 .build(),

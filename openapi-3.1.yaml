@@ -1762,6 +1762,15 @@ components:
       - Approved
       - Pending
       - Rejected
+    BikeLaneType:
+      type: string
+      description: Bike lane types, as stored in the `bike_lane_type` table.
+      enum:
+      - buffered_lane
+      - lane
+      - path
+      - sharrow
+      - track
     BnaPipeline:
       type: object
       required:
@@ -1970,6 +1979,16 @@ components:
       type: array
       items:
         $ref: '#/components/schemas/BnaPipeline'
+    BnaRegion:
+      type: string
+      description: BNA regions of the United States, as stored in the `bna_region` table.
+      enum:
+      - Mid-Atlantic
+      - New England
+      - Midwest
+      - Mountain
+      - Pacific
+      - South
     Cities:
       type: array
       items:
