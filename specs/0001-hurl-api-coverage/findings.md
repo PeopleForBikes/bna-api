@@ -5,7 +5,7 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. The findings of the specification review, which are work
 to do, are in [review.md](./review.md).
 
-Status: in progress; keep it current as the code changes.
+Status: complete, ready for review; keep it current as the code changes.
 
 ## 1. Behavior that does not survive a naive implementation
 
@@ -50,6 +50,16 @@ country takes both a migration and the enum. They differ by nothing since
 lists.
 
 **Cost**: 177 documented countries were rejected with a 422.
+
+### 1.5 A 500 gets its source from a middleware
+
+A database error does not know its request, so `complete_internal_error`
+(`lambdas/src/lib.rs`) answers any 500 with the request path and a generic
+message. The cause only goes to the logs. A handler returning a 500 outside of
+`ExecutionError` has its body replaced too.
+
+**Caught by**: the specification review (R-14), and checked by renaming tables
+in the test database.
 
 ## 2. Library and tooling traps
 
@@ -102,7 +112,13 @@ byte-identical.
 The Rust coverage check was compared with the Python script on one real report
 and one report built to fail every check.
 
-### 3.3 Reproduce a review finding before fixing it
+### 3.3 Update a row to test the order of a list
+
+PostgreSQL moves an updated row physically, so a list without `ORDER BY` often
+looks stable until a row changes. Updating a row, even with the same value,
+makes the missing order visible (`scenario/pagination.hurl`).
+
+### 3.4 Reproduce a review finding before fixing it
 
 Review findings come from reading the code. Running them against the local API
 confirmed them, and showed which responses to expect in the tests.

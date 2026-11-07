@@ -267,7 +267,7 @@ resetting the database.
 
 - [x] 12.1 Fresh database from the new dump: `just test localhost` passes twice
       in a row; `just coverage` passes.
-  - Rerun on 2026-11-07 after the review fixes: 12 files and 217 requests pass
+  - Rerun on 2026-11-07 after the review fixes: 12 files and 220 requests pass
     twice; coverage 73/73; the smoke test and each file run alone pass; the dump
     regenerates byte-identical.
 - [ ] 12.2 **Deferred.** `just test staging` passes against
