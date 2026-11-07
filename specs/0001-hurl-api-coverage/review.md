@@ -22,7 +22,6 @@ reproduced against the local API.
 | R-08 | Major    | Task 4.1 is only partly done                      | Fixed                   |
 | R-09 | Minor    | The specification contradicts itself on codes     | Fixed                   |
 | R-10 | Minor    | Bodies accept undocumented fields                 | Fixed                   |
-| R-11 | Minor    | Lists are paged without a stable order            | Open                    |
 | R-12 | Minor    | `latest=true` reports misleading headers          | Open                    |
 | R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |
 | R-14 | Minor    | 500 sources and report failures break the rule    | Open                    |
@@ -102,12 +101,6 @@ The error handling section and several tasks still said 400. Fixed in `bdd57af`.
 `POST /cities` stores `fips_code`, absent from the `CityPost` schema. Document
 it. `result_posted` and `torn_down` are parsed and never used; they stay for
 now, since the `entity` wrappers stay.
-
-### R-11 Lists are paged without a stable order
-
-The ratings, pipelines, US states, and submissions lists have no `ORDER BY`, and
-the sorted city list has no tie-breaker, so items can repeat or be skipped
-between pages. Order each list by a unique key.
 
 ### R-12 `latest=true` reports misleading headers
 

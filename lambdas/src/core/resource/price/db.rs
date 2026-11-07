@@ -27,8 +27,13 @@ pub async fn fetch_fargate_prices(
 
     // Build the filter.
     select = match latest {
-        true => select.order_by(sort_column, sea_orm::Order::Desc).limit(1),
-        false => select.order_by(sort_column, sort_direction.into()),
+        true => select
+            .order_by(sort_column, sea_orm::Order::Desc)
+            .order_by_desc(fargate_price::Column::Id)
+            .limit(1),
+        false => select
+            .order_by(sort_column, sort_direction.into())
+            .order_by_asc(fargate_price::Column::Id),
     };
 
     // Retrieve the models.

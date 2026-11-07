@@ -1,5 +1,5 @@
 use entity::bna_pipeline;
-use sea_orm::{DatabaseConnection, EntityTrait, PaginatorTrait};
+use sea_orm::{DatabaseConnection, EntityTrait, PaginatorTrait, QueryOrder};
 use uuid::Uuid;
 
 pub async fn fetch_bna_pipeline(
@@ -14,7 +14,7 @@ pub async fn fetch_bna_pipelines(
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<bna_pipeline::Model>), sea_orm::DbErr> {
-    let select = bna_pipeline::Entity::find();
+    let select = bna_pipeline::Entity::find().order_by_asc(bna_pipeline::Column::StateMachineId);
     let models = select
         .clone()
         .paginate(db, page_size)

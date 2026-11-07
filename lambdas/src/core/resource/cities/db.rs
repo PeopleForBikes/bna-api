@@ -40,7 +40,9 @@ pub(crate) async fn fetch_cities(
     let count = select.clone().count(db).await?;
 
     // Build the filter.
-    select = select.order_by(sort_column, sort_direction.into());
+    select = select
+        .order_by(sort_column, sort_direction.into())
+        .order_by_asc(city::Column::Id);
 
     // Retrieve the models.
     let models = select
@@ -61,7 +63,8 @@ pub(crate) async fn fetch_cities_ratings(
     let select =
         city::Entity::find_by_id((country.to_string(), region.to_string(), name.to_string()))
             .find_also_related(summary::Entity)
-            .order_by_desc(summary::Column::Version);
+            .order_by_desc(summary::Column::Version)
+            .order_by_asc(summary::Column::Id);
     let models = select
         .clone()
         .paginate(db, page_size)
@@ -122,7 +125,9 @@ pub(crate) async fn fetch_cities_submissions(
     }
 
     // Select the submissions.
-    let select = submission::Entity::find().filter(conditions);
+    let select = submission::Entity::find()
+        .filter(conditions)
+        .order_by_asc(submission::Column::Id);
     let models = select
         .clone()
         .paginate(db, page_size)
@@ -225,6 +230,7 @@ pub(crate) async fn fetch_cities_with_latest_summary(
     let sort_column = city_column(sort_by);
     let cities = rated_cities
         .order_by(sort_column, sort_direction.into())
+        .order_by_asc(city::Column::Id)
         .limit(page_size)
         .offset(page.saturating_sub(1) * page_size)
         .all(db)

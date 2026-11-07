@@ -1,5 +1,5 @@
 use entity::us_state;
-use sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait};
+use sea_orm::{DatabaseConnection, DbErr, EntityTrait, PaginatorTrait, QueryOrder};
 
 pub(crate) async fn fetch_us_state(
     db: &DatabaseConnection,
@@ -13,7 +13,7 @@ pub(crate) async fn fetch_us_states(
     page: u64,
     page_size: u64,
 ) -> Result<(u64, Vec<us_state::Model>), DbErr> {
-    let select = us_state::Entity::find();
+    let select = us_state::Entity::find().order_by_asc(us_state::Column::Name);
     let count = select.clone().count(db).await?;
     let models = select
         .paginate(db, page_size)

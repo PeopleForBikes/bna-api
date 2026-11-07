@@ -1,7 +1,7 @@
 use entity::{city, summary};
 use sea_orm::{
-    DatabaseConnection, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
-    RelationTrait,
+    DatabaseConnection, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QueryOrder,
+    QuerySelect, RelationTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -227,7 +227,8 @@ pub async fn fetch_ratings(
             entity::summary::Relation::Transit.def(),
         )
         // Older ratings have no measure.
-        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def());
+        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def())
+        .order_by_asc(summary::Column::Id);
     let models = select
         .clone()
         .into_model::<Bna>()

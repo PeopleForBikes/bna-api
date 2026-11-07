@@ -132,6 +132,9 @@ and this project adheres to
 - A NUL character, which the database cannot store, is now rejected instead of
   returning `500 Internal Server Error`: with `400 Bad Request` in a path, and
   with `422 Unprocessable Entity` in a body string.
+- Every list now has a stable order, so items are no longer repeated or skipped
+  between pages. The ratings, pipelines, US states, and submissions had none,
+  and the sorted lists had no tie-breaker.
 - Updating a pipeline with an unknown `status` or `step` now returns
   `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was

@@ -247,6 +247,35 @@ header "x-total-pages" == "{{total}}"
 header "link" == "<{{host}}/usstates?page_size=1&page=1>; rel=\"first\", <{{host}}/usstates?page_size=1&page=1>; rel=\"prev\", <{{host}}/usstates?page_size=1&page=3>; rel=\"next\", <{{host}}/usstates?page_size=1&page={{total}}>; rel=\"last\""
 
 # ################
+# Stable order
+# ################
+# Lists have a stable order: an updated row moves physically in the database, so
+# it would change place without one.
+# Updates the first submission, without changing it.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "status": "Pending"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.id" == 1
+
+# It is still the first submission.
+GET {{host}}/cities/submissions?page_size=1
+HTTP 200
+[Asserts]
+jsonpath "$[0].id" == 1
+
+# The US states are ordered by name.
+GET {{host}}/usstates?page_size=2
+HTTP 200
+[Asserts]
+jsonpath "$[0].name" == "Alabama"
+jsonpath "$[1].name" == "Alaska"
+
+# ################
 # Out-of-range values on every list
 # ################
 # The lists use different parameter types, so each is checked.
