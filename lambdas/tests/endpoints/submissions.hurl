@@ -175,6 +175,21 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
 jsonpath "$.errors[0].details" contains "status"
 
+# Rejects an update with a country the BNA does not cover.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Narnia"
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
+jsonpath "$.errors[0].details" contains "country"
+
 # Rejects a body that is not valid JSON.
 PATCH {{host}}/cities/submissions/1
 Authorization: Bearer {{token}}

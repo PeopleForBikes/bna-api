@@ -45,6 +45,22 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
 jsonpath "$.errors[0].details" contains "state_machine_id"
 
+# Rejects a pipeline with a Fargate price that does not exist.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "fargate_price_id": 999999,
+  "state_machine_id": "{{newUuid}}"
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna"
+jsonpath "$.errors[0].details" contains "fargate_price_id"
+
 # Rejects a body that is not valid JSON.
 POST {{host}}/pipelines/bna
 Authorization: Bearer {{token}}
@@ -175,6 +191,21 @@ content-type: application/json
 ```
 {"fargate_price_id": "one"}
 ```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/pipelines/bna/{{pipeline_id}}"
+jsonpath "$.errors[0].details" contains "fargate_price_id"
+
+# Rejects an update with a Fargate price that does not exist.
+PATCH {{host}}/pipelines/bna/{{pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "fargate_price_id": 999999
+}
 HTTP 422
 [Asserts]
 header "content-type" == "application/json"

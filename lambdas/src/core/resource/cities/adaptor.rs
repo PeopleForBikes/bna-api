@@ -173,6 +173,7 @@ pub async fn patch_cities_submission_adaptor(
     ctx: Context,
 ) -> Result<entity::submission::Model, ExecutionError> {
     // Turn the wrapper into an active model.
+    let country = submission.country.clone().unwrap_or_default();
     let mut active_model = submission.into_active_model();
     active_model.id = ActiveValue::Unchanged(submission_id);
 
@@ -185,6 +186,10 @@ pub async fn patch_cities_submission_adaptor(
             ctx.source(),
             format!("cannot find submission with id {submission_id}"),
         )),
+        // The status, the other foreign key, is checked when reading the body.
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
+            Err(uncovered_country(&ctx, &country))
+        }
         Err(e) => Err(e.into()),
     }
 }

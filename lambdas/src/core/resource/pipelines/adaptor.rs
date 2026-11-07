@@ -8,6 +8,16 @@ use sea_orm::{ActiveModelTrait, ActiveValue, DatabaseConnection, DbErr, IntoActi
 use tracing::info;
 use uuid::Uuid;
 
+/// Rejects a request body naming a Fargate price that does not exist. The status
+/// and the step, the other foreign keys, are checked when reading the body.
+fn unknown_fargate_price(ctx: &Context) -> ExecutionError {
+    ExecutionError::InvalidAttribute(
+        ctx.request_id(),
+        ctx.source(),
+        String::from("the fargate_price_id does not match any Fargate price"),
+    )
+}
+
 pub async fn get_pipelines_bna_adaptor(
     db: &DatabaseConnection,
     pipeline_id: Uuid,
@@ -57,6 +67,9 @@ pub async fn post_pipelines_bna_adaptor(
                 format!("the pipeline {state_machine_id} already exists"),
             ))
         }
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
+            Err(unknown_fargate_price(&ctx))
+        }
         Err(e) => Err(e.into()),
     }
 }
@@ -80,6 +93,9 @@ pub async fn patch_pipelines_bna_adaptor(
             ctx.source(),
             format!("cannot find a pipeline with the ID {analysis_id}"),
         )),
+        Err(e) if matches!(e.sql_err(), Some(SqlErr::ForeignKeyConstraintViolation(_))) => {
+            Err(unknown_fargate_price(&ctx))
+        }
         Err(e) => Err(e.into()),
     }
 }

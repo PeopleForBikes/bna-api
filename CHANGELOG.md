@@ -120,6 +120,9 @@ and this project adheres to
   documented `409 Conflict` instead of `500 Internal Server Error`.
 - Updating a pipeline that does not exist now returns `404 Not Found` instead of
   `500 Internal Server Error`.
+- Creating or updating a pipeline with a `fargate_price_id` that does not exist,
+  and updating a submission with a country the BNA does not cover, now return
+  `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Updating a pipeline with an unknown `status` or `step` now returns
   `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was
