@@ -110,6 +110,9 @@ pub(crate) struct CityPost {
     /// on the surface of the Earth.
     #[schema(examples("4.402771"))]
     longitude: Option<f64>,
+    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
+    #[schema(examples("4805000"))]
+    fips_code: Option<String>,
     /// City name
     #[schema(examples("Antwerp"))]
     name: String,

@@ -88,6 +88,7 @@ content-type: application/json
   "country": "{{country_name}}",
   "state": "{{region}}",
   "name": "hurl-{{newUuid}}",
+  "fips_code": "4714000",
   "latitude": 35.1,
   "longitude": -85.2,
   "residential_speed_limit": 30
@@ -107,6 +108,7 @@ GET {{host}}/cities/{{country}}/{{region}}/{{new_city_name}}
 HTTP 200
 [Asserts]
 jsonpath "$.id" == "{{new_city_id}}"
+jsonpath "$.fips_code" == "4714000"
 jsonpath "$.latitude" == 35.1
 jsonpath "$.longitude" == -85.2
 jsonpath "$.residential_speed_limit" == 30

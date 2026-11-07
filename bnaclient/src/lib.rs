@@ -1299,6 +1299,17 @@ pub mod types {
     ///      "type": "string",
     ///      "format": "date-time"
     ///    },
+    ///    "fips_code": {
+    ///      "description": "Numerical city identifier given by the U.S. census,
+    /// or 0 for non-US cities",
+    ///      "examples": [
+    ///        "4805000"
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
+    ///    },
     ///    "id": {
     ///      "description": "City identifier",
     ///      "type": "string",
@@ -1394,6 +1405,10 @@ pub mod types {
         pub country: Country,
         ///Creation date
         pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
+        ///Numerical city identifier given by the U.S. census, or 0 for non-US
+        /// cities
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///City identifier
         pub id: ::uuid::Uuid,
         ///Geographic coordinate that specifies the north-south position of a
@@ -1446,6 +1461,17 @@ pub mod types {
     ///  "properties": {
     ///    "country": {
     ///      "$ref": "#/components/schemas/Country"
+    ///    },
+    ///    "fips_code": {
+    ///      "description": "Numerical city identifier given by the U.S. census,
+    /// or 0 for non-US cities",
+    ///      "examples": [
+    ///        "4805000"
+    ///      ],
+    ///      "type": [
+    ///        "string",
+    ///        "null"
+    ///      ]
     ///    },
     ///    "latitude": {
     ///      "description": "Geographic coordinate that specifies the
@@ -1527,6 +1553,10 @@ pub mod types {
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityPost {
         pub country: Country,
+        ///Numerical city identifier given by the U.S. census, or 0 for non-US
+        /// cities
+        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        pub fips_code: ::std::option::Option<::std::string::String>,
         ///Geographic coordinate that specifies the north-south position of a
         /// point on the surface of the Earth.
         #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
@@ -5403,6 +5433,10 @@ pub mod types {
                 ::chrono::DateTime<::chrono::offset::Utc>,
                 ::std::string::String,
             >,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
             id: ::std::result::Result<::uuid::Uuid, ::std::string::String>,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
@@ -5429,6 +5463,7 @@ pub mod types {
                 Self {
                     country: Err("no value supplied for country".to_string()),
                     created_at: Err("no value supplied for created_at".to_string()),
+                    fips_code: Ok(Default::default()),
                     id: Err("no value supplied for id".to_string()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
@@ -5461,6 +5496,16 @@ pub mod types {
                 self.created_at = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for created_at: {e}"));
+                self
+            }
+            pub fn fips_code<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.fips_code = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for fips_code: {e}"));
                 self
             }
             pub fn id<T>(mut self, value: T) -> Self
@@ -5563,6 +5608,7 @@ pub mod types {
                 Ok(Self {
                     country: value.country?,
                     created_at: value.created_at?,
+                    fips_code: value.fips_code?,
                     id: value.id?,
                     latitude: value.latitude?,
                     longitude: value.longitude?,
@@ -5581,6 +5627,7 @@ pub mod types {
                 Self {
                     country: Ok(value.country),
                     created_at: Ok(value.created_at),
+                    fips_code: Ok(value.fips_code),
                     id: Ok(value.id),
                     latitude: Ok(value.latitude),
                     longitude: Ok(value.longitude),
@@ -5597,6 +5644,10 @@ pub mod types {
         #[derive(Clone, Debug)]
         pub struct CityPost {
             country: ::std::result::Result<super::Country, ::std::string::String>,
+            fips_code: ::std::result::Result<
+                ::std::option::Option<::std::string::String>,
+                ::std::string::String,
+            >,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             name: ::std::result::Result<::std::string::String, ::std::string::String>,
@@ -5617,6 +5668,7 @@ pub mod types {
             fn default() -> Self {
                 Self {
                     country: Err("no value supplied for country".to_string()),
+                    fips_code: Ok(Default::default()),
                     latitude: Ok(Default::default()),
                     longitude: Ok(Default::default()),
                     name: Err("no value supplied for name".to_string()),
@@ -5637,6 +5689,16 @@ pub mod types {
                 self.country = value
                     .try_into()
                     .map_err(|e| format!("error converting supplied value for country: {e}"));
+                self
+            }
+            pub fn fips_code<T>(mut self, value: T) -> Self
+            where
+                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T::Error: ::std::fmt::Display,
+            {
+                self.fips_code = value
+                    .try_into()
+                    .map_err(|e| format!("error converting supplied value for fips_code: {e}"));
                 self
             }
             pub fn latitude<T>(mut self, value: T) -> Self
@@ -5718,6 +5780,7 @@ pub mod types {
             ) -> ::std::result::Result<Self, super::error::ConversionError> {
                 Ok(Self {
                     country: value.country?,
+                    fips_code: value.fips_code?,
                     latitude: value.latitude?,
                     longitude: value.longitude?,
                     name: value.name?,
@@ -5733,6 +5796,7 @@ pub mod types {
             fn from(value: super::CityPost) -> Self {
                 Self {
                     country: Ok(value.country),
+                    fips_code: Ok(value.fips_code),
                     latitude: Ok(value.latitude),
                     longitude: Ok(value.longitude),
                     name: Ok(value.name),

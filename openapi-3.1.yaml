@@ -2014,6 +2014,13 @@ components:
           type: string
           format: date-time
           description: Creation date
+        fips_code:
+          type:
+          - string
+          - 'null'
+          description: Numerical city identifier given by the U.S. census, or 0 for non-US cities
+          examples:
+          - '4805000'
         id:
           type: string
           format: uuid
@@ -2091,6 +2098,13 @@ components:
         country:
           $ref: '#/components/schemas/Country'
           description: Country name
+        fips_code:
+          type:
+          - string
+          - 'null'
+          description: Numerical city identifier given by the U.S. census, or 0 for non-US cities
+          examples:
+          - '4805000'
         latitude:
           type:
           - number

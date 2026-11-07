@@ -21,7 +21,7 @@ reproduced against the local API.
 | R-07 | Major    | The pipeline scenario reads nothing back          | Fixed                   |
 | R-08 | Major    | Task 4.1 is only partly done                      | Fixed                   |
 | R-09 | Minor    | The specification contradicts itself on codes     | Fixed                   |
-| R-10 | Minor    | Bodies accept undocumented fields                 | Open                    |
+| R-10 | Minor    | Bodies accept undocumented fields                 | Fixed                   |
 | R-11 | Minor    | Lists are paged without a stable order            | Open                    |
 | R-12 | Minor    | `latest=true` reports misleading headers          | Open                    |
 | R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |

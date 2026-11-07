@@ -86,6 +86,9 @@ and this project adheres to
 - Every country of the documented `Country` enum is now accepted. The `country`
   table held only 27 of the 204, so the others were rejected with
   `422 Unprocessable Entity`. A new migration adds them.
+- The cities now return their `fips_code`, and the OpenAPI specification
+  documents it in the city creation body (`CityPost`). The API stored it without
+  returning or documenting it.
 
 ### Fixed
 

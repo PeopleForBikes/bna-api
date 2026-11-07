@@ -313,6 +313,9 @@ pub(crate) struct City {
     /// A short version of the state name, usually 2 or 3 character long
     #[schema(examples("VAN"))]
     state_abbrev: Option<String>,
+    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
+    #[schema(examples("4805000"))]
+    fips_code: Option<String>,
     /// Residential speed limit in kilometer per hour (km/h).
     /// Only use if different from the state speed limit.
     #[schema(examples("50"))]
@@ -334,6 +337,7 @@ impl From<entity::city::Model> for City {
             longitude: value.longitude,
             region: value.region,
             state_abbrev: value.state_abbrev,
+            fips_code: value.fips_code,
             residential_speed_limit: value.residential_speed_limit,
             created_at: value.created_at,
             updated_at: value.updated_at,
