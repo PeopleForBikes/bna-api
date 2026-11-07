@@ -1,3 +1,4 @@
+pub mod bna;
 pub mod bna_pipeline;
 pub mod city;
 pub mod submission;

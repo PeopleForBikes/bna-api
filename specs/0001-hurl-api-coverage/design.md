@@ -88,8 +88,7 @@ behavior for API consumers and must be called out in the release notes.
   this repository are expected to use both enums. Resolution: **Code + Spec**,
   keep them at `entity::wrappers`, as the single definition generating the
   `BnaRegion` and `BikeLaneType` schemas, and use the names of the tables. No
-  operation uses them yet: `region` stays free text, since it also holds non-US
-  regions. Client-visible.
+  operation uses them yet. Client-visible.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never

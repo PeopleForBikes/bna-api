@@ -66,7 +66,9 @@ just test-localhost-schemathesis
   entity files; change migrations and regenerate instead. `entity/src/wrappers`
   holds hand-written DTO/wrapper types (e.g. `wrappers::city::CityPost`,
   `wrappers::submission::{SubmissionPost, SubmissionPatch}`) used at the API
-  boundary, distinct from the raw SeaORM models.
+  boundary, distinct from the raw SeaORM models. Lambda functions outside this
+  repository also use these wrappers, so a wrapper with no caller here is not
+  dead code: do not remove one without checking with the team.
 - **`migration/`** — SeaORM migrations (`m20220101_000001_main.rs`, etc.),
   applied with `sea-orm-cli migrate`. Schema docs (`docs/database.dbml`,
   `docs/database.sql`, `docs/database.svg`) are derived from the DB via the
