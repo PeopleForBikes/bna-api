@@ -45,7 +45,7 @@ cargo run -q -p hurl-coverage -- --spec ../../openapi-3.1.yaml --report reports/
 
 ## Continuous integration and releases
 
-On every pull request, the `integration` workflow
+On every pull request and push to `main`, the `integration` workflow
 (`.github/workflows/integration.yml`) loads `database-with-test-data.sql` in a
 fresh Postgres, starts the API with authentication disabled, then runs the smoke
 tests, `just test localhost`, and `just coverage`. The coverage output is shown

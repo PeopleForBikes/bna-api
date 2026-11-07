@@ -6,6 +6,11 @@ on:
       - opened
       - synchronize
       - reopened
+  # A release tags a commit of main, which pull requests do not run on since they
+  # are squash merged.
+  push:
+    branches:
+      - main
 
 jobs:
   test:
