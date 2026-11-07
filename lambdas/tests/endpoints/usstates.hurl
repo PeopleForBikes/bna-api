@@ -39,6 +39,16 @@ HTTP 404
 jsonpath "$.errors[0].status" == "404"
 jsonpath "$.errors[0].source.pointer" == "/usstates/texas"
 
+# Rejects a NUL character in the path: the database cannot store it.
+GET {{host}}/usstates/%00
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.pointer" == "/usstates/%00"
+jsonpath "$.errors[0].details" contains "NUL"
+
 # Rejects a state name that is not valid UTF-8.
 GET {{host}}/usstates/%FF
 HTTP 400

@@ -33,6 +33,21 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
 jsonpath "$.errors[0].details" contains "first_name"
 
+# Rejects a NUL character in a body string: the database cannot store it.
+POST {{host}}/cities/submissions
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+{"first_name": "a\u0000b", "last_name": "Doe", "email": "e@example.com", "country": "Canada", "city": "x", "fips_code": "0", "consent": true}
+```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions"
+jsonpath "$.errors[0].details" contains "NUL"
+
 # Rejects a body that is not valid JSON.
 POST {{host}}/cities/submissions
 Authorization: Bearer {{token}}

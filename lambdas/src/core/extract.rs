@@ -8,14 +8,18 @@
 //! a list points at.
 use crate::core::resource::schema::{APIError, APIErrorSource, APIErrors};
 use axum::{
+    body::{to_bytes, Body},
     extract::{FromRequest, FromRequestParts, OriginalUri, Path, Query, Request},
     http::{header, request::Parts, Extensions, StatusCode, Uri},
     response::{IntoResponse, Response},
     Json,
 };
 use serde::de::DeserializeOwned;
-use serde_json::json;
+use serde_json::{json, Value};
 use std::convert::Infallible;
+
+/// Largest request body, the default limit of the Axum extractors.
+const BODY_LIMIT: usize = 2 * 1024 * 1024;
 
 /// Path parameters, rejected with an `APIErrors` document.
 pub struct ApiPath<T>(pub T);
@@ -64,6 +68,17 @@ where
     type Rejection = ExtractionError;
 
     async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+        // The database cannot store a NUL character.
+        let path = request_path(&parts.uri, &parts.extensions);
+        if path.contains("%00") {
+            return Err(ExtractionError(APIError::new(
+                request_id(&parts.extensions),
+                StatusCode::BAD_REQUEST,
+                "Invalid Path Parameter",
+                "the path must not contain a NUL character",
+                APIErrorSource::Pointer(path),
+            )));
+        }
         match Path::<T>::from_request_parts(parts, state).await {
             Ok(Path(value)) => Ok(Self(value)),
             Err(rejection) => Err(ExtractionError(APIError::new(
@@ -115,7 +130,27 @@ where
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
         let id = request_id(req.extensions());
         let path = request_path(req.uri(), req.extensions());
+        let (parts, body) = req.into_parts();
+        let bytes = match to_bytes(body, BODY_LIMIT).await {
+            Ok(bytes) => bytes,
+            Err(e) => {
+                return Err(ExtractionError(APIError::new(
+                    id,
+                    StatusCode::BAD_REQUEST,
+                    "Invalid Request Body",
+                    &e.to_string(),
+                    APIErrorSource::Pointer(path),
+                )))
+            }
+        };
+        let req = Request::from_parts(parts, Body::from(bytes.clone()));
         match Json::<T>::from_request(req, state).await {
+            // The database cannot store a NUL character.
+            Ok(_) if holds_nul(&bytes) => Err(ExtractionError(APIError::invalid_attribute(
+                id,
+                &path,
+                "a string of the body must not contain a NUL character",
+            ))),
             Ok(Json(value)) => Ok(Self(value)),
             Err(rejection) => {
                 let details = rejection.body_text();
@@ -203,6 +238,23 @@ fn page_url(scheme: &str, authority: &str, path: &str, query: Option<&str>) -> S
     }
 }
 
+/// Returns whether a valid JSON body holds a NUL character in a string or a key.
+fn holds_nul(body: &[u8]) -> bool {
+    fn walk(value: &Value) -> bool {
+        match value {
+            Value::String(s) => s.contains('\0'),
+            Value::Array(items) => items.iter().any(walk),
+            Value::Object(fields) => fields
+                .iter()
+                .any(|(key, value)| key.contains('\0') || walk(value)),
+            _ => false,
+        }
+    }
+    // Only an escaped NUL is valid JSON, so most bodies skip the second parsing.
+    body.windows(6).any(|w| w == br"\u0000")
+        && serde_json::from_slice::<Value>(body).is_ok_and(|value| walk(&value))
+}
+
 /// Returns the API Gateway request ID, when the request came through it.
 fn request_id(extensions: &Extensions) -> Option<String> {
     match extensions.get::<lambda_http::request::RequestContext>() {
@@ -244,6 +296,16 @@ fn error_path(details: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_holds_nul() {
+        assert!(holds_nul(br#"{"a": "x\u0000y"}"#));
+        assert!(holds_nul(br#"{"a": ["\u0000"]}"#));
+        assert!(holds_nul(br#"{"a\u0000": 1}"#));
+        assert!(!holds_nul(br#"{"a": "x"}"#));
+        // An escaped backslash followed by the text u0000 is not a NUL.
+        assert!(!holds_nul(br#"{"a": "\\u0000"}"#));
+    }
 
     #[test]
     fn test_page_url_without_query() {

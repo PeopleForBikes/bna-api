@@ -103,7 +103,10 @@ behavior for API consumers and must be called out in the release notes.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never
-  produce 500. The coverage check treats any 500 as a failure.
+  produce 500. The coverage check treats any 500 as a failure. Found during the
+  review: a `fargate_price_id` or a submission `country` update that fails on a
+  foreign key returns 422, a NUL character returns 400 in a path and 422 in a
+  body string (R-01).
 - **M-04 Unreachable documented codes.** Most operations list 400, 401, 403 and
   404 whether or not they can happen. Proposed: **Spec**, remove 401 and 403
   everywhere (produced by API Gateway, out of scope), and remove 400 or 404
