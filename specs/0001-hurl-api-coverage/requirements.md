@@ -184,6 +184,11 @@ In scope:
 - The coverage check and its CI wiring.
 - Rebuilding the test database dump from a reproducible recipe, extended with
   fixtures.
+- Added during the review: removing the `effortless` crate, moving its error
+  types to `lambdas`, and removing other unused code (the
+  `patch-ratings-analysis` binary, the helpers predating Axum, the `Link` header
+  parser, and the event fixtures). The `entity` wrappers stay, since Lambda
+  functions outside this repository use them.
 
 Out of scope:
 

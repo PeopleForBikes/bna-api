@@ -94,7 +94,7 @@ resetting the database.
       resource, asserting 400 with an `APIErrors` JSON body and the right
       `source`.
 - [x] 3.2 Code: map every Axum extractor rejection (path, query, JSON) to an
-      `APIErrors` response with status 400.
+      `APIErrors` response (see 3.6 for the status codes).
   - `lambdas/src/core/resource/schema.rs`, `lambdas/src/lib.rs`
     (`impl IntoResponse for ExecutionError`), and the extractors used in
     `lambdas/src/core/resource/*/endpoint.rs`.
@@ -158,7 +158,7 @@ resetting the database.
 - [x] 5.8 Hurl: `endpoints/cities.hurl` covers `POST /cities` (201 with
       read-back, 400, 409) and unknown countries on read.
 - [x] 5.9 M-14: return and document 409 for a duplicate city.
-- [x] 5.10 M-15, M-16: return 400 for an unknown country, on create and on read.
+- [x] 5.10 M-15, M-16: reject an unknown country: 422 on create, 400 on read.
 - [x] 5.11 M-19: return 400 for out-of-range `year` and `count` on
       `/cities/top/{year}/{count}`.
 - [x] 5.12 `CHANGELOG.md`: submission update fixed; `latest` removed from city
@@ -173,8 +173,8 @@ resetting the database.
 
 ## Phase 6: Ratings (M-20, M-29)
 
-- [x] 6.1 Hurl: `POST /ratings` with an unknown `city_id` returns 400 with
-      `source.pointer` `/city_id`.
+- [x] 6.1 Hurl: `POST /ratings` with an unknown `city_id` returns 422, and
+      `details` names `city_id`.
 - [x] 6.2 Code: validate the city before inserting the rating.
   - `lambdas/src/core/resource/ratings/adaptor.rs`.
 - [x] 6.3 M-29: Hurl posts a rating with a measure and reads the measure back (a
@@ -185,14 +185,14 @@ resetting the database.
 ## Phase 7: Pipelines (M-21 to M-25, M-28)
 
 - [x] 7.1 Hurl: new `endpoints/pipelines.hurl` covering list, read (200, 404,
-      400 on an invalid UUID), create (201, 400, 409), and update (200, 400,
-      404), with read-back of every written field.
+      400 on an invalid UUID), create (201, 400, 409, 415, 422), and update
+      (200, 400, 404, 415, 422), with read-back of every written field.
 - [x] 7.2 M-21: declare and return `sqs_message` as a JSON object.
   - `lambdas/src/core/resource/pipelines/schema.rs`,
     `entity/src/wrappers/bna_pipeline.rs`.
 - [x] 7.3 M-22: return and document 409 for a duplicate `state_machine_id`.
 - [x] 7.4 M-23: return 404 when updating an unknown pipeline.
-- [x] 7.5 M-24: return 400 for an invalid `status` or `step` in the update body.
+- [x] 7.5 M-24: return 422 for an invalid `status` or `step` in the update body.
 - [x] 7.6 M-25: apply `start_time` on update.
   - `entity/src/wrappers/bna_pipeline.rs` (`start_time: ActiveValue::NotSet`).
 - [x] 7.7 ~~Tell the owners of the pipeline state machine that `sqs_message`
@@ -205,7 +205,7 @@ resetting the database.
 - [x] 7.9 M-39: make every `BnaPipelinePatch` field optional.
 - [x] 7.10 M-21, refined: accept `sqs_message` as a JSON object or a string
       holding one, store and return it as the object, and reject any other value
-      with 400; Hurl creates and updates a pipeline with a string message and
+      with 422; Hurl creates and updates a pipeline with a string message and
       reads the object back.
   - `entity/src/wrappers/bna_pipeline.rs`,
     `lambdas/src/core/resource/pipelines/schema.rs`.
@@ -277,7 +277,7 @@ resetting the database.
 - [x] 12.3 `cargo test`, `cargo clippy`, `just lint` pass; `bnaclient` CI job
       shows no diff.
 - [x] 12.4 `CHANGELOG.md` lists every client-visible change (M-01, M-05, M-42,
-      M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26, M-28, M-29, M-41).
+      M-07, M-12, M-13, M-15, M-16, M-19, M-21, M-26, M-28, M-29, M-41, M-43).
 - [ ] 12.5 **Deferred.** Every acceptance criterion in `requirements.md` is
       checked off.
   - Deferred on 2026-10-20 with 12.2: met, except US-5 (staging), which waits on

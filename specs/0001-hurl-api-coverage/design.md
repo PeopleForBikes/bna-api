@@ -97,7 +97,9 @@ behavior for API consumers and must be called out in the release notes.
   otherwise the value sent in the request or, by default, the country name. The
   specification describes the `region` field as the region of the city, and the
   `state` field as a short version of the state name. Found during the review.
-  **Pending decision.**
+  Resolution: out of this feature. The team decided on 2026-11-07 to remove the
+  confusion in a dedicated branch for v2, breaking changes included, so these
+  descriptions stay as they are here.
 - **M-03 Undocumented 500 on invalid input.** Several invalid requests reach the
   database and return 500 "Database error" with empty details (M-14 to M-18).
   Proposed: **Code**, validate before writing so that client mistakes never
@@ -502,11 +504,17 @@ No automation blocks the release; the person tagging does.
 After reconciliation, the API follows one rule set, documented in the
 specification and enforced by the suite:
 
-- 400: anything wrong with the request (path, query, or body), always with an
-  `APIErrors` body naming the source.
+- 400: an invalid path or query parameter, or a body that is not valid JSON.
 - 404: a well-formed request for a resource that does not exist.
 - 409: creating a resource that already exists.
+- 415: a body sent without the JSON content type.
+- 422: valid JSON whose content is rejected, including a value only a check can
+  reject (M-02). Only the first invalid field is reported.
 - 500: never expected; the coverage check fails if one is observed.
+
+Every error has an `APIErrors` body. `source.pointer` is the request path,
+`source.parameter` a query parameter, and `source.header` a header; `details`
+names the invalid field (M-42).
 
 ## Risks
 
@@ -522,5 +530,4 @@ specification and enforced by the suite:
 
 ## Open Questions
 
-- M-44: whether to only correct the description of the city `state` and `region`
-  fields, or also rename them.
+None for this feature: M-44 moved to a dedicated branch.
