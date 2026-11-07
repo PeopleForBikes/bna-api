@@ -1,26 +1,54 @@
 # ############
 # BNA Pipeline
 # ############
+#
+# Runs a city through a full BNA pipeline: create the city, start the pipeline,
+# move it through its steps, post the rating, complete the pipeline, and read
+# everything back. Every run uses its own city and pipeline identifier, so the
+# scenario can run repeatedly.
 
-# Create a new BNA pipeline
-POST {{host}}/pipelines/bna
+# Create a new city for this run.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
 content-type: application/json
 {
-  "s3_bucket": "united states/{{region}}/{{name}}/25.06",
+  "country": "{{country_name}}",
+  "state": "{{region}}",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 201
+[Captures]
+city_id: jsonpath "$.id"
+city_name: jsonpath "$.name"
+[Asserts]
+jsonpath "$.country" == "{{country_name}}"
+jsonpath "$.state" == "{{region}}"
+
+# Create a new BNA pipeline for this city.
+POST {{host}}/pipelines/bna
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "s3_bucket": "united states/{{region}}/{{city_name}}/25.06",
   "sqs_message": {
-    "city": "{{name}}",
-    "country": "{{country}}",
+    "city": "{{city_name}}",
+    "country": "{{country_name}}",
     "fips_code": "3570670",
     "region": "{{region}}"
   },
-  "state_machine_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+  "state_machine_id": "{{newUuid}}"
 }
 HTTP 201
 [Captures]
 state_machine_id: jsonpath "$.state_machine_id"
+[Asserts]
+jsonpath "$.status" == "Pending"
+jsonpath "$.step" == "Setup"
+jsonpath "$.sqs_message.city" == "{{city_name}}"
 
-# Update pipeline with additional information
+# Update the pipeline with the Fargate task running the analysis.
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "fargate_task_arn": "arn:aws:ecs:us-west-2:123456789012:task/bna/29f979fc9fca402d94b014aa23d2f6e0",
@@ -28,15 +56,13 @@ content-type: application/json
   "step": "Analysis"
 }
 HTTP 200
-
-# Retrieve the city.
-GET {{host}}/cities/{{country}}/{{region}}/{{name}}
-HTTP 200
-[Captures]
-city_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.status" == "Processing"
+jsonpath "$.step" == "Analysis"
 
 # Post the city rating.
 POST {{host}}/ratings
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "city_id": "{{city_id}}",
@@ -81,15 +107,64 @@ content-type: application/json
   "score": 8.93
 }
 HTTP 201
+[Captures]
+rating_id: jsonpath "$.id"
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+
+# The results are saved: move the pipeline to the save step.
+PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "step": "Save"
+}
+HTTP 200
+[Asserts]
+jsonpath "$.status" == "Processing"
+jsonpath "$.step" == "Save"
 
 # Update the pipeline and mark it as complete.
 PATCH {{host}}/pipelines/bna/{{state_machine_id}}
+Authorization: Bearer {{token}}
 content-type: application/json
 {
   "cost": "0.63749",
-  "end_time": "2025-06-20T14:11:32.395437Z",
-  "start_time": "2025-06-20T14:16:11.133641Z",
+  "end_time": "2025-06-20T14:16:11.133641Z",
+  "start_time": "2025-06-20T14:11:32.395437Z",
   "status": "Completed",
   "step": "Cleanup"
 }
 HTTP 200
+[Asserts]
+jsonpath "$.status" == "Completed"
+jsonpath "$.step" == "Cleanup"
+
+# Read the pipeline back: it holds what every step wrote.
+GET {{host}}/pipelines/bna/{{state_machine_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.cost" == "0.63749"
+jsonpath "$.end_time" == "2025-06-20T14:16:11.133641Z"
+jsonpath "$.fargate_task_arn" contains "task/bna/"
+jsonpath "$.s3_bucket" == "united states/{{region}}/{{city_name}}/25.06"
+jsonpath "$.sqs_message.city" == "{{city_name}}"
+jsonpath "$.start_time" == "2025-06-20T14:11:32.395437Z"
+jsonpath "$.status" == "Completed"
+jsonpath "$.step" == "Cleanup"
+
+# Read the rating back.
+GET {{host}}/ratings/{{rating_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.city_id" == "{{city_id}}"
+jsonpath "$.score" == 8.93
+jsonpath "$.version" == "24.12"
+
+# The city now has this rating.
+GET {{host}}/cities/{{country}}/{{region}}/{{city_name}}/ratings
+HTTP 200
+[Asserts]
+jsonpath "$.city.name" == "{{city_name}}"
+jsonpath "$.ratings" count == 1
+jsonpath "$.ratings[0].id" == "{{rating_id}}"

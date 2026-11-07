@@ -3,18 +3,17 @@ use super::adaptor::{
     post_pipelines_bna_adaptor,
 };
 use super::schema::{BnaPipeline, BnaPipelinePatch, BnaPipelinePost, BnaPipelines};
+use crate::core::extract::{ApiJson, ApiPath, ApiQuery, PageUrl};
 use crate::database_connect_or_init;
 use crate::{
-    core::resource::schema::{ErrorResponses, PaginationParameters},
-    Context, ExecutionError,
+    core::resource::schema::{
+        BadRequestResponse, ConflictResponse, NotFoundResponse, PaginationParameters,
+        UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
+    },
+    Context, ExecutionError, PageFlow, Paginatron,
 };
-use axum::{
-    extract::{Path, Query},
-    http::StatusCode,
-    Json,
-};
+use axum::{http::StatusCode, Json};
 use entity::wrappers::bna_pipeline::{BNAPipelinePatch, BNAPipelinePost};
-use serde_json::{json, Value};
 use tracing::debug;
 use utoipa_axum::{router::OpenApiRouter, routes};
 use uuid::Uuid;
@@ -39,10 +38,11 @@ pub fn routes() -> OpenApiRouter {
   ),
   responses(
     (status = OK, description = "Fetches the details of a BNA pipeline", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
+    NotFoundResponse,
   ))]
 async fn get_pipelines_bna(
-    Path(pipeline_id): Path<Uuid>,
+    ApiPath(pipeline_id): ApiPath<Uuid>,
     ctx: Context,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
     let db = database_connect_or_init().await?;
@@ -62,15 +62,19 @@ async fn get_pipelines_bna(
   ),
   responses(
     (status = OK, description = "Fetches the details of all BNA pipelines", body = BnaPipelines),
-    ErrorResponses,
+    BadRequestResponse,
   ))]
 async fn get_pipelines_bnas(
-    Query(pagination): Query<PaginationParameters>,
-) -> Result<Json<Value>, ExecutionError> {
+    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    PageUrl(url): PageUrl,
+) -> Result<PageFlow<BnaPipelines>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size())
-        .await
-        .map(|v| Json(json!(v.payload())))
+    let (total_items, models) =
+        get_pipelines_bnas_adaptor(db, pagination.page(), pagination.page_size()).await?;
+    Ok(PageFlow::new(
+        Paginatron::new(url, total_items, pagination.page(), pagination.page_size()),
+        BnaPipelines(models.into_iter().map(BnaPipeline::from).collect()),
+    ))
 }
 
 #[utoipa::path(
@@ -81,13 +85,17 @@ async fn get_pipelines_bnas(
   request_body = BnaPipelinePost,
   responses(
     (status = CREATED, description = "Creates a new city submission", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
+    ConflictResponse,
   ))]
 async fn post_pipelines_bna(
-    Json(bna_pipeline): Json<BNAPipelinePost>,
+    ctx: Context,
+    ApiJson(bna_pipeline): ApiJson<BNAPipelinePost>,
 ) -> Result<(StatusCode, Json<BnaPipeline>), ExecutionError> {
     let db = database_connect_or_init().await?;
-    post_pipelines_bna_adaptor(db, bna_pipeline)
+    post_pipelines_bna_adaptor(db, bna_pipeline, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");
@@ -108,14 +116,18 @@ async fn post_pipelines_bna(
   ),
   responses(
     (status = OK, description = "Updates the details of a BNA pipeline", body = BnaPipeline),
-    ErrorResponses,
+    BadRequestResponse,
+    UnsupportedMediaTypeResponse,
+    UnprocessableEntityResponse,
+    NotFoundResponse,
   ))]
 async fn patch_pipelines_bna(
-    Path(analysis_id): Path<Uuid>,
-    Json(bna_pipeline): Json<BNAPipelinePatch>,
+    ctx: Context,
+    ApiPath(analysis_id): ApiPath<Uuid>,
+    ApiJson(bna_pipeline): ApiJson<BNAPipelinePatch>,
 ) -> Result<Json<BnaPipeline>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id)
+    patch_pipelines_bna_adaptor(db, bna_pipeline, analysis_id, ctx)
         .await
         .map_err(|e| {
             debug!("{e}");

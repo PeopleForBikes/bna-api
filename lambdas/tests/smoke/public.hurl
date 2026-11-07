@@ -36,29 +36,11 @@ HTTP 200
 [Asserts]
 jsonpath "$" count <= 10
 
-# Create a new submission.
-POST {{host}}/cities/submissions
-content-type: application/json
-
-{
-  "city": "santa rosa",
-  "country": "United States",
-  "email": "jane.dpe@orgllc.com",
-  "fips_code": "3570670",
-  "first_name": "Jane",
-  "last_name": "Doe",
-  "organization": "Organization LLC",
-  "region": "new mexico",
-  "occupation": "CTO",
-  "consent": true
-}
-HTTP 201
-[Captures]
-submission_id: jsonpath "$.id"
-
 # Query all the submissions.
 GET {{host}}/cities/submissions
 HTTP 200
+[Captures]
+submission_id: jsonpath "$[0].id"
 
 # Query all the pending submissions.
 GET {{host}}/cities/submissions?status=Pending

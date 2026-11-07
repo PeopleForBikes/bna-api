@@ -3,7 +3,7 @@ use sea_orm::{DatabaseBackend, DatabaseConnection, FromQueryResult, Statement};
 
 pub(crate) async fn fetch_report_year(
     db: &DatabaseConnection,
-    year: u32,
+    year: i32,
 ) -> Result<Vec<BnaReport>, sea_orm::DbErr> {
     let query = format!(
         r#"
@@ -46,11 +46,11 @@ pub(crate) async fn fetch_report_year(
 
       -- Scores (derived/calculated metrics)
       opportunity.score AS opportunity_score,
-      people.score AS people_score,
+      people.score AS people,
       recreation.score AS recreation_score,
-      retail.score AS retail_score,
-      transit.score AS transit_score,
-      core_services.score AS core_services_score
+      retail.score AS retail,
+      transit.score AS transit,
+      core_services.score AS coreservices_score
 
     FROM city
     INNER JOIN LATERAL (
@@ -126,11 +126,11 @@ pub(crate) async fn fetch_all_reports(
 
     -- Scores (derived/calculated metrics)
     opportunity.score AS opportunity_score,
-    people.score AS people_score,
+    people.score AS people,
     recreation.score AS recreation_score,
-    retail.score AS retail_score,
-    transit.score AS transit_score,
-    core_services.score AS core_services_score
+    retail.score AS retail,
+    transit.score AS transit,
+    core_services.score AS coreservices_score
 
   FROM city
   INNER JOIN summary ON city.id = summary.city_id

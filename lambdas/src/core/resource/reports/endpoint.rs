@@ -1,9 +1,13 @@
 use crate::{database_connect_or_init, ExecutionError};
 
 use super::adaptor::{get_report_adaptor, get_reports_adaptor};
-use axum::extract::Path;
+use crate::core::{
+    extract::ApiPath,
+    resource::schema::{deserialize_bna_year, BadRequestResponse},
+};
 use axum_streams::*;
 use futures::{stream, StreamExt};
+use serde::Deserialize;
 use utoipa_axum::router::OpenApiRouter;
 use utoipa_axum::routes;
 
@@ -26,7 +30,7 @@ pub fn routes() -> OpenApiRouter {
 )]
 async fn get_reports() -> Result<StreamBodyAs<'static>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let ratings = get_reports_adaptor(db).await.expect("reports");
+    let ratings = get_reports_adaptor(db).await?;
     let stream = stream::iter(ratings);
     Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
@@ -44,14 +48,24 @@ async fn get_reports() -> Result<StreamBodyAs<'static>, ExecutionError> {
   ),
   responses(
     (status = OK, description = "Fetches the latest rating reports for a specific year in csv format", content_type = "text/csv"),
+    BadRequestResponse,
   )
 )]
-async fn get_reports_year(Path(year): Path<u32>) -> Result<StreamBodyAs<'static>, ExecutionError> {
+async fn get_reports_year(
+    ApiPath(ReportYearPath { year }): ApiPath<ReportYearPath>,
+) -> Result<StreamBodyAs<'static>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let ratings = get_report_adaptor(db, year).await.expect("reports");
+    let ratings = get_report_adaptor(db, year).await?;
     let stream = stream::iter(ratings);
     Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
         stream.map(Ok::<_, axum::Error>),
     ))
+}
+
+/// Path parameters of the report of a year.
+#[derive(Deserialize)]
+struct ReportYearPath {
+    #[serde(deserialize_with = "deserialize_bna_year")]
+    year: i32,
 }

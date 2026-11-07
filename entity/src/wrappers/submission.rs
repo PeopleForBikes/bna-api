@@ -1,4 +1,4 @@
-use crate::entities::submission;
+use crate::{entities::submission, wrappers::ApprovalStatus};
 use sea_orm::{ActiveValue, IntoActiveModel};
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,6 @@ pub struct SubmissionPost {
     pub region: Option<String>,
     pub fips_code: String,
     pub consent: bool,
-    pub status: Option<String>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
@@ -31,7 +30,7 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPost {
             region: ActiveValue::Set(self.region),
             fips_code: ActiveValue::Set(self.fips_code),
             consent: ActiveValue::Set(self.consent),
-            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            status: ActiveValue::Set(ApprovalStatus::Pending.to_string()),
             created_at: ActiveValue::NotSet,
         }
     }
@@ -49,7 +48,7 @@ pub struct SubmissionPatch {
     pub region: Option<Option<String>>,
     pub fips_code: Option<String>,
     pub consent: Option<bool>,
-    pub status: Option<String>,
+    pub status: Option<ApprovalStatus>,
 }
 
 impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
@@ -72,7 +71,9 @@ impl IntoActiveModel<submission::ActiveModel> for SubmissionPatch {
             region: self.region.map_or(ActiveValue::NotSet, ActiveValue::Set),
             fips_code: self.fips_code.map_or(ActiveValue::NotSet, ActiveValue::Set),
             consent: self.consent.map_or(ActiveValue::NotSet, ActiveValue::Set),
-            status: self.status.map_or(ActiveValue::NotSet, ActiveValue::Set),
+            status: self
+                .status
+                .map_or(ActiveValue::NotSet, |s| ActiveValue::Set(s.to_string())),
             created_at: ActiveValue::NotSet,
         }
     }
@@ -94,7 +95,6 @@ mod tests {
         let region = Some("texas".to_string());
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = None;
         let wrapper = SubmissionPost {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -106,7 +106,6 @@ mod tests {
             region: region.clone(),
             fips_code: fips_code.clone(),
             consent,
-            status: status.clone(),
         };
         let active_model = wrapper.into_active_model();
         let expected = submission::ActiveModel {
@@ -121,7 +120,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::NotSet,
+            status: ActiveValue::Set("Pending".to_string()),
             created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
@@ -139,7 +138,6 @@ mod tests {
         let region = None;
         let fips_code = "0123456".to_string();
         let consent = true;
-        let status = Some("Approved".to_string());
         let wrapper = SubmissionPost {
             first_name: first_name.clone(),
             last_name: last_name.clone(),
@@ -151,7 +149,6 @@ mod tests {
             region: region.clone(),
             fips_code: fips_code.clone(),
             consent,
-            status: status.clone(),
         };
         let active_model = wrapper.into_active_model();
         let expected = submission::ActiveModel {
@@ -166,7 +163,7 @@ mod tests {
             region: ActiveValue::Set(region),
             fips_code: ActiveValue::Set(fips_code),
             consent: ActiveValue::Set(consent),
-            status: ActiveValue::Set("Approved".to_string()),
+            status: ActiveValue::Set("Pending".to_string()),
             created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
@@ -205,5 +202,27 @@ mod tests {
             created_at: ActiveValue::NotSet,
         };
         assert_eq!(active_model, expected);
+    }
+
+    #[test]
+    fn test_submission_patch_status_into_model() {
+        let wrapper = SubmissionPatch {
+            first_name: None,
+            last_name: None,
+            occupation: None,
+            organization: None,
+            email: None,
+            country: None,
+            city: None,
+            region: None,
+            fips_code: None,
+            consent: None,
+            status: Some(ApprovalStatus::Approved),
+        };
+        let active_model = wrapper.into_active_model();
+        assert_eq!(
+            active_model.status,
+            ActiveValue::Set("Approved".to_string())
+        );
     }
 }

@@ -1,7 +1,7 @@
 use entity::{city, summary};
 use sea_orm::{
-    DatabaseConnection, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QuerySelect,
-    RelationTrait,
+    DatabaseConnection, EntityTrait, FromQueryResult, JoinType, PaginatorTrait, QueryOrder,
+    QuerySelect, RelationTrait,
 };
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -59,21 +59,6 @@ pub(crate) struct Bna {
     pub(crate) track: Option<f64>,
 }
 
-pub async fn fetch_ratings_summaries(
-    db: &DatabaseConnection,
-    page: u64,
-    page_size: u64,
-) -> Result<(u64, Vec<summary::Model>), sea_orm::DbErr> {
-    let select = summary::Entity::find();
-    let models = select
-        .clone()
-        .paginate(db, page_size)
-        .fetch_page(page)
-        .await?;
-    let count = select.count(db).await?;
-    Ok((count, models))
-}
-
 pub async fn fetch_ratings_city(
     db: &DatabaseConnection,
     rating_id: Uuid,
@@ -128,6 +113,13 @@ pub async fn fetch_rating(
         .column_as(entity::people::Column::Score, "people_score")
         .column_as(entity::retail::Column::Score, "retail_score")
         .column_as(entity::transit::Column::Score, "transit_score")
+        .columns([
+            entity::measure::Column::BufferedLane,
+            entity::measure::Column::Lane,
+            entity::measure::Column::Path,
+            entity::measure::Column::Sharrow,
+            entity::measure::Column::Track,
+        ])
         .join(
             JoinType::InnerJoin,
             entity::summary::Relation::CoreServices.def(),
@@ -156,6 +148,8 @@ pub async fn fetch_rating(
             sea_orm::JoinType::InnerJoin,
             entity::summary::Relation::Transit.def(),
         )
+        // Older ratings have no measure.
+        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def())
         .into_model::<Bna>()
         .one(db)
         .await?;
@@ -197,6 +191,13 @@ pub async fn fetch_ratings(
         .column_as(entity::people::Column::Score, "people_score")
         .column_as(entity::retail::Column::Score, "retail_score")
         .column_as(entity::transit::Column::Score, "transit_score")
+        .columns([
+            entity::measure::Column::BufferedLane,
+            entity::measure::Column::Lane,
+            entity::measure::Column::Path,
+            entity::measure::Column::Sharrow,
+            entity::measure::Column::Track,
+        ])
         .join(
             JoinType::InnerJoin,
             entity::summary::Relation::CoreServices.def(),
@@ -224,12 +225,15 @@ pub async fn fetch_ratings(
         .join(
             sea_orm::JoinType::InnerJoin,
             entity::summary::Relation::Transit.def(),
-        );
+        )
+        // Older ratings have no measure.
+        .join(JoinType::LeftJoin, entity::summary::Relation::Measure.def())
+        .order_by_asc(summary::Column::Id);
     let models = select
         .clone()
         .into_model::<Bna>()
         .paginate(db, page_size)
-        .fetch_page(page)
+        .fetch_page(page.saturating_sub(1))
         .await?;
     let count = select.count(db).await?;
     Ok((count, models))

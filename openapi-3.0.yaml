@@ -23,6 +23,9 @@ paths:
       parameters:
         - name: page
           in: query
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -32,6 +35,7 @@ paths:
           example: 5
         - name: page_size
           in: query
+          description: The number of items per page
           required: false
           schema:
             type: integer
@@ -41,9 +45,19 @@ paths:
           example: 25
         - name: sort_by
           in: query
+          description: Field to sort the cities by
           required: false
           schema:
             type: string
+            description: Fields the city lists can be sorted by.
+            enum:
+              - name
+              - country
+              - state
+              - state_abbrev
+              - region
+              - fips_code
+              - created_at
           example: created_at
         - name: order_direction
           in: query
@@ -51,19 +65,66 @@ paths:
           schema:
             $ref: '#/components/schemas/OrderDirection'
           example: desc
-        - name: latest
-          in: query
-          required: false
-          schema:
-            type: boolean
-          example: 'true'
       responses:
         '200':
           description: Fetches cities
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Cities'
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
     post:
       tags:
         - city
@@ -84,72 +145,67 @@ paths:
                 $ref: '#/components/schemas/City'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
+        '409':
+          description: The resource already exists.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
+                  - details: the resource already exists
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
+                      pointer: /cities
+                    status: '409'
+                    title: Conflict
+        '415':
           description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
+            The request body was not sent with the `application/json` content
+            type.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: access to the requested resource is forbidden
+                  - details: 'Expected request with `Content-Type: application/json`'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
           description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: the resource was not found
+                  - details: 'the country is not covered by the BNA: Narnia'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/submissions:
     get:
       tags:
@@ -162,7 +218,7 @@ paths:
           description: Filter for the submission status
           required: false
           schema:
-            type: string
+            $ref: '#/components/schemas/ApprovalStatus'
           example: Pending
         - name: page_size
           in: query
@@ -176,7 +232,9 @@ paths:
           example: 25
         - name: page
           in: query
-          description: The result page being returned
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -187,78 +245,63 @@ paths:
       responses:
         '200':
           description: Fetches submissions
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Submissions'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
     post:
       tags:
         - city
@@ -279,72 +322,53 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
+        '415':
           description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
+            The request body was not sent with the `application/json` content
+            type.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
+                  - details: 'Expected request with `Content-Type: application/json`'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
           description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: access to the requested resource is forbidden
+                  - details: 'the country is not covered by the BNA: Narnia'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/submissions/{submission_id}:
     get:
       tags:
@@ -365,7 +389,7 @@ paths:
           description: Filter for the submission status
           required: false
           schema:
-            type: string
+            $ref: '#/components/schemas/ApprovalStatus'
           example: Pending
       responses:
         '200':
@@ -376,56 +400,20 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -439,7 +427,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
     patch:
@@ -471,56 +459,20 @@ paths:
                 $ref: '#/components/schemas/Submission'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -534,9 +486,42 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /cities/summary/latest:
     get:
       tags:
@@ -546,6 +531,9 @@ paths:
       parameters:
         - name: page
           in: query
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -555,6 +543,7 @@ paths:
           example: 5
         - name: page_size
           in: query
+          description: The number of items per page
           required: false
           schema:
             type: integer
@@ -564,9 +553,19 @@ paths:
           example: 25
         - name: sort_by
           in: query
+          description: Field to sort the cities by
           required: false
           schema:
             type: string
+            description: Fields the city lists can be sorted by.
+            enum:
+              - name
+              - country
+              - state
+              - state_abbrev
+              - region
+              - fips_code
+              - created_at
           example: created_at
         - name: order_direction
           in: query
@@ -574,19 +573,66 @@ paths:
           schema:
             $ref: '#/components/schemas/OrderDirection'
           example: desc
-        - name: latest
-          in: query
-          required: false
-          schema:
-            type: boolean
-          example: 'true'
       responses:
         '200':
           description: Fetches cities with their latest summary
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CitiesWithSummary'
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /cities/top/{year}/{count}:
     get:
       tags:
@@ -623,56 +669,20 @@ paths:
                 $ref: '#/components/schemas/CitiesWithSummary'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -686,7 +696,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /cities/{country}/{region}/{name}:
@@ -732,56 +742,20 @@ paths:
                 $ref: '#/components/schemas/City'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -795,7 +769,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /cities/{country}/{region}/{name}/ratings:
@@ -846,7 +820,9 @@ paths:
           example: 25
         - name: page
           in: query
-          description: The result page being returned
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -857,62 +833,63 @@ paths:
       responses:
         '200':
           description: Fetches city ratings
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CityRatings'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -926,7 +903,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /health:
@@ -961,7 +938,9 @@ paths:
           example: 25
         - name: page
           in: query
-          description: The result page being returned
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -972,78 +951,63 @@ paths:
       responses:
         '200':
           description: Fetches the details of all BNA pipelines
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/BnaPipelines'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
     post:
       tags:
         - pipeline
@@ -1064,72 +1028,67 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
+        '409':
+          description: The resource already exists.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
+                  - details: the resource already exists
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
+                      pointer: /cities
+                    status: '409'
+                    title: Conflict
+        '415':
           description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
+            The request body was not sent with the `application/json` content
+            type.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: access to the requested resource is forbidden
+                  - details: 'Expected request with `Content-Type: application/json`'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
           description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: the resource was not found
+                  - details: 'the country is not covered by the BNA: Narnia'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /pipelines/bna/{pipeline_id}:
     get:
       tags:
@@ -1153,56 +1112,20 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1216,7 +1139,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
     patch:
@@ -1247,56 +1170,20 @@ paths:
                 $ref: '#/components/schemas/BnaPipeline'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1310,9 +1197,42 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
+        '415':
+          description: >-
+            The request body was not sent with the `application/json` content
+            type.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'Expected request with `Content-Type: application/json`'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
+          description: >-
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: 'the country is not covered by the BNA: Narnia'
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /prices/fargate:
     get:
       tags:
@@ -1322,6 +1242,9 @@ paths:
       parameters:
         - name: page
           in: query
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -1331,6 +1254,7 @@ paths:
           example: 5
         - name: page_size
           in: query
+          description: The number of items per page
           required: false
           schema:
             type: integer
@@ -1340,9 +1264,14 @@ paths:
           example: 25
         - name: sort_by
           in: query
+          description: Field to sort the prices by
           required: false
           schema:
             type: string
+            description: Fields the Fargate prices can be sorted by.
+            enum:
+              - per_second
+              - created_at
           example: created_at
         - name: order_direction
           in: query
@@ -1352,6 +1281,7 @@ paths:
           example: desc
         - name: latest
           in: query
+          description: Only return the latest price
           required: false
           schema:
             type: boolean
@@ -1359,10 +1289,63 @@ paths:
       responses:
         '200':
           description: Fetches a collection of Fargate prices
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FargatePrices'
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /prices/fargate/{price_id}:
     get:
       tags:
@@ -1388,56 +1371,20 @@ paths:
                 $ref: '#/components/schemas/FargatePrice'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1451,7 +1398,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /ratings:
@@ -1473,7 +1420,9 @@ paths:
           example: 25
         - name: page
           in: query
-          description: The result page being returned
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -1484,10 +1433,63 @@ paths:
       responses:
         '200':
           description: Fetches the city ratings
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Ratings'
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
     post:
       tags:
         - rating
@@ -1508,72 +1510,53 @@ paths:
                 $ref: '#/components/schemas/Rating'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
+        '415':
           description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
+            The request body was not sent with the `application/json` content
+            type.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
+                  - details: 'Expected request with `Content-Type: application/json`'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
+                      header: content-type
+                    status: '415'
+                    title: Invalid Request Body
+        '422':
           description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
+            The request body is valid JSON, but its content is rejected: a
+            missing or mistyped field, or a value that does not exist. `details`
+            names the first invalid field.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: access to the requested resource is forbidden
+                  - details: 'the country is not covered by the BNA: Narnia'
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
-        '404':
-          description: >-
-            The particular resource requested was not found. This occurs, for
-            example, when the id of the requested  resource does not exist.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: the resource was not found
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '404'
-                    title: Item Not Found
+                      pointer: /cities
+                    status: '422'
+                    title: Invalid Attribute
   /ratings/{rating_id}:
     get:
       tags:
@@ -1597,56 +1580,20 @@ paths:
                 $ref: '#/components/schemas/Rating'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1660,7 +1607,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /ratings/{rating_id}/city:
@@ -1686,56 +1633,20 @@ paths:
                 $ref: '#/components/schemas/RatingWithCity'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1749,7 +1660,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
   /reports:
@@ -1784,6 +1695,22 @@ paths:
           description: Fetches the latest rating reports for a specific year in csv format
           content:
             text/csv: {}
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /usstates:
     get:
       tags:
@@ -1803,7 +1730,9 @@ paths:
           example: 25
         - name: page
           in: query
-          description: The result page being returned
+          description: >-
+            The result page being returned, starting at 1. A page past the last
+            one returns an empty list.
           required: false
           schema:
             type: integer
@@ -1814,10 +1743,63 @@ paths:
       responses:
         '200':
           description: Fetches US states
+          headers:
+            link:
+              schema:
+                type: string
+              description: >-
+                Links to the `first`, `prev`, `next`, and `last` pages (RFC
+                8288), pointing at the same pages as the `x-` headers and
+                keeping the other query parameters.
+            x-next-page:
+              schema:
+                type: integer
+              description: >-
+                The page after the requested one, at most the last page (1 for
+                an empty list). A page past the last one navigates like the last
+                page.
+            x-page:
+              schema:
+                type: integer
+              description: The requested page, starting at 1.
+            x-per-page:
+              schema:
+                type: integer
+              description: The number of items per page.
+            x-prev-page:
+              schema:
+                type: integer
+              description: >-
+                The page before the requested one, at least 1. A page past the
+                last one navigates like the last page.
+            x-total:
+              schema:
+                type: integer
+              description: The total number of items.
+            x-total-pages:
+              schema:
+                type: integer
+              description: The number of pages holding items, 0 for an empty list.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UsStates'
+        '400':
+          description: >-
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/APIErrors'
+              example:
+                errors:
+                  - details: the request was formatted incorrectly
+                    id: blfwkg8nvHcEJnQ=
+                    source:
+                      parameter: status
+                    status: '400'
+                    title: Bad Request
   /usstates/{name}:
     get:
       tags:
@@ -1827,7 +1809,9 @@ paths:
       parameters:
         - name: name
           in: path
-          description: Full name of a US state
+          description: >-
+            Full name of a US state, case sensitive: `Texas` matches, `texas`
+            does not
           required: true
           schema:
             type: string
@@ -1841,56 +1825,20 @@ paths:
                 $ref: '#/components/schemas/UsState'
         '400':
           description: >-
-            The request was formatted incorrectly or missing required
-            parameters.
+            The request was formatted incorrectly: an invalid path or query
+            parameter, or a body that is not valid JSON.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/APIErrors'
               example:
                 errors:
-                  - details: >-
-                      the request was formatted incorrectly or missing required
-                      parameters
+                  - details: the request was formatted incorrectly
                     id: blfwkg8nvHcEJnQ=
                     source:
                       parameter: status
                     status: '400'
                     title: Bad Request
-        '401':
-          description: >-
-            The request has not been fulfilled because it lacks valid
-            authentication credentials for the target resource.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: >-
-                      invalid authentication credentials to access the specified
-                      resource
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '401'
-                    title: Unauthorized
-        '403':
-          description: >-
-            Forbidden to make the request. Most likely this indicates an issue
-            with the credentials or permissions.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/APIErrors'
-              example:
-                errors:
-                  - details: access to the requested resource is forbidden
-                    id: blfwkg8nvHcEJnQ=
-                    source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
-                    status: '403'
-                    title: Forbidden
         '404':
           description: >-
             The particular resource requested was not found. This occurs, for
@@ -1904,7 +1852,7 @@ paths:
                   - details: the resource was not found
                     id: blfwkg8nvHcEJnQ=
                     source:
-                      pointer: /bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
+                      pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
                     status: '404'
                     title: Item Not Found
 components:
@@ -1933,16 +1881,7 @@ components:
           nullable: true
         source:
           $ref: '#/components/schemas/APIErrorSource'
-          description: >-
-            An object containing references to the primary source of the error.
-
-
-            This field may be omitted in some situation. For instance, if the
-            server cannot
-
-            parse the request as valid JSON, including source doesn’t make sense
-
-            (because there’s no JSON document for source to refer to).
+          description: An object containing references to the primary source of the error.
         status:
           type: string
           description: >-
@@ -1957,18 +1896,18 @@ components:
       oneOf:
         - type: object
           description: >-
-            A JSON Pointer [RFC6901] to the value in the request document that
-            caused the error.
+            The path of the request that caused the error. The error details
+            name the invalid field, if any.
           required:
             - pointer
           properties:
             pointer:
               type: string
               description: >-
-                A JSON Pointer [RFC6901] to the value in the request document
-                that caused the error.
+                The path of the request that caused the error. The error details
+                name the invalid field, if any.
           example:
-            pointer: /data/attributes/title
+            pointer: /ratings/e6aade5a-b343-120b-dbaa-bd916cd99221
         - type: object
           description: A string indicating which URI query parameter caused the error.
           required:
@@ -1996,13 +1935,10 @@ components:
       description: |-
         An object containing references to the primary source of the error.
 
-        It SHOULD include one of the following members or be omitted:
+        It includes one of the following members:
 
-          - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
-            value in the request document that caused the error [e.g. "/data" for a primary
-            data object, or "/data/attributes/title" for a specific attribute].
-            This MUST point to a value in the request document that exists; if it doesn’t,
-            the client SHOULD simply ignore the pointer.
+          - pointer: the path of the request that caused the error [e.g. "/ratings/1"]. The
+            error details name the invalid field, if any.
           - parameter: a string indicating which URI query parameter caused the error.
           - header: a string indicating the name of a single request header which caused the
             error.
@@ -2020,6 +1956,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/APIError'
+    ApprovalStatus:
+      type: string
+      description: Approval status of a city submission.
+      enum:
+        - Approved
+        - Pending
+        - Rejected
+    BikeLaneType:
+      type: string
+      description: Bike lane types, as stored in the `bike_lane_type` table.
+      enum:
+        - buffered_lane
+        - lane
+        - path
+        - sharrow
+        - track
     BnaPipeline:
       type: object
       required:
@@ -2055,7 +2007,7 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
+          type: object
           description: Copy of the JSON message that was sent for processing
           example:
             city: santa rosa
@@ -2083,9 +2035,6 @@ components:
           description: Last pipeline step that was completed
     BnaPipelinePatch:
       type: object
-      required:
-        - status
-        - step
       properties:
         cost:
           type: string
@@ -2114,14 +2063,22 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
-          description: Copy of the JSON message that was sent for processing
-          example:
-            city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
-          nullable: true
+          oneOf:
+            - type: object
+              description: Copy of the JSON message that was sent for processing
+              example:
+                city: santa rosa
+                country: United States
+                fips_code: '3570670'
+                region: new mexico
+              nullable: true
+            - type: string
+              description: A string holding a JSON object
+              example: '{"country": "United States", "city": "santa rosa"}'
+          description: >-
+            Copy of the JSON message that was sent for processing: a JSON
+            object, or a string holding a JSON object. It is stored and returned
+            as a JSON object.
         start_time:
           type: string
           format: date-time
@@ -2165,14 +2122,22 @@ components:
           example: united states/new mexico/santa rosa/24.05.4
           nullable: true
         sqs_message:
-          type: string
-          description: Copy of the JSON message that was sent for processing
-          example:
-            city: santa rosa
-            country: United States
-            fips_code: '3570670'
-            region: new mexico
-          nullable: true
+          oneOf:
+            - type: object
+              description: Copy of the JSON message that was sent for processing
+              example:
+                city: santa rosa
+                country: United States
+                fips_code: '3570670'
+                region: new mexico
+              nullable: true
+            - type: string
+              description: A string holding a JSON object
+              example: '{"country": "United States", "city": "santa rosa"}'
+          description: >-
+            Copy of the JSON message that was sent for processing: a JSON
+            object, or a string holding a JSON object. It is stored and returned
+            as a JSON object.
         start_time:
           type: string
           format: date-time
@@ -2189,14 +2154,24 @@ components:
     BnaPipelineStep:
       type: string
       enum:
-        - SqsMessage
         - Setup
         - Analysis
+        - Save
         - Cleanup
     BnaPipelines:
       type: array
       items:
         $ref: '#/components/schemas/BnaPipeline'
+    BnaRegion:
+      type: string
+      description: BNA regions of the United States, as stored in the `bna_region` table.
+      enum:
+        - Mid-Atlantic
+        - New England
+        - Midwest
+        - Mountain
+        - Pacific
+        - South
     Cities:
       type: array
       items:
@@ -2222,6 +2197,13 @@ components:
           type: string
           format: date-time
           description: Creation date
+        fips_code:
+          type: string
+          description: >-
+            Numerical city identifier given by the U.S. census, or 0 for non-US
+            cities
+          example: '4805000'
+          nullable: true
         id:
           type: string
           format: uuid
@@ -2293,6 +2275,13 @@ components:
         country:
           $ref: '#/components/schemas/Country'
           description: Country name
+        fips_code:
+          type: string
+          description: >-
+            Numerical city identifier given by the U.S. census, or 0 for non-US
+            cities
+          example: '4805000'
+          nullable: true
         latitude:
           type: number
           format: double
@@ -3057,6 +3046,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position
@@ -3084,15 +3074,6 @@ components:
           example: Pending
     SubmissionPatch:
       type: object
-      required:
-        - first_name
-        - last_name
-        - email
-        - country
-        - city
-        - fips_code
-        - consent
-        - status
       properties:
         city:
           type: string
@@ -3122,6 +3103,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position
@@ -3144,9 +3126,8 @@ components:
           example: Antwerp
           nullable: true
         status:
-          type: string
-          description: Submission status, e.g. "Pending"
-          example: Pending
+          $ref: '#/components/schemas/ApprovalStatus'
+          description: Submission status
     SubmissionPost:
       type: object
       required:
@@ -3157,7 +3138,6 @@ components:
         - city
         - fips_code
         - consent
-        - status
       properties:
         city:
           type: string
@@ -3187,6 +3167,7 @@ components:
         last_name:
           type: string
           description: Last name
+          example: Doe
         occupation:
           type: string
           description: Job title or position
@@ -3208,10 +3189,6 @@ components:
             this concept, then the country name is used.
           example: Antwerp
           nullable: true
-        status:
-          type: string
-          description: Submission status, e.g. "Pending"
-          example: Pending
     Submissions:
       type: array
       items:

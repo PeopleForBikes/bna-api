@@ -2,11 +2,15 @@
 use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
 use entity::city;
+use lambda_http::http::StatusCode;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::convert::Into;
 use std::{fmt::Display, str::FromStr};
-use utoipa::{IntoParams, IntoResponses, ToSchema};
+use utoipa::{
+    openapi::{header::HeaderBuilder, path::ParameterIn, Object, OpenApi, RefOr, Type},
+    IntoParams, IntoResponses, ToSchema,
+};
 use uuid::Uuid;
 
 #[derive(ToSchema, Serialize, Deserialize)]
@@ -309,6 +313,9 @@ pub(crate) struct City {
     /// A short version of the state name, usually 2 or 3 character long
     #[schema(examples("VAN"))]
     state_abbrev: Option<String>,
+    /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
+    #[schema(examples("4805000"))]
+    fips_code: Option<String>,
     /// Residential speed limit in kilometer per hour (km/h).
     /// Only use if different from the state speed limit.
     #[schema(examples("50"))]
@@ -330,6 +337,7 @@ impl From<entity::city::Model> for City {
             longitude: value.longitude,
             region: value.region,
             state_abbrev: value.state_abbrev,
+            fips_code: value.fips_code,
             residential_speed_limit: value.residential_speed_limit,
             created_at: value.created_at,
             updated_at: value.updated_at,
@@ -339,21 +347,18 @@ impl From<entity::city::Model> for City {
 
 /// An object containing references to the primary source of the error.
 ///
-/// It SHOULD include one of the following members or be omitted:
+/// It includes one of the following members:
 ///
-///   - pointer: a JSON Pointer [RFC6901](https://tools.ietf.org/html/rfc6901) to the
-///     value in the request document that caused the error [e.g. "/data" for a primary
-///     data object, or "/data/attributes/title" for a specific attribute].
-///     This MUST point to a value in the request document that exists; if it doesn’t,
-///     the client SHOULD simply ignore the pointer.
+///   - pointer: the path of the request that caused the error [e.g. "/ratings/1"]. The
+///     error details name the invalid field, if any.
 ///   - parameter: a string indicating which URI query parameter caused the error.
 ///   - header: a string indicating the name of a single request header which caused the
 ///     error.
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Clone, Debug, ToSchema)]
 #[serde(rename_all = "snake_case")]
 pub enum APIErrorSource {
-    /// A JSON Pointer [RFC6901] to the value in the request document that caused the error.
-    #[schema(examples(json!({"pointer": "/data/attributes/title"})))]
+    /// The path of the request that caused the error. The error details name the invalid field, if any.
+    #[schema(examples(json!({"pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"})))]
     Pointer(String),
     /// A string indicating which URI query parameter caused the error.
     #[schema(examples(json!({ "parameter": "include" })))]
@@ -365,7 +370,7 @@ pub enum APIErrorSource {
 
 /// Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
 #[skip_serializing_none]
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Clone, Debug, ToSchema)]
 pub struct APIError {
     /// A unique identifier for this particular occurrence of the problem.
     #[schema(examples("blfwkg8nvHcEJnQ="))]
@@ -380,72 +385,111 @@ pub struct APIError {
     #[schema(examples("the entry was not found"))]
     details: String,
     /// An object containing references to the primary source of the error.
-    ///
-    /// This field may be omitted in some situation. For instance, if the server cannot
-    /// parse the request as valid JSON, including source doesn’t make sense
-    /// (because there’s no JSON document for source to refer to).
-    #[schema(examples(json!("pointer": "/bnas/analysis/e6aade5a-b343-120b-dbaa-bd916cd99221")))]
+    #[schema(examples(json!("pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221")))]
     source: APIErrorSource,
+}
+
+impl APIError {
+    /// Creates a new `APIError`.
+    pub fn new(
+        id: Option<String>,
+        status: StatusCode,
+        title: &str,
+        details: &str,
+        source: APIErrorSource,
+    ) -> Self {
+        Self {
+            id,
+            status: status.as_u16().to_string(),
+            title: title.to_string(),
+            details: details.to_string(),
+            source,
+        }
+    }
+
+    // Creates a new `APIError` for internal errors.
+    pub fn internal_error(id: Option<String>, title: &str, details: &str, source: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::INTERNAL_SERVER_ERROR,
+            title,
+            details,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for database issues.
+    pub fn db_error(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::internal_error(id, "Database error", message, source)
+    }
+
+    /// Creates a new `APIError` for no-content issues.
+    pub fn not_found(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::NOT_FOUND,
+            "Content Not Found",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for a request body whose content is rejected.
+    pub fn invalid_attribute(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "Invalid Attribute",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Creates a new `APIError` for a resource that already exists.
+    pub fn conflict(id: Option<String>, source: &str, message: &str) -> Self {
+        Self::new(
+            id,
+            StatusCode::CONFLICT,
+            "Conflict",
+            message,
+            APIErrorSource::Pointer(source.into()),
+        )
+    }
+
+    /// Returns the APIError status.
+    pub fn status(&self) -> String {
+        self.status.clone()
+    }
 }
 
 /// Error objects MUST be returned as an array keyed by errors in the top level of a
 /// JSON:API document.
-#[derive(Deserialize, Serialize, ToSchema)]
+#[derive(Deserialize, Serialize, Debug, ToSchema)]
 pub struct APIErrors {
     pub errors: Vec<APIError>,
 }
 
+impl APIErrors {
+    /// Creates a new `APIErrors`.
+    pub fn new(errors: &[APIError]) -> Self {
+        Self {
+            errors: errors.to_vec(),
+        }
+    }
+}
+
+impl From<APIError> for APIErrors {
+    fn from(value: APIError) -> Self {
+        APIErrors {
+            errors: vec![value],
+        }
+    }
+}
+
+/// Response for an operation reading or updating a resource that may not exist.
 #[allow(dead_code)]
-#[derive(Serialize, IntoResponses, ToSchema)]
-pub(crate) enum ErrorResponses {
-    /// Bad Request
-    #[response(
-        status = 400,
-        description = "The request was formatted incorrectly or missing required parameters.",
-        example = json!({
-          "errors": [
-          {
-            "details": "the request was formatted incorrectly or missing required parameters",
-            "id": "blfwkg8nvHcEJnQ=",
-            "source": {"parameter": "status"},
-            "status": "400",
-            "title": "Bad Request"
-          }
-        ]})
-    )]
-    BadRequest(APIErrors),
-    /// Unauthorized
-    #[response(
-      status = 401,
-      description = "The request has not been fulfilled because it lacks valid authentication credentials for the target resource.",
-      example = json!({
-        "errors": [
-        {
-          "details": "invalid authentication credentials to access the specified resource",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-          "status": "401",
-          "title": "Unauthorized"
-        }
-      ]})
-  )]
-    Unauthorized(APIErrors),
-    /// Forbidden
-    #[response(
-      status = 403,
-      description = "Forbidden to make the request. Most likely this indicates an issue with the credentials or permissions.",
-      example = json!({
-        "errors": [
-        {
-          "details": "access to the requested resource is forbidden",
-          "id": "blfwkg8nvHcEJnQ=",
-          "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
-          "status": "403",
-          "title": "Forbidden"
-        }
-      ]})
-  )]
-    Forbidden(APIErrors),
+#[derive(IntoResponses)]
+pub(crate) enum NotFoundResponse {
     /// Item Not Found
     #[response(
         status = 404,
@@ -455,7 +499,7 @@ pub(crate) enum ErrorResponses {
             {
               "details": "the resource was not found",
               "id": "blfwkg8nvHcEJnQ=",
-              "source": {"pointer": "/bnas/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
+              "source": {"pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"},
               "status": "404",
               "title": "Item Not Found"
             }
@@ -464,15 +508,158 @@ pub(crate) enum ErrorResponses {
     NotFound(APIErrors),
 }
 
+/// Highest page number a client can request.
+const MAX_PAGE: u64 = 65536;
+
+/// First year with BNA results.
+pub(crate) const FIRST_BNA_YEAR: i32 = 2017;
+
+/// Last year that can be requested.
+pub(crate) const LAST_BNA_YEAR: i32 = 2029;
+
+/// Deserializes a BNA year, between `FIRST_BNA_YEAR` and `LAST_BNA_YEAR`.
+pub(crate) fn deserialize_bna_year<'de, D>(deserializer: D) -> Result<i32, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let year = i32::deserialize(deserializer)?;
+    if (FIRST_BNA_YEAR..=LAST_BNA_YEAR).contains(&year) {
+        Ok(year)
+    } else {
+        Err(serde::de::Error::custom(format!(
+            "the year must be between {FIRST_BNA_YEAR} and {LAST_BNA_YEAR}"
+        )))
+    }
+}
+
+/// Response for an operation creating a resource that may already exist.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum ConflictResponse {
+    /// Conflict
+    #[response(
+        status = 409,
+        description = "The resource already exists.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the resource already exists",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"pointer": "/cities"},
+            "status": "409",
+            "title": "Conflict"
+          }
+        ]})
+    )]
+    Conflict(APIErrors),
+}
+
+/// Response for an operation receiving parameters or a body that may be invalid.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum BadRequestResponse {
+    /// Bad Request
+    #[response(
+        status = 400,
+        description = "The request was formatted incorrectly: an invalid path or query parameter, or a body that is not valid JSON.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the request was formatted incorrectly",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"parameter": "status"},
+            "status": "400",
+            "title": "Bad Request"
+          }
+        ]})
+    )]
+    BadRequest(APIErrors),
+}
+
+/// Response for an operation receiving a body without the JSON content type.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum UnsupportedMediaTypeResponse {
+    /// Unsupported Media Type
+    #[response(
+        status = 415,
+        description = "The request body was not sent with the `application/json` content type.",
+        example = json!({
+          "errors": [
+          {
+            "details": "Expected request with `Content-Type: application/json`",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"header": "content-type"},
+            "status": "415",
+            "title": "Invalid Request Body"
+          }
+        ]})
+    )]
+    UnsupportedMediaType(APIErrors),
+}
+
+/// Response for an operation receiving a body whose content may be rejected.
+#[allow(dead_code)]
+#[derive(IntoResponses)]
+pub(crate) enum UnprocessableEntityResponse {
+    /// Unprocessable Entity
+    #[response(
+        status = 422,
+        description = "The request body is valid JSON, but its content is rejected: a missing or mistyped field, or a value that does not exist. `details` names the first invalid field.",
+        example = json!({
+          "errors": [
+          {
+            "details": "the country is not covered by the BNA: Narnia",
+            "id": "blfwkg8nvHcEJnQ=",
+            "source": {"pointer": "/cities"},
+            "status": "422",
+            "title": "Invalid Attribute"
+          }
+        ]})
+    )]
+    UnprocessableEntity(APIErrors),
+}
+
+/// Deserializes a page number, between 1 and `MAX_PAGE`.
+pub(crate) fn deserialize_page<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let page = Option::<u64>::deserialize(deserializer)?;
+    match page {
+        Some(0) => Err(serde::de::Error::custom("pages start at 1")),
+        Some(p) if p > MAX_PAGE => Err(serde::de::Error::custom(format!(
+            "pages go up to {MAX_PAGE}"
+        ))),
+        _ => Ok(page),
+    }
+}
+
+/// Deserializes a page size, between 1 and `MAX_PAGE_SIZE`.
+pub(crate) fn deserialize_page_size<'de, D>(deserializer: D) -> Result<Option<u64>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let page_size = Option::<u64>::deserialize(deserializer)?;
+    match page_size {
+        Some(s) if !(1..=MAX_PAGE_SIZE).contains(&s) => Err(serde::de::Error::custom(format!(
+            "the page size must be between 1 and {MAX_PAGE_SIZE}"
+        ))),
+        _ => Ok(page_size),
+    }
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
 pub(crate) struct PaginationParameters {
     /// The number of items per page
     #[param(minimum = 1, maximum = 100, example = 25)]
+    #[serde(default, deserialize_with = "deserialize_page_size")]
     page_size: Option<u64>,
-    /// The result page being returned
+    /// The result page being returned, starting at 1. A page past the last one returns an empty list.
     #[param(minimum = 1, maximum = 65536, example = 5)]
+    #[serde(default, deserialize_with = "deserialize_page")]
     page: Option<u64>,
 }
 
@@ -480,25 +667,18 @@ impl Default for PaginationParameters {
     fn default() -> Self {
         Self {
             page_size: Some(DEFAULT_PAGE_SIZE),
-            page: Some(0),
+            page: Some(1),
         }
     }
 }
 
 impl PaginationParameters {
     pub fn page_size(&self) -> u64 {
-        match self.page_size {
-            Some(value) => match value {
-                0 => 1,
-                1..=MAX_PAGE_SIZE => value,
-                _ => MAX_PAGE_SIZE,
-            },
-            None => DEFAULT_PAGE_SIZE,
-        }
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
     }
 
     pub fn page(&self) -> u64 {
-        self.page.unwrap_or_default()
+        self.page.unwrap_or(1)
     }
 }
 
@@ -529,88 +709,69 @@ impl From<OrderDirection> for sea_orm::Order {
     }
 }
 
-/// Sorting parameters shared across all list endpoints.
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[into_params(parameter_in = Query)]
-pub(crate) struct SortParameters {
-    /// Field to sort by.
-    #[param(example = "created_at")]
-    sort_by: Option<String>,
+/// Pagination headers of every list, with their description.
+const PAGINATION_HEADERS: [(&str, &str, bool); 7] = [
+    (
+        "link",
+        "Links to the `first`, `prev`, `next`, and `last` pages (RFC 8288), \
+        pointing at the same pages as the `x-` headers and keeping the other query \
+        parameters.",
+        false,
+    ),
+    ("x-page", "The requested page, starting at 1.", true),
+    ("x-per-page", "The number of items per page.", true),
+    ("x-total", "The total number of items.", true),
+    (
+        "x-total-pages",
+        "The number of pages holding items, 0 for an empty list.",
+        true,
+    ),
+    (
+        "x-prev-page",
+        "The page before the requested one, at least 1. A page past the last one \
+        navigates like the last page.",
+        true,
+    ),
+    (
+        "x-next-page",
+        "The page after the requested one, at most the last page (1 for an empty \
+        list). A page past the last one navigates like the last page.",
+        true,
+    ),
+];
 
-    /// Sort direction (`asc` or `desc`).
-    #[param(example = "desc")]
-    order_direction: Option<OrderDirection>,
-
-    /// Fetch the latest entry.
-    /// When specified, it ignores the `sort_by` and `order_direction` parameters.
-    /// This parameter does not apply to all entities.
-    #[param(example = "true")]
-    latest: Option<bool>,
-}
-
-impl Default for SortParameters {
-    fn default() -> Self {
-        Self {
-            sort_by: Some(String::from("created_at")),
-            order_direction: Some(OrderDirection::default()),
-            latest: Some(false),
+/// Documents the pagination headers on the success response of every list.
+///
+/// A list is an operation accepting the `page` query parameter.
+pub fn document_pagination_headers(api: &mut OpenApi) {
+    for item in api.paths.paths.values_mut() {
+        let Some(operation) = item.get.as_mut() else {
+            continue;
+        };
+        let is_list = operation
+            .parameters
+            .iter()
+            .flatten()
+            .any(|p| p.name == "page" && matches!(p.parameter_in, ParameterIn::Query));
+        if !is_list {
+            continue;
         }
-    }
-}
-
-/// List parameters combining sorting and pagination.
-#[allow(dead_code)]
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[schema(as = ListParameters)]
-pub(crate) struct ListParams {
-    #[serde(flatten)]
-    pagination: Option<PaginationParameters>,
-
-    #[serde(flatten)]
-    sorting: Option<SortParameters>,
-}
-
-#[derive(Debug, Deserialize, IntoParams, ToSchema)]
-#[into_params(parameter_in = Query)]
-pub(crate) struct ListParameters {
-    #[param(minimum = 1, maximum = 65536, example = 5)]
-    page: Option<u64>,
-    #[param(minimum = 1, maximum = 100, example = 25)]
-    page_size: Option<u64>,
-    #[param(example = "created_at")]
-    sort_by: Option<String>,
-    #[param(example = "desc")]
-    order_direction: Option<OrderDirection>,
-    #[param(example = "true")]
-    latest: Option<bool>,
-}
-
-impl ListParameters {
-    pub fn page(&self) -> u64 {
-        self.page.unwrap_or_default()
-    }
-
-    pub fn page_size(&self) -> u64 {
-        match self.page_size {
-            Some(value) => match value {
-                0 => 1,
-                1..=MAX_PAGE_SIZE => value,
-                _ => MAX_PAGE_SIZE,
-            },
-            None => DEFAULT_PAGE_SIZE,
+        let Some(RefOr::T(response)) = operation.responses.responses.get_mut("200") else {
+            continue;
+        };
+        for (name, description, is_integer) in PAGINATION_HEADERS {
+            let schema_type = if is_integer {
+                Type::Integer
+            } else {
+                Type::String
+            };
+            response.headers.insert(
+                name.to_string(),
+                HeaderBuilder::new()
+                    .schema(Object::with_type(schema_type))
+                    .description(Some(description))
+                    .build(),
+            );
         }
-    }
-
-    pub fn sort_by(&self) -> String {
-        self.sort_by.clone().unwrap_or("created_at".to_string())
-    }
-
-    pub fn order_direction(&self) -> OrderDirection {
-        self.order_direction.clone().unwrap_or_default()
-    }
-
-    pub fn latest(&self) -> bool {
-        self.latest.unwrap_or_default()
     }
 }
