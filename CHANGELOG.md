@@ -135,6 +135,11 @@ and this project adheres to
 - Every list now has a stable order, so items are no longer repeated or skipped
   between pages. The ratings, pipelines, US states, and submissions had none,
   and the sorted lists had no tie-breaker.
+- A `500 Internal Server Error` now holds the request path in `source.pointer`
+  and a message in `details`, and the cause goes to the logs. It used to hold
+  `Unknown source` and empty details, and logged nothing unless the log level
+  was `debug`. `GET /reports` and `GET /reports/{year}` return it on a database
+  error instead of panicking.
 - Updating a pipeline with an unknown `status` or `step` now returns
   `422 Unprocessable Entity` instead of `500 Internal Server Error`.
 - Updating a pipeline now applies the documented `start_time`, which was

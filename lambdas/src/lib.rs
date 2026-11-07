@@ -2,8 +2,9 @@ pub mod core;
 
 use crate::core::resource::schema::{APIError, APIErrors};
 use axum::{
-    extract::{FromRequestParts, OriginalUri},
+    extract::{FromRequestParts, OriginalUri, Request},
     http::request::Parts,
+    middleware::Next,
     response::IntoResponse,
 };
 use bnacore::aws::get_aws_secrets_value;
@@ -16,12 +17,15 @@ use sea_orm::{Database, DatabaseConnection, DbErr};
 use serde::Serialize;
 use serde_json::json;
 use std::env;
-use tracing::debug;
+use tracing::{debug, error};
 
 /// Maximum number of items allowed to be returned by a query at once.
 pub const MAX_PAGE_SIZE: u64 = 100;
 /// Number of items to return per page if no argument was provided.
 pub const DEFAULT_PAGE_SIZE: u64 = 50;
+
+/// Details of an internal error, which must not leak its cause to the client.
+const INTERNAL_ERROR_DETAILS: &str = "the request could not be completed";
 
 /// Global static database connection.
 pub static DB_CONN: OnceCell<DatabaseConnection> = OnceCell::new();
@@ -253,10 +257,6 @@ pub enum ExecutionError {
     #[error("database error: {0:?}")]
     DatabaseError(#[from] sea_orm::DbErr),
 
-    /// Unexpected error.
-    #[error("unexpected error: {0} {1}")]
-    Unexpected(String, String),
-
     /// Entry not found.
     #[error("entry not found at {1}: {2}")]
     NotFound(Option<String>, String, String),
@@ -274,7 +274,11 @@ pub enum ExecutionError {
 impl From<ExecutionError> for APIError {
     fn from(value: ExecutionError) -> Self {
         match value {
-            ExecutionError::DatabaseError(_) => APIError::db_error(None, "Unknown source", ""),
+            // A database error does not know its request: `complete_internal_error`
+            // answers with the source, and the details stay in the logs.
+            ExecutionError::DatabaseError(_) => {
+                APIError::db_error(None, "/", INTERNAL_ERROR_DETAILS)
+            }
             ExecutionError::NotFound(id, source, message) => {
                 APIError::not_found(id, &source, &message)
             }
@@ -284,12 +288,6 @@ impl From<ExecutionError> for APIError {
             ExecutionError::InvalidAttribute(id, source, message) => {
                 APIError::invalid_attribute(id, &source, &message)
             }
-            _ => APIError::internal_error(
-                None,
-                "Internal Error",
-                "Unknown details",
-                "Unknown source",
-            ),
         }
     }
 }
@@ -302,6 +300,9 @@ impl From<ExecutionError> for APIErrors {
 
 impl IntoResponse for ExecutionError {
     fn into_response(self) -> axum::response::Response {
+        if matches!(self, ExecutionError::DatabaseError(_)) {
+            error!("{self}");
+        }
         let api_error = APIError::from(self);
         let api_errors = APIErrors::from(api_error);
         let status = if api_errors.errors.len() == 1 {
@@ -317,6 +318,25 @@ impl IntoResponse for ExecutionError {
             .body(json!(api_errors).to_string().into())
             .unwrap()
     }
+}
+
+/// Answers an internal error with the request it belongs to, as every error has
+/// the path of its request as its source.
+pub async fn complete_internal_error(
+    ctx: Context,
+    request: Request,
+    next: Next,
+) -> axum::response::Response {
+    let response = next.run(request).await;
+    if response.status() != StatusCode::INTERNAL_SERVER_ERROR {
+        return response;
+    }
+    let api_error = APIError::db_error(ctx.request_id(), &ctx.source(), INTERNAL_ERROR_DETAILS);
+    Response::builder()
+        .status(StatusCode::INTERNAL_SERVER_ERROR)
+        .header(header::CONTENT_TYPE, "application/json")
+        .body(json!(APIErrors::from(api_error)).to_string().into())
+        .unwrap()
 }
 
 pub struct Context {
@@ -364,6 +384,54 @@ impl Context {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use axum::{
+        body::{to_bytes, Body},
+        middleware::from_fn,
+        routing::get,
+        Router,
+    };
+    use sea_orm::DbErr;
+    use serde_json::Value;
+    use tower::ServiceExt;
+
+    /// Returns the status and the first error of a request to an app answering
+    /// with an execution error.
+    async fn first_error(error: fn() -> ExecutionError) -> (StatusCode, Value) {
+        let app = Router::new()
+            .route(
+                "/ratings/{rating_id}",
+                get(move || async move { Err::<(), _>(error()) }),
+            )
+            .layer(from_fn(complete_internal_error));
+        let request = Request::get("/ratings/1").body(Body::empty()).unwrap();
+        let response = app.oneshot(request).await.unwrap();
+        let status = response.status();
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let errors: Value = serde_json::from_slice(&body).unwrap();
+        (status, errors["errors"][0].clone())
+    }
+
+    #[tokio::test]
+    async fn test_database_error_points_at_the_request() {
+        let (status, error) =
+            first_error(|| ExecutionError::DatabaseError(DbErr::Custom("secret".to_string())))
+                .await;
+        assert_eq!(status, StatusCode::INTERNAL_SERVER_ERROR);
+        assert_eq!(error["status"], "500");
+        assert_eq!(error["source"]["pointer"], "/ratings/1");
+        assert_eq!(error["details"], "the request could not be completed");
+    }
+
+    #[tokio::test]
+    async fn test_other_errors_keep_their_response() {
+        let (status, error) = first_error(|| {
+            ExecutionError::NotFound(None, "/elsewhere".to_string(), "not here".to_string())
+        })
+        .await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+        assert_eq!(error["source"]["pointer"], "/elsewhere");
+        assert_eq!(error["details"], "not here");
+    }
 
     #[test]
     fn test_paginatron_with_different_page_size() {

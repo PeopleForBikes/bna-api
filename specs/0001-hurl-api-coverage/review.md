@@ -24,7 +24,6 @@ reproduced against the local API.
 | R-10 | Minor    | Bodies accept undocumented fields                 | Fixed                   |
 | R-12 | Minor    | `latest=true` reports misleading headers          | Open                    |
 | R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |
-| R-14 | Minor    | 500 sources and report failures break the rule    | Open                    |
 | R-15 | Minor    | Some requests lack a comment or a value assertion | Fixed                   |
 | R-16 | Minor    | The suite will start failing from 2029            | Open                    |
 | R-17 | Minor    | The verification records predate the latest code  | Fixed                   |
@@ -112,12 +111,6 @@ price and `x-page` echoes a `page` that is ignored (`price/db.rs`,
 
 Nine separate inserts (`ratings/adaptor.rs`): a failure partway leaves a
 `summary` row. Wrap them in a transaction. The code predates this feature.
-
-### R-14 500 sources and report failures break the rule
-
-500 errors report `source.pointer: "Unknown source"` with empty details
-(`lib.rs`), against M-42, and `.expect("reports")` panics on a database error
-instead of returning `APIErrors` (`reports/endpoint.rs`), against M-01.
 
 ### R-15 Some requests lack a comment or a value assertion
 

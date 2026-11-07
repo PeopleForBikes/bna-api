@@ -48,6 +48,7 @@ path = "src/main.rs"
 
 [dev-dependencies]
 color-eyre = { workspace = true }
+tower = { workspace = true, features = ["util"] }
 
 [package.metadata.lambda.deploy]
 memory = 128

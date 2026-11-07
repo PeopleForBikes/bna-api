@@ -1,5 +1,7 @@
+use axum::middleware;
 use entity::wrappers::{BikeLaneType, BnaRegion};
 use lambda_http::{run, tracing, Error};
+use lambdas::complete_internal_error;
 use lambdas::core::resource::{
     cities::{self, ApprovalStatus},
     pipelines, price, ratings, reports,
@@ -169,6 +171,7 @@ async fn main() -> Result<(), Error> {
         .merge(reports::endpoint::routes())
         .merge(system::endpoint::routes())
         .merge(usstates::endpoint::routes())
+        .layer(middleware::from_fn(complete_internal_error))
         .layer(TraceLayer::new_for_http())
         .split_for_parts();
     document_pagination_headers(&mut api);

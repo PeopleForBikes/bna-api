@@ -30,7 +30,7 @@ pub fn routes() -> OpenApiRouter {
 )]
 async fn get_reports() -> Result<StreamBodyAs<'static>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let ratings = get_reports_adaptor(db).await.expect("reports");
+    let ratings = get_reports_adaptor(db).await?;
     let stream = stream::iter(ratings);
     Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
@@ -55,7 +55,7 @@ async fn get_reports_year(
     ApiPath(ReportYearPath { year }): ApiPath<ReportYearPath>,
 ) -> Result<StreamBodyAs<'static>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    let ratings = get_report_adaptor(db, year).await.expect("reports");
+    let ratings = get_report_adaptor(db, year).await?;
     let stream = stream::iter(ratings);
     Ok(StreamBodyAs::new(
         CsvStreamFormat::new(true, b','),
