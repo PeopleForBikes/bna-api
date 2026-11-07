@@ -82,6 +82,10 @@ just test-localhost-schemathesis
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
   `just regenerate-all` (or `regenerate-all-no-cargo` to keep
   `bnaclient/Cargo.toml` from being auto-updated).
+- **`specs/learnings/`** (at the root and in workspace members, e.g.
+  `lambdas/specs/learnings/`) — documented solutions to past problems and team
+  decisions, by category, with frontmatter (`modules`, `tags`); relevant when
+  working in those areas.
 
 ### Resource module pattern (`lambdas/src/core/resource/<name>/`)
 

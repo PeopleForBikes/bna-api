@@ -8,6 +8,7 @@ coreservices
 dbdump
 dbml
 fips
+frontmatter
 Paginatron
 peopleforbikes
 pgadmin
