@@ -353,6 +353,7 @@ COPY public.bna_pipeline (state_machine_id, step, sqs_message, fargate_price_id,
 f0000000-0000-4000-8000-00000000b001	Setup	{"city": "Utrecht", "country": "Netherlands", "fips_code": "0", "region": "Netherlands"}	\N	\N	\N	Pending	2025-05-01 10:00:00+00	\N	\N
 f0000000-0000-4000-8000-00000000b002	Analysis	{"city": "Columbia", "country": "United States", "fips_code": "2915670", "region": "Missouri"}	\N	arn:aws:ecs:us-west-2:123456789012:task/bna/00000000000000000000000000000b02	united states/missouri/columbia/25.05	Processing	2025-05-02 10:00:00+00	\N	\N
 f0000000-0000-4000-8000-00000000b003	Cleanup	{"city": "Chattanooga", "country": "United States", "fips_code": "4714000", "region": "Tennessee"}	1	arn:aws:ecs:us-west-2:123456789012:task/bna/00000000000000000000000000000b03	united states/tennessee/chattanooga/25.05	Completed	2025-05-03 10:00:00+00	2025-05-03 14:47:32+00	0.63749
+f0000000-0000-4000-8000-00000000b004	Setup	"{\\"city\\": \\"Oshawa\\", \\"country\\": \\"Canada\\", \\"fips_code\\": \\"0\\"}"	\N	\N	\N	Pending	2025-05-04 10:00:00+00	\N	\N
 \.
 
 

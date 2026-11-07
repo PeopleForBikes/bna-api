@@ -112,7 +112,8 @@ VALUES
 ('666bddf7-5e3b-4def-ad36-960f805877cb', 7.9, 38.2, 52.7, 3.1, 0.0),
 ('f0000000-0000-4000-8000-00000000a001', 25.0, 80.5, 140.3, 0.0, 35.8);
 
--- Pipelines: one per status.
+-- Pipelines: one per status, and one with a message stored double-encoded, as
+-- messages sent as a string used to be.
 INSERT INTO public.bna_pipeline (
     state_machine_id, step, sqs_message, fargate_price_id, fargate_task_arn,
     s3_bucket, status, start_time, end_time, cost
@@ -137,6 +138,11 @@ INSERT INTO public.bna_pipeline (
     'arn:aws:ecs:us-west-2:123456789012:task/bna/00000000000000000000000000000b03',
     'united states/tennessee/chattanooga/25.05', 'Completed',
     '2025-05-03 10:00:00+00', '2025-05-03 14:47:32+00', 0.63749
+),
+(
+    'f0000000-0000-4000-8000-00000000b004', 'Setup',
+    '"{\"city\": \"Oshawa\", \"country\": \"Canada\", \"fips_code\": \"0\"}"',
+    NULL, NULL, NULL, 'Pending', '2025-05-04 10:00:00+00', NULL, NULL
 );
 
 -- Submissions: one per approval status.

@@ -13,7 +13,7 @@ reproduced against the local API.
 | ID   | Severity | Finding                                           | Status                  |
 | ---- | -------- | ------------------------------------------------- | ----------------------- |
 | R-01 | Major    | Client input still produces 500                   | Fixed                   |
-| R-02 | Major    | `GET /pipelines/bna` skips the message decoding   | Open                    |
+| R-02 | Major    | `GET /pipelines/bna` skips the message decoding   | Fixed                   |
 | R-03 | Major    | `Country` enum offers values the API rejects      | Open                    |
 | R-04 | Major    | City `state` and `region` fields are confusing    | Moved to its own branch |
 | R-05 | Major    | No test run exists for a tagged commit            | Open                    |

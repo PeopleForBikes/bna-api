@@ -12,6 +12,17 @@ header "x-total" toInt >= 3
 header "x-total-pages" == "{{pipelines_total}}"
 header "link" exists
 
+# The list and the read return a message stored double-encoded as an object.
+GET {{host}}/pipelines/bna?page_size={{max_page_size}}
+HTTP 200
+[Asserts]
+jsonpath "$[?(@.state_machine_id == 'f0000000-0000-4000-8000-00000000b004')].sqs_message.city" == "Oshawa"
+
+GET {{host}}/pipelines/bna/f0000000-0000-4000-8000-00000000b004
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.city" == "Oshawa"
+
 # Rejects an invalid query string parameter with a JSON error.
 GET {{host}}/pipelines/bna?page=abc
 HTTP 400

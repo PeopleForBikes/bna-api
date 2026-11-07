@@ -213,9 +213,8 @@ impl Display for BnaPipelineStep {
     }
 }
 
-#[allow(dead_code)]
-#[derive(ToSchema)]
-pub(crate) struct BnaPipelines(Vec<BnaPipeline>);
+#[derive(ToSchema, Serialize)]
+pub(crate) struct BnaPipelines(pub(crate) Vec<BnaPipeline>);
 
 #[cfg(test)]
 mod tests {
