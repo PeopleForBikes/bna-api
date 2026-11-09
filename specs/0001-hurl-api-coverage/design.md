@@ -48,11 +48,12 @@ Each entry lists the observed behavior, the specification, and its resolution.
 **All resolutions M-01 to M-27 were approved by the team on 2026-10-19**, as
 proposed (the alternative noted under M-07 was not retained). The resolutions
 found during implementation (M-28 to M-41) were decided on 2026-10-20, and M-02
-and M-42 during the review on 2026-11-05, and M-43 on 2026-11-07, as recorded in
-each entry. `Code` means the implementation changes; `Spec` means the
-specification changes (through the `utoipa` annotations, then
-`just regenerate-all-no-cargo`). Entries marked **client-visible** change
-behavior for API consumers and must be called out in the release notes.
+and M-42 during the review on 2026-11-05, M-43 on 2026-11-07, and M-46 and M-47
+while fixing R-12 on 2026-11-09, as recorded in each entry. `Code` means the
+implementation changes; `Spec` means the specification changes (through the
+`utoipa` annotations, then `just regenerate-all-no-cargo`). Entries marked
+**client-visible** change behavior for API consumers and must be called out in
+the release notes.
 
 ### Cross-cutting
 
@@ -150,10 +151,31 @@ behavior for API consumers and must be called out in the release notes.
 - **M-12 Ignored `latest`.** `latest` has no effect on `GET /cities` and
   `GET /cities/summary/latest` (verified: the cities adaptor never reads it). It
   works on `GET /prices/fargate`. Proposed: **Spec**, remove the parameter from
-  the two city operations.
+  the two city operations. `GET /prices/fargate` later lost it too (M-46).
 - **M-13 Free-form submission `status`.** `status=Bogus` returns 200 with an
   empty list. Valid values are `Pending`, `Approved`, `Rejected`. Proposed:
   **Code + Spec**, make it an enum and reject unknown values with 400.
+- **M-46 `latest` on the Fargate prices.** `GET /prices/fargate?latest=true`
+  returns one price, but the pagination headers describe the whole list:
+  `x-total` counts every price, `x-page` and `x-per-page` echo the ignored
+  `page` and `page_size`, and the `link` header points at further pages
+  returning the same price. It also sorts by `sort_by`, so
+  `latest=true&sort_by=per_second` returns the most expensive price instead of
+  the latest one. Found during the review (R-12); both observed on 2026-11-09.
+  Resolution: **Code + Spec**, the latest price is a single resource, not a page
+  of a list: `GET /prices/fargate/latest` returns the most recent price as a
+  `FargatePrice` object, the highest identifier breaking a tie, and the `latest`
+  parameter is removed from `GET /prices/fargate`. The operation documents 200
+  only: the migrations insert the first price and no operation deletes one, so
+  an empty table is a broken database, answered with 500. A fourth fixture
+  price, the newest and the cheapest, tells the latest price from the most
+  expensive one. Breaking, for 2.0.0. Client-visible.
+- **M-47 Unknown query parameters.** Every operation taking query parameters
+  ignores the ones it does not know, so a misspelled parameter returns 200 as if
+  it had not been sent, and `latest=true` would return the whole price list once
+  M-46 removes the parameter. Found while fixing R-12. Resolution: **Code**,
+  reject an unknown query parameter with 400, `source.parameter` naming it.
+  Client-visible.
 
 ### Cities and submissions
 
@@ -411,7 +433,8 @@ The dump becomes the output of a committed, reproducible recipe:
    - 3 pipelines: one `Pending`, one `Processing`, one `Completed` with cost and
      end time.
    - 3 submissions: one per status (`Pending`, `Approved`, `Rejected`).
-   - 3 Fargate prices with distinct dates and values.
+   - 3 Fargate prices with distinct dates and values, and a fourth, the newest
+     and the cheapest (M-46).
    - Measures on at least 2 ratings.
    - 1 city in a country without regions (region equals the country name).
    - Enough cities rated in one early year to test top-N with N of 5.
@@ -512,13 +535,15 @@ No automation blocks the release; the person tagging does.
 After reconciliation, the API follows one rule set, documented in the
 specification and enforced by the suite:
 
-- 400: an invalid path or query parameter, or a body that is not valid JSON.
+- 400: an invalid path or query parameter, an unknown query parameter (M-47), or
+  a body that is not valid JSON.
 - 404: a well-formed request for a resource that does not exist.
 - 409: creating a resource that already exists.
 - 415: a body sent without the JSON content type.
 - 422: valid JSON whose content is rejected, including a value only a check can
   reject (M-02). Only the first invalid field is reported.
-- 500: never expected; the coverage check fails if one is observed.
+- 500: never expected; the coverage check fails if one is observed. Only a
+  broken database produces one, such as an empty Fargate price table (M-46).
 
 Every error has an `APIErrors` body. `source.pointer` is the request path,
 `source.parameter` a query parameter, and `source.header` a header; `details`
@@ -526,9 +551,10 @@ names the invalid field (M-42).
 
 ## Risks
 
-- **Client-visible changes** (M-01, M-05, M-07, M-19, M-21, M-42): clients
-  relying on zero-based pages, clamped page sizes, plain-text errors, or a
-  string `sqs_message` in responses will break. They must be listed in the
+- **Client-visible changes** (M-01, M-05, M-07, M-19, M-21, M-42, M-46, M-47):
+  clients relying on zero-based pages, clamped page sizes, plain-text errors, a
+  string `sqs_message` in responses, `GET /prices/fargate?latest=true`, or
+  unknown query parameters being ignored will break. They must be listed in the
   release notes. The pipeline state machine may keep sending `sqs_message` as a
   string, as long as it holds a JSON object.
 - **No schema validation until Schemathesis is fixed**: response shapes can
