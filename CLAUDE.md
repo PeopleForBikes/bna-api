@@ -76,8 +76,8 @@ just test-localhost-schemathesis
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global
-  `DB_CONN: OnceCell<DatabaseConnection>`, `database_connect*` helpers,
-  and pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
+  `DB_CONN: OnceCell<DatabaseConnection>`, `database_connect*` helpers, and
+  pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
   `just regenerate-all` (or `regenerate-all-no-cargo` to keep
@@ -104,8 +104,8 @@ resources/endpoints should follow it too:
   operation documents exactly the error codes it can return, with
   `BadRequestResponse`, `NotFoundResponse`, `ConflictResponse`, and, when it
   takes a body, `UnsupportedMediaTypeResponse` and
-  `UnprocessableEntityResponse`. `source.pointer` is always the request path, and
-  `details` names the invalid field.
+  `UnprocessableEntityResponse`. `source.pointer` is always the request path,
+  and `details` names the invalid field.
 - `schema.rs` — resource-local request/response types (`ToSchema`, `IntoParams`,
   `IntoResponses`) distinct from the cross-resource types in
   `core/resource/schema.rs` (pagination params, `Country` enum, the error types
@@ -129,7 +129,7 @@ truth. The flow is `generate-oas-31` (runs the Axum binary with
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
 `bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after
 changing any endpoint/schema shape or the workspace version. It ends with
-`git restore bnaclient/Cargo.toml`, which discards *uncommitted* edits to that
+`git restore bnaclient/Cargo.toml`, which discards _uncommitted_ edits to that
 file, so back it up first if you've changed it. The `bnaclient` CI job
 regenerates and fails on any diff.
 
