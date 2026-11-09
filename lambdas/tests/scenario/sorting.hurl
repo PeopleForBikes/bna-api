@@ -47,6 +47,7 @@ jsonpath "$[1].per_second" toFloat <= {{price_2}}
 GET {{host}}/prices/fargate?sort_by=per_second&order_direction=desc
 HTTP 200
 [Captures]
+most_expensive_price_id: jsonpath "$[0].id"
 price_1: jsonpath "$[1].per_second" toFloat
 [Asserts]
 jsonpath "$[0].per_second" toFloat >= {{price_1}}
@@ -60,12 +61,13 @@ newest_price_date: jsonpath "$[0].created_at"
 [Asserts]
 jsonpath "$[1].created_at" <= "{{newest_price_date}}"
 
-# The latest Fargate price is the newest one.
-GET {{host}}/prices/fargate?latest=true
+# The latest Fargate price is the newest one, not the most expensive one.
+GET {{host}}/prices/fargate/latest
 HTTP 200
 [Asserts]
-jsonpath "$" count == 1
-jsonpath "$[0].id" == {{newest_price_id}}
+jsonpath "$.id" == {{newest_price_id}}
+jsonpath "$.id" != {{most_expensive_price_id}}
+jsonpath "$.created_at" == "{{newest_price_date}}"
 
 # Rejects an unknown sort field for the cities.
 GET {{host}}/cities?sort_by=bogus

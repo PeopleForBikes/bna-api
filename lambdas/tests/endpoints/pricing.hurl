@@ -27,6 +27,15 @@ jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.parameter" == "page"
 
+# Rejects `latest` on the list: the latest price has its own operation.
+GET {{host}}/prices/fargate?latest=true
+HTTP 400
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "400"
+jsonpath "$.errors[0].source.parameter" == "latest"
+
 # Rejects an invalid path parameter with a JSON error.
 GET {{host}}/prices/fargate/abc
 HTTP 400

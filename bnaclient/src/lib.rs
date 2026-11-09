@@ -8313,7 +8313,6 @@ impl Client {
     ///Sends a `GET` request to `/prices/fargate`
     ///
     ///Arguments:
-    /// - `latest`: Only return the latest price
     /// - `order_direction`
     /// - `page`: The result page being returned, starting at 1. A page past the
     ///   last one returns an empty list.
@@ -8321,7 +8320,6 @@ impl Client {
     /// - `sort_by`: Field to sort the prices by
     ///```ignore
     /// let response = client.get_prices_fargate()
-    ///    .latest(latest)
     ///    .order_direction(order_direction)
     ///    .page(page)
     ///    .page_size(page_size)
@@ -8331,6 +8329,20 @@ impl Client {
     /// ```
     pub fn get_prices_fargate(&self) -> builder::GetPricesFargate<'_> {
         builder::GetPricesFargate::new(self)
+    }
+
+    ///Get the latest AWS Fargate price, the one used to estimate the cost of a
+    /// new analysis.
+    ///
+    ///Sends a `GET` request to `/prices/fargate/latest`
+    ///
+    ///```ignore
+    /// let response = client.get_price_fargate_latest()
+    ///    .send()
+    ///    .await;
+    /// ```
+    pub fn get_price_fargate_latest(&self) -> builder::GetPriceFargateLatest<'_> {
+        builder::GetPriceFargateLatest::new(self)
     }
 
     ///Get a specific AWS Fargate price used to compute the cost of analysis
@@ -9933,7 +9945,6 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetPricesFargate<'a> {
         client: &'a super::Client,
-        latest: Result<Option<bool>, String>,
         order_direction: Result<Option<types::OrderDirection>, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
@@ -9944,23 +9955,11 @@ pub mod builder {
         pub fn new(client: &'a super::Client) -> Self {
             Self {
                 client: client,
-                latest: Ok(None),
                 order_direction: Ok(None),
                 page: Ok(None),
                 page_size: Ok(None),
                 sort_by: Ok(None),
             }
-        }
-
-        pub fn latest<V>(mut self, value: V) -> Self
-        where
-            V: std::convert::TryInto<bool>,
-        {
-            self.latest = value
-                .try_into()
-                .map(Some)
-                .map_err(|_| "conversion to `bool` for latest failed".to_string());
-            self
         }
 
         pub fn order_direction<V>(mut self, value: V) -> Self
@@ -10009,13 +10008,11 @@ pub mod builder {
         ) -> Result<ResponseValue<types::FargatePrices>, Error<types::ApiErrors>> {
             let Self {
                 client,
-                latest,
                 order_direction,
                 page,
                 page_size,
                 sort_by,
             } = self;
-            let latest = latest.map_err(Error::InvalidRequest)?;
             let order_direction = order_direction.map_err(Error::InvalidRequest)?;
             let page = page.map_err(Error::InvalidRequest)?;
             let page_size = page_size.map_err(Error::InvalidRequest)?;
@@ -10034,7 +10031,6 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("latest", &latest))
                 .query(&progenitor_client::QueryParam::new(
                     "order_direction",
                     &order_direction,
@@ -10056,6 +10052,52 @@ pub mod builder {
                 400u16 => Err(Error::ErrorResponse(
                     ResponseValue::from_response(response).await?,
                 )),
+                _ => Err(Error::UnexpectedResponse(response)),
+            }
+        }
+    }
+
+    ///Builder for [`Client::get_price_fargate_latest`]
+    ///
+    ///[`Client::get_price_fargate_latest`]: super::Client::get_price_fargate_latest
+    #[derive(Debug, Clone)]
+    pub struct GetPriceFargateLatest<'a> {
+        client: &'a super::Client,
+    }
+
+    impl<'a> GetPriceFargateLatest<'a> {
+        pub fn new(client: &'a super::Client) -> Self {
+            Self { client: client }
+        }
+
+        ///Sends a `GET` request to `/prices/fargate/latest`
+        pub async fn send(self) -> Result<ResponseValue<types::FargatePrice>, Error<()>> {
+            let Self { client } = self;
+            let url = format!("{}/prices/fargate/latest", client.baseurl,);
+            let mut header_map = ::reqwest::header::HeaderMap::with_capacity(1usize);
+            header_map.append(
+                ::reqwest::header::HeaderName::from_static("api-version"),
+                ::reqwest::header::HeaderValue::from_static(super::Client::api_version()),
+            );
+            #[allow(unused_mut)]
+            let mut request = client
+                .client
+                .get(url)
+                .header(
+                    ::reqwest::header::ACCEPT,
+                    ::reqwest::header::HeaderValue::from_static("application/json"),
+                )
+                .headers(header_map)
+                .build()?;
+            let info = OperationInfo {
+                operation_id: "get_price_fargate_latest",
+            };
+            client.pre(&mut request, &info).await?;
+            let result = client.exec(request, &info).await;
+            client.post(&result, &info).await?;
+            let response = result?;
+            match response.status().as_u16() {
+                200u16 => ResponseValue::from_response(response).await,
                 _ => Err(Error::UnexpectedResponse(response)),
             }
         }

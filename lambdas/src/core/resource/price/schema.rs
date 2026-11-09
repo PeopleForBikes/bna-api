@@ -45,7 +45,7 @@ impl From<Vec<entity::fargate_price::Model>> for FargatePrices {
     }
 }
 
-/// Parameters of the Fargate price list: pagination, sorting, and latest.
+/// Parameters of the Fargate price list: pagination and sorting.
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
 #[serde(deny_unknown_fields)]
@@ -63,9 +63,6 @@ pub(crate) struct PriceListParameters {
     sort_by: Option<PriceSortBy>,
     #[param(example = "desc")]
     order_direction: Option<OrderDirection>,
-    /// Only return the latest price
-    #[param(example = "true")]
-    latest: Option<bool>,
 }
 
 impl PriceListParameters {
@@ -83,10 +80,6 @@ impl PriceListParameters {
 
     pub fn order_direction(&self) -> OrderDirection {
         self.order_direction.clone().unwrap_or_default()
-    }
-
-    pub fn latest(&self) -> bool {
-        self.latest.unwrap_or_default()
     }
 }
 
