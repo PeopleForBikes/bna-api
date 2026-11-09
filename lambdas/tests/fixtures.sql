@@ -4,17 +4,19 @@
 -- need and the baseline lacks. Keep fixed identifiers and timestamps so the
 -- generated dump stays reproducible.
 
--- Fargate prices: pin the price inserted by the migrations and add two more,
--- so sorting and `latest` can be tested.
+-- Fargate prices: pin the price inserted by the migrations and add three more,
+-- so sorting and the latest price can be tested. The newest price is the
+-- cheapest, so the latest price differs from the most expensive one.
 UPDATE public.fargate_price
 SET created_at = '2024-01-01 00:00:00+00'
 WHERE id = 1;
 
 INSERT INTO public.fargate_price (id, per_second, created_at) VALUES
 (2, 0.0000405, '2025-01-01 00:00:00+00'),
-(3, 0.0000412, '2026-01-01 00:00:00+00');
+(3, 0.0000412, '2026-01-01 00:00:00+00'),
+(4, 0.0000300, '2026-06-01 00:00:00+00');
 
-SELECT pg_catalog.setval('public.fargate_price_id_seq', 3, true);
+SELECT pg_catalog.setval('public.fargate_price_id_seq', 4, true);
 
 -- A city in a country without regions: the region and the state are the
 -- country name.

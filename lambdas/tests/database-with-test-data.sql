@@ -713,6 +713,7 @@ COPY public.fargate_price (id, per_second, created_at) FROM stdin;
 1	0.000038	2024-01-01 00:00:00+00
 2	0.0000405	2025-01-01 00:00:00+00
 3	0.0000412	2026-01-01 00:00:00+00
+4	0.0000300	2026-06-01 00:00:00+00
 \.
 
 
@@ -1428,7 +1429,7 @@ Puerto Rico	PR	77	25
 -- Name: fargate_price_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.fargate_price_id_seq', 3, true);
+SELECT pg_catalog.setval('public.fargate_price_id_seq', 4, true);
 
 
 --
