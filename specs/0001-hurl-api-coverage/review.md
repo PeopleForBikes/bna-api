@@ -22,7 +22,7 @@ reproduced against the local API.
 | R-08 | Major    | Task 4.1 is only partly done                      | Fixed                   |
 | R-09 | Minor    | The specification contradicts itself on codes     | Fixed                   |
 | R-10 | Minor    | Bodies accept undocumented fields                 | Fixed                   |
-| R-12 | Minor    | `latest=true` reports misleading headers          | Open                    |
+| R-12 | Minor    | `latest=true` reports misleading headers          | Fixed                   |
 | R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |
 | R-15 | Minor    | Some requests lack a comment or a value assertion | Fixed                   |
 | R-16 | Minor    | The suite will start failing from 2029            | Open                    |
@@ -103,9 +103,13 @@ now, since the `entity` wrappers stay.
 
 ### R-12 `latest=true` reports misleading headers
 
-`GET /prices/fargate?latest=true` returns one item, but `x-total` counts every
-price and `x-page` echoes a `page` that is ignored (`price/db.rs`,
-`price/endpoint.rs`).
+**Observed.** `GET /prices/fargate?latest=true` returns one item, but `x-total`
+counts every price and `x-page` echoes a `page` that is ignored (`price/db.rs`,
+`price/endpoint.rs`). Reproducing it also showed that `latest=true` sorts by
+`sort_by`, so `sort_by=per_second` returns the most expensive price instead of
+the latest one. Fixed on 2026-11-09 by `GET /prices/fargate/latest`, which
+replaces the parameter (M-46), and by rejecting unknown query parameters, so
+that `latest=true` gets a 400 (M-47).
 
 ### R-13 `POST /ratings` is not transactional
 
@@ -142,7 +146,7 @@ Recorded in the scope of `requirements.md` in `bdd57af`.
   and the `state_abbrev` round trip.
 - `sqs_message: null` clearing the message.
 - `PATCH` of `fargate_price_id`, and of submission fields other than `status`.
-- `order_direction=bogus` and `latest=bogus` returning 400.
+- `order_direction=bogus` returning 400.
 - `measure` values on `GET /ratings` and `GET /ratings/{rating_id}/city`.
 - A city without ratings counting one item in `x-total` (M-37), and the headers
   of an empty list (M-41, only covered by doc tests).
