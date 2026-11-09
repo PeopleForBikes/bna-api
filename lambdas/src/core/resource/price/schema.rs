@@ -48,6 +48,7 @@ impl From<Vec<entity::fargate_price::Model>> for FargatePrices {
 /// Parameters of the Fargate price list: pagination, sorting, and latest.
 #[derive(Debug, Deserialize, IntoParams)]
 #[into_params(parameter_in = Query)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct PriceListParameters {
     /// The result page being returned, starting at 1. A page past the last one returns an empty list.
     #[param(minimum = 1, maximum = 65536, example = 5)]

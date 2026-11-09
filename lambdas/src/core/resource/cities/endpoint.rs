@@ -18,11 +18,12 @@ use crate::{
             CitiesPathParameters,
         },
         schema::{
-            deserialize_bna_year, BadRequestResponse, City, ConflictResponse, NotFoundResponse,
-            PaginationParameters, UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
+            deserialize_bna_year, deserialize_page, deserialize_page_size, BadRequestResponse,
+            City, ConflictResponse, NotFoundResponse, PaginationParameters,
+            UnprocessableEntityResponse, UnsupportedMediaTypeResponse,
         },
     },
-    database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
+    database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron, DEFAULT_PAGE_SIZE,
 };
 use axum::{http::StatusCode, Json};
 use entity::wrappers::{city, submission};
@@ -273,9 +274,33 @@ where
     }
 }
 
+/// Query string parameters of a submission.
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 struct SubmissionParameters {
     pub status: Option<ApprovalStatus>,
+}
+
+/// Query string parameters of the submission list: the status filter and the
+/// pagination, read together so that each one is a known parameter.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct SubmissionListParameters {
+    status: Option<ApprovalStatus>,
+    #[serde(default, deserialize_with = "deserialize_page")]
+    page: Option<u64>,
+    #[serde(default, deserialize_with = "deserialize_page_size")]
+    page_size: Option<u64>,
+}
+
+impl SubmissionListParameters {
+    fn page(&self) -> u64 {
+        self.page.unwrap_or(1)
+    }
+
+    fn page_size(&self) -> u64 {
+        self.page_size.unwrap_or(DEFAULT_PAGE_SIZE)
+    }
 }
 
 #[utoipa::path(
@@ -292,16 +317,15 @@ struct SubmissionParameters {
       BadRequestResponse,
     ))]
 async fn get_cities_submissions(
-    ApiQuery(submission_params): ApiQuery<SubmissionParameters>,
-    ApiQuery(pagination): ApiQuery<PaginationParameters>,
+    ApiQuery(list): ApiQuery<SubmissionListParameters>,
     PageUrl(url): PageUrl,
 ) -> Result<PageFlow<Submissions>, ExecutionError> {
     let db = database_connect_or_init().await?;
     let cities_submissions = get_cities_submissions_adaptor(
         db,
-        submission_params.status.map(|s| s.to_string()),
-        pagination.page(),
-        pagination.page_size(),
+        list.status.as_ref().map(|s| s.to_string()),
+        list.page(),
+        list.page_size(),
     )
     .await?;
     let submissions = cities_submissions
@@ -311,12 +335,7 @@ async fn get_cities_submissions(
         .collect::<Vec<Submission>>();
     let payload = Submissions(submissions);
     Ok(PageFlow::new(
-        Paginatron::new(
-            url,
-            cities_submissions.0,
-            pagination.page(),
-            pagination.page_size(),
-        ),
+        Paginatron::new(url, cities_submissions.0, list.page(), list.page_size()),
         payload,
     ))
 }

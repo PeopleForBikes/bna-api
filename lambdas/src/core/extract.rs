@@ -358,6 +358,14 @@ mod tests {
     }
 
     #[test]
+    fn test_error_path_unknown_field() {
+        assert_eq!(
+            error_path("Failed to deserialize query string: latest: unknown field `latest`, expected one of `page`, `page_size`"),
+            Some(String::from("latest"))
+        );
+    }
+
+    #[test]
     fn test_error_path_without_field() {
         assert_eq!(
             error_path(
