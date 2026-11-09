@@ -1279,13 +1279,6 @@ paths:
           schema:
             $ref: '#/components/schemas/OrderDirection'
           example: desc
-        - name: latest
-          in: query
-          description: Only return the latest price
-          required: false
-          schema:
-            type: boolean
-          example: 'true'
       responses:
         '200':
           description: Fetches a collection of Fargate prices
@@ -1346,6 +1339,21 @@ paths:
                       parameter: status
                     status: '400'
                     title: Bad Request
+  /prices/fargate/latest:
+    get:
+      tags:
+        - price
+      description: >-
+        Get the latest AWS Fargate price, the one used to estimate the cost of a
+        new analysis.
+      operationId: get_price_fargate_latest
+      responses:
+        '200':
+          description: Fetches the most recent Fargate price
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FargatePrice'
   /prices/fargate/{price_id}:
     get:
       tags:

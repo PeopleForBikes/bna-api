@@ -67,11 +67,11 @@ HTTP 200
 jsonpath "$.id" == {{fargate_price_id}}
 
 # Query the latest Fargate price.
-GET {{host}}/prices/fargate?latest=true
+GET {{host}}/prices/fargate/latest
 
 HTTP 200
 [Asserts]
-jsonpath "$" count == 1
+jsonpath "$.id" exists
 
 # Fetch all city reports.
 GET {{host}}/reports

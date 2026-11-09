@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- `GET /prices/fargate/latest` returns the latest Fargate price, the most recent
+  one, as a single `FargatePrice` object. It replaces
+  `GET /prices/fargate?latest=true`.
+
 ### Changed
 
 - Requests with an invalid path parameter, query string parameter, or body now
@@ -35,8 +41,7 @@ and this project adheres to
   out-of-range year used to return `404 Not Found`, and an out-of-range count
   was silently changed to 1 or 100.
 - The `latest` query parameter is no longer documented on `GET /cities` and
-  `GET /cities/summary/latest`: it never had any effect there. It remains on
-  `GET /prices/fargate`.
+  `GET /cities/summary/latest`: it never had any effect there.
 - `sort_by` now only accepts the documented fields, declared as enums in the
   OpenAPI specification: `name`, `country`, `state`, `state_abbrev`, `region`,
   `fips_code`, or `created_at` for the city lists, and `per_second` or
@@ -93,6 +98,15 @@ and this project adheres to
 - The cities now return their `fips_code`, and the OpenAPI specification
   documents it in the city creation body (`CityPost`). The API stored it without
   returning or documenting it.
+
+### Removed
+
+- The `latest` query parameter of `GET /prices/fargate`: use
+  `GET /prices/fargate/latest` instead. A request still sending it is rejected
+  with `400 Bad Request`. With `latest=true`, the list returned one price but
+  its pagination headers counted every price and echoed the ignored `page` and
+  `page_size`, and `sort_by=per_second` made it return the most expensive price
+  instead of the latest one.
 
 ### Fixed
 

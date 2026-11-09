@@ -1,4 +1,6 @@
-use super::adaptor::{get_price_fargate_adaptor, get_prices_fargate_adaptor};
+use super::adaptor::{
+    get_price_fargate_adaptor, get_price_fargate_latest_adaptor, get_prices_fargate_adaptor,
+};
 use crate::core::extract::{ApiPath, ApiQuery, PageUrl};
 use crate::{
     core::resource::{
@@ -16,6 +18,7 @@ const TAG: &str = "price";
 pub fn routes() -> OpenApiRouter {
     OpenApiRouter::new()
         .routes(routes!(get_prices_fargate))
+        .routes(routes!(get_price_fargate_latest))
         .routes(routes!(get_price_fargate))
 }
 
@@ -41,7 +44,6 @@ pub(crate) async fn get_prices_fargate(
         db,
         list.order_direction(),
         &list.sort_by(),
-        list.latest(),
         list.page(),
         list.page_size(),
     )
@@ -51,6 +53,22 @@ pub(crate) async fn get_prices_fargate(
         Paginatron::new(url, total_items, list.page(), list.page_size()),
         payload,
     ))
+}
+
+#[utoipa::path(
+  get,
+  path = "/prices/fargate/latest",
+  description = "Get the latest AWS Fargate price, the one used to estimate the cost of a new analysis.",
+  tag = TAG,
+  responses(
+    (status = OK, description = "Fetches the most recent Fargate price", body = FargatePrice),
+  ))]
+pub(crate) async fn get_price_fargate_latest() -> Result<Json<FargatePrice>, ExecutionError> {
+    let db = database_connect_or_init().await?;
+    get_price_fargate_latest_adaptor(db)
+        .await
+        .map(FargatePrice::from)
+        .map(Json)
 }
 
 #[utoipa::path(
