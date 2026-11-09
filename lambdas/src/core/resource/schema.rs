@@ -652,6 +652,7 @@ where
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct PaginationParameters {
     /// The number of items per page
     #[param(minimum = 1, maximum = 100, example = 25)]

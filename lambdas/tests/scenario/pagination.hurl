@@ -67,6 +67,12 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
 
+# Rejects an unknown query parameter on the ratings.
+GET {{host}}/ratings?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
+
 # Rejects an empty page_size.
 GET {{host}}/ratings?page_size=0
 
@@ -311,6 +317,12 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
 
+# Rejects an unknown query parameter on the cities.
+GET {{host}}/cities?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
+
 # A page past the last one of the cities is empty.
 GET {{host}}/cities?page=65536&page_size=1
 HTTP 200
@@ -348,6 +360,12 @@ GET {{host}}/cities/submissions?page_size=101
 HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects an unknown query parameter on the city submissions.
+GET {{host}}/cities/submissions?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
 
 # A page past the last one of the city submissions is empty.
 GET {{host}}/cities/submissions?page=65536&page_size=1
@@ -387,6 +405,12 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
 
+# Rejects an unknown query parameter on the latest city summaries.
+GET {{host}}/cities/summary/latest?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
+
 # A page past the last one of the latest city summaries is empty.
 GET {{host}}/cities/summary/latest?page=65536&page_size=1
 HTTP 200
@@ -424,6 +448,12 @@ GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page_size=101
 HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects an unknown query parameter on the ratings of a city.
+GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
 
 # A page past the last one of the ratings of a city is empty.
 GET {{host}}/cities/{{country}}/{{region}}/{{name}}/ratings?page=65536&page_size=1
@@ -463,6 +493,12 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
 
+# Rejects an unknown query parameter on the BNA pipelines.
+GET {{host}}/pipelines/bna?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
+
 # A page past the last one of the BNA pipelines is empty.
 GET {{host}}/pipelines/bna?page=65536&page_size=1
 HTTP 200
@@ -501,6 +537,12 @@ HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
 
+# Rejects an unknown query parameter on the Fargate prices.
+GET {{host}}/prices/fargate?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
+
 # A page past the last one of the Fargate prices is empty.
 GET {{host}}/prices/fargate?page=65536&page_size=1
 HTTP 200
@@ -538,6 +580,12 @@ GET {{host}}/usstates?page_size=101
 HTTP 400
 [Asserts]
 jsonpath "$.errors[0].source.parameter" == "page_size"
+
+# Rejects an unknown query parameter on the US states.
+GET {{host}}/usstates?bogus=1
+HTTP 400
+[Asserts]
+jsonpath "$.errors[0].source.parameter" == "bogus"
 
 # A page past the last one of the US states is empty.
 GET {{host}}/usstates?page=65536&page_size=1

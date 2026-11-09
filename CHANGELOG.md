@@ -42,6 +42,10 @@ and this project adheres to
   `fips_code`, or `created_at` for the city lists, and `per_second` or
   `created_at` for the Fargate prices. Other values are rejected with
   `400 Bad Request` instead of being silently ignored.
+- The lists, and `GET /cities/submissions/{submission_id}`, now reject a query
+  parameter they do not take with `400 Bad Request`, the error `source` naming
+  it in `parameter`. Unknown parameters, misspelled ones included, used to be
+  silently ignored.
 - `GET /reports/{year}` now rejects a year outside 2017 to 2029, the documented
   bounds, with `400 Bad Request`, now documented. It used to return an empty
   report.
