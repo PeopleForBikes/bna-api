@@ -75,9 +75,13 @@ db-reseed: db-fresh db-seed
 db-seed:
     cargo run --example seeder
 
-# Generate PostgreSQL dump from dbml.
+# Generate the PostgreSQL schema from dbml.
+# The output has no generation date, so it only changes with the schema.
 dbml-sql:
-    npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} -o {{ sql_dump }}
+    #!/usr/bin/env bash
+    set -euo pipefail
+    sql=$(npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
+    printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql" > {{ sql_dump }}
 
 # Convert PostgreSQL dump to dbml.
 dbml-from-sql:

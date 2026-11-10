@@ -1,6 +1,4 @@
--- SQL dump generated using DBML (dbml.dbdiagram.io)
--- Database: PostgreSQL
--- Generated at: 2026-11-10T16:24:30.104Z
+-- Generated from docs/database.dbml by `just dbml-sql`. Do not edit.
 
 CREATE TABLE "approval_status" (
   "status" character varying PRIMARY KEY NOT NULL
