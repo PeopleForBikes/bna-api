@@ -9,6 +9,7 @@ use entity::{
 };
 use sea_orm::{
     ActiveModelTrait, ActiveValue, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter,
+    TransactionTrait,
 };
 use tracing::info;
 use uuid::Uuid;
@@ -61,10 +62,15 @@ pub(crate) async fn post_ratings_adaptor(
     rating: RatingPost,
     ctx: Context,
 ) -> Result<Bna, ExecutionError> {
+    // Write the rating in a single transaction, so that a failure leaves no
+    // partial rating behind. Returning early drops the transaction, which rolls
+    // it back.
+    let txn = db.begin().await?;
+
     // Ensure the rated city exists.
     if city::Entity::find()
         .filter(city::Column::Id.eq(rating.city_id))
-        .one(db)
+        .one(&txn)
         .await?
         .is_none()
     {
@@ -118,7 +124,7 @@ pub(crate) async fn post_ratings_adaptor(
             .retail
             .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
-    info!("{:?}", people);
+    info!("{:?}", retail);
     let transit = transit::ActiveModel {
         id: ActiveValue::Set(rating_id),
         score: rating
@@ -126,7 +132,7 @@ pub(crate) async fn post_ratings_adaptor(
             .transit
             .map_or(ActiveValue::NotSet, |v| ActiveValue::Set(Some(v))),
     };
-    info!("{:?}", people);
+    info!("{:?}", transit);
     let infrastructure = infrastructure::ActiveModel {
         id: ActiveValue::Set(rating_id),
         low_stress_miles: ActiveValue::Set(rating.infrastructure.low_stress_miles),
@@ -181,15 +187,16 @@ pub(crate) async fn post_ratings_adaptor(
     info!("{:?}", measure);
 
     // And insert a new entry for each model.
-    let summary_model = summary.insert(db).await?;
-    let core_services_model = core_services.insert(db).await?;
-    let infrastructure_model = infrastructure.insert(db).await?;
-    let opportunity_model = opportunity.insert(db).await?;
-    let people_model = people.insert(db).await?;
-    let recreation_model = recreation.insert(db).await?;
-    let retail_model = retail.insert(db).await?;
-    let transit_model = transit.insert(db).await?;
-    let measure_model = measure.insert(db).await?;
+    let summary_model = summary.insert(&txn).await?;
+    let core_services_model = core_services.insert(&txn).await?;
+    let infrastructure_model = infrastructure.insert(&txn).await?;
+    let opportunity_model = opportunity.insert(&txn).await?;
+    let people_model = people.insert(&txn).await?;
+    let recreation_model = recreation.insert(&txn).await?;
+    let retail_model = retail.insert(&txn).await?;
+    let transit_model = transit.insert(&txn).await?;
+    let measure_model = measure.insert(&txn).await?;
+    txn.commit().await?;
     let bna = Bna {
         id: summary_model.id,
         city_id: summary_model.city_id,
@@ -226,4 +233,109 @@ pub(crate) async fn post_ratings_adaptor(
     };
     info!("{:?}", bna);
     Ok(bna)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::Utc;
+    use sea_orm::{DbBackend, DbErr, MockDatabase, Transaction};
+    use serde_json::json;
+
+    const CITY_ID: Uuid = Uuid::from_u128(1);
+
+    fn context() -> Context {
+        Context {
+            request_id: None,
+            source: "/ratings".to_string(),
+        }
+    }
+
+    fn rating_post() -> RatingPost {
+        serde_json::from_value(json!({
+            "city_id": CITY_ID,
+            "version": "25.10",
+            "score": 50.0,
+            "pop_size": 1,
+            "population": 1000,
+            "infrastructure": {},
+            "recreation": {},
+            "opportunity": {},
+            "core_services": {},
+            "people": {},
+            "retail": {},
+            "transit": {},
+            "measure": {}
+        }))
+        .unwrap()
+    }
+
+    fn city() -> city::Model {
+        city::Model {
+            id: CITY_ID,
+            country: "United States".to_string(),
+            state: "Texas".to_string(),
+            name: "Austin".to_string(),
+            latitude: None,
+            longitude: None,
+            region: None,
+            state_abbrev: None,
+            residential_speed_limit: None,
+            created_at: Utc::now().into(),
+            updated_at: None,
+            fips_code: None,
+        }
+    }
+
+    fn summary() -> summary::Model {
+        summary::Model {
+            id: Uuid::from_u128(2),
+            city_id: CITY_ID,
+            created_at: Utc::now().into(),
+            pop_size: 1,
+            population: 1000,
+            residential_speed_limit_override: None,
+            score: 50.0,
+            version: "25.10".to_string(),
+        }
+    }
+
+    fn core_services() -> core_services::Model {
+        core_services::Model {
+            id: Uuid::from_u128(2),
+            dentists: None,
+            doctors: None,
+            grocery: None,
+            hospitals: None,
+            pharmacies: None,
+            score: None,
+            social_services: None,
+        }
+    }
+
+    /// Returns the SQL of the statements run, in order.
+    fn statements(log: Vec<Transaction>) -> Vec<String> {
+        log.iter()
+            .flat_map(|t| t.statements().iter().map(|s| s.sql.clone()))
+            .collect()
+    }
+
+    #[tokio::test]
+    async fn test_post_rating_rolls_back_when_an_insert_fails() {
+        // The city exists, the first two inserts succeed, the third one fails.
+        let db = MockDatabase::new(DbBackend::Postgres)
+            .append_query_results([[city()]])
+            .append_query_results([[summary()]])
+            .append_query_results([[core_services()]])
+            .append_query_errors([DbErr::Custom("connection lost".to_string())])
+            .into_connection();
+
+        let result = post_ratings_adaptor(&db, rating_post(), context()).await;
+
+        assert!(result.is_err());
+        let sql = statements(db.into_transaction_log());
+        assert_eq!(sql.first().map(String::as_str), Some("BEGIN"));
+        assert_eq!(sql.last().map(String::as_str), Some("ROLLBACK"));
+        assert!(!sql.iter().any(|s| s == "COMMIT"));
+    }
 }

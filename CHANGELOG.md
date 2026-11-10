@@ -173,3 +173,5 @@ and this project adheres to
   than `page_size`, or none.
 - `GET /reports` and `GET /reports/{year}` now fill the `coreservices_score`,
   `people`, `retail`, and `transit` columns, which were always empty.
+- `POST /ratings` now writes a rating in a single transaction. A failure partway
+  used to leave a partial rating behind, listed by `GET /ratings`.

@@ -48,6 +48,7 @@ path = "src/main.rs"
 
 [dev-dependencies]
 color-eyre = { workspace = true }
+sea-orm = { workspace = true, features = ["mock"] }
 tower = { workspace = true, features = ["util"] }
 
 [package.metadata.lambda.deploy]
