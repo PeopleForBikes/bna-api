@@ -749,11 +749,10 @@ pub fn document_pagination_headers(api: &mut OpenApi) {
         let Some(operation) = item.get.as_mut() else {
             continue;
         };
-        let is_list = operation
-            .parameters
-            .iter()
-            .flatten()
-            .any(|p| p.name == "page" && matches!(p.parameter_in, ParameterIn::Query));
+        let is_list = operation.parameters.iter().flatten().any(|p| match p {
+            RefOr::T(p) => p.name == "page" && matches!(p.parameter_in, ParameterIn::Query),
+            RefOr::Ref(_) => false,
+        });
         if !is_list {
             continue;
         }
@@ -768,10 +767,12 @@ pub fn document_pagination_headers(api: &mut OpenApi) {
             };
             response.headers.insert(
                 name.to_string(),
-                HeaderBuilder::new()
-                    .schema(Object::with_type(schema_type))
-                    .description(Some(description))
-                    .build(),
+                RefOr::T(
+                    HeaderBuilder::new()
+                        .schema(Some(Object::with_type(schema_type)))
+                        .description(Some(description))
+                        .build(),
+                ),
             );
         }
     }

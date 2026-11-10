@@ -98,7 +98,9 @@ and this project adheres to
 - The cities now return their `fips_code`, and the OpenAPI specification
   documents it in the city creation body (`CityPost`). The API stored it without
   returning or documenting it.
-- All the dependencies are updated to their latest version.
+- All the dependencies are updated to their latest version, including utoipa 6,
+  utoipa-axum 0.3, and utoipa-swagger-ui 10. The OpenAPI specification is
+  unchanged.
 
 ### Removed
 
