@@ -70,9 +70,14 @@ just test-localhost-schemathesis
   repository also use these wrappers, so a wrapper with no caller here is not
   dead code: do not remove one without checking with the team.
 - **`migration/`** — SeaORM migrations (`m20220101_000001_main.rs`, etc.),
-  applied with `sea-orm-cli migrate`. Schema docs (`docs/database.dbml`,
-  `docs/database.sql`, `docs/database.svg`) are derived from the DB via the
-  `db-dump`/`dbml-*` just recipes.
+  applied with `sea-orm-cli migrate`. The schema is specified first in
+  `docs/database.dbml`, then implemented as a migration. `docs/database.svg`
+  (`just dbml-svg`) and `docs/database.sql` (`just dbml-sql`) are generated from
+  the `.dbml`; never edit them by hand, and do not regenerate the `.dbml` from
+  the database (`db-to-dbml`), which loses the column types. DBML cannot express
+  a descending index column, and `dbml2sql` makes every foreign key
+  `DEFERRABLE INITIALLY IMMEDIATE`; these two differences from the database are
+  expected.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global
