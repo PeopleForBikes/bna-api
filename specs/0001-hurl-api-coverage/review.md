@@ -23,7 +23,7 @@ reproduced against the local API.
 | R-09 | Minor    | The specification contradicts itself on codes     | Fixed                   |
 | R-10 | Minor    | Bodies accept undocumented fields                 | Fixed                   |
 | R-12 | Minor    | `latest=true` reports misleading headers          | Fixed                   |
-| R-13 | Minor    | `POST /ratings` is not transactional              | Open                    |
+| R-13 | Minor    | `POST /ratings` is not transactional              | Fixed                   |
 | R-15 | Minor    | Some requests lack a comment or a value assertion | Fixed                   |
 | R-16 | Minor    | The suite will start failing from 2029            | Open                    |
 | R-17 | Minor    | The verification records predate the latest code  | Fixed                   |
@@ -115,6 +115,13 @@ that `latest=true` gets a 400 (M-47).
 
 Nine separate inserts (`ratings/adaptor.rs`): a failure partway leaves a
 `summary` row. Wrap them in a transaction. The code predates this feature.
+
+No request can make a later insert fail: the detail tables only hold nullable
+`double precision` columns without constraints, a JSON number is always finite,
+and the city is checked first. Only a server-side failure, such as a lost connection
+or a Lambda timeout, leaves a partial rating. So the test is a unit test with
+SeaORM's `MockDatabase` instead of a Hurl request. Fixed on 2026-11-10: the city
+check and the inserts run in one transaction.
 
 ### R-15 Some requests lack a comment or a value assertion
 
