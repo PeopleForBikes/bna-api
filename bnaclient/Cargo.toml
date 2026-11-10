@@ -8,8 +8,8 @@ license = "MIT"
 bytes = "1.12"
 chrono = { workspace = true, features = ["serde"] }
 futures-core = "0.3"
-progenitor-client = { git = "https://github.com/oxidecomputer/progenitor", rev = "7c28b25" }
-reqwest = { workspace = true, features = ["json", "stream"] }
+progenitor-client = "0.16.0"
+reqwest = { workspace = true, features = ["json", "query", "stream"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 serde_urlencoded = "0.7"

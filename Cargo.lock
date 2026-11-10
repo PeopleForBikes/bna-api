@@ -608,9 +608,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-s3"
-version = "1.159.0"
+version = "1.158.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d5c431c5db2f1f6f536c2a19425575e28273859c6ab399d9ac957f73678c7db"
+checksum = "453a8913ce5559e09b00138105107a8ac1ae26ffa1e9ac84c9202bd3ede62724"
 dependencies = [
  "arc-swap",
  "aws-credential-types",
@@ -3901,8 +3901,9 @@ dependencies = [
 
 [[package]]
 name = "progenitor-client"
-version = "0.11.2"
-source = "git+https://github.com/oxidecomputer/progenitor?rev=7c28b25#7c28b2581fd9f4205fd8fee2c6b91245d93322ce"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f4df47ce7fa035b40e92b2f23e3df1c6c7147c2412e6fccb5be886b26c47118"
 dependencies = [
  "bytes",
  "futures-core",

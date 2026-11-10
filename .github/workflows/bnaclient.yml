@@ -28,7 +28,7 @@ jobs:
       - name: Install cargo progenitor
         uses: taiki-e/install-action@v2.90.2
         with:
-          tool: cargo-progenitor@0.14.0
+          tool: cargo-progenitor@0.16.0
       - name: Regenerate the specifications and the bnaclient
         run: just regenerate-all-no-cargo
       - name: Ensure there are no changes
