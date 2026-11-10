@@ -5,99 +5,14 @@ pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
-    /// Error types.
-    pub mod error {
-        /// Error from a `TryFrom` or `FromStr` implementation.
-        pub struct ConversionError(::std::borrow::Cow<'static, str>);
-        impl ::std::error::Error for ConversionError {}
-        impl ::std::fmt::Display for ConversionError {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
-                ::std::fmt::Display::fmt(&self.0, f)
-            }
-        }
-
-        impl ::std::fmt::Debug for ConversionError {
-            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
-                ::std::fmt::Debug::fmt(&self.0, f)
-            }
-        }
-
-        impl From<&'static str> for ConversionError {
-            fn from(value: &'static str) -> Self {
-                Self(value.into())
-            }
-        }
-
-        impl From<String> for ConversionError {
-            fn from(value: String) -> Self {
-                Self(value.into())
-            }
-        }
-    }
-
     ///Single API Error object as described in <https://jsonapi.org/format/#error-objects>.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Single API Error object as described in <https://jsonapi.org/format/#error-objects>.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "details",
-    ///    "source",
-    ///    "status",
-    ///    "title"
-    ///  ],
-    ///  "properties": {
-    ///    "details": {
-    ///      "description": "A human-readable explanation specific to this
-    /// occurrence of the problem",
-    ///      "examples": [
-    ///        "the entry was not found"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "id": {
-    ///      "description": "A unique identifier for this particular occurrence
-    /// of the problem.",
-    ///      "examples": [
-    ///        "blfwkg8nvHcEJnQ="
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "source": {
-    ///      "$ref": "#/components/schemas/APIErrorSource"
-    ///    },
-    ///    "status": {
-    ///      "description": "The HTTP status code applicable to this problem,
-    /// expressed as a string value.",
-    ///      "examples": [
-    ///        "404"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "title": {
-    ///      "description": "A short, human-readable summary of the problem",
-    ///      "examples": [
-    ///        "Item Not Found"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct ApiError {
         ///A human-readable explanation specific to this occurrence of the
         /// problem
         pub details: ::std::string::String,
         ///A unique identifier for this particular occurrence of the problem.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub id: ::std::option::Option<::std::string::String>,
         pub source: ApiErrorSource,
         ///The HTTP status code applicable to this problem, expressed as a
@@ -123,83 +38,6 @@ pub mod types {
     ///    error.
     ///  - header: a string indicating the name of a single request header which
     ///    caused the error.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "An object containing references to the primary source
-    /// of the error.\n\nIt includes one of the following members:\n\n  -
-    /// pointer: the path of the request that caused the error [e.g.
-    /// \"/ratings/1\"]. The\n    error details name the invalid field, if
-    /// any.\n  - parameter: a string indicating which URI query parameter
-    /// caused the error.\n  - header: a string indicating the name of a single
-    /// request header which caused the\n    error.",
-    ///  "oneOf": [
-    ///    {
-    ///      "description": "The path of the request that caused the error. The
-    /// error details name the invalid field, if any.",
-    ///      "examples": [
-    ///        {
-    ///          "pointer": "/ratings/e6aade5a-b343-120b-dbaa-bd916cd99221"
-    ///        }
-    ///      ],
-    ///      "type": "object",
-    ///      "required": [
-    ///        "pointer"
-    ///      ],
-    ///      "properties": {
-    ///        "pointer": {
-    ///          "description": "The path of the request that caused the error.
-    /// The error details name the invalid field, if any.",
-    ///          "type": "string"
-    ///        }
-    ///      }
-    ///    },
-    ///    {
-    ///      "description": "A string indicating which URI query parameter
-    /// caused the error.",
-    ///      "examples": [
-    ///        {
-    ///          "parameter": "include"
-    ///        }
-    ///      ],
-    ///      "type": "object",
-    ///      "required": [
-    ///        "parameter"
-    ///      ],
-    ///      "properties": {
-    ///        "parameter": {
-    ///          "description": "A string indicating which URI query parameter
-    /// caused the error.",
-    ///          "type": "string"
-    ///        }
-    ///      }
-    ///    },
-    ///    {
-    ///      "description": "A string indicating the name of a single request
-    /// header which caused the error.",
-    ///      "examples": [
-    ///        {
-    ///          "header": "Content-Type"
-    ///        }
-    ///      ],
-    ///      "type": "object",
-    ///      "required": [
-    ///        "header"
-    ///      ],
-    ///      "properties": {
-    ///        "header": {
-    ///          "description": "A string indicating the name of a single
-    /// request header which caused the error.",
-    ///          "type": "string"
-    ///        }
-    ///      }
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub enum ApiErrorSource {
         ///The path of the request that caused the error. The error details
@@ -217,28 +55,6 @@ pub mod types {
 
     ///Error objects MUST be returned as an array keyed by errors in the top
     /// level of a JSON:API document.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Error objects MUST be returned as an array keyed by
-    /// errors in the top level of a\nJSON:API document.",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "errors"
-    ///  ],
-    ///  "properties": {
-    ///    "errors": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/APIError"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct ApiErrors {
         pub errors: ::std::vec::Vec<ApiError>,
@@ -251,21 +67,6 @@ pub mod types {
     }
 
     ///Approval status of a city submission.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Approval status of a city submission.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "Approved",
-    ///    "Pending",
-    ///    "Rejected"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -313,15 +114,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for ApprovalStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for ApprovalStatus {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -332,24 +124,6 @@ pub mod types {
     }
 
     ///Bike lane types, as stored in the `bike_lane_type` table.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Bike lane types, as stored in the `bike_lane_type`
-    /// table.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "buffered_lane",
-    ///    "lane",
-    ///    "path",
-    ///    "sharrow",
-    ///    "track"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -408,15 +182,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for BikeLaneType {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for BikeLaneType {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -427,124 +192,25 @@ pub mod types {
     }
 
     ///`BnaPipeline`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "start_time",
-    ///    "state_machine_id",
-    ///    "status",
-    ///    "step"
-    ///  ],
-    ///  "properties": {
-    ///    "cost": {
-    ///      "description": "Cost of an analysis in USD",
-    ///      "examples": [
-    ///        "6.8941"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "end_time": {
-    ///      "description": "End time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "fargate_price_id": {
-    ///      "description": "Fargate price identifier used to compute the cost",
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "fargate_task_arn": {
-    ///      "description": "ARN of the Fargate task that performed the
-    /// analysis",
-    ///      "examples": [
-    ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "s3_bucket": {
-    ///      "description": "Path of the S3 bucket where the results were
-    /// stored",
-    ///      "examples": [
-    ///        "united states/new mexico/santa rosa/24.05.4"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "sqs_message": {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
-    ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
-    ///        }
-    ///      ],
-    ///      "type": [
-    ///        "object",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "start_time": {
-    ///      "description": "Start time",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "state_machine_id": {
-    ///      "description": "Pipeline identifier\nThis is the ID of the AWS
-    /// state machine that was used to run the pipeline",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "status": {
-    ///      "$ref": "#/components/schemas/PipelineStatus"
-    ///    },
-    ///    "step": {
-    ///      "$ref": "#/components/schemas/BnaPipelineStep"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaPipeline {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
         ///ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_task_arn: ::std::option::Option<::std::string::String>,
         ///Path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message:
             ::std::option::Option<::serde_json::Map<::std::string::String, ::serde_json::Value>>,
         ///Start time
@@ -564,155 +230,35 @@ pub mod types {
     }
 
     ///`BnaPipelinePatch`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "cost": {
-    ///      "description": "Cost of an analysis in USD",
-    ///      "examples": [
-    ///        "6.8941"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "end_time": {
-    ///      "description": "End time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "fargate_price_id": {
-    ///      "description": "Fargate price identifier used to compute the cost",
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "fargate_task_arn": {
-    ///      "description": "ARN of the Fargate task that performed the
-    /// analysis",
-    ///      "examples": [
-    ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "s3_bucket": {
-    ///      "description": "Path of the S3 bucket where the results were
-    /// stored",
-    ///      "examples": [
-    ///        "united states/new mexico/santa rosa/24.05.4"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "sqs_message": {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing: a JSON object, or a string holding a JSON object. It is
-    /// stored and returned as a JSON object.",
-    ///      "oneOf": [
-    ///        {
-    ///          "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///          "examples": [
-    ///            {
-    ///              "city": "santa rosa",
-    ///              "country": "United States",
-    ///              "fips_code": "3570670",
-    ///              "region": "new mexico"
-    ///            }
-    ///          ],
-    ///          "type": [
-    ///            "object",
-    ///            "null"
-    ///          ]
-    ///        },
-    ///        {
-    ///          "description": "A string holding a JSON object",
-    ///          "examples": [
-    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
-    ///          ],
-    ///          "type": "string"
-    ///        }
-    ///      ]
-    ///    },
-    ///    "start_time": {
-    ///      "description": "Start time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "status": {
-    ///      "$ref": "#/components/schemas/PipelineStatus"
-    ///    },
-    ///    "step": {
-    ///      "$ref": "#/components/schemas/BnaPipelineStep"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct BnaPipelinePatch {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
         ///ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_task_arn: ::std::option::Option<::std::string::String>,
         ///Path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing: a JSON
         /// object, or a string holding a JSON object. It is stored and returned
         /// as a JSON object.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<BnaPipelinePatchSqsMessage>,
         ///Start time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status: ::std::option::Option<PipelineStatus>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub step: ::std::option::Option<BnaPipelineStep>,
-    }
-
-    impl ::std::default::Default for BnaPipelinePatch {
-        fn default() -> Self {
-            Self {
-                cost: Default::default(),
-                end_time: Default::default(),
-                fargate_price_id: Default::default(),
-                fargate_task_arn: Default::default(),
-                s3_bucket: Default::default(),
-                sqs_message: Default::default(),
-                start_time: Default::default(),
-                status: Default::default(),
-                step: Default::default(),
-            }
-        }
     }
 
     impl BnaPipelinePatch {
@@ -724,42 +270,6 @@ pub mod types {
     ///Copy of the JSON message that was sent for processing: a JSON object, or
     /// a string holding a JSON object. It is stored and returned as a JSON
     /// object.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Copy of the JSON message that was sent for processing:
-    /// a JSON object, or a string holding a JSON object. It is stored and
-    /// returned as a JSON object.",
-    ///  "oneOf": [
-    ///    {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
-    ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
-    ///        }
-    ///      ],
-    ///      "type": [
-    ///        "object",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    {
-    ///      "description": "A string holding a JSON object",
-    ///      "examples": [
-    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(untagged)]
     pub enum BnaPipelinePatchSqsMessage {
@@ -784,137 +294,30 @@ pub mod types {
     }
 
     ///`BnaPipelinePost`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "state_machine_id"
-    ///  ],
-    ///  "properties": {
-    ///    "cost": {
-    ///      "description": "Cost of an analysis in USD",
-    ///      "examples": [
-    ///        "6.8941"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "end_time": {
-    ///      "description": "End time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "fargate_price_id": {
-    ///      "description": "Fargate price identifier used to compute the cost",
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "fargate_task_arn": {
-    ///      "description": "ARN of the Fargate task that performed the
-    /// analysis",
-    ///      "examples": [
-    ///        "arn:aws:ecs:us-west-2:123456789012:task/bna/
-    /// 29f979fc9fca402d94b014aa23d2f6e0"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "s3_bucket": {
-    ///      "description": "Path of the S3 bucket where the results were
-    /// stored",
-    ///      "examples": [
-    ///        "united states/new mexico/santa rosa/24.05.4"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "sqs_message": {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing: a JSON object, or a string holding a JSON object. It is
-    /// stored and returned as a JSON object.",
-    ///      "oneOf": [
-    ///        {
-    ///          "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///          "examples": [
-    ///            {
-    ///              "city": "santa rosa",
-    ///              "country": "United States",
-    ///              "fips_code": "3570670",
-    ///              "region": "new mexico"
-    ///            }
-    ///          ],
-    ///          "type": [
-    ///            "object",
-    ///            "null"
-    ///          ]
-    ///        },
-    ///        {
-    ///          "description": "A string holding a JSON object",
-    ///          "examples": [
-    ///            "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
-    ///          ],
-    ///          "type": "string"
-    ///        }
-    ///      ]
-    ///    },
-    ///    "start_time": {
-    ///      "description": "Start time",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    },
-    ///    "state_machine_id": {
-    ///      "description": "Pipeline identifier\nThis is the ID of the AWS
-    /// state machine that was used to run the pipeline",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct BnaPipelinePost {
         ///Cost of an analysis in USD
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub cost: ::std::option::Option<::std::string::String>,
         ///End time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub end_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Fargate price identifier used to compute the cost
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_price_id: ::std::option::Option<i32>,
         ///ARN of the Fargate task that performed the analysis
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fargate_task_arn: ::std::option::Option<::std::string::String>,
         ///Path of the S3 bucket where the results were stored
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub s3_bucket: ::std::option::Option<::std::string::String>,
         ///Copy of the JSON message that was sent for processing: a JSON
         /// object, or a string holding a JSON object. It is stored and returned
         /// as a JSON object.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub sqs_message: ::std::option::Option<BnaPipelinePostSqsMessage>,
         ///Start time
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub start_time: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
         ///Pipeline identifier
         ///This is the ID of the AWS state machine that was used to run the
@@ -931,42 +334,6 @@ pub mod types {
     ///Copy of the JSON message that was sent for processing: a JSON object, or
     /// a string holding a JSON object. It is stored and returned as a JSON
     /// object.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Copy of the JSON message that was sent for processing:
-    /// a JSON object, or a string holding a JSON object. It is stored and
-    /// returned as a JSON object.",
-    ///  "oneOf": [
-    ///    {
-    ///      "description": "Copy of the JSON message that was sent for
-    /// processing",
-    ///      "examples": [
-    ///        {
-    ///          "city": "santa rosa",
-    ///          "country": "United States",
-    ///          "fips_code": "3570670",
-    ///          "region": "new mexico"
-    ///        }
-    ///      ],
-    ///      "type": [
-    ///        "object",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    {
-    ///      "description": "A string holding a JSON object",
-    ///      "examples": [
-    ///        "{\"country\": \"United States\", \"city\": \"santa rosa\"}"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(untagged)]
     pub enum BnaPipelinePostSqsMessage {
@@ -991,21 +358,6 @@ pub mod types {
     }
 
     ///`BnaPipelineStep`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "Setup",
-    ///    "Analysis",
-    ///    "Save",
-    ///    "Cleanup"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -1056,15 +408,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for BnaPipelineStep {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for BnaPipelineStep {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -1075,18 +418,6 @@ pub mod types {
     }
 
     ///`BnaPipelines`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/BnaPipeline"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct BnaPipelines(pub ::std::vec::Vec<BnaPipeline>);
@@ -1110,25 +441,6 @@ pub mod types {
     }
 
     ///BNA regions of the United States, as stored in the `bna_region` table.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "BNA regions of the United States, as stored in the
-    /// `bna_region` table.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "Mid-Atlantic",
-    ///    "New England",
-    ///    "Midwest",
-    ///    "Mountain",
-    ///    "Pacific",
-    ///    "South"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -1187,15 +499,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for BnaRegion {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for BnaRegion {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -1206,18 +509,6 @@ pub mod types {
     }
 
     ///`Cities`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/City"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct Cities(pub ::std::vec::Vec<City>);
@@ -1241,18 +532,6 @@ pub mod types {
     }
 
     ///`CitiesWithSummary`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/CityWithSummary"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct CitiesWithSummary(pub ::std::vec::Vec<CityWithSummary>);
@@ -1276,130 +555,6 @@ pub mod types {
     }
 
     ///Detailed information of a city
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Detailed information of a city",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "country",
-    ///    "created_at",
-    ///    "id",
-    ///    "name",
-    ///    "state"
-    ///  ],
-    ///  "properties": {
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/Country"
-    ///    },
-    ///    "created_at": {
-    ///      "description": "Creation date",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "id": {
-    ///      "description": "City identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "latitude": {
-    ///      "description": "Geographic coordinate that specifies the
-    /// north-south position of a point\non the surface of the Earth.",
-    ///      "examples": [
-    ///        "51.260197"
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "longitude": {
-    ///      "description": "Geographic coordinate that specifies the east–west
-    /// position of a point\non the surface of the Earth.",
-    ///      "examples": [
-    ///        "4.402771"
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "name": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or\nsomething similar depending on the country. If a country
-    /// does not have\nthis concept, then the country name is used.",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "residential_speed_limit": {
-    ///      "description": "Residential speed limit in kilometer per hour
-    /// (km/h).\nOnly use if different from the state speed limit.",
-    ///      "examples": [
-    ///        "50"
-    ///      ],
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "state": {
-    ///      "description": "State name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "state_abbrev": {
-    ///      "description": "A short version of the state name, usually 2 or 3
-    /// character long",
-    ///      "examples": [
-    ///        "VAN"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "updated_at": {
-    ///      "description": "Update date",
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ],
-    ///      "format": "date-time"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct City {
         pub country: Country,
@@ -1407,36 +562,36 @@ pub mod types {
         pub created_at: ::chrono::DateTime<::chrono::offset::Utc>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fips_code: ::std::option::Option<::std::string::String>,
         ///City identifier
         pub id: ::uuid::Uuid,
         ///Geographic coordinate that specifies the north-south position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub latitude: ::std::option::Option<f64>,
         ///Geographic coordinate that specifies the east–west position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
         pub name: ::std::string::String,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
         ///Residential speed limit in kilometer per hour (km/h).
         ///Only use if different from the state speed limit.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub residential_speed_limit: ::std::option::Option<i32>,
         ///State name
         pub state: ::std::string::String,
         ///A short version of the state name, usually 2 or 3 character long
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state_abbrev: ::std::option::Option<::std::string::String>,
         ///Update date
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub updated_at: ::std::option::Option<::chrono::DateTime<::chrono::offset::Utc>>,
     }
 
@@ -1447,138 +602,35 @@ pub mod types {
     }
 
     ///`CityPost`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "country",
-    ///    "name",
-    ///    "state"
-    ///  ],
-    ///  "properties": {
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/Country"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "latitude": {
-    ///      "description": "Geographic coordinate that specifies the
-    /// north-south position of a point\non the surface of the Earth.",
-    ///      "examples": [
-    ///        "51.260197"
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "longitude": {
-    ///      "description": "Geographic coordinate that specifies the east–west
-    /// position of a point\non the surface of the Earth.",
-    ///      "examples": [
-    ///        "4.402771"
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "name": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or\nsomething similar depending on the country. If a country
-    /// does not have\nthis concept, then the country name is used.",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "residential_speed_limit": {
-    ///      "description": "Speed limit in kilometer per hour (km/h).",
-    ///      "examples": [
-    ///        "50"
-    ///      ],
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "state": {
-    ///      "description": "A short version of the state name, usually 2 or 3
-    /// character long",
-    ///      "examples": [
-    ///        "VAN"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "state_abbrev": {
-    ///      "description": "A short version of the state name, usually 2 or 3
-    /// character long",
-    ///      "examples": [
-    ///        "VAN"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityPost {
         pub country: Country,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fips_code: ::std::option::Option<::std::string::String>,
         ///Geographic coordinate that specifies the north-south position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub latitude: ::std::option::Option<f64>,
         ///Geographic coordinate that specifies the east–west position of a
         /// point on the surface of the Earth.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
         pub name: ::std::string::String,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
         ///Speed limit in kilometer per hour (km/h).
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub residential_speed_limit: ::std::option::Option<i32>,
         ///A short version of the state name, usually 2 or 3 character long
         pub state: ::std::string::String,
         ///A short version of the state name, usually 2 or 3 character long
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub state_abbrev: ::std::option::Option<::std::string::String>,
     }
 
@@ -1589,30 +641,6 @@ pub mod types {
     }
 
     ///`CityRatings`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "ratings"
-    ///  ],
-    ///  "properties": {
-    ///    "city": {
-    ///      "$ref": "#/components/schemas/City"
-    ///    },
-    ///    "ratings": {
-    ///      "type": "array",
-    ///      "items": {
-    ///        "$ref": "#/components/schemas/RatingSummary"
-    ///      }
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityRatings {
         pub city: City,
@@ -1626,27 +654,6 @@ pub mod types {
     }
 
     ///`CityWithSummary`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "summary"
-    ///  ],
-    ///  "properties": {
-    ///    "city": {
-    ///      "$ref": "#/components/schemas/City"
-    ///    },
-    ///    "summary": {
-    ///      "$ref": "#/components/schemas/RatingSummary"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct CityWithSummary {
         pub city: City,
@@ -1660,126 +667,29 @@ pub mod types {
     }
 
     ///`CoreServices`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "dentists": {
-    ///      "description": "BNA category subscore for access to dentists.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "doctors": {
-    ///      "description": "BNA category subscore for access to doctors.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "grocery": {
-    ///      "description": "BNA category subscore for access to grocery
-    /// stores.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "hospitals": {
-    ///      "description": "BNA category subscore for access to hospitals.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "pharmacies": {
-    ///      "description": "BNA category subscore for access to pharmacies.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA category score for access to core services.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "social_services": {
-    ///      "description": "BNA category subscore for access to social
-    /// services.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct CoreServices {
         ///BNA category subscore for access to dentists.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub dentists: ::std::option::Option<f64>,
         ///BNA category subscore for access to doctors.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub doctors: ::std::option::Option<f64>,
         ///BNA category subscore for access to grocery stores.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub grocery: ::std::option::Option<f64>,
         ///BNA category subscore for access to hospitals.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub hospitals: ::std::option::Option<f64>,
         ///BNA category subscore for access to pharmacies.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub pharmacies: ::std::option::Option<f64>,
         ///BNA category score for access to core services.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
         ///BNA category subscore for access to social services.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub social_services: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for CoreServices {
-        fn default() -> Self {
-            Self {
-                dentists: Default::default(),
-                doctors: Default::default(),
-                grocery: Default::default(),
-                hospitals: Default::default(),
-                pharmacies: Default::default(),
-                score: Default::default(),
-                social_services: Default::default(),
-            }
-        }
     }
 
     impl CoreServices {
@@ -1789,222 +699,6 @@ pub mod types {
     }
 
     ///Supported countries
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Supported countries",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "Afghanistan",
-    ///    "Albania",
-    ///    "Algeria",
-    ///    "Andorra",
-    ///    "Angola",
-    ///    "Antigua and Barbuda",
-    ///    "Argentina",
-    ///    "Armenia",
-    ///    "Australia",
-    ///    "Austria",
-    ///    "Azerbaijan",
-    ///    "The Bahamas",
-    ///    "Bahrain",
-    ///    "Bangladesh",
-    ///    "Barbados",
-    ///    "Belarus",
-    ///    "Belgium",
-    ///    "Belize",
-    ///    "Benin",
-    ///    "Bhutan",
-    ///    "Bolivia",
-    ///    "Bosnia and Herzegovina",
-    ///    "Botswana",
-    ///    "Brazil",
-    ///    "Brunei",
-    ///    "Bulgaria",
-    ///    "Burkina Faso",
-    ///    "Burundi",
-    ///    "Cambodia",
-    ///    "Cameroon",
-    ///    "Canada",
-    ///    "Cape Verde",
-    ///    "Central African Republic",
-    ///    "Chad",
-    ///    "Chile",
-    ///    "China",
-    ///    "Colombia",
-    ///    "Comoros",
-    ///    "Congo",
-    ///    "Costa Rica",
-    ///    "Croatia",
-    ///    "Cuba",
-    ///    "Cyprus",
-    ///    "Czechia",
-    ///    "Côte d'Ivoire",
-    ///    "Democratic Republic of the Congo",
-    ///    "Denmark",
-    ///    "Djibouti",
-    ///    "Dominica",
-    ///    "Dominican Republic",
-    ///    "East Timor",
-    ///    "Ecuador",
-    ///    "Egypt",
-    ///    "El Salvador",
-    ///    "England",
-    ///    "Equatorial Guinea",
-    ///    "Eritrea",
-    ///    "Estonia",
-    ///    "Eswatini",
-    ///    "Ethiopia",
-    ///    "Fiji",
-    ///    "Finland",
-    ///    "France",
-    ///    "Gabon",
-    ///    "Gambia",
-    ///    "Georgia",
-    ///    "Germany",
-    ///    "Ghana",
-    ///    "Greece",
-    ///    "Grenada",
-    ///    "Guatemala",
-    ///    "Guinea",
-    ///    "Guinea-Bissau",
-    ///    "Guyana",
-    ///    "Haiti",
-    ///    "Honduras",
-    ///    "Hungary",
-    ///    "Iceland",
-    ///    "India",
-    ///    "Indonesia",
-    ///    "Iran",
-    ///    "Iraq",
-    ///    "Ireland",
-    ///    "Israel",
-    ///    "Italy",
-    ///    "Jamaica",
-    ///    "Japan",
-    ///    "Jordan",
-    ///    "Kazakhstan",
-    ///    "Kenya",
-    ///    "Kiribati",
-    ///    "Kosovo",
-    ///    "Kuwait",
-    ///    "Kyrgyzstan",
-    ///    "Laos",
-    ///    "Latvia",
-    ///    "Lebanon",
-    ///    "Lesotho",
-    ///    "Liberia",
-    ///    "Libya",
-    ///    "Liechtenstein",
-    ///    "Lithuania",
-    ///    "Luxembourg",
-    ///    "Madagascar",
-    ///    "Malawi",
-    ///    "Malaysia",
-    ///    "Maldives",
-    ///    "Mali",
-    ///    "Malta",
-    ///    "Marshall Islands",
-    ///    "Mauritania",
-    ///    "Mauritius",
-    ///    "Mexico",
-    ///    "Micronesia",
-    ///    "Moldova",
-    ///    "Monaco",
-    ///    "Mongolia",
-    ///    "Montenegro",
-    ///    "Morocco",
-    ///    "Mozambique",
-    ///    "Myanmar",
-    ///    "Namibia",
-    ///    "Nauru",
-    ///    "Nepal",
-    ///    "Netherlands",
-    ///    "New Zealand",
-    ///    "Nicaragua",
-    ///    "Niger",
-    ///    "Nigeria",
-    ///    "North Korea",
-    ///    "North Macedonia",
-    ///    "Northern Ireland",
-    ///    "Norway",
-    ///    "Oman",
-    ///    "Pakistan",
-    ///    "Palau",
-    ///    "Palestine",
-    ///    "Panama",
-    ///    "Papua New Guinea",
-    ///    "Paraguay",
-    ///    "Peru",
-    ///    "Philippines",
-    ///    "Poland",
-    ///    "Portugal",
-    ///    "Qatar",
-    ///    "Republic of the Congo",
-    ///    "Romania",
-    ///    "Russia",
-    ///    "Rwanda",
-    ///    "Saint Kitts and Nevis",
-    ///    "Saint Lucia",
-    ///    "Saint Vincent and the Grenadines",
-    ///    "Samoa",
-    ///    "San Marino",
-    ///    "São Tomé and Príncipe",
-    ///    "Saudi Arabia",
-    ///    "Scotland",
-    ///    "Senegal",
-    ///    "Serbia",
-    ///    "Seychelles",
-    ///    "Sierra Leone",
-    ///    "Singapore",
-    ///    "Slovakia",
-    ///    "Slovenia",
-    ///    "Solomon Islands",
-    ///    "Somalia",
-    ///    "South Africa",
-    ///    "South Korea",
-    ///    "South Sudan",
-    ///    "Spain",
-    ///    "Sri Lanka",
-    ///    "Sudan",
-    ///    "Suriname",
-    ///    "Sweden",
-    ///    "Switzerland",
-    ///    "Syria",
-    ///    "Taiwan",
-    ///    "Tajikistan",
-    ///    "Tanzania",
-    ///    "Thailand",
-    ///    "Timor-Leste",
-    ///    "Togo",
-    ///    "Tonga",
-    ///    "Trinidad and Tobago",
-    ///    "Tunisia",
-    ///    "Turkey",
-    ///    "Turkmenistan",
-    ///    "Tuvalu",
-    ///    "Uganda",
-    ///    "Ukraine",
-    ///    "United Arab Emirates",
-    ///    "United Kingdom",
-    ///    "United States",
-    ///    "Uruguay",
-    ///    "Uzbekistan",
-    ///    "Vanuatu",
-    ///    "Vatican City",
-    ///    "Venezuela",
-    ///    "Vietnam",
-    ///    "Wales",
-    ///    "West Bank",
-    ///    "Yemen",
-    ///    "Zambia",
-    ///    "Zimbabwe"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -2699,15 +1393,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for Country {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for Country {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -2718,45 +1403,6 @@ pub mod types {
     }
 
     ///A Fargate price used to estimate the cost of an analysis
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "A Fargate price used to estimate the cost of an
-    /// analysis",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "created_at",
-    ///    "id",
-    ///    "per_second"
-    ///  ],
-    ///  "properties": {
-    ///    "created_at": {
-    ///      "description": "Creation date",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "id": {
-    ///      "description": "Identifier of the Fargate Price rate used to
-    /// compute the cost of the pipeline run",
-    ///      "examples": [
-    ///        "1"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "per_second": {
-    ///      "description": "Cost to run Fargate for 1 second",
-    ///      "examples": [
-    ///        "0.0023"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct FargatePrice {
         ///Creation date
@@ -2775,19 +1421,6 @@ pub mod types {
     }
 
     ///A collection of Fargate prices.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "A collection of Fargate prices.",
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/FargatePrice"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct FargatePrices(pub ::std::vec::Vec<FargatePrice>);
@@ -2811,25 +1444,6 @@ pub mod types {
     }
 
     ///Fields the city lists can be sorted by.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Fields the city lists can be sorted by.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "name",
-    ///    "country",
-    ///    "state",
-    ///    "state_abbrev",
-    ///    "region",
-    ///    "fips_code",
-    ///    "created_at"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -2896,15 +1510,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesLatestSummarySortBy {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for GetCitiesLatestSummarySortBy {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -2915,25 +1520,6 @@ pub mod types {
     }
 
     ///Fields the city lists can be sorted by.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Fields the city lists can be sorted by.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "name",
-    ///    "country",
-    ///    "state",
-    ///    "state_abbrev",
-    ///    "region",
-    ///    "fips_code",
-    ///    "created_at"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -3000,15 +1586,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for GetCitiesSortBy {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for GetCitiesSortBy {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -3019,20 +1596,6 @@ pub mod types {
     }
 
     ///Fields the Fargate prices can be sorted by.
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Fields the Fargate prices can be sorted by.",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "per_second",
-    ///    "created_at"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -3079,15 +1642,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for GetPricesFargateSortBy {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for GetPricesFargateSortBy {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -3098,58 +1652,14 @@ pub mod types {
     }
 
     ///`Infrastructure`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "high_stress_miles": {
-    ///      "description": "Total miles of high-stress streets in the measured
-    /// area.",
-    ///      "examples": [
-    ///        253
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "low_stress_miles": {
-    ///      "description": "Total miles of low-stress streets and paths in the
-    /// measured area.",
-    ///      "examples": [
-    ///        127
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Infrastructure {
         ///Total miles of high-stress streets in the measured area.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub high_stress_miles: ::std::option::Option<f64>,
         ///Total miles of low-stress streets and paths in the measured area.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub low_stress_miles: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Infrastructure {
-        fn default() -> Self {
-            Self {
-                high_stress_miles: Default::default(),
-                low_stress_miles: Default::default(),
-            }
-        }
     }
 
     impl Infrastructure {
@@ -3159,101 +1669,23 @@ pub mod types {
     }
 
     ///`Measure`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "buffered_lane": {
-    ///      "description": "Miles of buffered bike lanes.",
-    ///      "examples": [
-    ///        53.859
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "lane": {
-    ///      "description": "Miles of bike lanes.",
-    ///      "examples": [
-    ///        0
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "path": {
-    ///      "description": "Miles of off-street paths.",
-    ///      "examples": [
-    ///        53.859
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "sharrow": {
-    ///      "description": "Miles of sharrows.",
-    ///      "examples": [
-    ///        53.859
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    },
-    ///    "track": {
-    ///      "description": "Miles of tracks.",
-    ///      "examples": [
-    ///        53.859
-    ///      ],
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Measure {
         ///Miles of buffered bike lanes.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub buffered_lane: ::std::option::Option<f64>,
         ///Miles of bike lanes.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub lane: ::std::option::Option<f64>,
         ///Miles of off-street paths.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub path: ::std::option::Option<f64>,
         ///Miles of sharrows.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub sharrow: ::std::option::Option<f64>,
         ///Miles of tracks.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub track: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Measure {
-        fn default() -> Self {
-            Self {
-                buffered_lane: Default::default(),
-                lane: Default::default(),
-                path: Default::default(),
-                sharrow: Default::default(),
-                track: Default::default(),
-            }
-        }
     }
 
     impl Measure {
@@ -3263,101 +1695,24 @@ pub mod types {
     }
 
     ///`Opportunity`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "employment": {
-    ///      "description": "BNA category subscore for access to job location
-    /// areas.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "higher_education": {
-    ///      "description": "BNA category subscore for access to universities
-    /// and colleges.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "k12_education": {
-    ///      "description": "BNA category subscore for access to k12 schools",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA category score for access to education and
-    /// jobs.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "technical_vocational_college": {
-    ///      "description": "BNA category subscore for access to technical and
-    /// vocational colleges.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Opportunity {
         ///BNA category subscore for access to job location areas.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub employment: ::std::option::Option<f64>,
         ///BNA category subscore for access to universities and colleges.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub higher_education: ::std::option::Option<f64>,
         ///BNA category subscore for access to k12 schools
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub k12_education: ::std::option::Option<f64>,
         ///BNA category score for access to education and jobs.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
         ///BNA category subscore for access to technical and vocational
         /// colleges.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub technical_vocational_college: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Opportunity {
-        fn default() -> Self {
-            Self {
-                employment: Default::default(),
-                higher_education: Default::default(),
-                k12_education: Default::default(),
-                score: Default::default(),
-                technical_vocational_college: Default::default(),
-            }
-        }
     }
 
     impl Opportunity {
@@ -3367,20 +1722,6 @@ pub mod types {
     }
 
     ///Order direction for sorting
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Order direction for sorting",
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "asc",
-    ///    "desc"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -3427,15 +1768,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for OrderDirection {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for OrderDirection {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -3446,41 +1778,11 @@ pub mod types {
     }
 
     ///`People`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "people": {
-    ///      "description": "BNA category score for access to residential
-    /// areas.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct People {
         ///BNA category score for access to residential areas.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub people: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for People {
-        fn default() -> Self {
-            Self {
-                people: Default::default(),
-            }
-        }
     }
 
     impl People {
@@ -3490,20 +1792,6 @@ pub mod types {
     }
 
     ///`PipelineStatus`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "string",
-    ///  "enum": [
-    ///    "Completed",
-    ///    "Pending",
-    ///    "Processing"
-    ///  ]
-    ///}
-    /// ```
-    /// </details>
     #[derive(
         :: serde :: Deserialize,
         :: serde :: Serialize,
@@ -3551,15 +1839,6 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&::std::string::String> for PipelineStatus {
-        type Error = self::error::ConversionError;
-        fn try_from(
-            value: &::std::string::String,
-        ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for PipelineStatus {
         type Error = self::error::ConversionError;
         fn try_from(
@@ -3570,76 +1849,6 @@ pub mod types {
     }
 
     ///`Rating`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "core_services",
-    ///    "id",
-    ///    "infrastructure",
-    ///    "measure",
-    ///    "opportunity",
-    ///    "people",
-    ///    "recreation",
-    ///    "retail",
-    ///    "score",
-    ///    "transit",
-    ///    "version"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "core_services": {
-    ///      "$ref": "#/components/schemas/CoreServices"
-    ///    },
-    ///    "id": {
-    ///      "description": "Rating identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "infrastructure": {
-    ///      "$ref": "#/components/schemas/Infrastructure"
-    ///    },
-    ///    "measure": {
-    ///      "$ref": "#/components/schemas/Measure"
-    ///    },
-    ///    "opportunity": {
-    ///      "$ref": "#/components/schemas/Opportunity"
-    ///    },
-    ///    "people": {
-    ///      "$ref": "#/components/schemas/People"
-    ///    },
-    ///    "recreation": {
-    ///      "$ref": "#/components/schemas/Recreation"
-    ///    },
-    ///    "retail": {
-    ///      "$ref": "#/components/schemas/Retail"
-    ///    },
-    ///    "score": {
-    ///      "description": "Total rating score",
-    ///      "type": "number",
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "transit": {
-    ///      "$ref": "#/components/schemas/Transit"
-    ///    },
-    ///    "version": {
-    ///      "description": "Rating version\nThe format follows the [calver](https://calver.org) specification with\nthe YY.0M[.Minor] scheme.",
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Rating {
         ///City identifier
@@ -3669,90 +1878,6 @@ pub mod types {
     }
 
     ///`RatingPost`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "core_services",
-    ///    "infrastructure",
-    ///    "measure",
-    ///    "opportunity",
-    ///    "people",
-    ///    "pop_size",
-    ///    "population",
-    ///    "recreation",
-    ///    "retail",
-    ///    "score",
-    ///    "transit",
-    ///    "version"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "core_services": {
-    ///      "$ref": "#/components/schemas/CoreServices"
-    ///    },
-    ///    "infrastructure": {
-    ///      "$ref": "#/components/schemas/Infrastructure"
-    ///    },
-    ///    "measure": {
-    ///      "$ref": "#/components/schemas/Measure"
-    ///    },
-    ///    "opportunity": {
-    ///      "$ref": "#/components/schemas/Opportunity"
-    ///    },
-    ///    "people": {
-    ///      "$ref": "#/components/schemas/People"
-    ///    },
-    ///    "pop_size": {
-    ///      "description": "City population size category (small, medium,
-    /// large).",
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "population": {
-    ///      "description": "City population based on the annual U.S. Census
-    /// American Community Survey.",
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "recreation": {
-    ///      "$ref": "#/components/schemas/Recreation"
-    ///    },
-    ///    "retail": {
-    ///      "$ref": "#/components/schemas/Retail"
-    ///    },
-    ///    "score": {
-    ///      "description": "City rating score",
-    ///      "type": "number",
-    ///      "format": "double"
-    ///    },
-    ///    "speed_limit_override": {
-    ///      "description": "Residential speed limit, if any.",
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "transit": {
-    ///      "$ref": "#/components/schemas/Transit"
-    ///    },
-    ///    "version": {
-    ///      "description": "Rating version\nThe format follows the [calver](https://calver.org) specification with\nthe YY.0M[.Minor] scheme.",
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct RatingPost {
         ///City identifier
@@ -3772,7 +1897,7 @@ pub mod types {
         ///City rating score
         pub score: f64,
         ///Residential speed limit, if any.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub speed_limit_override: ::std::option::Option<i32>,
         pub transit: Transit,
         ///Rating version
@@ -3788,82 +1913,6 @@ pub mod types {
     }
 
     ///`RatingSummary`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city_id",
-    ///    "created_at",
-    ///    "id",
-    ///    "pop_size",
-    ///    "population",
-    ///    "score",
-    ///    "version"
-    ///  ],
-    ///  "properties": {
-    ///    "city_id": {
-    ///      "description": "City identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "created_at": {
-    ///      "description": "Creation date",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "id": {
-    ///      "description": "Analysis identifier",
-    ///      "type": "string",
-    ///      "format": "uuid"
-    ///    },
-    ///    "pop_size": {
-    ///      "description": "City population size category (small, medium,
-    /// large).",
-    ///      "examples": [
-    ///        "large"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "population": {
-    ///      "description": "City population based on the annual U.S. Census
-    /// American Community Survey.",
-    ///      "examples": [
-    ///        "989252"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "residential_speed_limit_override": {
-    ///      "description": "Residential speed limit override.",
-    ///      "type": [
-    ///        "integer",
-    ///        "null"
-    ///      ],
-    ///      "format": "int32"
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA score",
-    ///      "examples": [
-    ///        "77.0"
-    ///      ],
-    ///      "type": "number",
-    ///      "format": "double"
-    ///    },
-    ///    "version": {
-    ///      "description": "Analysis version. The format follows the [calver](https://calver.org)\nspecification with the YY.0M[.Minor] scheme.",
-    ///      "examples": [
-    ///        "23.12"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct RatingSummary {
         ///City identifier
@@ -3878,7 +1927,7 @@ pub mod types {
         /// Survey.
         pub population: i32,
         ///Residential speed limit override.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub residential_speed_limit_override: ::std::option::Option<i32>,
         ///BNA score
         pub score: f64,
@@ -3894,27 +1943,6 @@ pub mod types {
     }
 
     ///`RatingWithCity`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "rating"
-    ///  ],
-    ///  "properties": {
-    ///    "city": {
-    ///      "$ref": "#/components/schemas/City"
-    ///    },
-    ///    "rating": {
-    ///      "$ref": "#/components/schemas/Rating"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct RatingWithCity {
         pub city: City,
@@ -3928,18 +1956,6 @@ pub mod types {
     }
 
     ///`Ratings`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/Rating"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct Ratings(pub ::std::vec::Vec<Rating>);
@@ -3963,85 +1979,20 @@ pub mod types {
     }
 
     ///`Recreation`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "community_centers": {
-    ///      "description": "BNA category subscore for access to community
-    /// centers.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "parks": {
-    ///      "description": "BNA category subscore for access to parks.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "score": {
-    ///      "description": "BNA category score for access to recreational
-    /// facilities.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    },
-    ///    "trails": {
-    ///      "description": "BNA category subscore for access to bikeable
-    /// trails.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Recreation {
         ///BNA category subscore for access to community centers.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub community_centers: ::std::option::Option<f64>,
         ///BNA category subscore for access to parks.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub parks: ::std::option::Option<f64>,
         ///BNA category score for access to recreational facilities.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub score: ::std::option::Option<f64>,
         ///BNA category subscore for access to bikeable trails.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub trails: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Recreation {
-        fn default() -> Self {
-            Self {
-                community_centers: Default::default(),
-                parks: Default::default(),
-                score: Default::default(),
-                trails: Default::default(),
-            }
-        }
     }
 
     impl Recreation {
@@ -4051,41 +2002,11 @@ pub mod types {
     }
 
     ///`Retail`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "retail": {
-    ///      "description": "BNA category score for access to major retail
-    /// centers.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Retail {
         ///BNA category score for access to major retail centers.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub retail: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Retail {
-        fn default() -> Self {
-            Self {
-                retail: Default::default(),
-            }
-        }
     }
 
     impl Retail {
@@ -4095,124 +2016,6 @@ pub mod types {
     }
 
     ///`Submission`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "consent",
-    ///    "country",
-    ///    "created_at",
-    ///    "email",
-    ///    "fips_code",
-    ///    "first_name",
-    ///    "id",
-    ///    "last_name",
-    ///    "status"
-    ///  ],
-    ///  "properties": {
-    ///    "city": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "consent": {
-    ///      "description": "Consent status",
-    ///      "examples": [
-    ///        "true"
-    ///      ],
-    ///      "type": "boolean"
-    ///    },
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/Country"
-    ///    },
-    ///    "created_at": {
-    ///      "description": "Creation date",
-    ///      "type": "string",
-    ///      "format": "date-time"
-    ///    },
-    ///    "email": {
-    ///      "description": "email address",
-    ///      "examples": [
-    ///        "jane.doe@orgllc.com"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "first_name": {
-    ///      "description": "First name",
-    ///      "examples": [
-    ///        "Jane"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "id": {
-    ///      "description": "Submission identifier",
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    },
-    ///    "last_name": {
-    ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "occupation": {
-    ///      "description": "Job title or position",
-    ///      "examples": [
-    ///        "CTO"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "organization": {
-    ///      "description": "Organization or company",
-    ///      "examples": [
-    ///        "Organization LLC"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or\nsomething similar depending on the country. If a country
-    /// does not have\nthis concept, then the country name is used.",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "status": {
-    ///      "description": "Submission status, e.g. \"Pending\"",
-    ///      "examples": [
-    ///        "Pending"
-    ///      ],
-    ///      "type": "string"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct Submission {
         ///City name
@@ -4234,15 +2037,15 @@ pub mod types {
         ///Last name
         pub last_name: ::std::string::String,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
         ///Organization or company
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
         ///Submission status, e.g. "Pending"
         pub status: ::std::string::String,
@@ -4255,152 +2058,42 @@ pub mod types {
     }
 
     ///`SubmissionPatch`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "city": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "consent": {
-    ///      "description": "Consent status",
-    ///      "examples": [
-    ///        "true"
-    ///      ],
-    ///      "type": "boolean"
-    ///    },
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/Country"
-    ///    },
-    ///    "email": {
-    ///      "description": "email address",
-    ///      "examples": [
-    ///        "jane.doe@orgllc.com"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "first_name": {
-    ///      "description": "First name",
-    ///      "examples": [
-    ///        "Jane"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "last_name": {
-    ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "occupation": {
-    ///      "description": "Job title or position",
-    ///      "examples": [
-    ///        "CTO"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "organization": {
-    ///      "description": "Organization or company",
-    ///      "examples": [
-    ///        "Organization LLC"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or\nsomething similar depending on the country. If a country
-    /// does not have\nthis concept, then the country name is used.",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "status": {
-    ///      "$ref": "#/components/schemas/ApprovalStatus"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct SubmissionPatch {
         ///City name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub city: ::std::option::Option<::std::string::String>,
         ///Consent status
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub consent: ::std::option::Option<bool>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub country: ::std::option::Option<Country>,
         ///email address
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub email: ::std::option::Option<::std::string::String>,
         ///Numerical city identifier given by the U.S. census, or 0 for non-US
         /// cities
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub fips_code: ::std::option::Option<::std::string::String>,
         ///First name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub first_name: ::std::option::Option<::std::string::String>,
         ///Last name
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub last_name: ::std::option::Option<::std::string::String>,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
         ///Organization or company
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub status: ::std::option::Option<ApprovalStatus>,
-    }
-
-    impl ::std::default::Default for SubmissionPatch {
-        fn default() -> Self {
-            Self {
-                city: Default::default(),
-                consent: Default::default(),
-                country: Default::default(),
-                email: Default::default(),
-                fips_code: Default::default(),
-                first_name: Default::default(),
-                last_name: Default::default(),
-                occupation: Default::default(),
-                organization: Default::default(),
-                region: Default::default(),
-                status: Default::default(),
-            }
-        }
     }
 
     impl SubmissionPatch {
@@ -4410,104 +2103,6 @@ pub mod types {
     }
 
     ///`SubmissionPost`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "required": [
-    ///    "city",
-    ///    "consent",
-    ///    "country",
-    ///    "email",
-    ///    "fips_code",
-    ///    "first_name",
-    ///    "last_name"
-    ///  ],
-    ///  "properties": {
-    ///    "city": {
-    ///      "description": "City name",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "consent": {
-    ///      "description": "Consent status",
-    ///      "examples": [
-    ///        "true"
-    ///      ],
-    ///      "type": "boolean"
-    ///    },
-    ///    "country": {
-    ///      "$ref": "#/components/schemas/Country"
-    ///    },
-    ///    "email": {
-    ///      "description": "email address",
-    ///      "examples": [
-    ///        "jane.doe@orgllc.com"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "fips_code": {
-    ///      "description": "Numerical city identifier given by the U.S. census,
-    /// or 0 for non-US cities",
-    ///      "examples": [
-    ///        "4805000"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "first_name": {
-    ///      "description": "First name",
-    ///      "examples": [
-    ///        "Jane"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "last_name": {
-    ///      "description": "Last name",
-    ///      "examples": [
-    ///        "Doe"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "occupation": {
-    ///      "description": "Job title or position",
-    ///      "examples": [
-    ///        "CTO"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "organization": {
-    ///      "description": "Organization or company",
-    ///      "examples": [
-    ///        "Organization LLC"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    },
-    ///    "region": {
-    ///      "description": "Region name. A region can be a state, a province, a
-    /// community, or\nsomething similar depending on the country. If a country
-    /// does not have\nthis concept, then the country name is used.",
-    ///      "examples": [
-    ///        "Antwerp"
-    ///      ],
-    ///      "type": [
-    ///        "string",
-    ///        "null"
-    ///      ]
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct SubmissionPost {
         ///City name
@@ -4525,15 +2120,15 @@ pub mod types {
         ///Last name
         pub last_name: ::std::string::String,
         ///Job title or position
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub occupation: ::std::option::Option<::std::string::String>,
         ///Organization or company
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub organization: ::std::option::Option<::std::string::String>,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub region: ::std::option::Option<::std::string::String>,
     }
 
@@ -4544,18 +2139,6 @@ pub mod types {
     }
 
     ///`Submissions`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/Submission"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct Submissions(pub ::std::vec::Vec<Submission>);
@@ -4579,41 +2162,11 @@ pub mod types {
     }
 
     ///`Transit`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "object",
-    ///  "properties": {
-    ///    "transit": {
-    ///      "description": "BNA category score for access to major transit
-    /// stops.",
-    ///      "type": [
-    ///        "number",
-    ///        "null"
-    ///      ],
-    ///      "format": "double",
-    ///      "maximum": 100.0,
-    ///      "minimum": 0.0
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
-    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
+    #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, Default)]
     pub struct Transit {
         ///BNA category score for access to major transit stops.
-        #[serde(default, skip_serializing_if = "::std::option::Option::is_none")]
+        #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub transit: ::std::option::Option<f64>,
-    }
-
-    impl ::std::default::Default for Transit {
-        fn default() -> Self {
-            Self {
-                transit: Default::default(),
-            }
-        }
     }
 
     impl Transit {
@@ -4623,53 +2176,6 @@ pub mod types {
     }
 
     ///Detailed information of a city
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "description": "Detailed information of a city",
-    ///  "type": "object",
-    ///  "required": [
-    ///    "abbrev",
-    ///    "fipscode",
-    ///    "name",
-    ///    "speed_limit"
-    ///  ],
-    ///  "properties": {
-    ///    "abbrev": {
-    ///      "description": "Two-letter state abbreviation..",
-    ///      "examples": [
-    ///        "TX"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "fipscode": {
-    ///      "description": "State FIPS code.",
-    ///      "examples": [
-    ///        "48"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "name": {
-    ///      "description": "State name.",
-    ///      "examples": [
-    ///        "Texas"
-    ///      ],
-    ///      "type": "string"
-    ///    },
-    ///    "speed_limit": {
-    ///      "description": "State speed limit in mph.",
-    ///      "examples": [
-    ///        "30"
-    ///      ],
-    ///      "type": "integer",
-    ///      "format": "int32"
-    ///    }
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     pub struct UsState {
         ///Two-letter state abbreviation..
@@ -4689,18 +2195,6 @@ pub mod types {
     }
 
     ///`UsStates`
-    ///
-    /// <details><summary>JSON schema</summary>
-    ///
-    /// ```json
-    ///{
-    ///  "type": "array",
-    ///  "items": {
-    ///    "$ref": "#/components/schemas/UsState"
-    ///  }
-    ///}
-    /// ```
-    /// </details>
     #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug)]
     #[serde(transparent)]
     pub struct UsStates(pub ::std::vec::Vec<UsState>);
@@ -7961,6 +5455,36 @@ pub mod types {
             }
         }
     }
+
+    /// Error types.
+    pub mod error {
+        /// Error from a `TryFrom` or `FromStr` implementation.
+        pub struct ConversionError(::std::borrow::Cow<'static, str>);
+        impl ::std::error::Error for ConversionError {}
+        impl ::std::fmt::Display for ConversionError {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+                ::std::fmt::Display::fmt(&self.0, f)
+            }
+        }
+
+        impl ::std::fmt::Debug for ConversionError {
+            fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> Result<(), ::std::fmt::Error> {
+                ::std::fmt::Debug::fmt(&self.0, f)
+            }
+        }
+
+        impl From<&'static str> for ConversionError {
+            fn from(value: &'static str) -> Self {
+                Self(value.into())
+            }
+        }
+
+        impl From<String> for ConversionError {
+            fn from(value: String) -> Self {
+                Self(value.into())
+            }
+        }
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -7980,7 +5504,10 @@ impl Client {
     /// `baseurl` is the base URL provided to the internal
     /// `reqwest::Client`, and should include a scheme and hostname,
     /// as well as port and a path stem if applicable.
-    pub fn new(baseurl: &str) -> Self {
+    ///
+    /// Returns an error if the `reqwest::Client` cannot be built,
+    /// for example when the TLS backend fails to initialize.
+    pub fn new(baseurl: &str) -> Result<Self, reqwest::Error> {
         #[cfg(not(target_arch = "wasm32"))]
         let client = {
             let dur = ::std::time::Duration::from_secs(15u64);
@@ -7990,7 +5517,7 @@ impl Client {
         };
         #[cfg(target_arch = "wasm32")]
         let client = reqwest::ClientBuilder::new();
-        Self::new_with_client(baseurl, client.build().unwrap())
+        Ok(Self::new_with_client(baseurl, client.build()?))
     }
 
     /// Construct a new client with an existing `reqwest::Client`,
