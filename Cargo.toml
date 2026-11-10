@@ -19,7 +19,7 @@ version = "1.6.0-alpha.1"
 [workspace.dependencies]
 async-std = "1.13.2"
 aws-config = "1.13.1"
-aws-sdk-s3 = "1.158.0"
+aws-sdk-s3 = "1.159.0"
 axum = "0.8.9"
 axum-streams = "0.30.0"
 bnacore = { git = "https://github.com/PeopleForBikes/brokenspoke", rev = "daf78f2" }
