@@ -13,9 +13,9 @@ Table "bna_pipeline" {
   "fargate_price_id" integer
   "fargate_task_arn" "character varying"
   "s3_bucket" "character varying"
-  "status" "character varying" [not null, default: `'Pending'::charactervarying`]
-  "start_time" timestamp [not null]
-  "end_time" timestamp
+  "status" "character varying" [not null, default: 'Pending']
+  "start_time" "timestamp with time zone" [not null]
+  "end_time" "timestamp with time zone"
   "cost" numeric
 }
 
@@ -36,13 +36,13 @@ Table "city" {
   "country" "character varying" [not null]
   "state" "character varying" [not null]
   "name" "character varying" [not null]
-  "latitude" doubleprecision
-  "longitude" doubleprecision
+  "latitude" "double precision"
+  "longitude" "double precision"
   "region" "character varying"
   "state_abbrev" "character varying"
   "residential_speed_limit" integer
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
-  "updated_at" timestamp
+  "created_at" "timestamp with time zone" [not null, default: `CURRENT_TIMESTAMP`]
+  "updated_at" "timestamp with time zone"
   "fips_code" "character varying"
 
   Indexes {
@@ -53,13 +53,13 @@ Table "city" {
 
 Table "core_services" {
   "id" uuid [pk, not null]
-  "dentists" doubleprecision
-  "doctors" doubleprecision
-  "grocery" doubleprecision
-  "hospitals" doubleprecision
-  "pharmacies" doubleprecision
-  "score" doubleprecision
-  "social_services" doubleprecision
+  "dentists" "double precision"
+  "doctors" "double precision"
+  "grocery" "double precision"
+  "hospitals" "double precision"
+  "pharmacies" "double precision"
+  "score" "double precision"
+  "social_services" "double precision"
 }
 
 Table "country" {
@@ -67,51 +67,51 @@ Table "country" {
 }
 
 Table "fargate_price" {
-  "id" integer [pk, not null]
+  "id" integer [pk, increment]
   "per_second" numeric [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "created_at" "timestamp with time zone" [not null, default: `CURRENT_TIMESTAMP`]
 }
 
 Table "infrastructure" {
   "id" uuid [pk, not null]
-  "low_stress_miles" doubleprecision
-  "high_stress_miles" doubleprecision
+  "low_stress_miles" "double precision"
+  "high_stress_miles" "double precision"
 }
 
 Table "measure" {
   "id" uuid [pk, not null]
-  "buffered_lane" real
-  "lane" real
-  "path" real
-  "sharrow" real
-  "track" real
+  "buffered_lane" "double precision"
+  "lane" "double precision"
+  "path" "double precision"
+  "sharrow" "double precision"
+  "track" "double precision"
 }
 
 Table "opportunity" {
   "id" uuid [pk, not null]
-  "employment" doubleprecision
-  "higher_education" doubleprecision
-  "k12_education" doubleprecision
-  "score" doubleprecision
-  "technical_vocational_college" doubleprecision
+  "employment" "double precision"
+  "higher_education" "double precision"
+  "k12_education" "double precision"
+  "score" "double precision"
+  "technical_vocational_college" "double precision"
 }
 
 Table "people" {
   "id" uuid [pk, not null]
-  "score" doubleprecision
+  "score" "double precision"
 }
 
 Table "recreation" {
   "id" uuid [pk, not null]
-  "community_centers" doubleprecision
-  "parks" doubleprecision
-  "recreation_trails" doubleprecision
-  "score" doubleprecision
+  "community_centers" "double precision"
+  "parks" "double precision"
+  "recreation_trails" "double precision"
+  "score" "double precision"
 }
 
 Table "retail" {
   "id" uuid [pk, not null]
-  "score" doubleprecision
+  "score" "double precision"
 }
 
 Table "seaql_migrations" {
@@ -131,7 +131,7 @@ Table "state_region_crosswalk" {
 }
 
 Table "submission" {
-  "id" integer [pk, not null]
+  "id" integer [pk, increment]
   "first_name" "character varying" [not null]
   "last_name" "character varying" [not null]
   "occupation" "character varying"
@@ -140,20 +140,20 @@ Table "submission" {
   "country" "character varying" [not null]
   "city" "character varying" [not null]
   "region" "character varying"
-  "fips_code" "character varying" [not null, default: `'0'::charactervarying`]
+  "fips_code" "character varying" [not null, default: '0']
   "consent" boolean [not null]
   "status" "character varying" [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "created_at" "timestamp with time zone" [not null, default: `CURRENT_TIMESTAMP`]
 }
 
 Table "summary" {
   "id" uuid [pk, not null]
   "city_id" uuid [not null]
-  "created_at" timestamp [not null, default: `CURRENT_TIMESTAMP`]
+  "created_at" "timestamp with time zone" [not null, default: `CURRENT_TIMESTAMP`]
   "pop_size" integer [not null]
   "population" integer [not null]
   "residential_speed_limit_override" integer
-  "score" doubleprecision [not null]
+  "score" "double precision" [not null]
   "version" "character varying" [not null]
 
   Indexes {
@@ -163,7 +163,7 @@ Table "summary" {
 
 Table "transit" {
   "id" uuid [pk, not null]
-  "score" doubleprecision
+  "score" "double precision"
 }
 
 Table "us_state" {
