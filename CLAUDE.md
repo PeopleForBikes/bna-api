@@ -27,6 +27,8 @@ just db-fresh                  # drop all tables and re-apply migrations
 just db-generate-models        # regenerate entity/src/entities from the live DB schema
 just db-seed                   # seed DB from a City Ratings CSV via `cargo run --example seeder`
 just db-reset                  # fresh + generate-models + seed
+just dbml-sql / dbml-svg       # generate docs/database.sql / .svg from docs/database.dbml
+just dbml-check                # check that database.dbml matches the migrations
 just debug-axum                # run the Axum server locally in watch mode (bacon)
 just generate-oas-31           # regenerate openapi-3.1.yaml from the Axum source (utoipa)
 just generate-oas-30           # down-convert 3.1 -> openapi-3.0.yaml
@@ -77,7 +79,8 @@ just test-localhost-schemathesis
   the database (`db-to-dbml`), which loses the column types. DBML cannot express
   a descending index column, and `dbml2sql` makes every foreign key
   `DEFERRABLE INITIALLY IMMEDIATE`; these two differences from the database are
-  expected.
+  expected. `just dbml-check` builds a database from each on the local Postgres
+  and fails on any other difference, or when `docs/database.sql` is out of date.
 - **`lambdas/`** — the actual API. `src/main.rs` builds the Axum app + `utoipa`
   OpenAPI spec and runs it as a Lambda (via `lambda_http::run`). `src/lib.rs`
   exposes shared infrastructure: the global

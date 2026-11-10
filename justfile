@@ -76,12 +76,64 @@ db-seed:
     cargo run --example seeder
 
 # Generate the PostgreSQL schema from dbml.
-# The output has no generation date, so it only changes with the schema.
 dbml-sql:
     #!/usr/bin/env bash
     set -euo pipefail
+    sql=$({{ just_executable() }} dbml-sql-print)
+    printf '%s\n' "$sql" > {{ sql_dump }}
+
+# Print the PostgreSQL schema generated from dbml.
+# The output has no generation date, so it only changes with the schema.
+[private]
+dbml-sql-print:
+    #!/usr/bin/env bash
+    set -euo pipefail
     sql=$(npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
-    printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql" > {{ sql_dump }}
+    printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql"
+
+# Check that the dbml matches the migrations and that the SQL is up to date.
+# Builds a database from each on the server of DATABASE_URL and compares their
+# schemas, apart from the two differences DBML cannot avoid: descending index
+# columns, and foreign keys that dbml2sql makes deferrable.
+dbml-check:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    server="${DATABASE_URL%/*}"
+    from_dbml="dbml_check_${$}_dbml"
+    from_migrations="dbml_check_${$}_migrations"
+    tmp=$(mktemp -d)
+    cleanup() {
+      psql "$DATABASE_URL" -q -c "SET client_min_messages = warning" \
+        -c "DROP DATABASE IF EXISTS $from_dbml" \
+        -c "DROP DATABASE IF EXISTS $from_migrations" || true
+      rm -rf "$tmp"
+    }
+    trap cleanup EXIT
+    dump() {
+      pg_dump -d "$server/$1" --schema-only --no-owner -T seaql_migrations \
+        | grep -v -e '^--' -e '^$' -e '^SET ' -e '^SELECT pg_catalog' \
+          -e '^\\restrict' -e '^\\unrestrict'
+    }
+
+    {{ just_executable() }} dbml-sql-print > "$tmp/spec.sql"
+    if ! diff -q {{ sql_dump }} "$tmp/spec.sql" > /dev/null; then
+      echo "{{ sql_dump }} is out of date: run 'just dbml-sql'." >&2
+      exit 1
+    fi
+
+    psql "$DATABASE_URL" -qc "CREATE DATABASE $from_dbml" \
+      -c "CREATE DATABASE $from_migrations"
+    psql "$server/$from_dbml" -v ON_ERROR_STOP=1 -q -f "$tmp/spec.sql"
+    cargo run -q -p migration -- up -u "$server/$from_migrations" > /dev/null
+
+    dump "$from_dbml" | sed 's/ DEFERRABLE;$/;/' > "$tmp/dbml.sql"
+    dump "$from_migrations" | sed 's/ DESC\([,)]\)/\1/g' > "$tmp/migrations.sql"
+    if diff -u --label migrations --label {{ dbml }} "$tmp/migrations.sql" "$tmp/dbml.sql"; then
+      echo "{{ dbml }} matches the migrations."
+    else
+      echo "{{ dbml }} does not match the migrations." >&2
+      exit 1
+    fi
 
 # Convert PostgreSQL dump to dbml.
 dbml-from-sql:
