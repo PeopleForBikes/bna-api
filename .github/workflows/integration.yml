@@ -137,10 +137,12 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
       # The runner's PostgreSQL client is older than the server, and pg_dump
-      # refuses to dump a newer server.
+      # refuses to dump a newer server. Ubuntu's pg_dump wrapper picks the
+      # version of the runner's local cluster, so the 18 binaries come first.
       - name: Install the PostgreSQL 18 client
         run: |
           sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
           sudo apt-get install -y postgresql-client-18
+          echo "/usr/lib/postgresql/18/bin" >> "$GITHUB_PATH"
       - name: Check the schema specification against the migrations
         run: just dbml-check
