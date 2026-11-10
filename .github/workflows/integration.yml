@@ -109,3 +109,38 @@ jobs:
       #     --exclude-method 'POST'
       #     --exclude-method 'PATCH'
       #     ../../openapi-3.0.yaml
+
+  # Checks that the schema specification, docs/database.dbml, matches the
+  # migrations. A job of its own, so that a failure does not hide the tests.
+  schema:
+    runs-on: ubuntu-24.04
+
+    env:
+      DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+
+    services:
+      postgres:
+        image: ghcr.io/gui/pgrouting:18.1-trixie-postgis-3.6.1-pgrouting-4.0.0
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
+      # The runner's PostgreSQL client is older than the server, and pg_dump
+      # refuses to dump a newer server.
+      - name: Install the PostgreSQL 18 client
+        run: |
+          sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -y
+          sudo apt-get install -y postgresql-client-18
+      - name: Check the schema specification against the migrations
+        run: just dbml-check
