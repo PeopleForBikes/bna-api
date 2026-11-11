@@ -79,7 +79,7 @@ fmt-spellcheck:
 # Fix the fixable Markdown lint findings, then format the Markdown files.
 # rumdl exits 1 when findings it cannot fix remain; just lint reports them.
 fmt-md:
-    rumdl check --config .markdownlint.yml --fix . || [ $? -eq 1 ]
+    rumdl check --no-cache --config .markdownlint.yml --fix . || [ $? -eq 1 ]
     oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
@@ -88,7 +88,7 @@ lint: lint-md lint-spellcheck
 # Check the Markdown formatting, then lint the Markdown files.
 lint-md:
     oxfmt --check "**/*.md"
-    rumdl check --config .markdownlint.yml .
+    rumdl check --no-cache --config .markdownlint.yml .
 
 # Check spelling in the whole repository.
 lint-spellcheck:
@@ -106,6 +106,9 @@ lint-spellcheck:
 - rumdl gets `--config .markdownlint.yml` explicitly: when it finds the file by
   itself and cannot parse it, it falls back to its defaults without a word and
   exits 0; given the path, it fails with `Config error` (`findings.md` §2.2).
+- rumdl runs with `--no-cache`: by default it writes a `.rumdl_cache/` folder at
+  the root, so `just lint` would modify the working tree (Requirement 4.4). It
+  lints the repository in about 10 ms without a cache.
 - `oxfmt "**/*.md"` restricts oxfmt to Markdown; without the glob it would also
   format the JSON, YAML and TOML files.
 - No tool needs an exclude list for `target/` or `lambdas/tests/.venv/`: all

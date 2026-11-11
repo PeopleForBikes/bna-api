@@ -28,7 +28,7 @@ fmt-spellcheck:
 # Fix the fixable Markdown lint findings, then format the Markdown files.
 # rumdl exits 1 when findings it cannot fix remain; just lint reports them.
 fmt-md:
-    rumdl check --config .markdownlint.yml --fix . || [ $? -eq 1 ]
+    rumdl check --no-cache --config .markdownlint.yml --fix . || [ $? -eq 1 ]
     oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
@@ -37,7 +37,7 @@ lint: lint-md lint-spellcheck
 # Check the Markdown formatting, then lint the Markdown files.
 lint-md:
     oxfmt --check "**/*.md"
-    rumdl check --config .markdownlint.yml .
+    rumdl check --no-cache --config .markdownlint.yml .
 
 # Check spelling in the whole repository.
 lint-spellcheck:
