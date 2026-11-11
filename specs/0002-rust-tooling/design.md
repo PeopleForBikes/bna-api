@@ -72,12 +72,14 @@ fmt-just:
     just --fmt --unstable
 
 # Fix the spelling mistakes that have a single correction.
+# typos exits 2 when misspellings with several suggestions remain; just lint reports them.
 fmt-spellcheck:
-    -typos --write-changes
+    typos --write-changes || [ $? -eq 2 ]
 
 # Fix the fixable Markdown lint findings, then format the Markdown files.
+# rumdl exits 1 when findings it cannot fix remain; just lint reports them.
 fmt-md:
-    -rumdl check --fix .
+    rumdl check --config .markdownlint.yml --fix . || [ $? -eq 1 ]
     oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
@@ -86,18 +88,24 @@ lint: lint-md lint-spellcheck
 # Check the Markdown formatting, then lint the Markdown files.
 lint-md:
     oxfmt --check "**/*.md"
-    rumdl check .
+    rumdl check --config .markdownlint.yml .
 
 # Check spelling in the whole repository.
 lint-spellcheck:
     typos
 ```
 
-- The `-` prefix lets a fixer report what it could not fix without stopping
-  `just fmt`: measured in the spike's scratch runs, `rumdl check --fix` exits 1
-  when unfixable findings remain, and `typos --write-changes` exits 2 when a
-  misspelling has several suggestions. The remaining problems are then reported
-  by `just lint`.
+- Each fixer tolerates only the exit code that means "something is left for a
+  person", so `just fmt` still runs the next fixer: `typos --write-changes`
+  exits 2 when a misspelling has several suggestions, and `rumdl check --fix`
+  exits 1 when unfixable findings remain. Any other code stops `just fmt`: 127
+  for a missing tool, 78 for a broken `_typos.toml`, 2 for a broken
+  `.markdownlint.yml` (all measured). The remaining problems are reported by
+  `just lint`. The first version used just's `-` prefix, which ignored every
+  error, a missing tool included (spec review; `findings.md` §2.2).
+- rumdl gets `--config .markdownlint.yml` explicitly: when it finds the file by
+  itself and cannot parse it, it falls back to its defaults without a word and
+  exits 0; given the path, it fails with `Config error` (`findings.md` §2.2).
 - `oxfmt "**/*.md"` restricts oxfmt to Markdown; without the glob it would also
   format the JSON, YAML and TOML files.
 - No tool needs an exclude list for `target/` or `lambdas/tests/.venv/`: all
@@ -319,10 +327,15 @@ the CI lint job (tool versions).
 ## Error Handling
 
 - **A tool is missing locally**: the recipe fails with the shell's
-  `command not found` (exit 127). `CLAUDE.md` names the tools and where their
-  versions are pinned; no install logic is added (out of scope).
-- **An unfixable problem during `just fmt`**: the fixer reports it, the `-`
-  prefix lets the remaining fixers run, and `just lint` then fails on it.
+  `command not found` (exit 127), in `just fmt` as in `just lint`. `CLAUDE.md`
+  names the tools and where their versions are pinned; no install logic is added
+  (out of scope).
+- **A broken configuration file**: oxfmt (`.oxfmtrc.json`), rumdl
+  (`.markdownlint.yml`, given with `--config`) and typos (`_typos.toml`) each
+  fail, and so does the recipe.
+- **An unfixable problem during `just fmt`**: the fixer reports it and exits
+  with its "left for a person" code, which the recipe accepts so the remaining
+  fixers run; `just lint` then fails on it.
 - **A failed check during `just lint`**: `just` stops at the first non-zero
   exit; in CI the job fails.
 - **A download or attestation failure in CI**: the install step fails and the

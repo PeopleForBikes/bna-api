@@ -75,8 +75,8 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
 
 - [x] 5. Lint Markdown with rumdl
   - [x] 5.1 In `justfile`, make `lint-md` run `rumdl check .` after the format
-        check, and make `fmt-md` run `-rumdl check --fix .` before
-        `oxfmt "**/*.md"` (recipes in `design.md`).
+        check, and make `fmt-md` run `rumdl check --fix .` (accepting exit 1)
+        before `oxfmt "**/*.md"` (recipes in `design.md`).
     - Add the MD076 option to `.markdownlint.yml` (`list-item-spacing`,
       `allow-loose-continuation: true`, content in `design.md`); added during
       implementation, see `findings.md` §2.1.
@@ -98,8 +98,8 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
         correction, and the `spike` file type ignoring code spans and
         `cspell:ignore` comments in files named `spike.md`.
     - _Requirements: 3.1, 3.4, 3.5_
-  - [x] 6.2 In `justfile`, add `fmt-spellcheck` (`-typos --write-changes`) and
-        make `lint-spellcheck` run `typos`.
+  - [x] 6.2 In `justfile`, add `fmt-spellcheck` (`typos --write-changes`,
+        accepting exit 2) and make `lint-spellcheck` run `typos`.
     - _Requirements: 3.1, 3.2, 3.3, 3.6_
   - [x] 6.3 Delete `cspell.config.yaml` and `words.txt`.
     - _Requirements: 3.6, 7.2, 7.3_
@@ -198,9 +198,10 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
   oxfmt (task 4) comes before rumdl so the parity check runs on unchanged files.
 - **Line numbers** are those of commit `b9ea034`; earlier tasks shift some of
   them in `justfile` (tasks 1, 2 and 6 all edit it).
-- **The `-` prefix** on `typos --write-changes` and `rumdl check --fix` is
-  intentional: both exit non-zero when they leave something to fix by hand, and
-  `just fmt` must still run the next fixer.
+- **Accepted exit codes**: `typos --write-changes` (2) and `rumdl check --fix`
+  (1) exit non-zero when they leave something to fix by hand, and `just fmt`
+  must still run the next fixer; any other code must stop it. The first version
+  used just's `-` prefix, which also hid a missing tool (`findings.md` §2.2).
 - **Linux archives**: the binary names inside them were confirmed with
   `tar -tzf` during task 9.1; after a version bump, list the new archives the
   same way if the install step fails on `install`.

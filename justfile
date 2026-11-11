@@ -21,12 +21,14 @@ fmt-just:
     just --fmt --unstable
 
 # Fix the spelling mistakes that have a single correction.
+# typos exits 2 when misspellings with several suggestions remain; just lint reports them.
 fmt-spellcheck:
-    -typos --write-changes
+    typos --write-changes || [ $? -eq 2 ]
 
 # Fix the fixable Markdown lint findings, then format the Markdown files.
+# rumdl exits 1 when findings it cannot fix remain; just lint reports them.
 fmt-md:
-    -rumdl check --fix .
+    rumdl check --config .markdownlint.yml --fix . || [ $? -eq 1 ]
     oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
@@ -35,7 +37,7 @@ lint: lint-md lint-spellcheck
 # Check the Markdown formatting, then lint the Markdown files.
 lint-md:
     oxfmt --check "**/*.md"
-    rumdl check .
+    rumdl check --config .markdownlint.yml .
 
 # Check spelling in the whole repository.
 lint-spellcheck:
