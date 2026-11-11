@@ -74,6 +74,17 @@ fix on a scratch copy: `just fmt` exits 1 without typos, 1 with a broken
 `.markdownlint.yml` or `_typos.toml`; with only unfixable findings left it exits
 0 and `just lint` exits 1.
 
+### 2.3 rumdl writes a cache into the working tree unless told not to
+
+`rumdl check` creates and updates `.rumdl_cache/` at the repository root (85
+entries after a few runs). It stays out of `git status` only because rumdl
+writes its own `.rumdl_cache/.gitignore` (`*`), so `just lint` looked clean
+while it modified files, against Requirement 4.4. Both recipes now pass
+`--no-cache` (`justfile:31`, `justfile:40`); without a cache rumdl still lints
+the whole repository in about 10 ms.
+
+**Caught by**: the spec review, which found the folder in the working tree.
+
 ## 3. Method — what actually worked
 
 ### 3.1 Compare the new formatter with the old one before switching
