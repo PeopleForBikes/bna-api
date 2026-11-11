@@ -22,7 +22,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
 
 ## Tasks
 
-- [ ] 1. Pin the remaining `npx` packages
+- [x] 1. Pin the remaining `npx` packages
   - In `justfile` (`dbml-sql-print`, line 91), call
     `npx -y --package=@dbml/cli@12.0.0 dbml2sql`.
   - In `justfile` (`dbml-svg`, line 144), call
@@ -31,7 +31,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
     (`docs/database.sql` and `docs/database.svg` byte-identical).
   - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 2. Remove the `sql2dbml` recipes
+- [x] 2. Remove the `sql2dbml` recipes
   - In `justfile`, delete `db-to-dbml` (line 47) and `dbml-from-sql` (line 139),
     with their comments. Keep `db-dump`.
   - In `CLAUDE.md` (line 79), keep the rule "do not regenerate the `.dbml` from
@@ -40,7 +40,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
     only `specs/`.
   - _Requirements: 7.1_
 
-- [ ] 3. Shorten the two long link reference labels
+- [x] 3. Shorten the two long link reference labels
   - `code-of-conduct.md`: `[BNA Mechanics Code of Conduct][code of conduct]` and
     `[code of conduct]: https://peopleforbikes.github.io/code-of-conduct/` on
     one line.
@@ -52,16 +52,16 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
     issue, and both links still render to the same URLs.
   - _Requirements: 2.1, 4.3_
 
-- [ ] 4. Format Markdown with oxfmt
-  - [ ] 4.1 Add `.oxfmtrc.json` at the root with `printWidth: 80` and
+- [x] 4. Format Markdown with oxfmt
+  - [x] 4.1 Add `.oxfmtrc.json` at the root with `printWidth: 80` and
         `proseWrap: "always"` (content in `design.md`).
     - _Requirements: 1.1_
-  - [ ] 4.2 In `justfile`, make `fmt-md` run `oxfmt "**/*.md"`, and make
+  - [x] 4.2 In `justfile`, make `fmt-md` run `oxfmt "**/*.md"`, and make
         `lint-md` start with `oxfmt --check "**/*.md"`.
     - _Requirements: 1.1, 1.3, 1.4_
-  - [ ] 4.3 Delete `.prettierignore`.
+  - [x] 4.3 Delete `.prettierignore`.
     - _Requirements: 7.2, 7.3_
-  - [ ] 4.4 Check parity, then format.
+  - [x] 4.4 Check parity, then format.
     - Before formatting, run
       `npx prettier@3.9.10 --check --prose-wrap always "**/*.md"` to list the
       files prettier would change today
@@ -73,40 +73,40 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
       exits 0.
     - _Requirements: 1.2, 4.2_
 
-- [ ] 5. Lint Markdown with rumdl
-  - [ ] 5.1 In `justfile`, make `lint-md` run `rumdl check .` after the format
+- [x] 5. Lint Markdown with rumdl
+  - [x] 5.1 In `justfile`, make `lint-md` run `rumdl check .` after the format
         check, and make `fmt-md` run `-rumdl check --fix .` before
         `oxfmt "**/*.md"` (recipes in `design.md`).
     - Add the MD076 option to `.markdownlint.yml` (`list-item-spacing`,
       `allow-loose-continuation: true`, content in `design.md`); added during
       implementation, see `findings.md` §2.1.
     - _Requirements: 2.1, 2.3, 2.4, 4.3_
-  - [ ] 5.2 Verify on the repository: `just lint-md` passes and reads
+  - [x] 5.2 Verify on the repository: `just lint-md` passes and reads
         `.markdownlint.yml` (`rumdl config` lists its settings as
         `[from .markdownlint.yml]`).
     - _Requirements: 2.1_
-  - [ ] 5.3 Negative check on a scratch branch: a heading level skip in any
+  - [x] 5.3 Negative check on a scratch branch: a heading level skip in any
         `.md` file makes `just lint-md` fail with the file, the line and the
         rule; revert.
     - _Requirements: 2.2_
 
-- [ ] 6. Spellcheck the whole repository with typos
-  - [ ] 6.1 Add `_typos.toml` at the root (content in `design.md`): hidden
+- [x] 6. Spellcheck the whole repository with typos
+  - [x] 6.1 Add `_typos.toml` at the root (content in `design.md`): hidden
         folders checked, `.git/` excluded, `ND`, `nd` and `claus` accepted, the
         misspelling of "submission" found at
         `lambdas/src/core/resource/cities/endpoint.rs:225` added with its
         correction, and the `spike` file type ignoring code spans and
         `cspell:ignore` comments in files named `spike.md`.
     - _Requirements: 3.1, 3.4, 3.5_
-  - [ ] 6.2 In `justfile`, add `fmt-spellcheck` (`-typos --write-changes`) and
+  - [x] 6.2 In `justfile`, add `fmt-spellcheck` (`-typos --write-changes`) and
         make `lint-spellcheck` run `typos`.
     - _Requirements: 3.1, 3.2, 3.3, 3.6_
-  - [ ] 6.3 Delete `cspell.config.yaml` and `words.txt`.
+  - [x] 6.3 Delete `cspell.config.yaml` and `words.txt`.
     - _Requirements: 3.6, 7.2, 7.3_
-  - [ ] 6.4 In `specs/0002-rust-tooling/spike.md:457`, turn the bold quote of
+  - [x] 6.4 In `specs/0002-rust-tooling/spike.md:457`, turn the bold quote of
         the typo finding into a code span (formatting only).
     - _Requirements: 3.5_
-  - [ ] 6.5 Run `just fmt-spellcheck` and review the diff: it must fix the 13
+  - [x] 6.5 Run `just fmt-spellcheck` and review the diff: it must fix the 13
         single-suggestion findings (the `justfile` variable and its comment at
         line 30, `lambdas/src/lib.rs:188` and `:195`, the doc comments of
         `lambdas/src/core/resource/{cities,pipelines,usstates}/mod.rs` and
@@ -117,11 +117,11 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
         "submission" (`endpoint.rs:225`, `openapi-3.1.yaml:338`,
         `openapi-3.0.yaml:376`, `bnaclient/src/lib.rs:5629`).
     - _Requirements: 3.3_
-  - [ ] 6.6 Fix the two findings with several suggestions by hand: the comment
+  - [x] 6.6 Fix the two findings with several suggestions by hand: the comment
         at `justfile:13` ("at once") and `bnaclient/CHANGELOG.md:15` ("from the
         API schema").
     - _Requirements: 3.2_
-  - [ ] 6.7 Verify the code and the generated files.
+  - [x] 6.7 Verify the code and the generated files.
     - `cargo check --workspace` and `cargo test` pass.
     - `just regenerate-all-no-cargo` leaves `git status` unchanged (the OpenAPI
       files and `bnaclient` match their fixed source).
@@ -129,12 +129,12 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
       misspelling there (negative check on a scratch branch, then revert).
     - _Requirements: 3.1, 3.2, 3.5, 6.4_
 
-- [ ] 7. Wire the meta recipes
-  - [ ] 7.1 In `justfile`, set `fmt: fmt-spellcheck fmt-md fmt-just` and
+- [x] 7. Wire the meta recipes
+  - [x] 7.1 In `justfile`, set `fmt: fmt-spellcheck fmt-md fmt-just` and
         `lint: lint-md lint-spellcheck`; keep `ci: lint`. Update the recipe
         comments as in `design.md`.
     - _Requirements: 4.1, 4.4_
-  - [ ] 7.2 Verify the properties of `design.md`.
+  - [x] 7.2 Verify the properties of `design.md`.
     - `just fmt` twice: the second run changes nothing.
     - `just lint` passes on the repository.
     - On a scratch branch, add in turn an unformatted paragraph, a lint error
@@ -143,7 +143,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
       `just fmt`: the formatting and the misspelling are fixed. Revert.
     - _Requirements: 1.3, 4.2, 4.3, 4.4, 4.5, 4.6_
 
-- [ ] 8. Checkpoint - Local quality
+- [x] 8. Checkpoint - Local quality
   - `just fmt` changes nothing; `just lint` passes.
   - `cargo check --workspace`, `cargo test` and `cargo clippy` pass.
   - `just dbml-sql`, `just dbml-svg` and `just regenerate-all-no-cargo` leave
@@ -153,7 +153,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
     expected).
 
 - [ ] 9. Run the checks in CI
-  - [ ] 9.1 In `.github/workflows/ci-rust.yml`, `lint` job: add the step that
+  - [x] 9.1 In `.github/workflows/ci-rust.yml`, `lint` job: add the step that
         installs oxfmt 0.78.0, rumdl 0.3.2 and typos 1.52.1 with
         `gh release download` and `gh attestation verify`, then replace
         `just lint-md` with `just lint` (step in `design.md`).
@@ -167,7 +167,7 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
         its log shows that neither rumdl nor typos ran. Remove the commit.
     - _Requirements: 5.3_
 
-- [ ] 10. Update `CLAUDE.md`
+- [x] 10. Update `CLAUDE.md`
   - In the command block (lines 22-23), describe `just fmt` (every automatic
     fix: spelling, Markdown lint, Markdown format, `justfile` format) and
     `just lint` (formatting check, Markdown lint, spelling of the whole
