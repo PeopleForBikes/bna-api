@@ -22,13 +22,14 @@ fmt-just:
 
 # Format markdown files.
 fmt-md:
-    npx --yes prettier --write --prose-wrap always "**/*.md"
+    oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
 lint: lint-md lint-spellcheck
 
 # Lint markown files.
 lint-md:
+    oxfmt --check "**/*.md"
     npx --yes markdownlint-cli2 "**/*.md" "#**/.venv" "#docs/themes" "#target"
 
 # Check spelling.

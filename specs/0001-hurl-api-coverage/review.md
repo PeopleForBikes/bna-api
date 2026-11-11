@@ -118,10 +118,10 @@ Nine separate inserts (`ratings/adaptor.rs`): a failure partway leaves a
 
 No request can make a later insert fail: the detail tables only hold nullable
 `double precision` columns without constraints, a JSON number is always finite,
-and the city is checked first. Only a server-side failure, such as a lost connection
-or a Lambda timeout, leaves a partial rating. So the test is a unit test with
-SeaORM's `MockDatabase` instead of a Hurl request. Fixed on 2026-11-10: the city
-check and the inserts run in one transaction.
+and the city is checked first. Only a server-side failure, such as a lost
+connection or a Lambda timeout, leaves a partial rating. So the test is a unit
+test with SeaORM's `MockDatabase` instead of a Hurl request. Fixed on
+2026-11-10: the city check and the inserts run in one transaction.
 
 ### R-15 Some requests lack a comment or a value assertion
 
