@@ -20,17 +20,18 @@ fmt: fmt-md fmt-just
 fmt-just:
     just --fmt --unstable
 
-# Format markdown files.
+# Fix the fixable Markdown lint findings, then format the Markdown files.
 fmt-md:
+    -rumdl check --fix .
     oxfmt "**/*.md"
 
 # Meta task running all the linters at once.
 lint: lint-md lint-spellcheck
 
-# Lint markown files.
+# Check the Markdown formatting, then lint the Markdown files.
 lint-md:
     oxfmt --check "**/*.md"
-    npx --yes markdownlint-cli2 "**/*.md" "#**/.venv" "#docs/themes" "#target"
+    rumdl check .
 
 # Check spelling.
 lint-spellcheck:
