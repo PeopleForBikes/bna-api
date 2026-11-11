@@ -12,7 +12,7 @@ and this project adheres to
 
 ### Fixes
 
-- Fixes field mismatch between the CityPost struct from tha API schema and the
+- Fixes field mismatch between the CityPost struct from the API schema and the
   entities. [#502]
 
 [#502]: https://github.com/PeopleForBikes/bna-api/pull/502

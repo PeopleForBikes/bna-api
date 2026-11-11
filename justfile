@@ -10,7 +10,7 @@ entities := "entity/src/entities"
 sql_dump := "docs/database.sql"
 sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 
-# Meta task running ALL the CI tasks at onces.
+# Meta task running ALL the CI tasks at once.
 ci: lint
 
 # Meta tasks running all formatters at once.
