@@ -88,7 +88,7 @@ dbml-sql:
 dbml-sql-print:
     #!/usr/bin/env bash
     set -euo pipefail
-    sql=$(npx -y --package=@dbml/cli dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
+    sql=$(npx -y --package=@dbml/cli@12.0.0 dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
     printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql"
 
 # Check that the dbml matches the migrations and that the SQL is up to date.
@@ -141,7 +141,7 @@ dbml-from-sql:
 
 # Generate the SVG diagram from dbml.
 dbml-svg:
-    npx -y --package=@softwaretechnik/dbml-renderer dbml-renderer -i {{ dbml }} -o docs/database.svg
+    npx -y --package=@softwaretechnik/dbml-renderer@1.0.31 dbml-renderer -i {{ dbml }} -o docs/database.svg
 
 # Spin up Docker Compose.
 compose-up:
