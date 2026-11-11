@@ -149,8 +149,9 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
   - `just dbml-sql`, `just dbml-svg` and `just regenerate-all-no-cargo` leave
     `git status` unchanged.
   - `git grep -n -E 'prettier|markdownlint-cli2|cspell|words\.txt|docs/themes'`
-    finds nothing outside `specs/` (the `.markdownlint.yml` file name is
-    expected).
+    finds nothing outside `specs/` except the two `cspell:ignore` lines of
+    `_typos.toml` (lines 16 and 20), which the design requires: typos skips the
+    misspellings spikes quote in `cspell:ignore` comments.
 
 - [ ] 9. Run the checks in CI
   - [x] 9.1 In `.github/workflows/ci-rust.yml`, `lint` job: add the step that
