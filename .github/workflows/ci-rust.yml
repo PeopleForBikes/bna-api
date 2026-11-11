@@ -22,13 +22,13 @@ jobs:
         run: |
           bin="$RUNNER_TEMP/bin"
           mkdir -p "$bin"
-          # Download a release archive, verify its build attestation, install the binary.
+          # Download a release archive, verify its release attestation, install the binary.
           install_tool() {
             local name="$1" repo="$2" tag="$3" archive="$4" member="$5"
             local dir="$RUNNER_TEMP/$name"
             mkdir -p "$dir"
             gh release download "$tag" --repo "$repo" --pattern "$archive" --dir "$dir"
-            gh attestation verify "$dir/$archive" --repo "$repo"
+            gh release verify-asset "$tag" "$dir/$archive" --repo "$repo"
             tar -xzf "$dir/$archive" -C "$dir"
             install -m 0755 "$dir/$member" "$bin/$name"
           }

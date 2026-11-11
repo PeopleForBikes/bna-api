@@ -54,8 +54,8 @@ checked.
 - **Repository_Files**: every file of the repository that git does not ignore,
   of any type, including hidden folders, but not the `.git/` folder.
 - **Pinned_Tool**: a tool installed at an exact version, from a source whose
-  integrity is checked before use (a published checksum or a GitHub build
-  attestation).
+  integrity is checked before use (a published checksum, or a GitHub release or
+  build attestation).
 - **Automatic_Fix**: a change a tool can make without a human choice: oxfmt's
   formatting, the fixes of rumdl's fixable rules, and the typos corrections that
   have a single suggestion.

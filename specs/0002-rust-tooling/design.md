@@ -14,9 +14,9 @@ fix (spelling corrections, lint fixes, then formatting), and `just lint` only
 checks, stopping at the first failure.
 
 CI installs the three binaries at exact versions from their GitHub releases,
-verifies each archive's GitHub build attestation, and runs `just lint`. Locally
-the recipes call the binaries from the `PATH`; how contributors install them is
-left to the tool-manager spike (requirements, out of scope).
+verifies each archive's GitHub release attestation, and runs `just lint`.
+Locally the recipes call the binaries from the `PATH`; how contributors install
+them is left to the tool-manager spike (requirements, out of scope).
 
 The rest is clean-up: the remaining `npx` packages get exact versions, the
 `sql2dbml` recipes and the configuration files of the removed tools go away, the
@@ -33,7 +33,7 @@ flowchart LR
     FM --> FJ["fmt-just: just --fmt"]
   end
   subgraph "CI (ci-rust.yml, lint job)"
-    I["Install: gh release download + gh attestation verify"] --> L
+    I["Install: gh release download + gh release verify-asset"] --> L
   end
   L["just lint"] --> LM["lint-md: oxfmt --check, then rumdl check"]
   LM --> LS["lint-spellcheck: typos"]
@@ -217,13 +217,13 @@ lint:
       run: |
         bin="$RUNNER_TEMP/bin"
         mkdir -p "$bin"
-        # Download a release archive, verify its build attestation, install the binary.
+        # Download a release archive, verify its release attestation, install the binary.
         install_tool() {
           local name="$1" repo="$2" tag="$3" archive="$4" member="$5"
           local dir="$RUNNER_TEMP/$name"
           mkdir -p "$dir"
           gh release download "$tag" --repo "$repo" --pattern "$archive" --dir "$dir"
-          gh attestation verify "$dir/$archive" --repo "$repo"
+          gh release verify-asset "$tag" "$dir/$archive" --repo "$repo"
           tar -xzf "$dir/$archive" -C "$dir"
           install -m 0755 "$dir/$member" "$bin/$name"
         }
@@ -240,11 +240,17 @@ lint:
 
 - One mechanism for the three tools, with the versions in one `env` block (the
   single place contributors look them up, Requirement 8.1).
-- **Integrity**: each archive's GitHub build attestation was confirmed through
-  the GitHub API for the exact Linux assets above (oxfmt 1, rumdl 3, typos 1
-  attestations). `gh attestation verify` fails the step on a mismatch, and
-  GitHub Actions runs `bash -e`, so `just lint` never runs with an unverified
-  binary (Requirement 5.5).
+- **Integrity**: the three releases are immutable, and GitHub signs a release
+  attestation for each: its subjects are the release tag and the digest of every
+  asset. `gh release verify-asset` checks that the downloaded archive is one of
+  them and fails the step otherwise; GitHub Actions runs `bash -e`, so
+  `just lint` never runs with an unverified binary (Requirement 5.5). A release
+  attestation proves the archive is the one published with that release, not
+  which workflow built it: only rumdl also publishes SLSA build provenance, and
+  oxfmt and typos publish no checksum file, so the release attestation is the
+  one check all three support. The first version called `gh attestation verify`,
+  which looks for build provenance only and failed on oxfmt in the pull
+  request's first CI run (`findings.md` §2.4).
 - **Why not the existing actions**: `taiki-e/install-action` (already used in
   `bnaclient.yml`) has no manifest entry for typos 1.52.1, released on
   2026-11-09, even on its latest tag `v2.90.3`, and its oxfmt manifest does not
@@ -325,7 +331,8 @@ the CI lint job (tool versions).
 5. **Stable generated files**: `just dbml-sql` and `just dbml-svg` reproduce the
    committed `docs/database.sql` and `docs/database.svg` byte for byte.
 6. **No unpinned code**: every `npx` call in the `justfile` names an exact
-   version, and every binary CI runs for `just lint` was attestation-verified.
+   version, and every binary CI runs for `just lint` was verified against its
+   GitHub release attestation.
 
 ## Error Handling
 
@@ -398,11 +405,11 @@ commands and comparing files, as the spike did.
 
 ## Dependencies
 
-| Tool  | Version | Source (GitHub release)                | Integrity                | License           |
-| ----- | ------- | -------------------------------------- | ------------------------ | ----------------- |
-| oxfmt | 0.78.0  | `oxc-project/oxc`, tag `oxfmt_v0.78.0` | GitHub build attestation | MIT               |
-| rumdl | 0.3.2   | `rvben/rumdl`, tag `v0.3.2`            | GitHub build attestation | MIT               |
-| typos | 1.52.1  | `crate-ci/typos`, tag `v1.52.1`        | GitHub build attestation | Apache-2.0 or MIT |
+| Tool  | Version | Source (GitHub release)                | Integrity                                         | License           |
+| ----- | ------- | -------------------------------------- | ------------------------------------------------- | ----------------- |
+| oxfmt | 0.78.0  | `oxc-project/oxc`, tag `oxfmt_v0.78.0` | GitHub release attestation                        | MIT               |
+| rumdl | 0.3.2   | `rvben/rumdl`, tag `v0.3.2`            | GitHub release attestation (and build provenance) | MIT               |
+| typos | 1.52.1  | `crate-ci/typos`, tag `v1.52.1`        | GitHub release attestation                        | Apache-2.0 or MIT |
 
 Still on `npx`, now pinned: `@dbml/cli@12.0.0`,
 `@softwaretechnik/dbml-renderer@1.0.31`, `@apiture/openapi-down-convert@0.14.2`
