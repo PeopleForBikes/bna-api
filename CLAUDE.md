@@ -76,8 +76,8 @@ just test-localhost-schemathesis
   `docs/database.dbml`, then implemented as a migration. `docs/database.svg`
   (`just dbml-svg`) and `docs/database.sql` (`just dbml-sql`) are generated from
   the `.dbml`; never edit them by hand, and do not regenerate the `.dbml` from
-  the database (`db-to-dbml`), which loses the column types. DBML cannot express
-  a descending index column, and `dbml2sql` makes every foreign key
+  the database, which loses the column types. DBML cannot express a descending
+  index column, and `dbml2sql` makes every foreign key
   `DEFERRABLE INITIALLY IMMEDIATE`; these two differences from the database are
   expected. `just dbml-check` builds a database from each on the local Postgres
   and fails on any other difference, or when `docs/database.sql` is out of date.
