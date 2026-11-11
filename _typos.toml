@@ -1,0 +1,20 @@
+[files]
+# Check hidden folders such as .github/, but not the git database.
+ignore-hidden = false
+extend-exclude = [".git/"]
+
+[default.extend-words]
+# Correct words typos would flag.
+# ND and nd: North Dakota, in the migrations, the test data and a seed CSV.
+ND = "ND"
+nd = "nd"
+# claus: part of a city name in the seed CSV.
+claus = "claus"
+# Misspellings typos does not know, found once.
+sumission = "submission"
+
+# Spikes quote misspellings on purpose, as code spans or in cspell:ignore
+# comments: skip those, check the rest.
+[type.spike]
+extend-glob = ["spike.md"]
+extend-ignore-re = ["`[^`\\n]+`", "<!-- cspell:ignore .* -->"]

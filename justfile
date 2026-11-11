@@ -20,6 +20,10 @@ fmt: fmt-md fmt-just
 fmt-just:
     just --fmt --unstable
 
+# Fix the spelling mistakes that have a single correction.
+fmt-spellcheck:
+    -typos --write-changes
+
 # Fix the fixable Markdown lint findings, then format the Markdown files.
 fmt-md:
     -rumdl check --fix .
@@ -33,9 +37,9 @@ lint-md:
     oxfmt --check "**/*.md"
     rumdl check .
 
-# Check spelling.
+# Check spelling in the whole repository.
 lint-spellcheck:
-    npx --yes cspell --no-progress --show-suggestions --show-context "**/*.md"
+    typos
 
 # Dump database schema.
 db-dump:
