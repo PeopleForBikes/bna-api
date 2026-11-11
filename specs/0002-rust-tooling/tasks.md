@@ -1,7 +1,5 @@
 # Implementation Plan: Rust Tooling for Markdown and Spelling
 
-<!-- cspell:words brokenspoke oxfmt oxfmtrc rumdl softwaretechnik -->
-
 ## Overview
 
 The work goes from the least to the most visible change, one commit per task, so
