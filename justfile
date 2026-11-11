@@ -13,8 +13,8 @@ sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 # Meta task running ALL the CI tasks at once.
 ci: lint
 
-# Meta tasks running all formatters at once.
-fmt: fmt-md fmt-just
+# Meta tasks running all formatters and automatic fixes at once.
+fmt: fmt-spellcheck fmt-md fmt-just
 
 # Format the justfile.
 fmt-just:
