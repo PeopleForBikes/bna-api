@@ -1,7 +1,5 @@
 # Requirements Document: Rust Tooling for Markdown and Spelling
 
-<!-- cspell:words rumdl softwaretechnik -->
-
 ## Introduction
 
 The repository formats, lints and spellchecks its Markdown with three JavaScript

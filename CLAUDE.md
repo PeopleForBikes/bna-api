@@ -45,9 +45,10 @@ before committing.
 rumdl (Markdown linter, `.markdownlint.yml`) and typos (spellchecker,
 `_typos.toml`) on the `PATH`, at the versions pinned in the `env` block of
 `.github/workflows/ci-rust.yml`. typos only knows common misspellings: add a
-word it wrongly flags, or a misspelling it should learn, to `_typos.toml`.
-`just fmt` also corrects code (comments, identifiers, strings): review those
-changes and build before committing.
+word it wrongly flags, or a misspelling it should learn, to `_typos.toml`. In a
+`spike.md`, typos skips code spans, so quote deliberate misspellings (seeded
+typos, tool findings) as code spans. `just fmt` also corrects code (comments,
+identifiers, strings): review those changes and build before committing.
 
 Local dev DB: `just compose-up` starts Postgres on `localhost:5432` (user/db
 `bna`/`bna`, or `postgres`/`postgres`) and pgadmin on `:8484`. `DATABASE_URL` is

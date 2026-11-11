@@ -1,8 +1,5 @@
 # Design Document: Rust Tooling for Markdown and Spelling
 
-<!-- cspell:words brokenspoke oxfmt oxfmtrc rumdl rvben softwaretechnik -->
-<!-- cspell:words taiki venv -->
-
 ## Overview
 
 The three `npx` Markdown tools are replaced by three single binaries: oxfmt

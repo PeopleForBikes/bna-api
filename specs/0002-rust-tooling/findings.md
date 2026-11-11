@@ -1,7 +1,5 @@
 # Findings: Rust Tooling for Markdown and Spelling
 
-<!-- cspell:words oxfmt rumdl -->
-
 Everything non-obvious learned while implementing this feature: behavior that
 looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
