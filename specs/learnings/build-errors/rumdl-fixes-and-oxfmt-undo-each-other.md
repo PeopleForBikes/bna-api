@@ -16,8 +16,8 @@ superseded_by:
 ## Context
 
 Markdown is linted by rumdl and formatted by oxfmt. `just fmt` applies rumdl's
-fixes, then formats (`justfile:28-30`); `just lint`, which CI runs, checks the
-formatting, then lints (`justfile:36-38`). rumdl reads `.markdownlint.yml`, but
+fixes, then formats (`justfile:30-32`); `just lint`, which CI runs, checks the
+formatting, then lints (`justfile:38-40`). rumdl reads `.markdownlint.yml`, but
 it also has rules markdownlint does not have (MD057 and MD062 to MD086), and
 some of them can fix files automatically.
 
