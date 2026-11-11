@@ -19,8 +19,8 @@ Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, and
 Most repo-level tasks are `just` recipes (see `justfile`). Key ones:
 
 ```bash
-just fmt                       # format markdown + justfile
-just lint                      # markdown lint + spellcheck (this is what CI runs)
+just fmt                       # apply every automatic fix: spelling, markdown lint, markdown format, justfile format
+just lint                      # check markdown format + markdown lint + spelling of the whole repo (this is what CI runs)
 just compose-up / compose-down # start/stop local Postgres + pgadmin (docker-compose.yml)
 just db-migrate                # apply migrations (sea-orm-cli migrate up)
 just db-fresh                  # drop all tables and re-apply migrations
@@ -37,9 +37,17 @@ just regenerate-all-no-cargo   # regenerate both OAS files + bnaclient (preferre
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
 code (`cargo build`, `cargo test`, `cargo test -p lambdas <name>`,
-`cargo clippy`). Note that CI (`.github/workflows/ci-rust.yml`) currently only
-lints markdown via `just lint-md`; it does not run `cargo test`/`clippy` in CI,
-so run these locally before committing.
+`cargo clippy`). Note that CI (`.github/workflows/ci-rust.yml`) runs
+`just lint`; it does not run `cargo test`/`clippy` in CI, so run these locally
+before committing.
+
+`just fmt` and `just lint` need oxfmt (Markdown formatter, `.oxfmtrc.json`),
+rumdl (Markdown linter, `.markdownlint.yml`) and typos (spellchecker,
+`_typos.toml`) on the `PATH`, at the versions pinned in the `env` block of
+`.github/workflows/ci-rust.yml`. typos only knows common misspellings: add a
+word it wrongly flags, or a misspelling it should learn, to `_typos.toml`.
+`just fmt` also corrects code (comments, identifiers, strings): review those
+changes and build before committing.
 
 Local dev DB: `just compose-up` starts Postgres on `localhost:5432` (user/db
 `bna`/`bna`, or `postgres`/`postgres`) and pgadmin on `:8484`. `DATABASE_URL` is
