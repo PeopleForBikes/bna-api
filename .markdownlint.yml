@@ -6,3 +6,7 @@ line-length:
   code_blocks: false
 single-h1: false
 no-inline-html: false
+# The formatter keeps a blank line after a list item that holds a block (a code
+# block, a second paragraph); accept it instead of fixing it back and forth.
+list-item-spacing:
+  allow-loose-continuation: true
