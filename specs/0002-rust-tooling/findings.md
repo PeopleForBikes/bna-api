@@ -45,6 +45,35 @@ first such list (in `spike.md` itself) broke `just lint`. Any rumdl-only rule
 with an automatic fix can conflict with the formatter in the same way; when
 `just lint` fails right after `just fmt`, look for a rule both tools rewrite.
 
+### 2.2 A fixer must not hide a missing tool or a broken configuration
+
+`just fmt` has to keep going when a fixer leaves work for a person, but it must
+stop on a real error. The first version used just's `-` prefix on
+`typos --write-changes` and `rumdl check --fix`, which ignores every non-zero
+exit: without typos on the `PATH`, `just fmt` printed `command not found` and
+still exited 0. The recipes now accept only the documented code (`justfile:26`,
+`justfile:31`): `|| [ $? -eq 2 ]` for typos, `|| [ $? -eq 1 ]` for rumdl.
+
+A second trap sat behind the first: when rumdl finds `.markdownlint.yml` by
+itself and cannot parse it, it ignores it silently, uses its defaults and exits
+0 (`rumdl config` then shows every setting `[from default]`). Given the file
+with `--config .markdownlint.yml`, it fails with
+`Config error: Failed to parse config` and exits 2, so both recipes pass it
+explicitly. oxfmt (exit 1) and typos (exit 78) already fail on a broken
+configuration file.
+
+**Caught by**: the spec review, then exit codes measured on scratch files with
+the pinned binaries: typos 0 clean, 2 misspellings left, 78 broken config; rumdl
+0 clean, 1 findings left, 2 broken config given with `--config`, 0 broken config
+found by itself; a missing command 127.
+
+**Cost**: before the fix, a contributor without typos or with a YAML mistake in
+`.markdownlint.yml` would get a green `just fmt` that fixed nothing (or linted
+with the wrong rules); only `just lint` or CI would show it. Verified after the
+fix on a scratch copy: `just fmt` exits 1 without typos, 1 with a broken
+`.markdownlint.yml` or `_typos.toml`; with only unfixable findings left it exits
+0 and `just lint` exits 1.
+
 ## 3. Method — what actually worked
 
 ### 3.1 Compare the new formatter with the old one before switching
