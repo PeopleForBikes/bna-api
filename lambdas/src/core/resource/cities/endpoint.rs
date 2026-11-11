@@ -222,7 +222,7 @@ async fn post_city(
 #[utoipa::path(
   get,
   path = "/cities/submissions/{submission_id}",
-  description = "Get the details of a specific sumission.",
+  description = "Get the details of a specific submission.",
   tag = TAG,
   params(
     ("submission_id" = i32, Path, description = "Submission identifier", example = "1"),

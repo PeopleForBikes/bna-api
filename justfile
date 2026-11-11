@@ -6,7 +6,7 @@ set dotenv-load
 # Define variables.
 
 dbml := "docs/database.dbml"
-entites := "entity/src/entities"
+entities := "entity/src/entities"
 sql_dump := "docs/database.sql"
 sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 
@@ -51,9 +51,9 @@ db-dump-with-data:
 
 # Generate models
 db-generate-models:
-    rm -fr  {{ entites }}
+    rm -fr  {{ entities }}
     sea-orm-cli generate entity \
-      -o {{ entites }} \
+      -o {{ entities }} \
       --with-serde both \
       --date-time-crate chrono
 
