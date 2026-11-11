@@ -43,9 +43,6 @@ db-dump:
 db-dump-with-data:
     pg_dump -d $DATABASE_URL > {{ sql_dump_data }}
 
-# Dump database and convert it to dbml.
-db-to-dbml: db-dump dbml-from-sql dbml-svg
-
 # Generate models
 db-generate-models:
     rm -fr  {{ entites }}
@@ -134,10 +131,6 @@ dbml-check:
       echo "{{ dbml }} does not match the migrations." >&2
       exit 1
     fi
-
-# Convert PostgreSQL dump to dbml.
-dbml-from-sql:
-    npx -y --package=@dbml/cli sql2dbml {{ sql_dump }} --postgres -o {{ dbml }}
 
 # Generate the SVG diagram from dbml.
 dbml-svg:
