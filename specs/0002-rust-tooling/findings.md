@@ -10,8 +10,20 @@ pull request's CI run. Keep it current as the code changes.
 
 ## 1. Behavior that does not survive a naive implementation
 
-None found: the behavior matched the specification once the tools were
-configured (section 2).
+### 1.1 `just fmt` can correct a generated file without its source
+
+`typos --write-changes` corrects every file it reads, generated ones included
+(`openapi-3.1.yaml`, `openapi-3.0.yaml`, `bnaclient/src/lib.rs`,
+`docs/database.sql`). When the misspelling also sits in the source (a utoipa
+description, `docs/database.dbml`), both are corrected in the same run and the
+generated file still matches; this is what happened to the description at
+`lambdas/src/core/resource/cities/endpoint.rs:225`, and
+`just regenerate-all-no-cargo` reproduced all four copies. When a misspelling
+exists only in a generated file, `just fmt` creates a drift that only the
+`bnaclient` and `integration` CI jobs reveal. Nothing in this feature guards
+against it: after `just fmt`, regenerate when a generated file changed.
+
+**Caught by**: the spec review (test gaps).
 
 ## 2. Library and tooling traps
 
@@ -111,6 +123,28 @@ proves the archive is the published one, while build provenance also says which
 workflow built it.
 
 ## 3. Method — what actually worked
+
+### 3.0 Negative checks and their output
+
+Each check ran on a scratch copy of the repository (never on the branch) with
+the pinned binaries; `just lint` left the copy unchanged every time. The
+misspelling used was a common one typos knows, with a single correction; it is
+not quoted here, since `just fmt` would correct the quote.
+
+| Change made to the copy                            | `just lint` exit | Reported                                                                   |
+| -------------------------------------------------- | ---------------- | -------------------------------------------------------------------------- |
+| Heading level skip in `code-of-conduct.md`         | 1                | `code-of-conduct.md:7:1: [MD001] Expected heading level 2…`                |
+| Long unformatted paragraph in `code-of-conduct.md` | 1                | oxfmt: `Format issues found in above 1 files`; rumdl and typos did not run |
+| Known misspelling in `.github/CONTRIBUTING.md`     | 2 (typos)        | typos names the word, its correction and `.github/CONTRIBUTING.md:10:8`    |
+| Long paragraph in `.github/CONTRIBUTING.md`        | 1                | oxfmt lists `.github/CONTRIBUTING.md`                                      |
+| Heading level skip in `.github/CONTRIBUTING.md`    | 1                | `.github/CONTRIBUTING.md:10:1: [MD001] …`                                  |
+| Misspelling in a code span, ordinary Markdown file | 2                | typos names the word and its correction                                    |
+| Misspelling in a code span of a `spike.md`         | 0                | nothing (skipped by the `spike` file type)                                 |
+| Misspelling in the prose of a `spike.md`           | 2                | typos names the word and its correction                                    |
+
+After `just fmt` on a copy with a long paragraph and a known misspelling, the
+paragraph was rewrapped, the word corrected, and `just lint` exited 0. The exit
+codes of `just fmt` with a missing tool or a broken configuration are in §2.2.
 
 ### 3.1 Compare the new formatter with the old one before switching
 
