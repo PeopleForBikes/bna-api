@@ -85,6 +85,33 @@ the whole repository in about 10 ms.
 
 **Caught by**: the spec review, which found the folder in the working tree.
 
+### 2.4 `gh attestation verify` checks build provenance, not release attestations
+
+The CI lint job of the pull request failed in its install step (PR #552, run
+42965301458, exit code 1, before `just lint`). The step log could not be read
+from the sandbox; the cause follows from the attestations themselves.
+`gh attestation verify` looks for SLSA build provenance
+(`https://slsa.dev/provenance/v1`) by default. oxfmt and typos publish only the
+release attestation GitHub signs for immutable releases
+(`https://in-toto.io/attestation/release/v0.2`, whose subjects are the tag and
+every asset digest); rumdl publishes both. The spike and the design had called
+all three "build attestations" after counting them through the attestations API
+without reading their predicate type. The step now runs
+`gh release verify-asset "$tag" "$archive" --repo "$repo"`
+(`.github/workflows/ci-rust.yml:31`), which checks the release attestation and
+works for all three: the attestations API returns one release attestation for
+each of the three tags. The fix is confirmed only once the next CI run passes
+(task 9.2).
+
+**Caught by**: the failed CI step (the log itself was out of reach from the
+sandbox), then the predicate type of each attestation, decoded from
+`gh api repos/<repo>/attestations/sha256:<digest>`.
+
+**Cost**: one failed CI run. When a project's attestations matter, read their
+`predicateType` before choosing the verification command: a release attestation
+proves the archive is the published one, while build provenance also says which
+workflow built it.
+
 ## 3. Method — what actually worked
 
 ### 3.1 Compare the new formatter with the old one before switching

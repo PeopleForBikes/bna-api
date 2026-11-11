@@ -155,10 +155,10 @@ misspellings they fix (see `design.md`); tasks name the file and line instead.
 - [ ] 9. Run the checks in CI
   - [x] 9.1 In `.github/workflows/ci-rust.yml`, `lint` job: add the step that
         installs oxfmt 0.78.0, rumdl 0.3.2 and typos 1.52.1 with
-        `gh release download` and `gh attestation verify`, then replace
+        `gh release download` and `gh release verify-asset`, then replace
         `just lint-md` with `just lint` (step in `design.md`).
     - _Requirements: 5.1, 5.2, 5.4, 5.5, 5.6_
-  - [ ] 9.2 Verify on the pull request: the install step logs a verified
+  - [ ] 9.2 Verify on the pull request: the install step logs a verified release
         attestation for each archive (and confirms the binary names inside the
         Linux archives), and the job passes without setting up Node.js.
     - _Requirements: 5.4, 5.5, 5.6_
