@@ -454,7 +454,7 @@ copied next to the file), typos 1.52.1 and harper-cli 3.1.0 (§5.8):
 | typos 1.52.1            | 1, real                | 18 / 20            | 0                            |
 | harper-cli (SpellCheck) | 126 (30 words), 1 real | 20 / 20            | 10                           |
 
-- typos found a real typo that cspell misses: "from **tha** API schema"
+- typos found a real typo that cspell misses: "from `tha` API schema"
   (`bnaclient/CHANGELOG.md:15`). cspell accepts `tha` because it is in one of
   its dictionaries.
 - typos does not check words against a dictionary: it looks them up in a list of
