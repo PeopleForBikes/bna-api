@@ -166,7 +166,7 @@ pub enum BNAPipelineStep {
     Step,
 }
 
-// Pricing is coming from the CloudTempo calculator with the following paramaters:
+// Pricing is coming from the CloudTempo calculator with the following parameters:
 // - Architecture: x86
 // - Region: US West (Oregon)
 // - Duration: 1h

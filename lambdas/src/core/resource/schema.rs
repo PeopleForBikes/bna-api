@@ -1,4 +1,4 @@
-//! Describes the schemas shared accross resources.
+//! Describes the schemas shared across resources.
 use crate::{DEFAULT_PAGE_SIZE, MAX_PAGE_SIZE};
 use chrono::DateTime;
 use entity::city;

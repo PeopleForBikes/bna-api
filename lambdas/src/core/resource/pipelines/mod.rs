@@ -1,4 +1,4 @@
-//! Module for the /pipeline enpoint.
+//! Module for the /pipeline endpoint.
 pub mod adaptor;
 mod db;
 pub mod endpoint;

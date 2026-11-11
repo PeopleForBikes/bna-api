@@ -1,4 +1,4 @@
-//! Module for the /cities enpoint.
+//! Module for the /cities endpoint.
 pub mod adaptor;
 mod db;
 pub mod endpoint;
@@ -9,7 +9,7 @@ pub use schema::ApprovalStatus;
 use super::schema::Country;
 use serde::Deserialize;
 
-/// Path parameters for the /cities enpoint.
+/// Path parameters for the /cities endpoint.
 #[derive(Debug, Deserialize)]
 pub struct CitiesPathParameters {
     /// Country name, one of the supported countries.

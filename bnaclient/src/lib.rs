@@ -5626,7 +5626,7 @@ impl Client {
         builder::PostCitiesSubmission::new(self)
     }
 
-    ///Get the details of a specific sumission.
+    ///Get the details of a specific submission.
     ///
     ///Sends a `GET` request to `/cities/submissions/{submission_id}`
     ///

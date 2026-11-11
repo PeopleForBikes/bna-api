@@ -1,4 +1,4 @@
-//! Module for the /usstates enpoint.
+//! Module for the /usstates endpoint.
 pub mod adaptor;
 mod db;
 pub mod endpoint;

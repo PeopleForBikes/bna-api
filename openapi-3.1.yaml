@@ -335,7 +335,7 @@ paths:
     get:
       tags:
       - city
-      description: Get the details of a specific sumission.
+      description: Get the details of a specific submission.
       operationId: get_cities_submission
       parameters:
       - name: submission_id
