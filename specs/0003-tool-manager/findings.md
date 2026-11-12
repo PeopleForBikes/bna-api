@@ -106,6 +106,23 @@ only the `PATH` it passes to `nono run`.
 guarantee. The maintainer reworded it: the shims come ahead of every directory
 of the contributor's `PATH`.
 
+### 2.5 mise-action caches the installed tools by default
+
+`jdx/mise-action` has `cache: true` by default: after the install it saves
+`~/.local/share/mise` to the GitHub Actions cache, under a key that includes the
+runner image, the mise version and a hash per job (four different keys on the
+pull request). A later run with the same key restores the tools, and
+`mise install --locked` then finds them installed and downloads nothing, so the
+checksum and attestation checks run only when the cache entry is first written.
+A change to `mise.toml` or `mise.lock` changes the key.
+
+**Caught by**: task 7.1, the `Restoring mise cache` and `Saving mise cache`
+groups of each job's log (every key `not found` on the first run).
+
+**Cost**: building cargo-progenitor from source takes 72.5 s in the bnaclient
+job; the release tools take about 1 s per job. Turning the cache off would add
+that time to every run.
+
 ## 3. Method — what actually worked
 
 ### 3.1 Scratch mise directories for every install
@@ -207,3 +224,13 @@ directory is read-only in the sandbox
   flag). In a session with the default state directory, `mise ls --current`
   lists the eight tools from `mise.toml` at their pinned versions, none missing,
   with no trust error and no denied write.
+- **7.1** (pull request #553): every check passes (`ci-rust` build, lint and
+  test; `bnaclient` build, lint and test; `integration` test and schema). Each
+  mise-action step checks mise 2026.11.5 against its signed release list, runs
+  `mise install --locked` with that job's `install_args` only, and the next
+  steps use the tools: lint installs just, typos, oxfmt and rumdl in 1.2 s, and
+  `mise ls` lists the other four as missing; bnaclient installs just and
+  cargo-progenitor (72.5 s, the cargo build); the integration `test` job
+  installs just and hurl and the Hurl tests pass on `ubuntu-24.04`; `schema`
+  installs just. At the `info` log level the action does not print the
+  attestation checks; task 1.3 shows them with `--verbose`.
