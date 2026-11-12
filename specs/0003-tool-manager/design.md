@@ -142,6 +142,8 @@ typos" step with its `env` block (lines 16-41) are replaced by:
 - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
   with:
     version: 2026.11.5
+    # Install from mise.lock at every run, so every job checks what it runs.
+    cache: false
     install_args: >-
       github:casey/just github:crate-ci/typos github:oxc-project/oxc
       github:rvben/rumdl
@@ -160,14 +162,16 @@ toolchain on the `PATH`:
 - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
   with:
     version: 2026.11.5
+    # Install from mise.lock at every run, so every job checks what it runs.
+    cache: false
     install_args: github:casey/just cargo:cargo-progenitor
 ```
 
 The job's `defaults.run.working-directory: bnaclient` does not apply to a `uses`
 step; mise finds `mise.toml` from the workspace root, and the later `run` steps
 in `bnaclient/` find the tools on the `PATH`. Building cargo-progenitor from
-source replaces the prebuilt download of `taiki-e/install-action`; the action's
-cache (on by default) keeps later runs short.
+source replaces the prebuilt download of `taiki-e/install-action` and takes
+about 72 s at every run, since the action's cache is off (below).
 
 ### `.github/workflows/integration.yml` (test and schema jobs)
 
@@ -184,6 +188,14 @@ All `jdx/mise-action` steps use the same commit and `version: 2026.11.5`, and
 the default `github_token` (the job's token, which avoids GitHub's anonymous
 rate limit). The action runs `mise install` with `--locked` itself when
 `mise.lock` exists (spike §5.13), and `locked = true` makes it locked anyway.
+
+Every step sets `cache: false` (decided after the first CI run, `findings.md`
+§2.5). The action's default cache saves mise's data directory and restores it on
+later runs, where `mise install --locked` finds the tools installed and checks
+nothing: the checksums and attestations would be verified only by the run that
+wrote the cache entry, and a cache entry written by a compromised step would be
+trusted. Without it, each job downloads and verifies its tools: about 1 s for
+the release tools, 72.5 s for building cargo-progenitor in the bnaclient job.
 
 ### `justfile` (Agent_Recipes)
 
@@ -385,8 +397,8 @@ There is no Rust code; each requirement is checked by a command, recorded in
 - Contributors must install mise (2026.11.5 or newer) and run `mise install`
   once per checkout before `just fmt`, `just lint` or the tests; the pull
   request description says so.
-- The first CI run of each job builds cargo-progenitor (bnaclient) and fills the
-  action's cache; later runs restore it.
+- Every CI run of the bnaclient job builds cargo-progenitor (about 72 s); no job
+  uses the action's cache.
 - Rollback: revert the commit; the previous install steps come back with it.
 
 ## Dependencies

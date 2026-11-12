@@ -119,9 +119,10 @@ A change to `mise.toml` or `mise.lock` changes the key.
 **Caught by**: task 7.1, the `Restoring mise cache` and `Saving mise cache`
 groups of each job's log (every key `not found` on the first run).
 
-**Cost**: building cargo-progenitor from source takes 72.5 s in the bnaclient
-job; the release tools take about 1 s per job. Turning the cache off would add
-that time to every run.
+**Cost**: the maintainer chose to turn the cache off (`cache: false` in the four
+steps), so every job verifies what it runs: building cargo-progenitor from
+source now takes 72.5 s at every bnaclient run; the release tools take about 1 s
+per job.
 
 ### 2.6 The shims are links to the mise executable
 
