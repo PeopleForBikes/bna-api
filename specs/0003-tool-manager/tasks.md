@@ -182,7 +182,7 @@ never touched. The commands and their results go in `findings.md`.
 
 - [ ] 7. Run the checks in CI
   - Ask the maintainer before pushing; push over SSH only.
-  - [ ] 7.1 On the pull request, `ci-rust`, `bnaclient` and `integration` pass.
+  - [x] 7.1 On the pull request, `ci-rust`, `bnaclient` and `integration` pass.
         Each job's log shows the action installing mise 2026.11.5, running
         `mise install --locked` with that job's tools only, and the next steps
         using them; the Hurl tests pass on `ubuntu-24.04` (`libxml2` present).
