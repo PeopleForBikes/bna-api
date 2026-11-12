@@ -1,0 +1,26 @@
+# Pinned command-line tools for contributors and CI (specs/0003-tool-manager).
+# After changing a version, run:
+#   mise lock --platform linux-x64,linux-arm64,macos-arm64,macos-x64
+# and review the URLs of mise.lock.
+
+[settings]
+# Only GitHub is asked for release metadata and attestations.
+use_versions_host = false
+# Build crates from crates.io instead of unverified prebuilt binaries.
+cargo.binstall = false
+# Never install a missing tool behind a command's back.
+auto_install = false
+# Every install uses mise.lock only.
+locked = true
+# Check the attestations mise.lock records again at every install.
+locked_verify_provenance = true
+
+[tools]
+"github:casey/just" = "1.59.0"
+"github:crate-ci/typos" = "1.52.1"
+"github:oxc-project/oxc" = { version = "0.78.0", version_prefix = "oxfmt_v" }
+"github:rvben/rumdl" = "0.3.2"
+"github:Orange-OpenSource/hurl" = "8.1.0"
+"cargo:bacon" = "3.26.0"
+"cargo:sea-orm-cli" = "2.0.4"
+"cargo:cargo-progenitor" = "0.16.0"
