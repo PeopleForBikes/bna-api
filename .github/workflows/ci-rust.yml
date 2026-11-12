@@ -12,33 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
-      - name: Install oxfmt, rumdl and typos
-        env:
-          GH_TOKEN: ${{ github.token }}
-          OXFMT_VERSION: 0.78.0
-          RUMDL_VERSION: 0.3.2
-          TYPOS_VERSION: 1.52.1
-        run: |
-          bin="$RUNNER_TEMP/bin"
-          mkdir -p "$bin"
-          # Download a release archive, verify its release attestation, install the binary.
-          install_tool() {
-            local name="$1" repo="$2" tag="$3" archive="$4" member="$5"
-            local dir="$RUNNER_TEMP/$name"
-            mkdir -p "$dir"
-            gh release download "$tag" --repo "$repo" --pattern "$archive" --dir "$dir"
-            gh release verify-asset "$tag" "$dir/$archive" --repo "$repo"
-            tar -xzf "$dir/$archive" -C "$dir"
-            install -m 0755 "$dir/$member" "$bin/$name"
-          }
-          install_tool oxfmt oxc-project/oxc "oxfmt_v${OXFMT_VERSION}" \
-            oxfmt-x86_64-unknown-linux-gnu.tar.gz oxfmt-x86_64-unknown-linux-gnu
-          install_tool rumdl rvben/rumdl "v${RUMDL_VERSION}" \
-            "rumdl-v${RUMDL_VERSION}-x86_64-unknown-linux-gnu.tar.gz" rumdl
-          install_tool typos crate-ci/typos "v${TYPOS_VERSION}" \
-            "typos-v${TYPOS_VERSION}-x86_64-unknown-linux-musl.tar.gz" typos
-          echo "$bin" >> "$GITHUB_PATH"
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          version: 2026.11.5
+          install_args: >-
+            github:casey/just github:crate-ci/typos github:oxc-project/oxc
+            github:rvben/rumdl
       - name: Check formatting, lint and spelling
         run: just lint
 
