@@ -204,14 +204,16 @@ never touched. The commands and their results go in `findings.md`.
 
 - [ ] 7. Run the checks in CI
   - Ask the maintainer before pushing; push over SSH only.
-  - [x] 7.1 On the pull request, `ci-rust`, `bnaclient` and `integration` pass.
-        Each job's log shows the action installing mise 2026.11.5, running
+  - [ ] 7.1 On the pull request (again after the review's commits, with
+        `cache: false`), `ci-rust`, `bnaclient` and `integration` pass. Each
+        job's log shows the action installing mise 2026.11.5, running
         `mise install --locked` with that job's tools only, and the next steps
         using them; the Hurl tests pass on `ubuntu-24.04` (`libxml2` present).
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.7_
-  - [ ] 7.2 Optional, only with the maintainer's approval before the push: a
-        commit altering one checksum in `mise.lock` makes the `ci-rust` `lint`
-        job fail at the action, and `just lint` does not run. Remove the commit.
+  - [x] 7.2 Skipped: the maintainer did not ask for it (`findings.md` §3.2).
+        Optional, only with the maintainer's approval before the push: a commit
+        altering one checksum in `mise.lock` makes the `ci-rust` `lint` job fail
+        at the action, and `just lint` does not run. Remove the commit.
     - _Requirements: 5.5_
 
 - [ ] 8. Checkpoint - Final
