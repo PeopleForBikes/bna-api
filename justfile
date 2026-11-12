@@ -10,6 +10,11 @@ entities := "entity/src/entities"
 sql_dump := "docs/database.sql"
 sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 
+# mise's directories, for the nono recipes (specs/0003-tool-manager).
+mise_data := env("MISE_DATA_DIR", env("XDG_DATA_HOME", home_directory() / ".local/share") / "mise")
+mise_config := env("MISE_CONFIG_DIR", env("XDG_CONFIG_HOME", home_directory() / ".config") / "mise")
+mise_state := env("MISE_STATE_DIR", env("XDG_STATE_HOME", home_directory() / ".local/state") / "mise")
+
 # Meta task running ALL the CI tasks at once.
 ci: lint
 
@@ -191,13 +196,24 @@ regenerate-all-no-cargo: regenerate-all
 nono-claude-login:
     nono run --profile nolabs-ai/claude --allow-launch-services -- claude "/login"
 
-# Use nono sandbox for Claude.
+# Use nono sandbox for Claude, with the tools installed by mise.
 nono-claude profile="pfb-claude":
-    nono run --allow-cwd --profile {{ profile }} -- claude
-
-# Use nono sandbox for Claude -- restricted internet, skip-permissions.
-nono-claude-danger profile="pfb-claude":
-    nono run \
+    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
+    PATH="{{ mise_data }}/shims:$PATH" nono run \
     --allow-cwd \
     --profile {{ profile }} \
+    --read "{{ mise_data }}" \
+    --read "{{ mise_config }}" \
+    --allow "{{ mise_state }}" \
+    -- claude
+
+# Use nono sandbox for Claude -- restricted internet, skip-permissions, with the tools installed by mise.
+nono-claude-danger profile="pfb-claude":
+    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
+    PATH="{{ mise_data }}/shims:$PATH" nono run \
+    --allow-cwd \
+    --profile {{ profile }} \
+    --read "{{ mise_data }}" \
+    --read "{{ mise_config }}" \
+    --allow "{{ mise_state }}" \
     -- claude --dangerously-skip-permissions
