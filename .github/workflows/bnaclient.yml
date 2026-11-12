@@ -21,14 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
       - uses: dtolnay/rust-toolchain@nightly
         with:
           components: clippy, rustfmt
-      - name: Install cargo progenitor
-        uses: taiki-e/install-action@v2.90.2
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
-          tool: cargo-progenitor@0.16.0
+          version: 2026.11.5
+          install_args: github:casey/just cargo:cargo-progenitor
       - name: Regenerate the specifications and the bnaclient
         run: just regenerate-all-no-cargo
       - name: Ensure there are no changes
