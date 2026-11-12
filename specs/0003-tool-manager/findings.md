@@ -5,9 +5,11 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: in progress, tasks 1 to 6 done; task 7 (CI on the pull request) waits
-for the maintainer. Measured with mise 2026.11.6 on macOS arm64, in the nono
-sandbox, on 2026-11-11.
+Status: in progress. Tasks 1 to 3, 5 and 6 done, with 3.1 and 5.3 added after
+the spec review (2026-11-12); task 4 runs again with the recipe of task 3.1, and
+task 7.1 again on the pull request after the review's commits. Task 7.2 skipped.
+Measured with mise 2026.11.6 on macOS arm64, in the nono sandbox, on 2026-11-11
+and 2026-11-12.
 
 ## 1. Behavior that does not survive a naive implementation
 
@@ -253,3 +255,54 @@ directory is read-only in the sandbox
   installs just and hurl and the Hurl tests pass on `ubuntu-24.04`; `schema`
   installs just. At the `info` log level the action does not print the
   attestation checks; task 1.3 shows them with `--verbose`.
+- **7.2**: skipped (optional; the maintainer did not ask for it). Requirement
+  5.5 rests on task 1.4, where a broken lockfile makes `mise install` fail, and
+  on the action failing its step when `mise install` fails.
+- **8** (2026-11-12, after the review's commits): `just fmt` exits 0 and changes
+  nothing; `just lint` exits 0, and 127 without the tools on the `PATH`; the
+  widened version `git grep` of task 6 finds only `bnaclient/Cargo.toml:11` and
+  the four `s3_bucket` test paths; no workflow mentions `setup-just`,
+  `install-action`, `gh release download` or a `_VERSION` variable.
+
+### 3.3 Acceptance criteria
+
+✅ verified, ⏳ to verify again after the review's commits.
+
+| Criterion | Status | Verified by                                                                                                           |
+| --------- | ------ | --------------------------------------------------------------------------------------------------------------------- |
+| 1.1       | ✅     | task 1.1 (`mise.toml:19-26`, exact versions)                                                                          |
+| 1.2       | ✅     | task 1.1 (`github:` and `cargo:` backends)                                                                            |
+| 1.3       | ✅     | task 1.1 (`mise.toml:6-16`)                                                                                           |
+| 1.4       | ✅     | task 1.2 (`check_lock.py`: four platforms, URL and checksum each)                                                     |
+| 1.5       | ✅     | task 1.2 (provenance of the four Attested_Tools on every platform)                                                    |
+| 1.6       | ✅     | tasks 5.3 and 8 (widened `git grep`)                                                                                  |
+| 2.1       | ✅     | task 1.3 (eight tools at their versions)                                                                              |
+| 2.2       | ✅     | tasks 1.3 and 1.4 (checksum step in the log, mismatch refused)                                                        |
+| 2.3       | ✅     | task 1.3 (`locked_verify_provenance`, §1.1)                                                                           |
+| 2.4       | ✅     | task 1.4 (altered checksum)                                                                                           |
+| 2.5       | ✅     | task 1.4 (removed checksum, removed platform)                                                                         |
+| 2.6       | ✅     | task 1.3 (`cargo install <crate>@<version> --locked`)                                                                 |
+| 2.7       | ✅     | task 1.5 (warning, nothing installed)                                                                                 |
+| 2.8       | ✅     | task 1.5 (exit 1 and 127 without another copy)                                                                        |
+| 3.1       | ✅     | task 3 (`git diff -- justfile`)                                                                                       |
+| 3.2       | ✅     | tasks 1.3, 6 and 7.1                                                                                                  |
+| 3.3       | ✅     | tasks 6 and 8 (exit 127)                                                                                              |
+| 4.1       | ⏳     | task 4 (data read-only, state writable); the mise executable grant of task 3.1 is checked with a stand-in `nono` only |
+| 4.2       | ✅     | task 4 (§2.4)                                                                                                         |
+| 4.3       | ⏳     | task 4, with Homebrew's mise and the recipe before task 3.1                                                           |
+| 4.4       | ✅     | task 3 (dry runs)                                                                                                     |
+| 4.5       | ✅     | task 4 (`MISE_STATE_DIR` pointing to a missing folder)                                                                |
+| 5.1       | ⏳     | task 7.1, before `cache: false`                                                                                       |
+| 5.2       | ✅     | task 2 (commit `b44d12e7…`, `version: 2026.11.5`)                                                                     |
+| 5.3       | ⏳     | task 7.1, before `cache: false`                                                                                       |
+| 5.4       | ⏳     | task 7.1; every run, once `cache: false` is on the pull request (§2.5)                                                |
+| 5.5       | ✅     | task 1.4 (task 7.2 skipped)                                                                                           |
+| 5.6       | ✅     | tasks 2.4 and 8                                                                                                       |
+| 5.7       | ⏳     | task 7.1, before `cache: false`                                                                                       |
+| 6.1       | ✅     | task 5.1                                                                                                              |
+| 6.2       | ✅     | task 5.1                                                                                                              |
+| 6.3       | ✅     | task 5.1                                                                                                              |
+| 6.4       | ✅     | task 5.2                                                                                                              |
+
+Not covered by any check: the `linux-arm64` and `macos-x64` entries of
+`mise.lock` are checked by script only, never installed.
