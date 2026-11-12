@@ -42,6 +42,8 @@ jobs:
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: 2026.11.5
+          # Install from mise.lock at every run, so every job checks what it runs.
+          cache: false
           install_args: github:casey/just github:Orange-OpenSource/hurl
       - name: Seed the database
         run: psql $DATABASE_URL < lambdas/tests/database-with-test-data.sql
@@ -136,6 +138,8 @@ jobs:
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: 2026.11.5
+          # Install from mise.lock at every run, so every job checks what it runs.
+          cache: false
           install_args: github:casey/just
       # The runner's PostgreSQL client is older than the server, and pg_dump
       # refuses to dump a newer server. Ubuntu's pg_dump wrapper picks the

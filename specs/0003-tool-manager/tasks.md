@@ -70,7 +70,8 @@ never touched. The commands and their results go in `findings.md`.
 - [x] 2. Install the CI tools with `jdx/mise-action`
   - Line numbers are those of commit `d927dea`. Every step uses
     `jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7` with
-    `version: 2026.11.5` and the default `github_token` (steps in `design.md`).
+    `version: 2026.11.5`, `cache: false` (added after the first CI run,
+    `findings.md` §2.5) and the default `github_token` (steps in `design.md`).
   - Local check for each sub-task, with empty scratch mise directories:
     `mise install <the job's install_args>` installs exactly those tools from
     `mise.lock` and nothing else (`mise ls --installed`).

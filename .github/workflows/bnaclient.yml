@@ -27,6 +27,8 @@ jobs:
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: 2026.11.5
+          # Install from mise.lock at every run, so every job checks what it runs.
+          cache: false
           install_args: github:casey/just cargo:cargo-progenitor
       - name: Regenerate the specifications and the bnaclient
         run: just regenerate-all-no-cargo
