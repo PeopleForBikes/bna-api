@@ -123,6 +123,24 @@ groups of each job's log (every key `not found` on the first run).
 job; the release tools take about 1 s per job. Turning the cache off would add
 that time to every run.
 
+### 2.6 The shims are links to the mise executable
+
+Every file in mise's shims directory is a symbolic link to the `mise` that
+created it (`bacon -> /opt/homebrew/bin/mise`), so running a tool inside nono
+also reads that executable. Task 4 passed because Homebrew's `/opt/homebrew` is
+readable in the maintainer's profile; mise's own installer puts it in
+`~/.local/bin/mise`, which the `pfb-claude` profile does not grant, so every
+shim would fail in the sandbox. Both recipes now grant `--read-file` to the
+`mise` on the caller's `PATH` and to the file it resolves to (`justfile:208`,
+`justfile:220`), and none when there is no `mise`. just's `which()` would need
+`set lists` in just 1.59.0, so the recipe uses `command -v` in the shell.
+
+**Caught by**: the spec review, reading how mise creates shims; confirmed with
+`ls -l` on the scratch shims directory.
+
+**Cost**: Requirement 4.1 now also names the mise executable, and task 4 runs
+again with the new recipe.
+
 ## 3. Method — what actually worked
 
 ### 3.1 Scratch mise directories for every install

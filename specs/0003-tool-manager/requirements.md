@@ -150,8 +150,9 @@ agent to use the tools I installed, so that it can run `just fmt` and
 #### Acceptance Criteria
 
 1. WHEN a contributor runs an Agent_Recipe, the system SHALL grant the sandbox
-   read access to mise's data and configuration directories and read-write
-   access to its state directory.
+   read access to mise's data and configuration directories and to the mise
+   executable on the contributor's `PATH`, and read-write access to its state
+   directory.
 2. WHEN a contributor runs an Agent_Recipe, the system SHALL put mise's shims
    directory ahead of every directory of the contributor's `PATH` in the
    sandboxed process.
