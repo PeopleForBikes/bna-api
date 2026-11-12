@@ -12,6 +12,7 @@ related:
     specs/0003-tool-manager/findings.md,
     specs/learnings/security-issues/mise-can-skip-its-integrity-checks.md,
     specs/learnings/integration-issues/mise-missing-tool-falls-back-to-path.md,
+    specs/learnings/integration-issues/docker-in-the-nono-sandbox.md,
   ]
 superseded_by:
 ---
