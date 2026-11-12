@@ -125,8 +125,16 @@ never touched. The commands and their results go in `findings.md`.
     - `git diff d927dea -- justfile` changes nothing but the variables and the
       two recipes.
   - _Requirements: 3.1, 4.1, 4.2, 4.4, 4.5_
+  - [x] 3.1 Added after the spec review: in both recipes, grant `--read-file` to
+        the `mise` on the caller's `PATH` and to the file it resolves to, only
+        when there is one, as in `design.md`. Verify with a stand-in `nono` that
+        prints its arguments: Homebrew's mise gives the link and its target, a
+        plain `mise` file gives that file (twice), no `mise` gives no
+        `--read-file` and the recipe still starts nono;
+        `just --fmt --check --unstable` passes.
+    - _Requirements: 4.1, 4.3_
 
-- [x] 4. Check the Agent_Recipes in a real nono session
+- [ ] 4. Check the Agent_Recipes in a real nono session
   - Run by the maintainer, outside the sandbox (an agent cannot start nono
     inside nono): in the checkout, `mise trust` and `mise install` with mise's
     default directories, then `just nono-claude`.
@@ -139,6 +147,10 @@ never touched. The commands and their results go in `findings.md`.
       directory (no `tracked-configs` error).
   - Then start `MISE_STATE_DIR=<a missing scratch path> just nono-claude`: the
     recipe creates the folder and the session starts.
+  - After task 3.1, start `just nono-claude` again: the session starts (nono
+    accepts the `--read-file` flags) and `just lint` exits 0. If possible, also
+    with mise installed by its own installer in `~/.local/bin` (shims pointing
+    there, after `mise reshim`).
   - Record whether `nono run` accepted the repeated `--read` flags and passed
     the `PATH`. If either fails, stop and update the specification
     (`pfb-spec-update`) before going on.

@@ -19,8 +19,9 @@ job does not compile the Crate_Tools. The 20-line `gh` install function and its
 
 The `justfile` recipes are unchanged: they keep calling the tools by name from
 the `PATH`. Only the two Agent_Recipes change: they grant the sandbox access to
-mise's directories and put mise's shims first on the `PATH`, so an agent runs
-`just lint` with the tools installed outside the sandbox (spike §5.12).
+mise's directories and executable and put mise's shims ahead of the
+contributor's `PATH`, so an agent runs `just lint` with the tools installed
+outside the sandbox (spike §5.12).
 
 ## Architecture
 
@@ -204,23 +205,25 @@ The two recipes (lines 194-204) become:
 # Use nono sandbox for Claude, with the tools installed by mise.
 nono-claude profile="pfb-claude":
     mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    PATH="{{ mise_data }}/shims:$PATH" nono run \
+    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
     --allow-cwd \
     --profile {{ profile }} \
     --read "{{ mise_data }}" \
     --read "{{ mise_config }}" \
     --allow "{{ mise_state }}" \
+    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
     -- claude
 
 # Use nono sandbox for Claude -- restricted internet, skip-permissions, with the tools installed by mise.
 nono-claude-danger profile="pfb-claude":
     mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    PATH="{{ mise_data }}/shims:$PATH" nono run \
+    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
     --allow-cwd \
     --profile {{ profile }} \
     --read "{{ mise_data }}" \
     --read "{{ mise_config }}" \
     --allow "{{ mise_state }}" \
+    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
     -- claude --dangerously-skip-permissions
 ```
 
@@ -228,6 +231,13 @@ nono-claude-danger profile="pfb-claude":
   access to the configuration directory covers the contributor's
   `trusted_config_paths`; write access to the state directory lets mise record a
   new checkout in `tracked-configs` (spike §5.12).
+- Each shim is a link to the mise executable, so the sandbox must also read it
+  (added after the spec review, `findings.md` §2.6). The recipe grants the
+  `mise` found on the caller's `PATH` and, when that is a link (Homebrew's
+  `/opt/homebrew/bin/mise`), the file it resolves to, each with `--read-file`:
+  the one program, not the folder around it (`~/.local/bin` for mise's own
+  installer, which may hold other programs). Without `mise` on the `PATH` the
+  recipe adds no grant and still starts the sandbox, as before this feature.
 - `mkdir -p` makes Requirement 4.5 hold without depending on how nono treats a
   missing path, which the spike did not test (its own `--allow` flags for
   missing or existing paths did not reach the session, spike §5.12). The
@@ -295,8 +305,8 @@ No runtime data. The two files above are the only new data: `mise.toml`
 6. **One installer in CI**: no workflow installs a Pinned_Tool except through
    `jdx/mise-action`.
 7. **Agents read, never write, the tools**: the Agent_Recipes grant read access
-   to the data and configuration directories and write access only to the state
-   directory.
+   to the data and configuration directories and to the mise executable, and
+   write access only to the state directory.
 
 ## Error Handling
 
@@ -357,7 +367,9 @@ There is no Rust code; each requirement is checked by a command, recorded in
 - **Agents** (4.1-4.5): one real session started with `just nono-claude` in a
   trusted checkout: inside it, `which typos` names the shim and `just lint`
   exits 0; then once with a mise directory removed, the recipe still starts the
-  sandbox. `just --dry-run nono-claude` shows the flags (4.1, 4.2, 4.4).
+  sandbox. `just --dry-run nono-claude` shows the flags (4.1, 4.2, 4.4). With a
+  stand-in `nono` printing its arguments, the `--read-file` grants follow the
+  `mise` on the `PATH` (a link and its target, a plain file, or none).
 - **CI** (5.1-5.7): the pull request's runs of `ci-rust`, `bnaclient` and
   `integration` pass; each job's log shows only its tools installed, from
   `mise.lock`. The failure path (5.5) relies on the action failing when
