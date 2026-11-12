@@ -13,12 +13,10 @@ Repository containing all the lambda endpoints for API Gateway.
 
 ### Remark
 
-Once [Rust] is setup, most of the tools can be installed using [cargo binstall]:
-
-```bash
-cargo install cargo-binstall
-cargo binstall bacon@3.16.0 hurl@7.0.0 just@1.42.4 sea-orm-cli@1.1.1
-```
+Bacon, Hurl, Just and Sea-ORM-CLI are pinned in `mise.toml` at the root of the
+repository: install them with `mise install`, as described in the
+[Local tools](../.github/CONTRIBUTING.md#local-tools) section of the
+contributing guide.
 
 ## Quickstart
 
@@ -83,7 +81,6 @@ for id in `xan sample 10 city-ratings-all-historical-results-v25.09.csv | xan se
 ```
 
 [bacon]: https://dystroy.org/bacon/
-[cargo binstall]: https://github.com/cargo-bins/cargo-binstall
 [docker]: https://www.docker.com/get-started/
 [hurl]: http://hurl.dev
 [just]: https://github.com/casey/just

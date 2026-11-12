@@ -317,6 +317,10 @@ No runtime data. The two files above are the only new data: `mise.toml`
   recipe keeps calling its tools by name (Requirement 3.1).
 - `lambdas/tests/justfile` is unchanged: `hurl` and `sea-orm-cli` come from the
   `PATH`.
+- `lambdas/README.md`: its "Remark" told contributors to
+  `cargo binstall bacon@3.16.0 hurl@7.0.0 just@1.42.4 sea-orm-cli@1.1.1`; it now
+  points to the "Local tools" section of `.github/CONTRIBUTING.md` (found by the
+  spec review, Requirement 1.6).
 - `.github/dependabot.yml` already updates GitHub Actions weekly, so it will
   propose new commits of `jdx/mise-action`; the `version:` input and the tool
   versions stay manual (version bumps are out of scope).
@@ -333,10 +337,12 @@ There is no Rust code; each requirement is checked by a command, recorded in
   the scratch directory, not committed) checks properties 2 and 3: four
   platforms per Release_Tool, a checksum each, the URL's target matching the
   platform, provenance for the Attested_Tools.
-- **Single source** (1.6, property 1, 5.6): `git grep` for each tool's version
-  string and for `setup-just`, `install-action`, `gh release download`,
-  `HURL_VERSION`, outside `specs/`, `CHANGELOG.md`, `mise.toml` and `mise.lock`,
-  finds nothing.
+- **Single source** (1.6, property 1, 5.6): `git grep` for each tool's name
+  followed by any version (not only the pinned one, which missed the stale
+  `cargo binstall` line of `lambdas/README.md`) and for `setup-just`,
+  `install-action`, `gh release download`, `HURL_VERSION`, outside `specs/`,
+  `CHANGELOG.md`, `mise.toml` and `mise.lock`, finds nothing but the matches
+  task 6 lists.
 - **Contributor install** (2.1-2.6, 3.2): with mise's directories pointed at
   empty scratch folders, `mise install` installs the eight tools at their
   versions (`--version` of each), then `just lint` exits 0. Negative checks on a

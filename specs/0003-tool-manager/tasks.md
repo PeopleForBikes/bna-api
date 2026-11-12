@@ -159,25 +159,34 @@ never touched. The commands and their results go in `findings.md`.
         pinned in `mise.toml` (installed with `mise install`, see
         `.github/CONTRIBUTING.md`)".
     - _Requirements: 6.4_
-  - Verify: `just lint` passes on both files.
+  - [x] 5.3 In `lambdas/README.md`, replace the "Remark" (a `cargo binstall` of
+        other versions of bacon, hurl, just and sea-orm-cli) with a pointer to
+        the "Local tools" section of `.github/CONTRIBUTING.md`, and drop the
+        `[cargo binstall]` link. Added after the spec review.
+    - _Requirements: 1.6_
+  - Verify: `just lint` passes on the three files.
 
 - [x] 6. Checkpoint - Local quality
   - `just fmt` changes nothing; `just lint` passes with the tools of task 1.3 on
     the `PATH`.
   - With a `PATH` without oxfmt, rumdl and typos (`just` called by its full
     path), `just lint` fails with a non-zero status (127).
-  - One source of versions: this command finds only `bnaclient/Cargo.toml:11`
-    (`progenitor-client`, a library the client depends on, not the tool).
+  - One source of versions: this command, which matches a tool's name followed
+    by any version (not only the pinned one), finds only
+    `bnaclient/Cargo.toml:11` (`progenitor-client`, a library the client depends
+    on, not the tool) and the four `s3_bucket` paths of
+    `lambdas/tests/endpoints/pipelines.hurl` (test data such as
+    `tennessee/hurl/25.06`).
 
     ```bash
     git grep -n -i -E \
-      'oxfmt[^0-9]{0,20}0\.78|rumdl[^0-9]{0,20}0\.3\.2|typos[^0-9]{0,20}1\.52|just[^0-9]{0,12}1\.59|hurl[^0-9]{0,12}8\.1|bacon[^0-9]{0,12}3\.26|sea-orm-cli[^0-9]{0,12}2\.0|progenitor[^0-9]{0,12}0\.16' \
+      '(oxfmt|rumdl|typos|just|hurl|bacon|sea-orm-cli|progenitor)[^0-9]{0,20}[0-9]+\.[0-9]+' \
       -- ':!specs/' ':!CHANGELOG.md' ':!Cargo.lock' ':!mise.toml' ':!mise.lock'
     ```
 
   - `git diff d927dea --stat` lists only `mise.toml`, `mise.lock`, the three
-    workflows, `justfile`, `.github/CONTRIBUTING.md`, `CLAUDE.md` and
-    `specs/0003-tool-manager/`.
+    workflows, `justfile`, `.github/CONTRIBUTING.md`, `CLAUDE.md`,
+    `lambdas/README.md` and `specs/0003-tool-manager/`.
   - _Requirements: 1.6, 3.1, 3.3_
 
 - [ ] 7. Run the checks in CI
