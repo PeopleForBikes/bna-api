@@ -135,7 +135,7 @@ never touched. The commands and their results go in `findings.md`.
         `just --fmt --check --unstable` passes.
     - _Requirements: 4.1, 4.3_
 
-- [ ] 4. Check the Agent_Recipes in a real nono session
+- [x] 4. Check the Agent_Recipes in a real nono session
   - Run by the maintainer, outside the sandbox (an agent cannot start nono
     inside nono): in the checkout, `mise trust` and `mise install` with mise's
     default directories, then `just nono-claude`.
@@ -202,9 +202,9 @@ never touched. The commands and their results go in `findings.md`.
     `lambdas/README.md` and `specs/0003-tool-manager/`.
   - _Requirements: 1.6, 3.1, 3.3_
 
-- [ ] 7. Run the checks in CI
+- [x] 7. Run the checks in CI
   - Ask the maintainer before pushing; push over SSH only.
-  - [ ] 7.1 On the pull request (again after the review's commits, with
+  - [x] 7.1 On the pull request (again after the review's commits, with
         `cache: false`), `ci-rust`, `bnaclient` and `integration` pass. Each
         job's log shows the action installing mise 2026.11.5, running
         `mise install --locked` with that job's tools only, and the next steps
@@ -216,7 +216,7 @@ never touched. The commands and their results go in `findings.md`.
         at the action, and `just lint` does not run. Remove the commit.
     - _Requirements: 5.5_
 
-- [ ] 8. Checkpoint - Final
+- [x] 8. Checkpoint - Final
   - Run the checks of task 6 again.
   - The pull request's CI is green.
   - Every acceptance criterion of `requirements.md` is checked off against the
