@@ -14,7 +14,7 @@ on:
 
 jobs:
   test:
-    # Hurl's .deb needs libxml2, which Ubuntu 26.04 no longer provides.
+    # Hurl needs libxml2, which Ubuntu 26.04 no longer provides.
     runs-on: ubuntu-24.04
 
     env:
@@ -39,12 +39,10 @@ jobs:
         with:
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
-      - name: Install HURL
-        run: |
-          HURL_VERSION=8.1.0
-          curl --location --remote-name https://github.com/Orange-OpenSource/hurl/releases/download/$HURL_VERSION/hurl_${HURL_VERSION}_amd64.deb
-          sudo apt install -y ./hurl_${HURL_VERSION}_amd64.deb
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          version: 2026.11.5
+          install_args: github:casey/just github:Orange-OpenSource/hurl
       - name: Seed the database
         run: psql $DATABASE_URL < lambdas/tests/database-with-test-data.sql
       - name: Build the API server
@@ -135,7 +133,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v2
+      - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+        with:
+          version: 2026.11.5
+          install_args: github:casey/just
       # The runner's PostgreSQL client is older than the server, and pg_dump
       # refuses to dump a newer server. Ubuntu's pg_dump wrapper picks the
       # version of the runner's local cluster, so the 18 binaries come first.
