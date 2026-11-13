@@ -47,3 +47,16 @@ checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404
 [[operations]]
 include-name = "PATCH /pipelines/bna/{pipeline_id}"
 checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404, 409, 422, 429, "5XX"]
+
+# A null optional enum or string means "unchanged": the entity wrappers these
+# bodies deserialize serialize an unset field as null, so the Lambdas that send
+# them may rely on it. The specification cannot say so, because progenitor
+# panics on a nullable reference (0.16.0), so the fields are documented
+# non-nullable and Schemathesis sends null as invalid data.
+[[operations]]
+include-name = "PATCH /cities/submissions/{submission_id}"
+checks.negative_data_rejection.enabled = false
+
+[[operations]]
+include-name = "PATCH /pipelines/bna/{pipeline_id}"
+checks.negative_data_rejection.enabled = false
