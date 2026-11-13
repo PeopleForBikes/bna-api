@@ -24,9 +24,10 @@ ci: lint lint-rust test-rust
 # Meta tasks running all formatters and automatic fixes at once.
 fmt: fmt-spellcheck fmt-md fmt-just
 
-# Format the justfile.
+# Format the justfiles.
 fmt-just:
     just --fmt --unstable
+    just --fmt --unstable --justfile lambdas/tests/justfile
 
 # typos exits 2 when misspellings with several suggestions remain; just lint reports them.
 # Fix the spelling mistakes that have a single correction.
