@@ -64,3 +64,10 @@ checks.negative_data_rejection.enabled = false
 [[operations]]
 include-name = "PATCH /pipelines/bna/{pipeline_id}"
 checks.negative_data_rejection.enabled = false
+
+# The stateful phase infers a link from the nullable fargate_price_id of a
+# pipeline to this operation; a null becomes the path segment "None", which the
+# API rightly rejects with 400. Only the stateful phase follows that link.
+[[operations]]
+include-name = "GET /prices/fargate/{price_id}"
+phases.stateful.checks.positive_data_acceptance.enabled = false
