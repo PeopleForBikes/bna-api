@@ -31,7 +31,7 @@ jobs:
           cache: false
           install_args: github:casey/just cargo:cargo-progenitor
       - name: Regenerate the specifications and the bnaclient
-        run: just regenerate-all
+        run: just generate
       - name: Ensure there are no changes
         run: test -z "$(git status --porcelain)" || (git status; git diff; false)
 
