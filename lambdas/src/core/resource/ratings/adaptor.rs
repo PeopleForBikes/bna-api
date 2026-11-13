@@ -62,6 +62,17 @@ pub(crate) async fn post_ratings_adaptor(
     rating: RatingPost,
     ctx: Context,
 ) -> Result<Bna, ExecutionError> {
+    // Reject a score the specification does not allow before touching the
+    // database: reading it back would return a response that violates the
+    // schema.
+    if let Some((field, value)) = rating.score_out_of_range() {
+        return Err(ExecutionError::InvalidAttribute(
+            ctx.request_id(),
+            ctx.source(),
+            format!("the {field} must be between 0 and 100: {value}"),
+        ));
+    }
+
     // Write the rating in a single transaction, so that a failure leaves no
     // partial rating behind. Returning early drops the transaction, which rolls
     // it back.
@@ -337,5 +348,26 @@ mod tests {
         assert_eq!(sql.first().map(String::as_str), Some("BEGIN"));
         assert_eq!(sql.last().map(String::as_str), Some("ROLLBACK"));
         assert!(!sql.iter().any(|s| s == "COMMIT"));
+    }
+
+    #[tokio::test]
+    async fn test_post_rating_rejects_a_score_out_of_range_without_a_query() {
+        let mut rating = rating_post();
+        rating.transit.transit = Some(101.0);
+        let db = MockDatabase::new(DbBackend::Postgres).into_connection();
+
+        let result = post_ratings_adaptor(&db, rating, context()).await;
+
+        match result {
+            Err(ExecutionError::InvalidAttribute(_, source, message)) => {
+                assert_eq!(source, "/ratings");
+                assert_eq!(
+                    message,
+                    "the transit.transit must be between 0 and 100: 101"
+                );
+            }
+            _ => panic!("expected an invalid attribute error"),
+        }
+        assert!(db.into_transaction_log().is_empty());
     }
 }

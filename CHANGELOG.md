@@ -182,3 +182,8 @@ and this project adheres to
   `people`, `retail`, and `transit` columns, which were always empty.
 - `POST /ratings` now writes a rating in a single transaction. A failure partway
   used to leave a partial rating behind, listed by `GET /ratings`.
+- `POST /ratings` now rejects a score or a subscore outside 0 to 100 with
+  `422 Unprocessable Content`, as documented, naming the field in `details`. It
+  used to store the value, and every read of the rating then returned a score
+  the specification does not allow. The total `score` of the request now
+  documents its 0 to 100 range too.

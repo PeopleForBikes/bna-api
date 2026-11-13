@@ -214,6 +214,7 @@ pub(crate) struct RatingPost {
     /// the YY.0M[.Minor] scheme.
     pub(crate) version: String,
     /// City rating score
+    #[schema(minimum = 0, maximum = 100)]
     pub(crate) score: f64,
     /// City population size category (small, medium, large).
     pub(crate) pop_size: i32,
@@ -247,6 +248,56 @@ pub(crate) struct RatingPost {
     pub(crate) measure: Measure,
 }
 
+/// The lowest and highest value of every score and subscore of a rating.
+pub(crate) const SCORE_RANGE: std::ops::RangeInclusive<f64> = 0.0..=100.0;
+
+impl RatingPost {
+    /// Returns the first score outside [`SCORE_RANGE`], with its field path,
+    /// or `None` when every score is in range. An absent subscore is in range.
+    pub(crate) fn score_out_of_range(&self) -> Option<(&'static str, f64)> {
+        [
+            ("score", Some(self.score)),
+            (
+                "recreation.community_centers",
+                self.recreation.community_centers,
+            ),
+            ("recreation.parks", self.recreation.parks),
+            ("recreation.trails", self.recreation.trails),
+            ("recreation.score", self.recreation.score),
+            ("opportunity.employment", self.opportunity.employment),
+            (
+                "opportunity.higher_education",
+                self.opportunity.higher_education,
+            ),
+            ("opportunity.k12_education", self.opportunity.k12_education),
+            ("opportunity.score", self.opportunity.score),
+            (
+                "opportunity.technical_vocational_college",
+                self.opportunity.technical_vocational_college,
+            ),
+            ("core_services.dentists", self.core_services.dentists),
+            ("core_services.doctors", self.core_services.doctors),
+            ("core_services.grocery", self.core_services.grocery),
+            ("core_services.hospitals", self.core_services.hospitals),
+            ("core_services.pharmacies", self.core_services.pharmacies),
+            ("core_services.score", self.core_services.score),
+            (
+                "core_services.social_services",
+                self.core_services.social_services,
+            ),
+            ("people.people", self.people.people),
+            ("retail.retail", self.retail.retail),
+            ("transit.transit", self.transit.transit),
+        ]
+        .into_iter()
+        .find_map(|(field, value)| {
+            value
+                .filter(|v| !SCORE_RANGE.contains(v))
+                .map(|v| (field, v))
+        })
+    }
+}
+
 #[derive(ToSchema, Serialize, Deserialize)]
 pub(crate) struct Measure {
     /// Miles of buffered bike lanes.
@@ -264,4 +315,79 @@ pub(crate) struct Measure {
     /// Miles of tracks.
     #[schema(examples(53.859))]
     pub(crate) track: Option<f64>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::{json, Value};
+
+    /// A rating with a total score of 50 and every subscore absent, merged
+    /// with `extra`.
+    fn rating_post(extra: Value) -> RatingPost {
+        let mut body = json!({
+            "city_id": Uuid::from_u128(1),
+            "version": "25.10",
+            "score": 50.0,
+            "pop_size": 1,
+            "population": 1000,
+            "infrastructure": {},
+            "recreation": {},
+            "opportunity": {},
+            "core_services": {},
+            "people": {},
+            "retail": {},
+            "transit": {},
+            "measure": {}
+        });
+        body.as_object_mut()
+            .unwrap()
+            .extend(extra.as_object().unwrap().clone());
+        serde_json::from_value(body).unwrap()
+    }
+
+    #[test]
+    fn test_scores_in_range_and_absent_subscores_pass() {
+        let rating = rating_post(json!({
+            "recreation": {"parks": 0.0, "score": 100.0},
+            "transit": {"transit": 42.5}
+        }));
+        assert_eq!(rating.score_out_of_range(), None);
+    }
+
+    #[test]
+    fn test_score_bounds_are_inclusive() {
+        assert_eq!(
+            rating_post(json!({"score": 0.0})).score_out_of_range(),
+            None
+        );
+        assert_eq!(
+            rating_post(json!({"score": 100.0})).score_out_of_range(),
+            None
+        );
+    }
+
+    #[test]
+    fn test_total_score_above_100_is_reported() {
+        let rating = rating_post(json!({"score": 101.0}));
+        assert_eq!(rating.score_out_of_range(), Some(("score", 101.0)));
+    }
+
+    #[test]
+    fn test_subscore_below_0_is_reported_with_its_path() {
+        let rating = rating_post(json!({"core_services": {"dentists": -1.0}}));
+        assert_eq!(
+            rating.score_out_of_range(),
+            Some(("core_services.dentists", -1.0))
+        );
+    }
+
+    #[test]
+    fn test_only_the_first_score_out_of_range_is_reported() {
+        let rating = rating_post(json!({
+            "score": -3.4e38,
+            "transit": {"transit": 101.0}
+        }));
+        assert_eq!(rating.score_out_of_range(), Some(("score", -3.4e38)));
+    }
 }

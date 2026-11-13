@@ -2879,6 +2879,8 @@ components:
           type: number
           format: double
           description: City rating score
+          maximum: 100
+          minimum: 0
         speed_limit_override:
           type: integer
           format: int32
