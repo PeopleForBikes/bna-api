@@ -64,8 +64,8 @@ db-generate-models:
       --with-serde both \
       --date-time-crate chrono
 
-# Apply migrations and seed the database.
-db-init: db-migrate db-seed
+# Initialize the database with the test data.
+db-init: db-seed
 
 # Drop all tables and re-apply the migrations.
 db-fresh:
@@ -75,14 +75,24 @@ db-fresh:
 db-migrate:
     sea-orm-cli migrate up
 
-# Drop the tables, apply the migrations, generate the models and seed the database.
-db-reset: db-fresh db-generate-models db-seed
+# Replace the database with the test data, then generate the models.
+db-reset: db-seed db-generate-models
 
-# Drop the table and seed the database.
-db-reseed: db-fresh db-seed
+# Replace the database with the test data.
+db-reseed: db-seed
 
-# Seed the database from a City Ratings CSV file.
-db-seed:
+# The dump holds the tables, the test data and the applied migrations, and loads
+# into an empty schema only: everything in the public schema is dropped first.
+# Replace the database with the test data, then apply the newer migrations.
+db-seed: && db-migrate
+    psql "${DATABASE_URL}" -v ON_ERROR_STOP=1 -q \
+      -c 'SET client_min_messages = warning' \
+      -c 'DROP SCHEMA public CASCADE' \
+      -c 'CREATE SCHEMA public'
+    psql "${DATABASE_URL}" -v ON_ERROR_STOP=1 -q -f {{ sql_dump_data }} > /dev/null
+
+# Seed a migrated database from examples/sample.csv instead of the test data.
+db-seed-from-csv:
     cargo run --example seeder
 
 # Generate the PostgreSQL schema from dbml.
