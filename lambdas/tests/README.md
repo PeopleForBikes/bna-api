@@ -63,7 +63,7 @@ Before pushing it, the person releasing confirms that:
 ## Test data
 
 The tests run against a database loaded from `database-with-test-data.sql`.
-Locally, `just db-init` at the root of the repository loads it, replacing
+Locally, `just db-seed` at the root of the repository loads it, replacing
 whatever the database holds, then applies any migration newer than the dump.
 This dump is generated, never edited by hand:
 
