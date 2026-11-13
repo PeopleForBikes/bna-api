@@ -6,6 +6,24 @@ defaults:
 
 on:
   pull_request:
+    # Everything `just generate` reads: the code the specification comes from
+    # (utoipa annotations, and the entity wrappers deriving ToSchema), the
+    # workspace version and the dependency versions, the specifications, the
+    # client, the recipes, and the pinned progenitor.
+    paths:
+      - ".github/workflows/bnaclient.yml"
+      - "Cargo.lock"
+      - "Cargo.toml"
+      - "bnaclient/**"
+      - "entity/Cargo.toml"
+      - "entity/src/**"
+      - "justfile"
+      - "lambdas/Cargo.toml"
+      - "lambdas/src/**"
+      - "mise.lock"
+      - "mise.toml"
+      - "openapi-3.0.yaml"
+      - "openapi-3.1.yaml"
     types:
       - opened
       - synchronize
