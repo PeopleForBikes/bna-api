@@ -160,7 +160,10 @@ endpoint/schema shape or the workspace version. progenitor rewrites
 `bnaclient/Cargo.toml` with its own versions and edition; `generate-client` puts
 ours back, and fails when progenitor needs a dependency or a feature that ours
 lacks: add it to `bnaclient/Cargo.toml`. The `bnaclient` CI job regenerates and
-fails on that check or on any diff.
+fails on that check or on any diff. It runs only on pull requests that change
+one of the files `just generate` reads, listed in the `paths` of
+`.github/workflows/bnaclient.yml`: keep that list in step when the generation
+starts reading another file.
 
 ### Versioning and deployment
 
