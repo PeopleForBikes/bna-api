@@ -25,13 +25,13 @@ fmt: fmt-spellcheck fmt-md fmt-just
 fmt-just:
     just --fmt --unstable
 
-# Fix the spelling mistakes that have a single correction.
 # typos exits 2 when misspellings with several suggestions remain; just lint reports them.
+# Fix the spelling mistakes that have a single correction.
 fmt-spellcheck:
     typos --write-changes || [ $? -eq 2 ]
 
-# Fix the fixable Markdown lint findings, then format the Markdown files.
 # rumdl exits 1 when findings it cannot fix remain; just lint reports them.
+# Fix the fixable Markdown lint findings, then format the Markdown files.
 fmt-md:
     rumdl check --no-cache --config .markdownlint.yml --fix . || [ $? -eq 1 ]
     oxfmt "**/*.md"
@@ -91,10 +91,10 @@ dbml-sql-print:
     sql=$(npx -y --package=@dbml/cli@12.0.0 dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
     printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql"
 
-# Check that the dbml matches the migrations and that the SQL is up to date.
 # Builds a database from each on the server of DATABASE_URL and compares their
 # schemas, apart from the two differences DBML cannot avoid: descending index
 # columns, and foreign keys that dbml2sql makes deferrable.
+# Check that the dbml matches the migrations and that the SQL is up to date.
 dbml-check:
     #!/usr/bin/env bash
     set -euo pipefail
