@@ -9,6 +9,10 @@ continue-on-failure = true
 # Schemathesis 4's defaults, stated so that a new default cannot weaken the run.
 [generation]
 mode = "all"
+# PostgreSQL text cannot store a NUL character, so the API rejects a string
+# holding one with 422 on purpose ("a string of the body must not contain a NUL
+# character"); generating them would only report that deliberate rejection.
+allow-x00 = false
 
 [checks]
 enabled = true
