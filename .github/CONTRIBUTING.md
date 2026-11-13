@@ -22,6 +22,9 @@ the same two files.
 - On Linux, the `libxml2` library, which hurl needs.
 - A GitHub login (`gh auth login`) or a `GITHUB_TOKEN` environment variable, to
   avoid GitHub's rate limit on anonymous requests.
+- [uv], for the Schemathesis tests only (`just test-schemathesis` in
+  `lambdas/tests`): mise does not install it. The recipe runs a pinned
+  Schemathesis release through `uvx`.
 
 ### Setup
 
@@ -84,3 +87,4 @@ steps in `.github/workflows/`.
 
 [mise]: https://mise.jdx.dev/
 [mise installation]: https://mise.jdx.dev/getting-started.html
+[uv]: https://docs.astral.sh/uv/

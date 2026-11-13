@@ -11,13 +11,14 @@ Repository containing all the lambda endpoints for API Gateway.
 - [PostgreSQL] client, `psql` 17.6 or later
 - [Rust]
 - [Sea-ORM-CLI]
+- [uv], for the Schemathesis tests
 
 ### Remark
 
 Bacon, Hurl, Just and Sea-ORM-CLI are pinned in `mise.toml` at the root of the
 repository: install them with `mise install`, as described in the
 [Local tools](../.github/CONTRIBUTING.md#local-tools) section of the
-contributing guide. Docker, the PostgreSQL client and Rust are installed
+contributing guide. Docker, the PostgreSQL client, Rust and uv are installed
 separately.
 
 ## Quickstart
@@ -65,13 +66,18 @@ You can send requests using cURL or your favorite REST client, for instance:
 curl http://localhost:3000/ratings
 ```
 
-Or use the predefined test suites, using Hurl:
+Or use the predefined test suites, using Hurl, then Schemathesis, which
+generates requests from the OpenAPI specification:
 
 ```bash
 cd lambdas/tests
 just test-smoke-public localhost
 just test localhost
+just test-schemathesis
 ```
+
+Schemathesis writes random rows: run `just db-seed` again before the next Hurl
+run. See [`tests/README.md`](tests/README.md#schemathesis).
 
 ## Extras
 
@@ -91,3 +97,4 @@ for id in `xan sample 10 city-ratings-all-historical-results-v25.09.csv | xan se
 [postgresql]: https://www.postgresql.org/download/
 [rust]: https://www.rust-lang.org/tools/install
 [sea-orm-cli]: https://www.sea-ql.org/SeaORM/docs/generate-entity/sea-orm-cli/
+[uv]: https://docs.astral.sh/uv/
