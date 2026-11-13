@@ -20,7 +20,8 @@ Most repo-level tasks are `just` recipes (see `justfile`). Key ones:
 
 ```bash
 just fmt                       # apply every automatic fix: spelling, markdown lint, markdown format, justfile format
-just lint                      # check markdown format + markdown lint + spelling of the whole repo (this is what CI runs)
+just lint                      # check markdown format + markdown lint + spelling of the whole repo (ci-rust.yml runs it)
+just ci                        # lint + lint-rust (fmt, clippy, doc) + test-rust (cargo test): run before committing
 just compose-up / compose-down # start/stop local Postgres + pgadmin (docker-compose.yml)
 just db-seed                   # replace the DB with the test data (lambdas/tests/database-with-test-data.sql), then migrate
 just db-seed-from-csv          # replace the DB with examples/sample.csv instead (migrate fresh + `cargo run --example seeder`)
@@ -36,9 +37,14 @@ just regenerate-all           # regenerate both OAS files + bnaclient (keeps bna
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
 code (`cargo build`, `cargo test`, `cargo test -p lambdas <name>`,
-`cargo clippy`). Note that CI (`.github/workflows/ci-rust.yml`) runs
-`just lint`; it does not run `cargo test`/`clippy` in CI, so run these locally
-before committing.
+`cargo clippy`). CI runs `just lint` (`.github/workflows/ci-rust.yml`), and
+`cargo fmt --check`, `cargo clippy -- -D warnings` and `cargo test` in
+`lambdas/` and `migration/` (`lambdas.yml`, `migration.yml`). Before committing,
+run `just ci`: `lint`, plus `lint-rust` and `test-rust`, the same Rust checks
+over the whole workspace (clippy skips the generated `bnaclient`). Three CI
+checks run separately: `just dbml-check` (needs the database), the integration
+tests below (need a running server), and `just regenerate-all` (rewrites the
+generated files; CI fails on their diff).
 
 `just fmt` and `just lint` need oxfmt (Markdown formatter, `.oxfmtrc.json`),
 rumdl (Markdown linter, `.markdownlint.yml`) and typos (spellchecker,
