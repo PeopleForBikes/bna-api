@@ -108,7 +108,7 @@ and their results go in `findings.md`.
       no new one.
     - _Requirements: 3.6, 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 4. Checkpoint: the local run is green
+- [x] 4. Checkpoint: the local run is green
   - On a fresh `just db-seed` with the Dev_Server:
     `just test-smoke-public localhost`, `just test localhost` and
     `just coverage` pass, then `just test-schemathesis` passes, all against the
@@ -116,8 +116,8 @@ and their results go in `findings.md`.
   - `just ci` passes at the root, and `git status` is clean.
   - _Requirements: 1.3, 4.1, 4.4_
 
-- [ ] 5. Run Schemathesis on every pull request
-  - [ ] 5.1 In `.github/workflows/integration.yml`, in the `test` job: add the
+- [x] 5. Run Schemathesis on every pull request
+  - [x] 5.1 In `.github/workflows/integration.yml`, in the `test` job: add the
         pinned `astral-sh/setup-uv` step with uv's version, the
         `Run Schemathesis` step and the `Upload the Schemathesis reports` step
         of `design.md` after the coverage summary, and remove the commented-out
