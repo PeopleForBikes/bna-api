@@ -187,3 +187,8 @@ and this project adheres to
   used to store the value, and every read of the rating then returned a score
   the specification does not allow. The total `score` of the request now
   documents its 0 to 100 range too.
+- A request body, and each category of a `POST /ratings` body, must now be a
+  JSON object, as documented: anything else gets `422 Unprocessable Content`. A
+  JSON array with one element per field used to be read field by field, so
+  `PATCH /cities/submissions/{submission_id}` with `[null, …, "Approved"]`
+  approved the submission.

@@ -249,3 +249,19 @@ header "content-type" == "application/json"
 jsonpath "$.errors" count == 1
 jsonpath "$.errors[0].status" == "415"
 jsonpath "$.errors[0].source.header" == "content-type"
+
+# Rejects a body that is valid JSON but not an object, even an array with one
+# element per field, which serde would read field by field.
+PATCH {{host}}/cities/submissions/1
+Authorization: Bearer {{token}}
+content-type: application/json
+```
+[null, null, null, null, null, null, null, null, null, null, null]
+```
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities/submissions/1"
+jsonpath "$.errors[0].details" == "the body must be a JSON object"

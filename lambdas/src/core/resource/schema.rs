@@ -649,6 +649,29 @@ where
     }
 }
 
+/// Deserializes a struct from a JSON object only.
+///
+/// serde's derived `Deserialize` also reads a struct from an array, matching
+/// its fields by position, which the specification does not allow. The body
+/// itself is checked by `ApiJson`; a struct field of a body uses this function.
+pub(crate) fn deserialize_object<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::de::DeserializeOwned,
+{
+    use serde::de::{Error, Unexpected};
+    let value = serde_json::Value::deserialize(deserializer)?;
+    let unexpected = match &value {
+        serde_json::Value::Object(_) => return T::deserialize(value).map_err(Error::custom),
+        serde_json::Value::Null => Unexpected::Unit,
+        serde_json::Value::Bool(b) => Unexpected::Bool(*b),
+        serde_json::Value::Number(_) => Unexpected::Other("number"),
+        serde_json::Value::String(s) => Unexpected::Str(s),
+        serde_json::Value::Array(_) => Unexpected::Seq,
+    };
+    Err(Error::invalid_type(unexpected, &"a JSON object"))
+}
+
 #[allow(dead_code)]
 #[derive(Debug, Deserialize, IntoParams, ToSchema)]
 #[into_params(parameter_in = Query)]

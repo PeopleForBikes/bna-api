@@ -281,6 +281,33 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/ratings"
 jsonpath "$.errors[0].details" startsWith "the core_services.dentists must be between 0 and 100"
 
+# Rejects a rating whose category is an array instead of an object.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "city_id": "{{city_id}}",
+  "core_services": {},
+  "infrastructure": [null, null],
+  "opportunity": {},
+  "people": {},
+  "recreation": {},
+  "retail": {},
+  "transit": {},
+  "measure": {},
+  "pop_size": 2,
+  "population": 123456,
+  "version": "24.12",
+  "score": 8.93
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" contains "infrastructure"
+
 # Queries the city of a rating with an invalid id.
 GET {{host}}/ratings/1/city
 HTTP 400
