@@ -7,6 +7,7 @@ on:
       - synchronize
       - reopened
 
+# Jobs that apply to the whole workspace.
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -24,8 +25,6 @@ jobs:
           install_args: >-
             github:casey/just github:crate-ci/typos github:oxc-project/oxc
             github:rvben/rumdl
-      # Spelling, Markdown, and the Rust code of the whole workspace (rustfmt,
-      # clippy, rustdoc): the lambdas and migration workflows only test.
       - name: Check spelling, Markdown and Rust
         run: just lint
 

@@ -15,7 +15,6 @@ on:
       - reopened
 
 jobs:
-  # The ci-rust workflow lints the whole workspace with `just lint`.
   test:
     runs-on: ubuntu-latest
     steps:
