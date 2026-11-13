@@ -21,11 +21,10 @@ superseded_by:
 
 ## Context
 
-The `nono-claude` and `nono-claude-danger` recipes start Claude in the nono
-sandbox with the tools mise installed outside it: they put mise's shims
-directory ahead of the `PATH` and grant read access to mise's data and
-configuration directories and write access to its state directory
-(`justfile:199-221`).
+The `nono-claude-danger` recipe of the root `justfile` starts Claude in the nono
+sandbox with the tools mise installed outside it: it puts mise's shims directory
+ahead of the `PATH` and grants read access to mise's data and configuration
+directories and write access to its state directory.
 
 ## Symptom
 
@@ -55,9 +54,8 @@ maintainer's mise came from Homebrew, and the `pfb-claude` profile already reads
 
 ## Solution
 
-Both recipes grant the `mise` found on the caller's `PATH`, and the file it
-resolves to when it is a link, each as a single file (`justfile:202`,
-`justfile:208`, and the same at `justfile:214` and `justfile:220`):
+The recipe grants the `mise` found on the caller's `PATH`, and the file it
+resolves to when it is a link, each as a single file:
 
 ```just
 mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \

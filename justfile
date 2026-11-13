@@ -186,18 +186,6 @@ regenerate-all-no-cargo: regenerate-all
 nono-claude-login:
     nono run --profile nolabs-ai/claude --allow-launch-services -- claude "/login"
 
-# Use nono sandbox for Claude, with the tools installed by mise.
-nono-claude profile="pfb-claude":
-    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
-    --allow-cwd \
-    --profile {{ profile }} \
-    --read "{{ mise_data }}" \
-    --read "{{ mise_config }}" \
-    --allow "{{ mise_state }}" \
-    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
-    -- claude
-
 # Use nono sandbox for Claude -- restricted internet, skip-permissions, with the tools installed by mise.
 nono-claude-danger profile="pfb-claude":
     mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"

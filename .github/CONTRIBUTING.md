@@ -47,8 +47,8 @@ the same two files.
 3. Put the tools on your `PATH`: either activate mise in your shell (for example
    `eval "$(mise activate zsh)"` in `~/.zshrc`), or add mise's shims directory
    (`~/.local/share/mise/shims` by default) to your `PATH`. The
-   `just nono-claude` and `just nono-claude-danger` recipes do the latter for
-   the agent, and let the sandbox read the tools installed outside it.
+   `just nono-claude-danger` recipe does the latter for the agent, and lets the
+   sandbox read the tools installed outside it.
 
 Run `mise install` again after pulling a change to `mise.toml`. mise never
 installs a tool behind a command's back: a tool that is not installed falls back
