@@ -93,7 +93,9 @@ under `lambdas/tests/`.
 
 Touching `lambdas/src/lib.rs` (modification time only) left the server untouched
 for 8 s. Appending an empty line restarted it: down after 0.2 s, back with a new
-PID after 5.9 s (debug build, incremental).
+PID after 5.9 s (debug build, incremental). The same change to
+`entity/src/lib.rs`, after the spec review asked for it: down after 0.2 s, back
+with a new PID after 5.5 s.
 
 **Caught by**: task 1.2, whose first version of the probe used `touch` and
 concluded no restart.
