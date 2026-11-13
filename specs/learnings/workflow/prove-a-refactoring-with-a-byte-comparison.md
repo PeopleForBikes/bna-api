@@ -41,7 +41,7 @@ Copy the artifacts, regenerate them, and compare:
 
 ```bash
 cp openapi-3.1.yaml /tmp/31.yaml
-just regenerate-all
+just generate
 cmp openapi-3.1.yaml /tmp/31.yaml && git diff --quiet bnaclient openapi-3.0.yaml
 ```
 

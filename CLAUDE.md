@@ -16,23 +16,29 @@ Workspace members: `bnaclient`, `lambdas`, `entity`, `migration`, and
 
 ## Common commands
 
-Most repo-level tasks are `just` recipes (see `justfile`). Key ones:
+Most repo-level tasks are `just` recipes (see `justfile`). The justfile follows
+a meta task convention: a meta task (its comment starts with "Meta task") only
+runs other recipes, usually the ones named after it (`lint` runs `lint-*`), and
+comes right before them. Key ones:
 
 ```bash
-just fmt                       # apply every automatic fix: spelling, markdown lint, markdown format, justfile format
-just lint                      # check markdown format + markdown lint + spelling of the whole repo (ci-rust.yml runs it)
-just ci                        # lint + lint-rust (fmt, clippy, doc) + test-rust (cargo test): run before committing
+just ci                        # meta: lint + test, run before committing
+just fmt                       # meta: apply every automatic fix (fmt-spellcheck, fmt-just, fmt-md)
+just lint                      # meta: check spelling, Markdown and Rust (lint-spellcheck, lint-md, lint-rust: rustfmt, clippy, rustdoc)
+just test                      # meta: run the Rust tests (test-rust: cargo test --workspace)
+just compose                   # meta: compose-down + compose-up, a fresh Postgres (deletes the database volume)
 just compose-up / compose-down # start/stop local Postgres + pgadmin (docker-compose.yml)
 just db-seed                   # replace the DB with the test data (lambdas/tests/database-with-test-data.sql), then migrate
 just db-seed-from-csv          # replace the DB with examples/sample.csv instead (migrate fresh + `cargo run --example seeder`)
 just db-migrate                # apply pending migrations (sea-orm-cli migrate up)
 just db-generate-models        # regenerate entity/src/entities from the live DB schema
-just dbml-sql / dbml-svg       # generate docs/database.sql / .svg from docs/database.dbml
+just dbml                      # meta: generate docs/database.sql and .svg from docs/database.dbml (dbml-sql, dbml-svg)
 just dbml-check                # check that database.dbml matches the migrations
 just debug-axum                # run the Axum server locally in watch mode (bacon)
+just generate                  # meta: regenerate both OAS files + bnaclient (generate-oas-31, generate-oas-30, generate-client)
 just generate-oas-31           # regenerate openapi-3.1.yaml from the Axum source (utoipa)
 just generate-oas-30           # down-convert 3.1 -> openapi-3.0.yaml
-just regenerate-all           # regenerate both OAS files + bnaclient (keeps bnaclient/Cargo.toml, checks its dependencies)
+just generate-client           # regenerate bnaclient (keeps bnaclient/Cargo.toml, checks its dependencies)
 ```
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
@@ -40,21 +46,21 @@ code (`cargo build`, `cargo test`, `cargo test -p lambdas <name>`,
 `cargo clippy`). CI runs `just lint` (`.github/workflows/ci-rust.yml`), and
 `cargo fmt --check`, `cargo clippy -- -D warnings` and `cargo test` in
 `lambdas/` and `migration/` (`lambdas.yml`, `migration.yml`). Before committing,
-run `just ci`: `lint`, plus `lint-rust` and `test-rust`, the same Rust checks
-over the whole workspace (clippy skips the generated `bnaclient`). Three CI
-checks run separately: `just dbml-check` (needs the database), the integration
-tests below (need a running server), and `just regenerate-all` (rewrites the
-generated files; CI fails on their diff).
+run `just ci`: `lint` and `test`, whose Rust checks cover the whole workspace
+(clippy skips the generated `bnaclient`). Three CI checks run separately:
+`just dbml-check` (needs the database), the integration tests below (need a
+running server), and `just generate` (rewrites the generated files; CI fails on
+their diff).
 
 `just fmt` and `just lint` need oxfmt (Markdown formatter, `.oxfmtrc.json`),
 rumdl (Markdown linter, `.markdownlint.yml`) and typos (spellchecker,
 `_typos.toml`) on the `PATH`, at the versions pinned in `mise.toml` (installed
-with `mise install`, see `.github/CONTRIBUTING.md`). typos only knows common
-misspellings: add a word it wrongly flags, or a misspelling it should learn, to
-`_typos.toml`. In a `spike.md`, typos skips code spans, so quote deliberate
-misspellings (seeded typos, tool findings) as code spans. `just fmt` also
-corrects code (comments, identifiers, strings): review those changes and build
-before committing.
+with `mise install`, see `.github/CONTRIBUTING.md`); `just lint` also needs the
+Rust toolchain, for `lint-rust`. typos only knows common misspellings: add a
+word it wrongly flags, or a misspelling it should learn, to `_typos.toml`. In a
+`spike.md`, typos skips code spans, so quote deliberate misspellings (seeded
+typos, tool findings) as code spans. `just fmt` also corrects code (comments,
+identifiers, strings): review those changes and build before committing.
 
 Local dev DB: `just compose-up` starts Postgres on `localhost:5432` (user/db
 `bna`/`bna`, or `postgres`/`postgres`) and pgadmin on `:8484`. `DATABASE_URL` is
@@ -103,7 +109,7 @@ just test-localhost-schemathesis
   pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
-  `just regenerate-all`.
+  `just generate`.
 - **`specs/learnings/`** (at the root and in workspace members, e.g.
   `lambdas/specs/learnings/`) — documented solutions to past problems and team
   decisions, by category, with frontmatter (`modules`, `tags`); relevant when
@@ -149,7 +155,7 @@ on the Axum handlers/schemas in `lambdas/src/core/resource/**` are the source of
 truth. The flow is `generate-oas-31` (runs the Axum binary with
 `BNA_API_GENERATE_ONLY=1` to emit `openapi-3.1.yaml`) → `generate-oas-30`
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
-`bnaclient` from the 3.0 spec). Run `just regenerate-all` after changing any
+`bnaclient` from the 3.0 spec). Run `just generate` after changing any
 endpoint/schema shape or the workspace version. progenitor rewrites
 `bnaclient/Cargo.toml` with its own versions and edition; `generate-client` puts
 ours back, and fails when progenitor needs a dependency or a feature that ours
