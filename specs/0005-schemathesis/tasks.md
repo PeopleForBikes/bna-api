@@ -127,20 +127,20 @@ and their results go in `findings.md`.
       with `if: ${{ !cancelled() }}`.
     - _Requirements: 2.2, 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 6. Document the recipe
-  - [ ] 6.1 `lambdas/tests/README.md`: a "Schemathesis" section with the
+- [x] 6. Document the recipe
+  - [x] 6.1 `lambdas/tests/README.md`: a "Schemathesis" section with the
         prerequisites, the recipe, what it checks, the reports and crash files,
         `st replay` through the recipe's `uvx` command, the CI step, and the
         `just db-seed` needed before the Hurl suites after a run. Mention the
         nono grants for agents.
     - _Requirements: 6.1, 6.2_
-  - [ ] 6.2 `lambdas/README.md`: uv among the requirements (installed
+  - [x] 6.2 `lambdas/README.md`: uv among the requirements (installed
         separately, like Docker), and `just test-schemathesis` with the Hurl
         suites in "Terminal 2". `.github/CONTRIBUTING.md`: uv as the
         prerequisite of Schemathesis, outside the tools mise installs.
         `CLAUDE.md`: uv as the prerequisite of `just test-schemathesis`.
     - _Requirements: 6.3, 6.4_
-  - [ ] 6.3 `just lint` passes.
+  - [x] 6.3 `just lint` passes.
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
 - [ ] 7. Checkpoint: the pull request
