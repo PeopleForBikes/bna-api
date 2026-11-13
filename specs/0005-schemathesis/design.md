@@ -53,13 +53,15 @@ Dev_Server (debug build, watched by bacon) locally, the release build in CI.
 
 ### `bacon.toml`
 
-The `axum-debug` job gains one line:
+The `axum-debug` job gains two lines:
 
 ```toml
 [jobs.axum-debug]
 # ...
 on_change_strategy = "kill_then_restart"
 ignore = ["lambdas/tests"]
+# Follow the newest log lines, but show a failed build from its first error.
+scroll_anchor = "auto"
 ```
 
 bacon watches each package's `src`, `tests`, `benches` and `examples`
@@ -69,6 +71,13 @@ project root, and since 3.23.0 a folder pattern also ignores its content
 (bacon's changelog, fix #438). The other jobs keep watching `lambdas/tests/`,
 where the Rust tests of `hurl-coverage` live. The change is in the working tree
 since 2026-11-13; the first task commits it.
+
+`scroll_anchor` was added after the implementation, at the maintainer's request,
+so that the job shows the server's latest log lines while the test suites run.
+The job predates the option (bacon 3.23.0), so it kept the default, `first`,
+which stays at the top of the output; `auto`, the default of bacon's own run
+jobs, follows the newest lines and shows a failed build from its first error. It
+changes the display only, not when the server restarts.
 
 ### `lambdas/tests/justfile`
 
