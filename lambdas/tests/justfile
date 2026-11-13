@@ -3,9 +3,10 @@ set positional-arguments
 # Define variables.
 top_dir := `git rev-parse --show-toplevel`
 
-# Setup the project.
-setup:
-    uv sync --all-extras --dev
+# Schemathesis release run by uvx, and the date after which uv considers no
+# package when resolving its dependencies: both change together.
+schemathesis := "schemathesis@4.33.4"
+schemathesis_exclude_newer := "2026-11-13"
 
 # Export the OpenAPI specification.
 openapi-export:
@@ -36,27 +37,11 @@ coverage:
 test-smoke-public *env:
     hurl --test --variables-file $1.vars smoke/public.hurl
 
-# Run the schemathesis tests locally again the openapi schema.
-test-localhost-schemathesis:
-    RUST_BACKTRACE=1 \
-    uv run st run \
-      --base-url http://localhost:3000/ \
-      --cassette-path cassette.yaml \
-      -vvv \
-      -x \
-      --show-trace \
-      --generation-allow-x00 false \
-      --exclude-method 'POST' \
-      --exclude-method 'PATCH' \
-      {{ top_dir }}/openapi-3.0.yaml
-
-# Run the schemathesis tests again the openapi schema.
-test-staging-schemathesis:
-    uv run st run \
-      {{ top_dir }}/openapi-3.0.yaml \
-      --exclude-method 'POST' \
-      --exclude-method 'PATCH' \
-      --base-url https://api.staging.bna.peopleforbikes.org/
+# Settings are in schemathesis.toml. Needs uv, and the API on localhost:3000.
+# Run Schemathesis against the local server.
+test-schemathesis:
+    uvx --python 3.13 --exclude-newer {{ schemathesis_exclude_newer }} \
+      {{ schemathesis }} run {{ top_dir }}/openapi-3.1.yaml
 
 # Uses a dedicated database, dropped and recreated on each run.
 # Generate the test database dump from the migrations, baseline.sql and fixtures.sql.

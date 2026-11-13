@@ -1,0 +1,30 @@
+#:schema https://raw.githubusercontent.com/schemathesis/schemathesis/master/src/schemathesis/config/schema.json
+
+# The local server: the Dev_Server, or the release build in CI.
+base-url = "http://localhost:3000"
+
+# Report every failure of a scenario, not only the first.
+continue-on-failure = true
+
+# Schemathesis 4's defaults, stated so that a new default cannot weaken the run.
+[generation]
+mode = "all"
+
+[checks]
+enabled = true
+
+[phases]
+examples.enabled = true
+coverage.enabled = true
+fuzzing.enabled = true
+stateful.enabled = true
+
+[reports]
+directory = "schemathesis-report"
+junit.enabled = true
+html.enabled = true
+
+# Excluded findings, one block each, with the reason they are false positives:
+# [[operations]]
+# include-name = "POST /cities"
+# checks.positive_data_acceptance.enabled = false  # reason

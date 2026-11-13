@@ -40,11 +40,11 @@ and their results go in `findings.md`.
     - _Requirements: 1.1, 1.2_
 
 - [ ] 2. Run a pinned Schemathesis 4 through `uvx`
-  - [ ] 2.1 Check the latest Schemathesis 4.x release on PyPI. Keep 4.33.4 and
+  - [x] 2.1 Check the latest Schemathesis 4.x release on PyPI. Keep 4.33.4 and
         `2026-11-13`, or take the newer release with the day after its
         publication.
     - _Requirements: 2.1_
-  - [ ] 2.2 In `lambdas/tests/justfile`, add the `schemathesis` and
+  - [x] 2.2 In `lambdas/tests/justfile`, add the `schemathesis` and
         `schemathesis_exclude_newer` variables and the `test-schemathesis`
         recipe of `design.md`; remove the `setup`, `test-localhost-schemathesis`
         and `test-staging-schemathesis` recipes. Delete

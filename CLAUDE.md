@@ -77,7 +77,7 @@ cd lambdas/tests
 just test localhost            # or `just test staging` — runs the hurl suites in endpoints/ and scenario/
 just test-smoke-public localhost
 just coverage                  # compare the last run's report with openapi-3.1.yaml (hurl-coverage)
-just test-localhost-schemathesis
+just test-schemathesis
 ```
 
 ## Architecture
