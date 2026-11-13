@@ -45,6 +45,10 @@ jobs:
           # Install from mise.lock at every run, so every job checks what it runs.
           cache: false
           install_args: github:casey/just github:Orange-OpenSource/hurl
+      # uv runs the Schemathesis release pinned in lambdas/tests/justfile.
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.8"
       - name: Seed the database
         run: psql $DATABASE_URL < lambdas/tests/database-with-test-data.sql
       - name: Build the API server
@@ -86,29 +90,20 @@ jobs:
           path: lambdas/tests/reports
           if-no-files-found: warn
 
-      # Schemathesis causes the server to crash somehow.
-      # ```
-      # Network Error
-      #
-      # Connection failed
-      #
-      #     Connection aborted. Remote end closed connection without response
-      # ```
-      # This will require more investigation to be run in the CI.
-      # - name: Run Schemathesis
-      #   run: >
-      #     cd lambdas/tests &&
-      #     RUST_BACKTRACE=1
-      #     uv run st run
-      #     --base-url http://localhost:3000/
-      #     --cassette-path cassette.yaml
-      #     -vvv
-      #     -x
-      #     --show-trace
-      #     --generation-allow-x00 false
-      #     --exclude-method 'POST'
-      #     --exclude-method 'PATCH'
-      #     ../../openapi-3.0.yaml
+      # Schemathesis writes random rows, so it runs after the Hurl suites, which
+      # need the test data as loaded. Like the coverage check, it also runs when
+      # an earlier step failed, and its reports are uploaded either way.
+      - name: Run Schemathesis
+        if: ${{ !cancelled() }}
+        working-directory: lambdas/tests
+        run: just test-schemathesis
+      - name: Upload the Schemathesis reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: schemathesis-reports
+          path: lambdas/tests/schemathesis-report
+          if-no-files-found: warn
 
   # Checks that the schema specification, docs/database.dbml, matches the
   # migrations. A job of its own, so that a failure does not hide the tests.
