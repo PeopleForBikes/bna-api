@@ -145,7 +145,7 @@ and their results go in `findings.md`.
   - [x] 6.3 `just lint` passes.
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 7. Checkpoint: the pull request
+- [x] 7. Checkpoint: the pull request
   - The pull request's integration run passes, with the Schemathesis step and
     the `schemathesis-reports` artifact (JUnit and HTML). Record the step's
     duration in `findings.md`.

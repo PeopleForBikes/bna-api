@@ -5,10 +5,9 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: tasks 1 to 6 done; task 7 (the pull request's CI run, and the duration
-of the Schemathesis step there) waits for the branch to be pushed. Measured with
-bacon 3.26.0, uv 0.13.8 and Schemathesis 4.33.4 on macOS arm64, in the nono
-sandbox, on 2026-11-13.
+Status: done, tasks 1 to 7 (pull request 555). Measured with bacon 3.26.0, uv
+0.13.8 and Schemathesis 4.33.4 on macOS arm64, in the nono sandbox, on
+2026-11-13.
 
 ## 1. Behavior that does not survive a naive implementation
 
@@ -277,7 +276,7 @@ passing too. Two warnings remain, neither failing the run:
 - `POST /pipelines/bna` mostly gets `422`, since a random `fargate_price_id`
   rarely matches a price.
 
-### 4.2 The first CI run (task 7)
+### 4.2 The CI runs (task 7)
 
 Pull request #555, head `5146ccd`, integration run `43485935034`: the `test` job
 passed in 2 min 27 s. The Schemathesis step took 24 s: about 1 s to download
@@ -287,6 +286,13 @@ stateful scenarios (20 of 44 inferred links covered), and the same two warnings
 as locally. The `schemathesis-reports` artifact (JUnit and HTML, 17.8 kB) and
 `integration-reports` were uploaded. The `lambdas` and `migration` workflows
 passed; `ci-rust` failed on rustfmt (section 2.8).
+
+The second run, on head `4d9b46e` after the rustfmt fix (integration run
+`43487781516`), passed every workflow: `ci-rust`, `integration`, `bnaclient`,
+`lambdas` and `migration`. Its Schemathesis step took 32 s: 5,095 test cases,
+all passing, 31 stateful scenarios with 10 of the 44 inferred links covered. The
+number of scenarios and covered links varies from run to run (153 and 20 in the
+first), since the stateful phase is random.
 
 Follow-ups, outside this feature: identifiers or OpenAPI links for these two
 warnings; a length limit on the body fields matching the 255 characters of the
