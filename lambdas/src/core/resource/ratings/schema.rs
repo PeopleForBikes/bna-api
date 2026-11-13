@@ -1,6 +1,6 @@
 //! Describes the Ratings schemas.
 use super::db::Bna;
-use crate::core::resource::schema::City;
+use crate::core::resource::schema::{deserialize_object, City};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 use uuid::Uuid;
@@ -224,27 +224,35 @@ pub(crate) struct RatingPost {
     pub(crate) speed_limit_override: Option<i32>,
 
     /// BNAInfrastructure
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) infrastructure: Infrastructure,
 
     /// BNA Recreation
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) recreation: Recreation,
 
     /// BNA Opportunity
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) opportunity: Opportunity,
 
     /// BNA Core Services
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) core_services: CoreServices,
 
     /// BNA People
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) people: People,
 
     /// BNA Retail
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) retail: Retail,
 
     /// BNA Transit
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) transit: Transit,
 
     /// Measurement of the city's bike infrastructure.
+    #[serde(deserialize_with = "deserialize_object")]
     pub(crate) measure: Measure,
 }
 
@@ -325,6 +333,11 @@ mod tests {
     /// A rating with a total score of 50 and every subscore absent, merged
     /// with `extra`.
     fn rating_post(extra: Value) -> RatingPost {
+        try_rating_post(extra).unwrap()
+    }
+
+    /// Deserializes the rating of [`rating_post`].
+    fn try_rating_post(extra: Value) -> Result<RatingPost, serde_json::Error> {
         let mut body = json!({
             "city_id": Uuid::from_u128(1),
             "version": "25.10",
@@ -343,7 +356,21 @@ mod tests {
         body.as_object_mut()
             .unwrap()
             .extend(extra.as_object().unwrap().clone());
-        serde_json::from_value(body).unwrap()
+        serde_json::from_value(body)
+    }
+
+    #[test]
+    fn test_a_category_must_be_an_object() {
+        for value in [json!([null, null]), json!(null), json!("x")] {
+            let error = try_rating_post(json!({ "infrastructure": value }))
+                .err()
+                .expect("a category that is not an object is rejected");
+            assert!(
+                error.to_string().contains("expected a JSON object"),
+                "{error}"
+            );
+        }
+        assert!(try_rating_post(json!({"infrastructure": {"low_stress_miles": 1.0}})).is_ok());
     }
 
     #[test]

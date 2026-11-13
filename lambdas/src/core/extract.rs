@@ -145,6 +145,13 @@ where
         };
         let req = Request::from_parts(parts, Body::from(bytes.clone()));
         match Json::<T>::from_request(req, state).await {
+            // serde also reads a struct from an array, matching its fields by
+            // position, but every body is documented as an object.
+            Ok(_) if !is_object(&bytes) => Err(ExtractionError(APIError::invalid_attribute(
+                id,
+                &path,
+                "the body must be a JSON object",
+            ))),
             // The database cannot store a NUL character.
             Ok(_) if holds_nul(&bytes) => Err(ExtractionError(APIError::invalid_attribute(
                 id,
@@ -238,6 +245,11 @@ fn page_url(scheme: &str, authority: &str, path: &str, query: Option<&str>) -> S
     }
 }
 
+/// Returns whether a valid JSON body is an object.
+fn is_object(body: &[u8]) -> bool {
+    body.iter().find(|b| !b.is_ascii_whitespace()) == Some(&b'{')
+}
+
 /// Returns whether a valid JSON body holds a NUL character in a string or a key.
 fn holds_nul(body: &[u8]) -> bool {
     fn walk(value: &Value) -> bool {
@@ -296,6 +308,17 @@ fn error_path(details: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_is_object() {
+        assert!(is_object(br#"{"a": 1}"#));
+        assert!(is_object(b" \n\t{}"));
+        assert!(!is_object(b"[null, null]"));
+        assert!(!is_object(b" []"));
+        assert!(!is_object(b"null"));
+        assert!(!is_object(br#""text""#));
+        assert!(!is_object(b"42"));
+    }
 
     #[test]
     fn test_holds_nul() {
