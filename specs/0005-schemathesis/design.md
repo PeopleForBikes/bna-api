@@ -116,6 +116,9 @@ continue-on-failure = true
 # Schemathesis 4's defaults, stated so that a new default cannot weaken the run.
 [generation]
 mode = "all"
+# PostgreSQL text cannot store a NUL character, so the API rejects a string
+# holding one with 422 on purpose; generating them would only report that.
+allow-x00 = false
 
 [checks]
 enabled = true
@@ -131,19 +134,35 @@ directory = "schemathesis-report"
 junit.enabled = true
 html.enabled = true
 
-# Excluded findings, one block each, with the reason they are false positives:
-# [[operations]]
-# include-name = "POST /cities"
-# checks.positive_data_acceptance.enabled = false  # reason
+# Excluded findings, one block per operation, with the reason they are false
+# positives (findings.md, section 4), for example:
+[[operations]]
+include-name = "POST /ratings"
+checks.positive_data_acceptance.expected-statuses = [
+  "2XX",
+  "3XX",
+  401,
+  403,
+  404,
+  409,
+  422,
+  429,
+  "5XX",
+]
 ```
 
 - No `max-failures`: a run tests every operation (Requirement 3.4), and
   `continue-on-failure` reports every failure within a scenario.
 - No `generation.max-examples`: the default (100 cases per operation in the
   fuzzing phase) is measured in CI before any cap is considered.
-- `[[operations]]` blocks disable a check for the matching operations; an
+- `[[operations]]` blocks adjust a check for the matching operations; an
   Excluded_Finding names its operation with `include-name` and its check, with a
-  comment giving the reason (Requirement 3.6).
+  comment giving the reason (Requirement 3.6). The implementation has seven
+  blocks, for causes C, E, F and G of `findings.md` (section 4).
+- `generation.allow-x00 = false` is not an operation block: it stops generating
+  the NUL characters every body string would otherwise carry, since the API
+  rejects them on purpose (cause D). The team chose it over adding a pattern to
+  every string field of the specification.
 
 ### `.gitignore`
 
@@ -282,6 +301,13 @@ cache and crash files in `.schemathesis/`.
 - **`specs/0001-hurl-api-coverage`** stated that response shapes are not
   validated against the schema "until Schemathesis is fixed"; this feature
   closes that gap. The past spec stays as written.
+- **API fixes of the triage**: scores of a rating checked against 0 to 100
+  (`lambdas/src/core/resource/ratings/`), a body and a rating category accepted
+  only as JSON objects (`lambdas/src/core/extract.rs`, `deserialize_object` in
+  `lambdas/src/core/resource/schema.rs`), and the region, city and US state
+  names of the paths bounded to 255 characters (`MAX_PATH_NAME_LENGTH`, same
+  file), which also changes `bnaclient`: these parameters become types that
+  check their length.
 - **Root `justfile`**: unchanged. Its `test` meta task runs the Rust tests only,
   as Schemathesis needs a running server.
 
@@ -342,13 +368,12 @@ cache and crash files in `.schemathesis/`.
 
 ## Open Questions
 
-- **The Findings of Schemathesis 4**: their number and kind decide the size of
-  the triage task; none could be observed before implementation. The pinned
-  `uvx` call itself was checked on 2026-11-13: it resolves 27 packages, and
-  selects the 26 operations of `openapi-3.1.yaml`.
-- **Stateful links**: Schemathesis 4 infers links from response schemas and
-  `Location` headers. Whether it finds links between the API's operations (for
-  example `POST /cities/submissions` and
-  `GET`/`PATCH /cities/submissions/{submission_id}`) is observed in the first
-  run; adding OpenAPI links to the `utoipa` annotations is left for a follow-up
-  if it finds none.
+Both questions of the design were answered by the first run, on 2026-11-13
+(`findings.md`, section 4):
+
+- **The Findings of Schemathesis 4**: 86 failures from seven causes, and an
+  eighth once the first was fixed; four were fixed in the API, four handled in
+  `schemathesis.toml`.
+- **Stateful links**: the stateful phase inferred 44 links and covered 23,
+  without OpenAPI links in the specification. Two operations still need an
+  existing city to reach their logic, a follow-up.

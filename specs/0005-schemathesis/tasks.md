@@ -39,7 +39,7 @@ and their results go in `findings.md`.
       `200` again.
     - _Requirements: 1.1, 1.2_
 
-- [ ] 2. Run a pinned Schemathesis 4 through `uvx`
+- [x] 2. Run a pinned Schemathesis 4 through `uvx`
   - [x] 2.1 Check the latest Schemathesis 4.x release on PyPI. Keep 4.33.4 and
         `2026-11-13`, or take the newer release with the day after its
         publication.
@@ -59,14 +59,14 @@ and their results go in `findings.md`.
       of the three deleted files; `grep -rn 4.33.4` (or the chosen version)
       outside `specs/` finds only `lambdas/tests/justfile`.
     - _Requirements: 2.1, 2.2, 2.4, 2.5, 3.1, 3.2, 3.3, 3.5, 3.6, 6.4_
-  - [ ] 2.3 Reproducible resolution: resolve the Pinned_Release twice, each with
+  - [x] 2.3 Reproducible resolution: resolve the Pinned_Release twice, each with
         `UV_CACHE_DIR` and `UV_TOOL_DIR` in a new scratch directory, with the
         recipe's `uvx` options and `--from` the release, running `python -c`
         that prints every installed distribution and its version
         (`importlib.metadata.distributions()`), sorted. The two lists are
         identical.
     - _Requirements: 2.3_
-  - [ ] 2.4 First run: with the Dev_Server on a fresh `just db-seed`, run
+  - [x] 2.4 First run: with the Dev_Server on a fresh `just db-seed`, run
         `just test-schemathesis`.
     - The output lists 26 selected operations, the examples, coverage, fuzzing
       and stateful phases, and every check of `design.md` (Schemathesis 4's list
@@ -76,9 +76,11 @@ and their results go in `findings.md`.
     - Record every Finding (operation, check, a reproducing cURL command) and
       the stateful phase's link count (inferred, covered) in `findings.md`.
     - _Requirements: 3.1, 3.2, 3.4, 3.5_
-  - [ ] 2.5 Negative checks, none committed:
+  - [x] 2.5 Negative checks, none committed:
     - stop the Dev_Server and run the recipe: it exits `1` with a Network Error
-      per operation;
+      per operation (done with the recipe's `uvx` command and
+      `--url http://localhost:3999`, a closed port, since the Dev_Server
+      belonged to the maintainer's terminal);
     - with `PATH` lacking uv, the recipe fails (`uvx: command not found`);
     - change a `utoipa` annotation so that a documented response field no longer
       matches what the handler returns, run `just generate-oas-31`, and run the
@@ -86,12 +88,12 @@ and their results go in `findings.md`.
       Revert with `git restore`.
     - _Requirements: 3.4, 3.7_
 
-- [ ] 3. Triage the Findings until the run passes
-  - [ ] 3.1 Classify each Finding of 2.4 as a defect of the API, a defect of the
+- [x] 3. Triage the Findings until the run passes
+  - [x] 3.1 Classify each Finding of 2.4 as a defect of the API, a defect of the
         specification, or a false positive, with the reason, in `findings.md`.
         Group the Findings that share one cause.
     - _Requirements: 4.1_
-  - [ ] 3.2 One commit per cause, following `design.md` (Integration):
+  - [x] 3.2 One commit per cause, following `design.md` (Integration):
     - API defect: the fix in `lambdas/src/core/resource/**`, a Hurl request in
       `lambdas/tests/endpoints/` or `lambdas/tests/scenario/` that fails without
       the fix and passes with it, and a `CHANGELOG.md` entry under
