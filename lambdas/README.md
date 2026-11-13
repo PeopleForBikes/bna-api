@@ -8,6 +8,7 @@ Repository containing all the lambda endpoints for API Gateway.
 - [Docker]
 - [Hurl]
 - [Just]
+- [PostgreSQL] client, `psql` 17.6 or later
 - [Rust]
 - [Sea-ORM-CLI]
 
@@ -16,7 +17,8 @@ Repository containing all the lambda endpoints for API Gateway.
 Bacon, Hurl, Just and Sea-ORM-CLI are pinned in `mise.toml` at the root of the
 repository: install them with `mise install`, as described in the
 [Local tools](../.github/CONTRIBUTING.md#local-tools) section of the
-contributing guide.
+contributing guide. Docker, the PostgreSQL client and Rust are installed
+separately.
 
 ## Quickstart
 
@@ -38,7 +40,9 @@ The first terminal is used to watch the API server output in debug mode.
   export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postgres
   ```
 
-- Initialize the database
+- Initialize the database with the test data, the same data the CI tests run
+  against. It replaces whatever the database holds, so run it again at any time
+  to start over.
 
   ```bash
   just db-init
@@ -84,5 +88,6 @@ for id in `xan sample 10 city-ratings-all-historical-results-v25.09.csv | xan se
 [docker]: https://www.docker.com/get-started/
 [hurl]: http://hurl.dev
 [just]: https://github.com/casey/just
+[postgresql]: https://www.postgresql.org/download/
 [rust]: https://www.rust-lang.org/tools/install
 [sea-orm-cli]: https://www.sea-ql.org/SeaORM/docs/generate-entity/sea-orm-cli/
