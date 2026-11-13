@@ -15,8 +15,8 @@ superseded_by:
 
 ## Context
 
-`just test` runs every Hurl file with `hurl --test`
-(`lambdas/tests/justfile:23`), which runs the files in parallel against one
+`just test` runs every Hurl file with `hurl --test` (the `test` recipe of
+`lambdas/tests/justfile`), which runs the files in parallel against one
 database.
 
 ## Symptom
