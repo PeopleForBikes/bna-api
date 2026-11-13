@@ -36,7 +36,9 @@ and their results go in `findings.md`.
     - create and delete a file in `lambdas/tests/`, then delete and recreate
       `lambdas/tests/reports/`: the PID never changes and `/health` stays `200`;
     - touch a file in `lambdas/src/`: the PID changes and `/health` returns
-      `200` again.
+      `200` again. Done with a content change (an appended empty line, then
+      restored), since `touch` alone does not trigger bacon (`findings.md`
+      §2.2), in `lambdas/src/` and in `entity/src/`.
     - _Requirements: 1.1, 1.2_
 
 - [x] 2. Run a pinned Schemathesis 4 through `uvx`
