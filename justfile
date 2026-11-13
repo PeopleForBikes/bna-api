@@ -48,7 +48,7 @@ lint-md:
 lint-spellcheck:
     typos
 
-# Generate models
+# Generate the entities from the schema of the database.
 db-generate-models:
     rm -fr  {{ entities }}
     sea-orm-cli generate entity \
@@ -56,22 +56,9 @@ db-generate-models:
       --with-serde both \
       --date-time-crate chrono
 
-# Initialize the database with the test data.
-db-init: db-seed
-
-# Drop all tables and re-apply the migrations.
-db-fresh:
-    sea-orm-cli migrate fresh
-
-# Run the migrations.
+# Apply the pending migrations.
 db-migrate:
     sea-orm-cli migrate up
-
-# Replace the database with the test data, then generate the models.
-db-reset: db-seed db-generate-models
-
-# Replace the database with the test data.
-db-reseed: db-seed
 
 # The dump holds the tables, the test data and the applied migrations, and loads
 # into an empty schema only: everything in the public schema is dropped first.
@@ -83,8 +70,9 @@ db-seed: && db-migrate
       -c 'CREATE SCHEMA public'
     psql "${DATABASE_URL}" -v ON_ERROR_STOP=1 -q -f {{ sql_dump_data }} > /dev/null
 
-# Seed a migrated database from examples/sample.csv instead of the test data.
+# Replace the database with the sample of examples/sample.csv instead of the test data.
 db-seed-from-csv:
+    sea-orm-cli migrate fresh
     cargo run --example seeder
 
 # Generate the PostgreSQL schema from dbml.

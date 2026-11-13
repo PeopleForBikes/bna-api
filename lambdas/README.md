@@ -45,7 +45,7 @@ The first terminal is used to watch the API server output in debug mode.
   to start over.
 
   ```bash
-  just db-init
+  just db-seed
   ```
 
 - Start the API server in debug mode

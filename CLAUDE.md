@@ -22,13 +22,10 @@ Most repo-level tasks are `just` recipes (see `justfile`). Key ones:
 just fmt                       # apply every automatic fix: spelling, markdown lint, markdown format, justfile format
 just lint                      # check markdown format + markdown lint + spelling of the whole repo (this is what CI runs)
 just compose-up / compose-down # start/stop local Postgres + pgadmin (docker-compose.yml)
-just db-migrate                # apply migrations (sea-orm-cli migrate up)
-just db-fresh                  # drop all tables and re-apply migrations
-just db-generate-models        # regenerate entity/src/entities from the live DB schema
 just db-seed                   # replace the DB with the test data (lambdas/tests/database-with-test-data.sql), then migrate
-just db-seed-from-csv          # seed a migrated DB from examples/sample.csv via `cargo run --example seeder`
-just db-init                   # same as db-seed: what contributors run to set up the local DB
-just db-reset                  # seed + generate-models
+just db-seed-from-csv          # replace the DB with examples/sample.csv instead (migrate fresh + `cargo run --example seeder`)
+just db-migrate                # apply pending migrations (sea-orm-cli migrate up)
+just db-generate-models        # regenerate entity/src/entities from the live DB schema
 just dbml-sql / dbml-svg       # generate docs/database.sql / .svg from docs/database.dbml
 just dbml-check                # check that database.dbml matches the migrations
 just debug-axum                # run the Axum server locally in watch mode (bacon)
