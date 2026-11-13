@@ -8,6 +8,8 @@ dbml-error.log
 debug/
 lambdas/.env
 lambdas/tests/.hypothesis
+lambdas/tests/.schemathesis
 lambdas/tests/.venv
 lambdas/tests/reports
+lambdas/tests/schemathesis-report
 target/
