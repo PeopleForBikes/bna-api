@@ -227,6 +227,60 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/ratings"
 jsonpath "$.errors[0].details" contains "city_id"
 
+# Rejects a rating whose score is above 100.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "city_id": "{{city_id}}",
+  "core_services": {},
+  "infrastructure": {},
+  "opportunity": {},
+  "people": {},
+  "recreation": {},
+  "retail": {},
+  "transit": {},
+  "measure": {},
+  "pop_size": 2,
+  "population": 123456,
+  "version": "24.12",
+  "score": 101
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" startsWith "the score must be between 0 and 100"
+
+# Rejects a rating whose subscore is below 0.
+POST {{host}}/ratings
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "city_id": "{{city_id}}",
+  "core_services": {"dentists": -1},
+  "infrastructure": {},
+  "opportunity": {},
+  "people": {},
+  "recreation": {},
+  "retail": {},
+  "transit": {},
+  "measure": {},
+  "pop_size": 2,
+  "population": 123456,
+  "version": "24.12",
+  "score": 8.93
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/ratings"
+jsonpath "$.errors[0].details" startsWith "the core_services.dentists must be between 0 and 100"
+
 # Queries the city of a rating with an invalid id.
 GET {{host}}/ratings/1/city
 HTTP 400
