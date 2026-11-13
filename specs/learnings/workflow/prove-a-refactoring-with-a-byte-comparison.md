@@ -46,8 +46,8 @@ cmp openapi-3.1.yaml /tmp/31.yaml && git diff --quiet bnaclient openapi-3.0.yaml
 ```
 
 For the test data, regenerate the dump (`just dump-test-data` in
-`lambdas/tests`, `lambdas/tests/justfile:63`) and check that
-`git status database-with-test-data.sql` shows no change.
+`lambdas/tests`) and check that `git status database-with-test-data.sql` shows
+no change.
 
 ## Prevention
 
