@@ -26,11 +26,11 @@ and their results go in `findings.md`.
 
 ## Tasks
 
-- [ ] 1. Keep the Dev_Server up during test runs
-  - [ ] 1.1 Commit `ignore = ["lambdas/tests"]` in the `axum-debug` job of
+- [x] 1. Keep the Dev_Server up during test runs
+  - [x] 1.1 Commit `ignore = ["lambdas/tests"]` in the `axum-debug` job of
         `bacon.toml` (in the working tree since 2026-11-13).
     - _Requirements: 1.1, 1.2_
-  - [ ] 1.2 With `just debug-axum` running on the Test_Data, probe with a script
+  - [x] 1.2 With `just debug-axum` running on the Test_Data, probe with a script
         in the scratch directory (not committed) that polls `GET /health` and
         the `axumed` PID every 100 ms for 8 s:
     - create and delete a file in `lambdas/tests/`, then delete and recreate
