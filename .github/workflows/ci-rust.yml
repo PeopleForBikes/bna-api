@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
         with:
           version: 2026.11.5
@@ -20,7 +24,9 @@ jobs:
           install_args: >-
             github:casey/just github:crate-ci/typos github:oxc-project/oxc
             github:rvben/rumdl
-      - name: Check formatting, lint and spelling
+      # Spelling, Markdown, and the Rust code of the whole workspace (rustfmt,
+      # clippy, rustdoc): the lambdas and migration workflows only test.
+      - name: Check spelling, Markdown and Rust
         run: just lint
 
   test:
