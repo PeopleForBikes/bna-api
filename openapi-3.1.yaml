@@ -655,6 +655,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 255
         example: Antwerp
       - name: name
         in: path
@@ -662,6 +663,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 255
         example: Antwerp
       responses:
         '200':
@@ -721,6 +723,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 255
         example: Antwerp
       - name: name
         in: path
@@ -728,6 +731,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 255
         example: Antwerp
       - name: page_size
         in: query
@@ -1635,6 +1639,7 @@ paths:
         required: true
         schema:
           type: string
+          maxLength: 255
         example: Texas
       responses:
         '200':

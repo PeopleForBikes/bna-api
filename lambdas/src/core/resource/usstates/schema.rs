@@ -1,3 +1,4 @@
+use crate::core::resource::schema::deserialize_path_name;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -40,4 +41,20 @@ impl From<Vec<entity::us_state::Model>> for UsStates {
             .collect::<Vec<UsState>>();
         UsStates(s)
     }
+}
+
+/// Path parameters of `GET /usstates/{name}`.
+#[derive(Debug, Deserialize)]
+pub(crate) struct UsStatePathParameters {
+    /// Full name of the US state.
+    #[serde(deserialize_with = "deserialize_name")]
+    pub(crate) name: String,
+}
+
+/// Deserializes a US state name, of a bounded length.
+fn deserialize_name<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    deserialize_path_name("name", deserializer)
 }

@@ -335,10 +335,10 @@ pub(crate) struct CityParams {
     /// Region name. A region can be a state, a province, a community, or
     /// something similar depending on the country. If a country does not have
     /// this concept, then the country name is used.
-    #[param(example = "Antwerp")]
+    #[param(example = "Antwerp", max_length = 255)]
     region: String,
     /// City name
-    #[param(example = "Antwerp")]
+    #[param(example = "Antwerp", max_length = 255)]
     name: String,
 }
 

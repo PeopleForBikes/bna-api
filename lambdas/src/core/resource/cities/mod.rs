@@ -6,7 +6,7 @@ mod schema;
 
 pub use schema::ApprovalStatus;
 
-use super::schema::Country;
+use super::schema::{deserialize_path_name, Country};
 use serde::Deserialize;
 
 /// Path parameters for the /cities endpoint.
@@ -16,9 +16,27 @@ pub struct CitiesPathParameters {
     #[serde(deserialize_with = "deserialize_country")]
     pub country: String,
     /// Region name.
+    #[serde(deserialize_with = "deserialize_region")]
     pub region: String,
     /// City name.
+    #[serde(deserialize_with = "deserialize_name")]
     pub name: String,
+}
+
+/// Deserializes a region name, of a bounded length.
+fn deserialize_region<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    deserialize_path_name("region", deserializer)
+}
+
+/// Deserializes a city name, of a bounded length.
+fn deserialize_name<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    deserialize_path_name("name", deserializer)
 }
 
 /// Deserializes a country name, rejecting the ones that are not supported.

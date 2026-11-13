@@ -4,7 +4,7 @@ use crate::{
         schema::{BadRequestResponse, NotFoundResponse, PaginationParameters},
         usstates::{
             adaptor::{get_us_state_adaptor, get_us_states_adaptor},
-            schema::{UsState, UsStates},
+            schema::{UsState, UsStatePathParameters, UsStates},
         },
     },
     database_connect_or_init, Context, ExecutionError, PageFlow, Paginatron,
@@ -26,7 +26,7 @@ pub fn routes() -> OpenApiRouter {
   description = "Get the details of a specific US state.",
   tag = TAG,
   params(
-    ("name" = String, Path, description = "Full name of a US state, case sensitive: `Texas` matches, `texas` does not", example = "Texas"),
+    ("name" = String, Path, description = "Full name of a US state, case sensitive: `Texas` matches, `texas` does not", example = "Texas", max_length = 255),
   ),
   responses(
     (status = OK, description = "Fetches a Us state", body = UsState),
@@ -34,11 +34,11 @@ pub fn routes() -> OpenApiRouter {
     NotFoundResponse,
   ))]
 async fn get_us_state(
-    ApiPath(name): ApiPath<String>,
+    ApiPath(params): ApiPath<UsStatePathParameters>,
     ctx: Context,
 ) -> Result<Json<UsState>, ExecutionError> {
     let db = database_connect_or_init().await?;
-    get_us_state_adaptor(db, &name, ctx)
+    get_us_state_adaptor(db, &params.name, ctx)
         .await
         .map(UsState::from)
         .map(Json)

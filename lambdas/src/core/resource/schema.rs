@@ -649,6 +649,33 @@ where
     }
 }
 
+/// Longest free-text path parameter, in characters: a region, a city or a US
+/// state name.
+///
+/// The database columns have no limit. This one keeps a request far below
+/// hyper's limit of 65,534 bytes for a URI, past which it answers `414` before
+/// the router. The specification documents it as the `max_length` of these
+/// parameters.
+pub(crate) const MAX_PATH_NAME_LENGTH: usize = 255;
+
+/// Deserializes the free-text path parameter `field`, of at most
+/// [`MAX_PATH_NAME_LENGTH`] characters.
+pub(crate) fn deserialize_path_name<'de, D>(
+    field: &str,
+    deserializer: D,
+) -> Result<String, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let value = String::deserialize(deserializer)?;
+    if value.chars().count() > MAX_PATH_NAME_LENGTH {
+        return Err(serde::de::Error::custom(format!(
+            "the {field} must be at most {MAX_PATH_NAME_LENGTH} characters long"
+        )));
+    }
+    Ok(value)
+}
+
 /// Deserializes a struct from a JSON object only.
 ///
 /// serde's derived `Deserialize` also reads a struct from an array, matching
@@ -798,5 +825,36 @@ pub fn document_pagination_headers(api: &mut OpenApi) {
                 ),
             );
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::Value;
+
+    fn path_name(value: &str) -> Result<String, serde_json::Error> {
+        deserialize_path_name("name", Value::String(value.to_string()))
+    }
+
+    #[test]
+    fn test_path_name_up_to_the_limit_passes() {
+        let longest = "a".repeat(MAX_PATH_NAME_LENGTH);
+        assert_eq!(path_name(&longest).unwrap(), longest);
+    }
+
+    #[test]
+    fn test_path_name_over_the_limit_names_the_field() {
+        let error = path_name(&"a".repeat(MAX_PATH_NAME_LENGTH + 1)).unwrap_err();
+        assert_eq!(
+            error.to_string(),
+            "the name must be at most 255 characters long"
+        );
+    }
+
+    #[test]
+    fn test_path_name_counts_characters_not_bytes() {
+        // 255 two-byte characters: 510 bytes, but 255 characters.
+        assert!(path_name(&"é".repeat(MAX_PATH_NAME_LENGTH)).is_ok());
     }
 }
