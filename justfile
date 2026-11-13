@@ -48,14 +48,6 @@ lint-md:
 lint-spellcheck:
     typos
 
-# Dump database schema.
-db-dump:
-    pg_dump -d $DATABASE_URL --schema-only > {{ sql_dump }}
-
-# Dump database with data.
-db-dump-with-data:
-    pg_dump -d $DATABASE_URL > {{ sql_dump_data }}
-
 # Generate models
 db-generate-models:
     rm -fr  {{ entities }}
