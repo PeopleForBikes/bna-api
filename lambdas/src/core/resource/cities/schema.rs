@@ -158,9 +158,6 @@ pub(crate) struct RatingSummary {
     version: String,
 }
 
-/*
-*/
-
 impl From<summary::Model> for RatingSummary {
     fn from(value: summary::Model) -> Self {
         Self {
