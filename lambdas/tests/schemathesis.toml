@@ -24,7 +24,26 @@ directory = "schemathesis-report"
 junit.enabled = true
 html.enabled = true
 
-# Excluded findings, one block each, with the reason they are false positives:
-# [[operations]]
-# include-name = "POST /cities"
-# checks.positive_data_acceptance.enabled = false  # reason
+# Excluded findings, one block per operation, with the reason they are false
+# positives (specs/0005-schemathesis/findings.md, section 4).
+
+# A body the schema allows, but a rule of the API rejects with the documented
+# 422: a city_id or a fargate_price_id that matches no row, a state that is not
+# a US state for a US city, an end_time that is not a date-time (a format is an
+# annotation in OpenAPI 3.1, so "" passes the schema). 422 joins the statuses
+# that accept valid data; a 400 or a 415 on valid data still fails.
+[[operations]]
+include-name = "POST /ratings"
+checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404, 409, 422, 429, "5XX"]
+
+[[operations]]
+include-name = "POST /pipelines/bna"
+checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404, 409, 422, 429, "5XX"]
+
+[[operations]]
+include-name = "POST /cities"
+checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404, 409, 422, 429, "5XX"]
+
+[[operations]]
+include-name = "PATCH /pipelines/bna/{pipeline_id}"
+checks.positive_data_acceptance.expected-statuses = ["2XX", "3XX", 401, 403, 404, 409, 422, 429, "5XX"]
