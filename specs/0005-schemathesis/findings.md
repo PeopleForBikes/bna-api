@@ -104,6 +104,21 @@ concluded no restart.
 watches `lambdas/src/`. Check a watcher with a real content change, then restore
 the file (which restarts it once more).
 
+### 2.8 A new stable Rust can fail `cargo fmt --check` on unchanged code
+
+CI installs the latest stable toolchain (`dtolnay/rust-toolchain@stable`). On
+2026-11-13, the day after Rust 1.100.0, the `ci-rust` lint job of pull request
+555 failed on an empty block comment (`/*` then `*/`, from July 2025) in
+`lambdas/src/core/resource/cities/schema.rs`: its rustfmt wants the closing line
+indented, while the rustfmt of Rust 1.99.1, used locally, does not. The comment
+held nothing and was removed (`715a2b2`), so every version agrees.
+
+**Caught by**: the first CI run of the pull request; `just ci` passed locally.
+
+**Cost**: a red required `lint` check unrelated to the change. Any pull request
+would have hit it, and the toolchain is not pinned, so a later release can do it
+again.
+
 ### 2.3 progenitor 0.16.0 still panics on a nullable reference
 
 Removing `nullable = false` from `SubmissionPatch.status` turns it into
@@ -261,6 +276,17 @@ passing too. Two warnings remain, neither failing the run:
   only with an existing city, which Schemathesis cannot guess;
 - `POST /pipelines/bna` mostly gets `422`, since a random `fargate_price_id`
   rarely matches a price.
+
+### 4.2 The first CI run (task 7)
+
+Pull request #555, head `5146ccd`, integration run `43485935034`: the `test` job
+passed in 2 min 27 s. The Schemathesis step took 24 s: about 1 s to download
+CPython 3.13.18 and install the 27 packages of the Pinned_Release, then 22 s of
+testing. It tested 26 of 26 operations, 5,600 test cases, all passing, with 153
+stateful scenarios (20 of 44 inferred links covered), and the same two warnings
+as locally. The `schemathesis-reports` artifact (JUnit and HTML, 17.8 kB) and
+`integration-reports` were uploaded. The `lambdas` and `migration` workflows
+passed; `ci-rust` failed on rustfmt (section 2.8).
 
 Follow-ups, outside this feature: identifiers or OpenAPI links for these two
 warnings; a length limit on the body fields matching the 255 characters of the
