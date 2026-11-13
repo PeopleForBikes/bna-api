@@ -31,7 +31,7 @@ just dbml-check                # check that database.dbml matches the migrations
 just debug-axum                # run the Axum server locally in watch mode (bacon)
 just generate-oas-31           # regenerate openapi-3.1.yaml from the Axum source (utoipa)
 just generate-oas-30           # down-convert 3.1 -> openapi-3.0.yaml
-just regenerate-all-no-cargo   # regenerate both OAS files + bnaclient (preferred; keeps bnaclient/Cargo.toml)
+just regenerate-all           # regenerate both OAS files + bnaclient (keeps bnaclient/Cargo.toml, checks its dependencies)
 ```
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
@@ -97,8 +97,7 @@ just test-localhost-schemathesis
   pagination constants (`MAX_PAGE_SIZE`, `DEFAULT_PAGE_SIZE`).
 - **`bnaclient/`** — a Rust client generated from `openapi-3.0.yaml` via
   `cargo progenitor` (`just generate-client`). Never hand-edit; regenerate via
-  `just regenerate-all` (or `regenerate-all-no-cargo` to keep
-  `bnaclient/Cargo.toml` from being auto-updated).
+  `just regenerate-all`.
 - **`specs/learnings/`** (at the root and in workspace members, e.g.
   `lambdas/specs/learnings/`) — documented solutions to past problems and team
   decisions, by category, with frontmatter (`modules`, `tags`); relevant when
@@ -144,11 +143,12 @@ on the Axum handlers/schemas in `lambdas/src/core/resource/**` are the source of
 truth. The flow is `generate-oas-31` (runs the Axum binary with
 `BNA_API_GENERATE_ONLY=1` to emit `openapi-3.1.yaml`) → `generate-oas-30`
 (down-converts to `openapi-3.0.yaml`) → `generate-client` (progenitor generates
-`bnaclient` from the 3.0 spec). Run `just regenerate-all-no-cargo` after
-changing any endpoint/schema shape or the workspace version. It ends with
-`git restore bnaclient/Cargo.toml`, which discards _uncommitted_ edits to that
-file, so back it up first if you've changed it. The `bnaclient` CI job
-regenerates and fails on any diff.
+`bnaclient` from the 3.0 spec). Run `just regenerate-all` after changing any
+endpoint/schema shape or the workspace version. progenitor rewrites
+`bnaclient/Cargo.toml` with its own versions and edition; `generate-client` puts
+ours back, and fails when progenitor needs a dependency or a feature that ours
+lacks: add it to `bnaclient/Cargo.toml`. The `bnaclient` CI job regenerates and
+fails on that check or on any diff.
 
 ### Versioning and deployment
 

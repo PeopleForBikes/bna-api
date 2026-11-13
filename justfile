@@ -149,8 +149,18 @@ compose-down:
     docker compose rm -sfv
     docker volume rm -f bna-api_postgres
 
+# progenitor rewrites bnaclient/Cargo.toml with its own versions and edition: the
+# recipe keeps ours, and fails when progenitor needs a dependency or a feature
+# that ours lacks.
 # Generate BNA API client.
 generate-client:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    manifest=bnaclient/Cargo.toml
+    version="$(cargo pkgid -p bnaclient | sed 's/.*[#@]//')"
+    tmp=$(mktemp -d)
+    cp "$manifest" "$tmp/kept.toml"
+    trap 'cp "$tmp/kept.toml" "$manifest"; rm -rf "$tmp"' EXIT
     RUST_LOG="debug" \
       cargo progenitor \
       -i ./openapi-3.0.yaml \
@@ -158,7 +168,24 @@ generate-client:
       -n bnaclient \
       --interface builder \
       --license-name MIT \
-      -v "$(cargo pkgid -p bnaclient | sed 's/.*[#@]//')"
+      -v "$version"
+    # One line per dependency: its name, then its features.
+    deps() {
+      awk '/^\[/ { in_deps = ($0 == "[dependencies]"); next }
+        in_deps && /^[A-Za-z0-9_-]+ *=/ {
+          features = ""
+          if (match($0, /features *= *\[[^]]*\]/)) {
+            features = substr($0, RSTART, RLENGTH)
+            sub(/features *= *\[/, "", features); sub(/\]/, "", features)
+            gsub(/[" ]/, "", features)
+          }
+          print $1, features
+        }' "$1" | sort
+    }
+    if ! diff -u --label "$manifest" --label progenitor <(deps "$tmp/kept.toml") <(deps "$manifest"); then
+      echo "progenitor needs other dependencies or features: update $manifest." >&2
+      exit 1
+    fi
 
 # Start the Axum server locally in watch mode.
 debug-axum:
@@ -177,10 +204,6 @@ generate-oas-30:
 
 # Regenerate the OpenAPI specifications and the client.
 regenerate-all: generate-oas-31 generate-oas-30 generate-client
-
-# Regenerate the OpenAPI specifications and the client without updating Cargo.toml.
-regenerate-all-no-cargo: regenerate-all
-    git restore bnaclient/Cargo.toml
 
 # Use nono sandbox to login with Claude.
 nono-claude-login:
