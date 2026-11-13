@@ -62,8 +62,8 @@ macOS). Three separate problems stood in the way, one after the other.
   command (`unknown shorthand flag: 'f' in -f`). Docker Desktop installs them
   under `~/.docker/cli-plugins`, which stays denied.
 - **A bare `nono run --profile pfb-claude ...`** with the Docker flags: it drops
-  the mise grants that the `nono-claude` recipe adds, so the tools installed by
-  mise disappear.
+  the mise grants that the `nono-claude-danger` recipe adds, so the tools
+  installed by mise disappear.
 
 ## Root Cause
 
@@ -75,16 +75,16 @@ macOS). Three separate problems stood in the way, one after the other.
 - Docker Desktop sets `"credsStore": "desktop"` in `~/.docker/config.json`, so
   every pull runs `docker-credential-desktop`, which needs
   `~/Library/Containers/com.docker.docker`, outside the sandbox.
-- The mise grants are not in the profile but in the recipe: `justfile:200`
-  (`nono-claude`) adds `--read` on mise's data and configuration directories,
-  `--allow` on its state directory (defined at `justfile:14` to `justfile:16`)
-  and `--read-file` on the mise executable (`justfile:208`).
+- The mise grants are not in the profile but in the recipe: `nono-claude-danger`
+  in the root `justfile` adds `--read` on mise's data and configuration
+  directories, `--allow` on its state directory (the `mise_data`, `mise_config`
+  and `mise_state` variables) and `--read-file` on the mise executable.
 
 ## Solution
 
-1. Start the session from the `nono-claude` recipe's command line, plus the two
-   Docker flags (and any `--allow-domain` / `--open-port` the work needs). The
-   recipe takes no extra arguments, so copy its command:
+1. Start the session from the `nono-claude-danger` recipe's command line, plus
+   the two Docker flags (and any `--allow-domain` / `--open-port` the work
+   needs). The recipe takes no extra arguments, so copy its command:
 
    ```sh
    mise_data=~/.local/share/mise mise_config=~/.config/mise mise_state=~/.local/state/mise
@@ -94,7 +94,7 @@ macOS). Three separate problems stood in the way, one after the other.
      --read-file "$mise_bin" --read-file "$(realpath "$mise_bin")" \
      --bypass-protection ~/.docker \
      --allow-unix-socket ~/.docker/run/docker.sock \
-     -- claude
+     -- claude --dangerously-skip-permissions
    ```
 
    The two Docker flags were verified (`docker version` reaches the daemon);
@@ -125,6 +125,6 @@ protects. Grant it for one session, not in the profile.
   example `docker compose ps --status running --services | wc -l` against the
   expected count, and stop otherwise: a failed pull leaves a half-started stack
   that looks like a test failure.
-- When proposing extra sandbox flags, start from the `nono-claude` recipe
-  (`justfile:200`), never from a bare `nono run`. A recipe parameter for extra
-  flags would make this one command; it does not exist yet.
+- When proposing extra sandbox flags, start from the `nono-claude-danger` recipe
+  in the root `justfile`, never from a bare `nono run`. A recipe parameter for
+  extra flags would make this one command; it does not exist yet.
