@@ -5,8 +5,10 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: in progress, tasks 1 to 3 done. Measured with bacon 3.26.0, uv 0.13.8
-and Schemathesis 4.33.4 on macOS arm64, in the nono sandbox, on 2026-11-13.
+Status: tasks 1 to 6 done; task 7 (the pull request's CI run, and the duration
+of the Schemathesis step there) waits for the branch to be pushed. Measured with
+bacon 3.26.0, uv 0.13.8 and Schemathesis 4.33.4 on macOS arm64, in the nono
+sandbox, on 2026-11-13.
 
 ## 1. Behavior that does not survive a naive implementation
 
