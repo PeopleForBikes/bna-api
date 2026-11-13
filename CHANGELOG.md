@@ -192,3 +192,9 @@ and this project adheres to
   JSON array with one element per field used to be read field by field, so
   `PATCH /cities/submissions/{submission_id}` with `[null, …, "Approved"]`
   approved the submission.
+- `GET /cities/{country}/{region}/{name}`, its `/ratings`, and
+  `GET /usstates/{name}` now document a maximum of 255 characters for the
+  region, city and US state names, and answer `400 Bad Request` past it, naming
+  the parameter in `details`. A name long enough to exceed 65,534 bytes of URI
+  got an undocumented `414 URI Too Long` from the HTTP server. `bnaclient`
+  checks the length before sending the request.

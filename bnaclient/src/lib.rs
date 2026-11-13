@@ -1595,6 +1595,230 @@ pub mod types {
         }
     }
 
+    ///`GetCityName`
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GetCityName(::std::string::String);
+    impl ::std::ops::Deref for GetCityName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<GetCityName> for ::std::string::String {
+        fn from(value: GetCityName) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for GetCityName {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCityName {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCityName {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for GetCityName {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
+        }
+    }
+
+    ///`GetCityRatingsName`
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GetCityRatingsName(::std::string::String);
+    impl ::std::ops::Deref for GetCityRatingsName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<GetCityRatingsName> for ::std::string::String {
+        fn from(value: GetCityRatingsName) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for GetCityRatingsName {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCityRatingsName {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCityRatingsName {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for GetCityRatingsName {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
+        }
+    }
+
+    ///`GetCityRatingsRegion`
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GetCityRatingsRegion(::std::string::String);
+    impl ::std::ops::Deref for GetCityRatingsRegion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<GetCityRatingsRegion> for ::std::string::String {
+        fn from(value: GetCityRatingsRegion) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for GetCityRatingsRegion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCityRatingsRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCityRatingsRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for GetCityRatingsRegion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
+        }
+    }
+
+    ///`GetCityRegion`
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GetCityRegion(::std::string::String);
+    impl ::std::ops::Deref for GetCityRegion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<GetCityRegion> for ::std::string::String {
+        fn from(value: GetCityRegion) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for GetCityRegion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetCityRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetCityRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for GetCityRegion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
+        }
+    }
+
     ///Fields the Fargate prices can be sorted by.
     #[derive(
         :: serde :: Deserialize,
@@ -1648,6 +1872,62 @@ pub mod types {
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
             value.parse()
+        }
+    }
+
+    ///`GetUsStateName`
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct GetUsStateName(::std::string::String);
+    impl ::std::ops::Deref for GetUsStateName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<GetUsStateName> for ::std::string::String {
+        fn from(value: GetUsStateName) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for GetUsStateName {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for GetUsStateName {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for GetUsStateName {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for GetUsStateName {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
         }
     }
 
@@ -6835,8 +7115,8 @@ pub mod builder {
     pub struct GetCity<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<::std::string::String, String>,
-        name: Result<::std::string::String, String>,
+        region: Result<types::GetCityRegion, String>,
+        name: Result<types::GetCityName, String>,
     }
 
     impl<'a> GetCity<'a> {
@@ -6861,21 +7141,21 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCityRegion>,
         {
-            self.region = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for region failed".to_string()
-            });
+            self.region = value
+                .try_into()
+                .map_err(|_| "conversion to `GetCityRegion` for region failed".to_string());
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCityName>,
         {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
+            self.name = value
+                .try_into()
+                .map_err(|_| "conversion to `GetCityName` for name failed".to_string());
             self
         }
 
@@ -6939,8 +7219,8 @@ pub mod builder {
     pub struct GetCityRatings<'a> {
         client: &'a super::Client,
         country: Result<types::Country, String>,
-        region: Result<::std::string::String, String>,
-        name: Result<::std::string::String, String>,
+        region: Result<types::GetCityRatingsRegion, String>,
+        name: Result<types::GetCityRatingsName, String>,
         page: Result<Option<::std::num::NonZeroU64>, String>,
         page_size: Result<Option<::std::num::NonZeroU64>, String>,
     }
@@ -6969,21 +7249,21 @@ pub mod builder {
 
         pub fn region<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCityRatingsRegion>,
         {
-            self.region = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for region failed".to_string()
-            });
+            self.region = value
+                .try_into()
+                .map_err(|_| "conversion to `GetCityRatingsRegion` for region failed".to_string());
             self
         }
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetCityRatingsName>,
         {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
+            self.name = value
+                .try_into()
+                .map_err(|_| "conversion to `GetCityRatingsName` for name failed".to_string());
             self
         }
 
@@ -8200,7 +8480,7 @@ pub mod builder {
     #[derive(Debug, Clone)]
     pub struct GetUsState<'a> {
         client: &'a super::Client,
-        name: Result<::std::string::String, String>,
+        name: Result<types::GetUsStateName, String>,
     }
 
     impl<'a> GetUsState<'a> {
@@ -8213,11 +8493,11 @@ pub mod builder {
 
         pub fn name<V>(mut self, value: V) -> Self
         where
-            V: std::convert::TryInto<::std::string::String>,
+            V: std::convert::TryInto<types::GetUsStateName>,
         {
-            self.name = value.try_into().map_err(|_| {
-                "conversion to `:: std :: string :: String` for name failed".to_string()
-            });
+            self.name = value
+                .try_into()
+                .map_err(|_| "conversion to `GetUsStateName` for name failed".to_string());
             self
         }
 
