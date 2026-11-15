@@ -7,6 +7,12 @@ services:
       POSTGRESQL_USERNAME: bna
       POSTGRESQL_PASSWORD: bna
       POSTGRESQL_DATABASE: bna
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "postgres", "-U", "postgres"]
+      interval: 10s
+      timeout: 60s
+      retries: 6
+      start_period: 10s
     ports:
       - 5432:5432
     volumes:
