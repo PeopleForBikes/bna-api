@@ -171,7 +171,7 @@ compose-down:
 
 # Spin up Docker Compose.
 compose-up:
-    docker compose up -d
+    docker compose up -d --wait
 
 # Meta task generating the OpenAPI specifications and the client.
 generate: generate-oas-31 generate-oas-30 generate-client
