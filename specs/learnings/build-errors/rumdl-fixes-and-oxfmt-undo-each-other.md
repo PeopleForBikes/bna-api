@@ -1,13 +1,17 @@
 ---
 title: rumdl's automatic fixes and oxfmt can undo each other
 date: 2026-11-10
-updated: 2026-11-10
+updated: 2026-11-14
 category: build-errors
 status: active
 tags: [rumdl, oxfmt, markdown, lint, formatter]
 modules: [.markdownlint.yml, justfile]
 spec: specs/0002-rust-tooling
-related: [specs/0002-rust-tooling/findings.md]
+related:
+  [
+    specs/0002-rust-tooling/findings.md,
+    specs/learnings/build-errors/oxfmt-rewrites-code-spans-and-yaml-in-markdown.md,
+  ]
 superseded_by:
 ---
 

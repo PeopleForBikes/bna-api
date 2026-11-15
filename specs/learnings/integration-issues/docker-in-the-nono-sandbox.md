@@ -1,7 +1,7 @@
 ---
 title: Docker in the nono sandbox needs a socket grant, own config, mise grants
 date: 2026-11-12
-updated: 2026-11-12
+updated: 2026-11-14
 category: integration-issues
 status: active
 tags: [docker, nono, sandbox, agents, compose]
@@ -11,6 +11,7 @@ related:
   [
     specs/0004-local-connection-pooler-yanked/spike.md,
     specs/learnings/integration-issues/mise-shims-need-the-mise-binary-in-a-sandbox.md,
+    specs/learnings/integration-issues/docker-health-check-timing-and-compose-wait.md,
   ]
 superseded_by:
 ---

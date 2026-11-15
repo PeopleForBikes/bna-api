@@ -1,7 +1,7 @@
 ---
 title: mise can skip its integrity checks, locally and in CI
 date: 2026-11-12
-updated: 2026-11-12
+updated: 2026-11-14
 category: security-issues
 status: active
 tags: [mise, attestation, checksum, mise-action, cache, supply-chain]
@@ -12,6 +12,7 @@ related:
     specs/0003-tool-manager/findings.md,
     specs/learnings/integration-issues/mise-missing-tool-falls-back-to-path.md,
     specs/learnings/integration-issues/mise-shims-need-the-mise-binary-in-a-sandbox.md,
+    specs/learnings/integration-issues/mise-lock-inside-nono-lock-the-tool-by-name.md,
   ]
 superseded_by:
 ---
