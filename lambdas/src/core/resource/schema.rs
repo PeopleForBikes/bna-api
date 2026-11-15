@@ -299,11 +299,11 @@ pub(crate) struct City {
     name: String,
     /// Geographic coordinate that specifies the north-south position of a point
     /// on the surface of the Earth.
-    #[schema(examples("51.260197"))]
+    #[schema(examples(51.260197))]
     latitude: Option<f64>,
     /// Geographic coordinate that specifies the east–west position of a point
     /// on the surface of the Earth.
-    #[schema(examples("4.402771"))]
+    #[schema(examples(4.402771))]
     longitude: Option<f64>,
     /// Region name. A region can be a state, a province, a community, or
     /// something similar depending on the country. If a country does not have
@@ -318,7 +318,7 @@ pub(crate) struct City {
     fips_code: Option<String>,
     /// Residential speed limit in kilometer per hour (km/h).
     /// Only use if different from the state speed limit.
-    #[schema(examples("50"))]
+    #[schema(examples(50))]
     residential_speed_limit: Option<i32>,
     /// Creation date
     created_at: DateTime<chrono::FixedOffset>,

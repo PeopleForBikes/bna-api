@@ -12,7 +12,7 @@ use utoipa::{IntoParams, ToSchema};
 #[schema(description = "A Fargate price used to estimate the cost of an analysis")]
 pub(crate) struct FargatePrice {
     /// Identifier of the Fargate Price rate used to compute the cost of the pipeline run
-    #[schema(examples("1"))]
+    #[schema(examples(1))]
     id: i32,
     /// Cost to run Fargate for 1 second
     #[schema(examples("0.0023"))]

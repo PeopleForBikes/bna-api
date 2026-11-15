@@ -105,11 +105,11 @@ pub(crate) struct CityPost {
     country: Country,
     /// Geographic coordinate that specifies the north-south position of a point
     /// on the surface of the Earth.
-    #[schema(examples("51.260197"))]
+    #[schema(examples(51.260197))]
     latitude: Option<f64>,
     /// Geographic coordinate that specifies the east–west position of a point
     /// on the surface of the Earth.
-    #[schema(examples("4.402771"))]
+    #[schema(examples(4.402771))]
     longitude: Option<f64>,
     /// Numerical city identifier given by the U.S. census, or 0 for non-US cities
     #[schema(examples("4805000"))]
@@ -129,7 +129,7 @@ pub(crate) struct CityPost {
     #[schema(examples("VAN"))]
     state_abbrev: Option<String>,
     /// Speed limit in kilometer per hour (km/h).
-    #[schema(examples("50"))]
+    #[schema(examples(50))]
     residential_speed_limit: Option<i32>,
 }
 
@@ -142,15 +142,15 @@ pub(crate) struct RatingSummary {
     /// Creation date
     created_at: DateTime<chrono::FixedOffset>,
     /// City population size category (small, medium, large).
-    #[schema(examples("large"))]
+    #[schema(examples(2))]
     pub pop_size: i32,
     /// City population based on the annual U.S. Census American Community Survey.
-    #[schema(examples("989252"))]
+    #[schema(examples(989252))]
     pub population: i32,
     /// Residential speed limit override.
     pub residential_speed_limit_override: Option<i32>,
     /// BNA score
-    #[schema(examples("77.0"))]
+    #[schema(examples(77.0))]
     score: f64,
     /// Analysis version. The format follows the [calver](https://calver.org)
     /// specification with the YY.0M[.Minor] scheme.
@@ -213,7 +213,7 @@ pub(crate) struct Submission {
     #[schema(examples("4805000"))]
     fips_code: String,
     /// Consent status
-    #[schema(examples("true"))]
+    #[schema(examples(true))]
     consent: bool,
     /// Submission status, e.g. "Pending"
     #[schema(examples("Pending"))]
@@ -275,7 +275,7 @@ pub(crate) struct SubmissionPost {
     #[schema(examples("4805000"))]
     fips_code: String,
     /// Consent status
-    #[schema(examples("true"))]
+    #[schema(examples(true))]
     consent: bool,
 }
 
@@ -312,7 +312,7 @@ pub(crate) struct SubmissionPatch {
     #[schema(examples("4805000"), nullable = false)]
     fips_code: Option<String>,
     /// Consent status
-    #[schema(examples("true"), nullable = false)]
+    #[schema(examples(true), nullable = false)]
     consent: Option<bool>,
     /// Submission status
     #[schema(examples("Pending"), nullable = false)]

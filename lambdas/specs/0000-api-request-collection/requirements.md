@@ -18,6 +18,10 @@ requests, retires `lambdas/requests.rest`, and documents how to use and extend
 the collection. It also makes `just compose-up` wait until PostgreSQL accepts
 connections, so that the local setup can be chained with the database recipes
 (raised by the user during the spike, added to this feature after its review).
+Last, it gives the examples of the OpenAPI specification the types of their
+fields: the importers copy them, and a quoted `"true"` for a boolean made the
+seeded bodies fail with `422` (`findings.md` §1.2, fixed in this feature after
+its learnings review).
 
 **In scope**:
 
@@ -33,6 +37,9 @@ connections, so that the local setup can be chained with the database recipes
   and `.github/CONTRIBUTING.md` (the pinned tool).
 - A health check on the PostgreSQL service of `docker-compose.yml`, and
   `just compose-up` waiting for it.
+- Examples of `openapi-3.1.yaml` whose JSON type matches the `type` of their
+  field, and a test that keeps it so. Fields documented as strings keep string
+  examples, including the `Decimal` amounts (`cost`, `per_second`).
 
 **Out of scope** (decided with the user; the spike's recommendation differs on
 the first point):
@@ -167,5 +174,24 @@ recipes (`just compose-up && just db-seed`) without waiting by hand.
    stopped, `just db-seed` SHALL succeed.
 4. IF the PostgreSQL service becomes unhealthy, THEN `just compose-up` SHALL
    exit with a non-zero status.
+
+### Requirement 6: OpenAPI examples have the types of their fields
+
+**User Story:** As a contributor seeding requests from the OpenAPI
+specification, I want its examples to have the types of their fields, so that a
+request built from them is accepted by the API.
+
+#### Acceptance Criteria
+
+1. Every example of a schema or parameter in `openapi-3.1.yaml` SHALL have a
+   JSON type that the `type` of its schema allows: a number for `integer` or
+   `number`, `true` or `false` for `boolean`, a string for `string`.
+2. The example of `pop_size`, a population size category stored as an integer,
+   SHALL be the integer of the category its example population belongs to.
+3. IF an example of `openapi-3.1.yaml` has a JSON type that the `type` of its
+   schema does not allow, THEN `cargo test` in `lambdas` SHALL fail and name the
+   location of that example.
+4. WHEN a submission is created from the examples of `SubmissionPost`, the API
+   SHALL answer with status 201.
 
 [Slumber]: https://github.com/LucasPickering/slumber

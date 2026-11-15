@@ -45,6 +45,20 @@ types.
 **Cost**: none here; fixing the example in the annotations would make imports
 usable without that check (out of scope).
 
+_Fixed in this feature (Requirement 6, task 11), after the learnings review._
+The cause was in the utoipa annotations: a string literal is a JSON string
+whatever the field's type, so `#[schema(examples("true"))]` on `consent: bool`
+produced `'true'`. Eighteen examples were quoted: `consent` (three schemas),
+`latitude`, `longitude` and `residential_speed_limit` (two schemas each),
+`pop_size` (`"large"` on an `i32`, now `2`), `population`, `score`, the `id` of
+a price, a state's `speed_limit`, and four path parameters (`submission_id`
+twice, `year`, `count`). A search of the `schema.rs` files found fourteen; the
+test written first, `lambdas/tests/openapi_examples.rs`, found the four path
+parameters of `lambdas/src/core/resource/cities/endpoint.rs`. `Decimal` amounts
+(`cost`, `per_second`) keep string examples: the specification documents them as
+strings. After `just generate`, the two OpenAPI files changed in exactly those
+18 examples and `bnaclient` did not change.
+
 ### 1.3 The health check's `timeout` above its `interval` is not an overlap
 
 `docker-compose.yml` gives the `postgres` service `interval: 10s` and

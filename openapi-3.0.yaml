@@ -383,7 +383,7 @@ paths:
           schema:
             type: integer
             format: int32
-          example: '1'
+          example: 1
         - name: status
           in: query
           description: Filter for the submission status
@@ -443,7 +443,7 @@ paths:
           schema:
             type: integer
             format: int32
-          example: '1'
+          example: 1
       requestBody:
         content:
           application/json:
@@ -649,7 +649,7 @@ paths:
             format: int32
             maximum: 2029
             minimum: 2017
-          example: '2024'
+          example: 2024
         - name: count
           in: path
           description: The number of top cities to collect
@@ -659,7 +659,7 @@ paths:
             format: int64
             maximum: 100
             minimum: 1
-          example: '10'
+          example: 10
       responses:
         '200':
           description: Fetches cities with their respective summary
@@ -2229,7 +2229,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '51.260197'
+          example: 51.260197
           nullable: true
         longitude:
           type: number
@@ -2239,7 +2239,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '4.402771'
+          example: 4.402771
           nullable: true
         name:
           type: string
@@ -2262,7 +2262,7 @@ components:
           description: |-
             Residential speed limit in kilometer per hour (km/h).
             Only use if different from the state speed limit.
-          example: '50'
+          example: 50
           nullable: true
         state:
           type: string
@@ -2303,7 +2303,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '51.260197'
+          example: 51.260197
           nullable: true
         longitude:
           type: number
@@ -2313,7 +2313,7 @@ components:
             point
 
             on the surface of the Earth.
-          example: '4.402771'
+          example: 4.402771
           nullable: true
         name:
           type: string
@@ -2334,7 +2334,7 @@ components:
           type: integer
           format: int32
           description: Speed limit in kilometer per hour (km/h).
-          example: '50'
+          example: 50
           nullable: true
         state:
           type: string
@@ -2645,7 +2645,7 @@ components:
           description: >-
             Identifier of the Fargate Price rate used to compute the cost of the
             pipeline run
-          example: '1'
+          example: 1
         per_second:
           type: string
           description: Cost to run Fargate for 1 second
@@ -2930,14 +2930,14 @@ components:
           type: integer
           format: int32
           description: City population size category (small, medium, large).
-          example: large
+          example: 2
         population:
           type: integer
           format: int32
           description: >-
             City population based on the annual U.S. Census American Community
             Survey.
-          example: '989252'
+          example: 989252
         residential_speed_limit_override:
           type: integer
           format: int32
@@ -2947,7 +2947,7 @@ components:
           type: number
           format: double
           description: BNA score
-          example: '77.0'
+          example: 77
         version:
           type: string
           description: >-
@@ -3032,7 +3032,7 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: true
         country:
           $ref: '#/components/schemas/Country'
           description: Country
@@ -3097,7 +3097,7 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: true
         country:
           $ref: '#/components/schemas/Country'
           description: Country
@@ -3161,7 +3161,7 @@ components:
         consent:
           type: boolean
           description: Consent status
-          example: 'true'
+          example: true
         country:
           $ref: '#/components/schemas/Country'
           description: Country
@@ -3243,7 +3243,7 @@ components:
           type: integer
           format: int32
           description: State speed limit in mph.
-          example: '30'
+          example: 30
     UsStates:
       type: array
       items:
