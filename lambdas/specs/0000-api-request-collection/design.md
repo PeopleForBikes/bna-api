@@ -4,13 +4,15 @@
 
 The feature changes configuration and documentation only; no Rust code, no
 endpoint, no schema. It also gives the local PostgreSQL service a health check
-that `just compose-up` waits for (Requirement 5). Slumber 5.4.4 joins the cargo
-tools of `mise.toml`, built from crates.io exactly like `cargo:bacon`,
-`cargo:sea-orm-cli` and `cargo:cargo-progenitor`, and stays out of CI because
-every workflow names the tools it installs. A new `lambdas/slumber.yml` holds
-one profile for the local server and one recipe, `get_cities`, the first example
-of the README's conventions; its token comes from `HURL_VARIABLE_token`, the
-variable the Hurl suites already read, so one variable serves both tools.
+that `just compose-up` waits for (Requirement 5), and fixes the types of the
+OpenAPI examples, with a test over `openapi-3.1.yaml` (Requirement 6). Slumber
+5.4.4 joins the cargo tools of `mise.toml`, built from crates.io exactly like
+`cargo:bacon`, `cargo:sea-orm-cli` and `cargo:cargo-progenitor`, and stays out
+of CI because every workflow names the tools it installs. A new
+`lambdas/slumber.yml` holds one profile for the local server and one recipe,
+`get_cities`, the first example of the README's conventions; its token comes
+from `HURL_VARIABLE_token`, the variable the Hurl suites already read, so one
+variable serves both tools.
 
 `lambdas/requests.rest` is deleted, and the `lambdas` workflow's path filter
 excludes the new collection instead of the old one. `lambdas/README.md` gains
@@ -190,6 +192,44 @@ requests:
   failures make the service `unhealthy` (R5.4).
 - `compose` (`compose-down` then `compose-up`) inherits the wait.
 
+### OpenAPI examples and their test
+
+- The utoipa annotations that quote a number or a boolean get a literal of the
+  field's type (`#[schema(examples(true))]`, `examples(51.260197)`,
+  `examples(50)`), in `lambdas/src/core/resource/cities/schema.rs` (`latitude`,
+  `longitude`, `residential_speed_limit`, `pop_size`, `population`, `score`,
+  three `consent`), `lambdas/src/core/resource/schema.rs` (`latitude`,
+  `longitude`, `residential_speed_limit`),
+  `lambdas/src/core/resource/price/schema.rs` (`id`) and
+  `lambdas/src/core/resource/usstates/schema.rs` (`speed_limit`); and the path
+  parameters of `lambdas/src/core/resource/cities/endpoint.rs` (`submission_id`
+  twice, `year`, `count`: `example = 1`, `2024`, `10`). A string example in
+  utoipa becomes a JSON string whatever the field's type (R6.1). Eighteen
+  examples in all; the four path parameters were missed by a search of the
+  `schema.rs` files and found by the test of task 11.1.
+- `pop_size` (`i32`) had the example `"large"`. The categories are not
+  documented; the test data shows three values whose population ranges grow with
+  them (0: 576 to 39,927; 1: 43,485 to 200,555; 2: 114,761 to 361,924, `summary`
+  table after `just db-seed`), read as the description's "small, medium, large".
+  The example population, 989,252, is large, so the example is `2` (R6.2).
+- Fields documented as strings keep string examples: `Decimal` is a `string` in
+  the specification (utoipa's `decimal` feature), so `cost` (`"6.8941"`) and
+  `per_second` (`"0.0023"`) are right as they are.
+- `just generate` regenerates `openapi-3.1.yaml`, `openapi-3.0.yaml` and
+  `bnaclient` from the annotations.
+- `lambdas/tests/openapi_examples.rs` (new integration test of `lambdas`) reads
+  `openapi-3.1.yaml` with `serde_norway` (a workspace dependency, added to the
+  `lambdas` dev-dependencies) and walks every mapping. A mapping with a `type`
+  (a string or a list) and an `examples` list is a schema; a mapping with an
+  `example` and a `schema` that has a `type` is a parameter. Each example's JSON
+  type (`null`, `boolean`, `integer`, `number`, `string`, `array`, `object`; an
+  integer also satisfies `number`) must be allowed, otherwise the test fails
+  with the path of every offending example (R6.1, R6.3). A schema without a
+  `type` (a `$ref`, an `allOf`) is skipped. A second test runs the check on a
+  small inline document with a quoted boolean, so the checker itself is shown to
+  catch the defect. The test reads the committed file: the `bnaclient` CI job
+  already fails when it differs from the annotations.
+
 ### `.github/CONTRIBUTING.md`
 
 - Prerequisites (`.github/CONTRIBUTING.md:20-21`): "mise builds bacon,
@@ -231,6 +271,8 @@ No other data is added. Slumber's history lives outside the repository.
    place of `requests.rest`.
 6. **A ready database**: when `just compose-up` exits 0, PostgreSQL accepts
    connections.
+7. **Typed examples**: no example of `openapi-3.1.yaml` has a JSON type that its
+   schema's `type` excludes; `cargo test` in `lambdas` enforces it.
 
 ## Error Handling
 
@@ -289,6 +331,9 @@ criterion is checked by a command, run on the implementation branch:
 | R5.1, R5.2       | Review of `docker-compose.yml` and `justfile`; then, run by the user, `just compose-down` and `just compose-up`: `docker compose ps` shows the `postgres` service `(healthy)` as soon as the recipe returns.                                                   |
 | R5.3             | Run by the user: `just compose-down && just compose-up && just db-seed` exits 0.                                                                                                                                                                               |
 | R5.4             | Run by the user: `docker compose` with a scratch override file setting the health check to `["CMD", "false"]` and `--wait` exits non-zero once the service is `unhealthy`; then `just compose`.                                                                |
+| R6.1, R6.3       | `cargo test -p lambdas --test openapi_examples`: fails on the current `openapi-3.1.yaml` and names the quoted examples; passes after the fix and `just generate`. Its second test shows the checker catching a quoted boolean.                                 |
+| R6.2             | Review: `pop_size` has the example `2`, its example population (989,252) being large.                                                                                                                                                                          |
+| R6.4             | With the local API running, a body made of the `SubmissionPost` examples (`slumber import openapi` of the regenerated `openapi-3.0.yaml`, its `post_cities_submission` recipe sent as is) answers `201`.                                                       |
 
 Every Slumber behaviour above was already observed with 5.4.4: an empty
 `requests: {}` loads; `env()` renders an unset variable as empty and a set one

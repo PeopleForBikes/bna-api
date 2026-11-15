@@ -172,10 +172,35 @@ the Testing Strategy in `design.md`, and `just ci` at each checkpoint.
   - Run `just ci`; it passes.
   - _Requirements: 5.1, 5.2_
 
+- [x] 11. Give the OpenAPI examples the types of their fields (finding 1.2)
+  - [x] 11.1 Write `lambdas/tests/openapi_examples.rs` as given in `design.md`
+        and add `serde_norway = { workspace = true }` to the dev-dependencies of
+        `lambdas/Cargo.toml`; run it on the current `openapi-3.1.yaml` and see
+        it fail on the quoted examples.
+    - _Requirements: 6.3_
+  - [x] 11.2 Replace the quoted examples of non-string fields with literals of
+        their type in the files listed in `design.md` (four `schema.rs` files
+        and `cities/endpoint.rs`), and `pop_size`'s `"large"` with `2`.
+    - _Requirements: 6.1, 6.2_
+  - [x] 11.3 Run `just generate`, then the test of 11.1: it passes. Review the
+        diff of `openapi-3.1.yaml`, `openapi-3.0.yaml` and `bnaclient`: only
+        examples change.
+    - _Requirements: 6.1, 6.3_
+  - [x] 11.4 With the local API running, send the `post_cities_submission`
+        recipe of `slumber import openapi openapi-3.0.yaml` as imported: `201`.
+    - Run 2026-11-15: the imported body had `"consent":true` (`"true"` before
+      the fix) and the API answered `201 Created`.
+    - _Requirements: 6.4_
+
+- [x] 12. Checkpoint - typed examples
+  - Run `just ci`; it passes.
+  - _Requirements: 6.1, 6.3_
+
 ## Notes
 
 - **Commits**: one per task 1, 2, 4, 5 and 9, each with its checks; task 7 goes
-  with the collection and the README.
+  with the collection and the README. Task 11 is one commit with its spec
+  update, the annotations, the test and the regenerated files.
 - **Sandbox**: `mise install` runs outside the nono sandbox, as for every mise
   install; Docker and the local API too. Inside the sandbox, run Slumber with
   `HOME` set to a scratch folder, so that it does not need its history folder,

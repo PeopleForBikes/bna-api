@@ -15,7 +15,7 @@ pub(crate) struct UsState {
     #[schema(examples("48"))]
     fipscode: String,
     /// State speed limit in mph.
-    #[schema(examples("30"))]
+    #[schema(examples(30))]
     speed_limit: i32,
 }
 

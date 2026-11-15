@@ -225,7 +225,7 @@ async fn post_city(
   description = "Get the details of a specific submission.",
   tag = TAG,
   params(
-    ("submission_id" = i32, Path, description = "Submission identifier", example = "1"),
+    ("submission_id" = i32, Path, description = "Submission identifier", example = 1),
     ("status" = Option<ApprovalStatus>, Query, description = "Filter for the submission status", example = "Pending"),
   ),
   responses(
@@ -373,7 +373,7 @@ async fn post_cities_submission(
   description = "Update a city submission.",
   tag = TAG,
   params(
-    ("submission_id" = i32, Path, description = "Submission identifier", example = "1"),
+    ("submission_id" = i32, Path, description = "Submission identifier", example = 1),
   ),
   request_body = SubmissionPatch,
   responses(
@@ -401,8 +401,8 @@ async fn patch_cities_submission(
   description = "Get the top N cities for a specific year.",
   tag = TAG,
   params(
-    ("year" = i32, Path, description = "The year to collect the top cities for",  example = "2024", minimum = 2017, maximum = 2029),
-    ("count" = u64, Path, description = "The number of top cities to collect",  example = "10", minimum = 1, maximum = 100),
+    ("year" = i32, Path, description = "The year to collect the top cities for",  example = 2024, minimum = 2017, maximum = 2029),
+    ("count" = u64, Path, description = "The number of top cities to collect",  example = 10, minimum = 1, maximum = 100),
   ),
   responses(
     (status = OK, description = "Fetches cities with their respective summary", body = CitiesWithSummary),
