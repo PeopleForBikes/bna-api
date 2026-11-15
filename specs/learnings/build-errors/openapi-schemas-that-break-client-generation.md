@@ -1,7 +1,7 @@
 ---
 title: utoipa and progenitor traps when shaping the OpenAPI schemas
 date: 2026-11-07
-updated: 2026-11-13
+updated: 2026-11-15
 category: build-errors
 status: active
 tags: [utoipa, progenitor, openapi, bnaclient, schema, nullable]
@@ -19,6 +19,7 @@ related:
   [
     specs/0001-hurl-api-coverage/findings.md,
     specs/0005-schemathesis/findings.md,
+    specs/learnings/conventions/openapi-examples-are-literals-of-the-field-type.md,
   ]
 superseded_by:
 ---
