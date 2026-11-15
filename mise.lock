@@ -17,6 +17,11 @@ version = "2.0.4"
 backend = "cargo:sea-orm-cli"
 specifiers = ["2.0.4"]
 
+[[tools."cargo:slumber"]]
+version = "5.4.4"
+backend = "cargo:slumber"
+specifiers = ["5.4.4"]
+
 [[tools."github:Orange-OpenSource/hurl"]]
 version = "8.1.0"
 backend = "github:Orange-OpenSource/hurl"
