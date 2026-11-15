@@ -9,7 +9,7 @@ on:
     paths:
       - ".github/workflows/lambdas.yml"
       - "lambdas/**"
-      - "!lambdas/requests.rest"
+      - "!lambdas/slumber.yml"
     types:
       - opened
       - synchronize
