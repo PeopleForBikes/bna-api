@@ -17,8 +17,8 @@ the same two files.
 ### Prerequisites
 
 - [mise][mise installation], version 2026.11.5 or newer.
-- A Rust toolchain: mise builds bacon, sea-orm-cli and cargo-progenitor from
-  crates.io.
+- A Rust toolchain: mise builds bacon, sea-orm-cli, cargo-progenitor and slumber
+  from crates.io.
 - On Linux, the `libxml2` library, which hurl needs.
 - A GitHub login (`gh auth login`) or a `GITHUB_TOKEN` environment variable, to
   avoid GitHub's rate limit on anonymous requests.
@@ -65,7 +65,7 @@ to any other copy on your `PATH`, and `mise exec` only warns about it.
 - oxfmt, rumdl, typos and hurl must also pass the check of their GitHub release
   attestation, at every install. just publishes no attestation and is checked by
   its checksum only.
-- bacon, sea-orm-cli and cargo-progenitor are built from crates.io with
+- bacon, sea-orm-cli, cargo-progenitor and slumber are built from crates.io with
   `cargo install --locked`, never installed from prebuilt binaries.
 
 ### Bumping a tool
