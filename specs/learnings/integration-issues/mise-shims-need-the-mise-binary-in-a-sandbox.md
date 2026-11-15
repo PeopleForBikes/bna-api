@@ -1,10 +1,10 @@
 ---
 title: mise's shims need the mise executable, so a sandbox must read it too
 date: 2026-11-12
-updated: 2026-11-12
+updated: 2026-11-14
 category: integration-issues
 status: active
-tags: [mise, shims, nono, sandbox, agents]
+tags: [mise, shims, nono, sandbox, agents, home]
 modules: [justfile]
 spec: specs/0003-tool-manager
 related:
@@ -13,6 +13,8 @@ related:
     specs/learnings/security-issues/mise-can-skip-its-integrity-checks.md,
     specs/learnings/integration-issues/mise-missing-tool-falls-back-to-path.md,
     specs/learnings/integration-issues/docker-in-the-nono-sandbox.md,
+    lambdas/specs/0000-api-request-collection/findings.md,
+    specs/learnings/integration-issues/mise-lock-inside-nono-lock-the-tool-by-name.md,
   ]
 superseded_by:
 ---
@@ -70,9 +72,37 @@ the sandbox. just's `which()` would need `set lists` (just 1.59.0), hence
 arguments (Homebrew link and target, a plain file, no mise) and in a real
 session with Homebrew's mise; a session with mise in `~/.local/bin` was not run.
 
+## Also: a different `HOME` makes the shims distrust `mise.toml`
+
+_Added 2026-11-14, from `lambdas/specs/0000-api-request-collection` (findings
+§2.2)._ Inside the sandbox, Slumber cannot write its history under
+`~/Library/Application Support/slumber/`, so its checks ran it with `HOME` set
+to a scratch folder. Through the shim, it failed before Slumber started:
+
+```text
+mise ERROR Config files in .../bna-api/mise.toml are not trusted.
+Trust them with `mise trust`.
+```
+
+mise keeps its trust records in its state directory, by default under the home
+folder (`~/.local/state/mise/trusted-configs/`, which holds this checkout's
+entry); with another `HOME`, it looks elsewhere and finds the checkout
+untrusted. Calling the installed program keeps the override for the tool only:
+
+```bash
+HOME=<scratch> "$(mise which slumber)" --file lambdas/slumber.yml collection
+```
+
+`mise which slumber` gives
+`~/.local/share/mise/installs/cargo-slumber/5.4.4/bin/slumber`; the checks of
+that feature passed this way. Pointing `MISE_STATE_DIR` at the real state
+directory might also work; not tried.
+
 ## Prevention
 
 - When a sandbox must run tools through shims or wrappers (mise, asdf, pyenv),
   grant what the shim executes, not only the directories of the tools: check
   with `ls -l` on a shim.
 - Test sandbox recipes with more than one install method of the tool manager.
+- When a command needs another `HOME` inside the sandbox, run the tool through
+  `"$(mise which <tool>)"`, not through its shim.
