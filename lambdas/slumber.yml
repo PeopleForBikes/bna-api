@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/LucasPickering/slumber/refs/tags/v5.4.4/schemas/collection.json
+# Keep the tag above equal to the Slumber version pinned in mise.toml.
+#
+# Requests to explore the BNA API with Slumber: see lambdas/README.md.
+name: BNA API
+
+profiles:
+  local:
+    name: Local development API
+    default: true
+    data:
+      host: http://localhost:3000
+      # Empty unless HURL_VARIABLE_token is set; the Hurl suites read it too.
+      token: "{{ env('HURL_VARIABLE_token') }}"
+
+requests:
+  city:
+    name: city
+    requests:
+      get_cities:
+        name: List the cities
+        method: GET
+        url: "{{ host }}/cities"
+        query:
+          page_size: 5
