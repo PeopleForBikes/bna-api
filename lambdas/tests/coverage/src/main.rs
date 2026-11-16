@@ -156,9 +156,15 @@ fn load_calls(report: &str) -> Result<Vec<Call>, Box<dyn Error>> {
 }
 
 /// Splits a path into its decoded segments.
+///
+/// An empty segment is kept, so that an empty parameter, such as the name in
+/// `/cities/United%20States/Tennessee/`, still matches its operation.
 fn segments(path: &str) -> Vec<String> {
+    let path = path.strip_prefix('/').unwrap_or(path);
+    if path.is_empty() {
+        return Vec::new();
+    }
     path.split('/')
-        .filter(|s| !s.is_empty())
         .map(|s| String::from_utf8_lossy(&urlencoding::decode_binary(s.as_bytes())).into_owned())
         .collect()
 }
@@ -344,6 +350,14 @@ mod tests {
     #[test]
     fn test_segments_root() {
         assert!(segments("/").is_empty());
+    }
+
+    #[test]
+    fn test_find_operation_empty_parameter() {
+        assert_eq!(
+            find_operation("GET", "/cities/United%20States/Tennessee/", &templates()),
+            Some(&operation("GET", "/cities/{country}/{region}/{name}"))
+        );
     }
 
     #[test]
