@@ -115,12 +115,12 @@ pub(crate) struct CityPost {
     #[schema(examples("4805000"))]
     fips_code: Option<String>,
     /// City name
-    #[schema(examples("Antwerp"))]
+    #[schema(examples("Antwerp"), min_length = 1, max_length = 255)]
     name: String,
     /// Region name. A region can be a state, a province, a community, or
     /// something similar depending on the country. If a country does not have
     /// this concept, then the country name is used.
-    #[schema(examples("Antwerp"))]
+    #[schema(examples("Antwerp"), min_length = 1, max_length = 255)]
     region: Option<String>,
     /// A short version of the state name, usually 2 or 3 character long
     #[schema(examples("VAN"))]

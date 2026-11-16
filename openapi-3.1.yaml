@@ -2141,6 +2141,8 @@ components:
           description: City name
           examples:
           - Antwerp
+          maxLength: 255
+          minLength: 1
         region:
           type:
           - string
@@ -2151,6 +2153,8 @@ components:
             this concept, then the country name is used.
           examples:
           - Antwerp
+          maxLength: 255
+          minLength: 1
         residential_speed_limit:
           type:
           - integer
