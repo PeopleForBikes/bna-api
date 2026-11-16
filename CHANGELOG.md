@@ -204,3 +204,7 @@ and this project adheres to
   `GET /cities/{country}/{region}/{name}`. Such a city used to be stored, and
   could never be read back. In `bnaclient`, the `name` and `region` of a
   `CityPost` are now the checked `CityPostName` and `CityPostRegion` types.
+- A request whose path matches no route, such as a city path with an empty name
+  (`/cities/United%20States/Tennessee/`), now gets a JSON `APIErrors` document
+  with its `404 Not Found`, holding the path in `source.pointer`, like every
+  other 404. The body used to be empty, without a `content-type`.

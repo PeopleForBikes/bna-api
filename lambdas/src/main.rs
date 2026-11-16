@@ -1,13 +1,13 @@
 use axum::middleware;
 use entity::wrappers::{BikeLaneType, BnaRegion};
 use lambda_http::{run, tracing, Error};
-use lambdas::complete_internal_error;
 use lambdas::core::resource::{
     cities::{self, ApprovalStatus},
     pipelines, price, ratings, reports,
     schema::{document_pagination_headers, APIError, APIErrorSource, APIErrors, OrderDirection},
     system, usstates,
 };
+use lambdas::{complete_internal_error, route_not_found};
 use std::{
     env::{self, set_var},
     fs,
@@ -186,8 +186,10 @@ async fn main() -> Result<(), Error> {
         return Ok(());
     }
 
-    // Add the Swagger UI.
-    let app = app.merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api));
+    // Add the Swagger UI, and answer any other path with a JSON 404.
+    let app = app
+        .merge(SwaggerUi::new("/swagger-ui").url("/apidoc/openapi.json", api))
+        .fallback(route_not_found);
 
     // Lookup for the  standalone flag.
     let standalone = env::var("BNA_API_STANDALONE")

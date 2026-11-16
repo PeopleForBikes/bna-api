@@ -260,6 +260,16 @@ header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/cities/Narnia/Narnia/Cair%20Paravel"
 
+# An empty city name leaves a path that matches no route: it is not found, with
+# the same JSON error as any other 404.
+GET {{host}}/cities/{{country}}/{{region}}/
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/Tennessee/"
+
 # Rejects a country that does not exist when reading the ratings of a city.
 GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel/ratings
 HTTP 400
