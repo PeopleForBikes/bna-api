@@ -2318,6 +2318,8 @@ components:
         name:
           type: string
           description: City name
+          maxLength: 255
+          minLength: 1
           example: Antwerp
         region:
           type: string
@@ -2328,6 +2330,8 @@ components:
             have
 
             this concept, then the country name is used.
+          maxLength: 255
+          minLength: 1
           example: Antwerp
           nullable: true
         residential_speed_limit:
