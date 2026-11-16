@@ -339,6 +339,17 @@ pub async fn complete_internal_error(
         .unwrap()
 }
 
+/// Answers a request matching no route, such as a path whose last parameter is
+/// empty, with the JSON error of every other `404 Not Found`. The router's own
+/// answer has no body.
+pub async fn route_not_found(ctx: Context) -> ExecutionError {
+    ExecutionError::NotFound(
+        ctx.request_id(),
+        ctx.source(),
+        "no resource matches the path".to_string(),
+    )
+}
+
 pub struct Context {
     // request_id: APIGatewayV2RequestID,
     request_id: Option<String>,
@@ -431,6 +442,26 @@ mod tests {
         assert_eq!(status, StatusCode::NOT_FOUND);
         assert_eq!(error["source"]["pointer"], "/elsewhere");
         assert_eq!(error["details"], "not here");
+    }
+
+    #[tokio::test]
+    async fn test_unknown_route_is_a_json_not_found() {
+        let app = Router::new()
+            .route("/cities/{country}/{region}/{name}", get(|| async {}))
+            .fallback(route_not_found);
+        let request = Request::get("/cities/Belgium/Antwerp/")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::NOT_FOUND);
+        assert_eq!(response.headers()[header::CONTENT_TYPE], "application/json");
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let errors: Value = serde_json::from_slice(&body).unwrap();
+        assert_eq!(errors["errors"][0]["status"], "404");
+        assert_eq!(
+            errors["errors"][0]["source"]["pointer"],
+            "/cities/Belgium/Antwerp/"
+        );
     }
 
     #[test]
