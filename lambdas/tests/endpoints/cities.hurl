@@ -203,6 +203,55 @@ jsonpath "$.errors[0].status" == "422"
 jsonpath "$.errors[0].source.pointer" == "/cities"
 jsonpath "$.errors[0].details" contains "state"
 
+# Rejects an empty city name: the city could not be read back by its path.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Belgium",
+  "state": "Antwerp",
+  "name": ""
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "name"
+
+# Rejects an empty region, for the same reason.
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Belgium",
+  "state": "Antwerp",
+  "region": "",
+  "name": "hurl-{{newUuid}}"
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "region"
+
+# Rejects a city name longer than its path parameter allows (255 characters).
+POST {{host}}/cities
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "country": "Belgium",
+  "state": "Antwerp",
+  "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+}
+HTTP 422
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors[0].status" == "422"
+jsonpath "$.errors[0].source.pointer" == "/cities"
+jsonpath "$.errors[0].details" contains "name"
+
 # Rejects a country that does not exist when reading a city.
 GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel
 HTTP 400
@@ -210,6 +259,16 @@ HTTP 400
 header "content-type" == "application/json"
 jsonpath "$.errors[0].status" == "400"
 jsonpath "$.errors[0].source.pointer" == "/cities/Narnia/Narnia/Cair%20Paravel"
+
+# An empty city name leaves a path that matches no route: it is not found, with
+# the same JSON error as any other 404.
+GET {{host}}/cities/{{country}}/{{region}}/
+HTTP 404
+[Asserts]
+header "content-type" == "application/json"
+jsonpath "$.errors" count == 1
+jsonpath "$.errors[0].status" == "404"
+jsonpath "$.errors[0].source.pointer" == "/cities/United%20States/Tennessee/"
 
 # Rejects a country that does not exist when reading the ratings of a city.
 GET {{host}}/cities/Narnia/Narnia/Cair%20Paravel/ratings

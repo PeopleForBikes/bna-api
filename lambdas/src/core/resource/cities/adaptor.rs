@@ -3,7 +3,10 @@ use super::db::{
     fetch_cities_with_latest_summary, fetch_city, fetch_country, fetch_state_region_crosswalk,
     fetch_top_cities,
 };
-use crate::{core::resource::schema::OrderDirection, Context, ExecutionError};
+use crate::{
+    core::resource::schema::{OrderDirection, MAX_PATH_NAME_LENGTH},
+    Context, ExecutionError,
+};
 use entity::{
     city, summary,
     wrappers::{
@@ -82,11 +85,32 @@ fn uncovered_country(ctx: &Context, country: &str) -> ExecutionError {
     )
 }
 
+/// Rejects a city name or region that `GET /cities/{country}/{region}/{name}`
+/// could not take as a path parameter: an empty one, or one longer than
+/// [`MAX_PATH_NAME_LENGTH`] characters. Such a city could never be read back.
+fn check_path_name(ctx: &Context, field: &str, value: &str) -> Result<(), ExecutionError> {
+    let length = value.chars().count();
+    if (1..=MAX_PATH_NAME_LENGTH).contains(&length) {
+        return Ok(());
+    }
+    Err(ExecutionError::InvalidAttribute(
+        ctx.request_id(),
+        ctx.source(),
+        format!("the {field} must be between 1 and {MAX_PATH_NAME_LENGTH} characters long"),
+    ))
+}
+
 pub async fn post_cities_adaptor(
     db: &DatabaseConnection,
     city: CityPost,
     ctx: Context,
 ) -> Result<city::Model, ExecutionError> {
+    // Ensure the city can be read back by its path.
+    check_path_name(&ctx, "name", &city.name)?;
+    if let Some(region) = &city.region {
+        check_path_name(&ctx, "region", region)?;
+    }
+
     // Ensure the country is a valid one.
     if fetch_country(db, &city.country).await?.is_none() {
         return Err(uncovered_country(&ctx, &city.country));

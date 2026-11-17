@@ -618,12 +618,12 @@ pub mod types {
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub longitude: ::std::option::Option<f64>,
         ///City name
-        pub name: ::std::string::String,
+        pub name: CityPostName,
         ///Region name. A region can be a state, a province, a community, or
         ///something similar depending on the country. If a country does not
         /// have this concept, then the country name is used.
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
-        pub region: ::std::option::Option<::std::string::String>,
+        pub region: ::std::option::Option<CityPostRegion>,
         ///Speed limit in kilometer per hour (km/h).
         #[serde(skip_serializing_if = "::std::option::Option::is_none")]
         pub residential_speed_limit: ::std::option::Option<i32>,
@@ -637,6 +637,126 @@ pub mod types {
     impl CityPost {
         pub fn builder() -> builder::CityPost {
             Default::default()
+        }
+    }
+
+    ///City name
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct CityPostName(::std::string::String);
+    impl ::std::ops::Deref for CityPostName {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<CityPostName> for ::std::string::String {
+        fn from(value: CityPostName) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for CityPostName {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for CityPostName {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for CityPostName {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for CityPostName {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
+        }
+    }
+
+    ///Region name. A region can be a state, a province, a community, or
+    ///something similar depending on the country. If a country does not have
+    ///this concept, then the country name is used.
+    #[derive(:: serde :: Serialize, Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+    #[serde(transparent)]
+    pub struct CityPostRegion(::std::string::String);
+    impl ::std::ops::Deref for CityPostRegion {
+        type Target = ::std::string::String;
+        fn deref(&self) -> &::std::string::String {
+            &self.0
+        }
+    }
+
+    impl ::std::convert::From<CityPostRegion> for ::std::string::String {
+        fn from(value: CityPostRegion) -> Self {
+            value.0
+        }
+    }
+
+    impl ::std::str::FromStr for CityPostRegion {
+        type Err = self::error::ConversionError;
+        fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            if value.chars().count() < 1usize {
+                return Err("shorter than 1 characters".into());
+            }
+            Ok(Self(value.to_string()))
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for CityPostRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl ::std::convert::TryFrom<::std::string::String> for CityPostRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(
+            value: ::std::string::String,
+        ) -> ::std::result::Result<Self, self::error::ConversionError> {
+            value.parse()
+        }
+    }
+
+    impl<'de> ::serde::Deserialize<'de> for CityPostRegion {
+        fn deserialize<D>(deserializer: D) -> ::std::result::Result<Self, D::Error>
+        where
+            D: ::serde::Deserializer<'de>,
+        {
+            ::std::string::String::deserialize(deserializer)?
+                .parse()
+                .map_err(|e: self::error::ConversionError| {
+                    <D::Error as ::serde::de::Error>::custom(e.to_string())
+                })
         }
     }
 
@@ -3424,9 +3544,9 @@ pub mod types {
             >,
             latitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
             longitude: ::std::result::Result<::std::option::Option<f64>, ::std::string::String>,
-            name: ::std::result::Result<::std::string::String, ::std::string::String>,
+            name: ::std::result::Result<super::CityPostName, ::std::string::String>,
             region: ::std::result::Result<
-                ::std::option::Option<::std::string::String>,
+                ::std::option::Option<super::CityPostRegion>,
                 ::std::string::String,
             >,
             residential_speed_limit:
@@ -3497,7 +3617,7 @@ pub mod types {
             }
             pub fn name<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::string::String>,
+                T: ::std::convert::TryInto<super::CityPostName>,
                 T::Error: ::std::fmt::Display,
             {
                 self.name = value
@@ -3507,7 +3627,7 @@ pub mod types {
             }
             pub fn region<T>(mut self, value: T) -> Self
             where
-                T: ::std::convert::TryInto<::std::option::Option<::std::string::String>>,
+                T: ::std::convert::TryInto<::std::option::Option<super::CityPostRegion>>,
                 T::Error: ::std::fmt::Display,
             {
                 self.region = value

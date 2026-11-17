@@ -198,3 +198,13 @@ and this project adheres to
   the parameter in `details`. A name long enough to exceed 65,534 bytes of URI
   got an undocumented `414 URI Too Long` from the HTTP server. `bnaclient`
   checks the length before sending the request.
+- `POST /cities` now rejects an empty `name` or `region`, or one longer than 255
+  characters, with `422 Unprocessable Content`, naming the field in `details`.
+  The specification documents these bounds, the ones of the path parameters of
+  `GET /cities/{country}/{region}/{name}`. Such a city used to be stored, and
+  could never be read back. In `bnaclient`, the `name` and `region` of a
+  `CityPost` are now the checked `CityPostName` and `CityPostRegion` types.
+- A request whose path matches no route, such as a city path with an empty name
+  (`/cities/United%20States/Tennessee/`), now gets a JSON `APIErrors` document
+  with its `404 Not Found`, holding the path in `source.pointer`, like every
+  other 404. The body used to be empty, without a `content-type`.
