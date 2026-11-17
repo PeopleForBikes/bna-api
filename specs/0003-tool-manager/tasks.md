@@ -227,7 +227,7 @@ never touched. The commands and their results go in `findings.md`.
   - Every acceptance criterion of `requirements.md` is checked off against the
     task that verified it, in `findings.md`.
 
-- [ ] 9. Move the mise grants to the Sandbox_Profile
+- [x] 9. Move the mise grants to the Sandbox_Profile
   - Added 2026-11-17 (`design.md`, "`justfile` (Agent_Recipe)"). One commit per
     sub-task, specification first: this update of the spec is its own commit.
   - [x] 9.1 In `.github/CONTRIBUTING.md` ("Local tools"), replace the sentence
@@ -254,7 +254,7 @@ never touched. The commands and their results go in `findings.md`.
         `specs/learnings/integration-issues/mise-shims-need-the-mise-binary-in-a-sandbox.md`
         (its example becomes the profile's `read_file` entry).
     - _Requirements: 6.5_
-  - [ ] 9.4 Real session, run by the maintainer outside the sandbox, with the
+  - [x] 9.4 Real session, run by the maintainer outside the sandbox, with the
         Sandbox_Profile of `design.md` promoted: start the sandbox without the
         old recipe's flags, and check inside it that `nono why` names the
         profile's entries, the mise executable has no grant of its own,
