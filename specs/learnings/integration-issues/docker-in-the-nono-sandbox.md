@@ -1,22 +1,23 @@
 ---
-title: Docker in the nono sandbox needs a socket grant, own config, mise grants
+title: Docker in the nono sandbox needs a socket grant and its own config
 date: 2026-11-12
-updated: 2026-11-14
+updated: 2026-11-17
 category: integration-issues
 status: active
 tags: [docker, nono, sandbox, agents, compose]
-modules: [justfile, docker-compose.yml]
+modules: [justfile, docker-compose.yml, .github/CONTRIBUTING.md]
 spec: specs/0004-local-connection-pooler-yanked
 related:
   [
     specs/0004-local-connection-pooler-yanked/spike.md,
     specs/learnings/integration-issues/mise-shims-need-the-mise-binary-in-a-sandbox.md,
     specs/learnings/integration-issues/docker-health-check-timing-and-compose-wait.md,
+    specs/0003-tool-manager/findings.md,
   ]
 superseded_by:
 ---
 
-# Docker in the nono sandbox needs a socket grant, own config, mise grants
+# Docker in the nono sandbox needs a socket grant and its own config
 
 ## Context
 
@@ -52,7 +53,8 @@ macOS). Three separate problems stood in the way, one after the other.
 
 3. In the restarted session, `rumdl`, `oxfmt` and `typos` were missing
    (`command not found`), and `mise exec` failed with `Operation not permitted`
-   on `ln -sf` into `~/.local/state/mise/trusted-configs/`.
+   on `ln -sf` into `~/.local/state/mise/trusted-configs/`. This one no longer
+   happens since 2026-11-17 (see Root Cause).
 
 ## What Did Not Work
 
@@ -62,9 +64,9 @@ macOS). Three separate problems stood in the way, one after the other.
   fine, but the CLI no longer finds its plugins, so `docker compose` is not a
   command (`unknown shorthand flag: 'f' in -f`). Docker Desktop installs them
   under `~/.docker/cli-plugins`, which stays denied.
-- **A bare `nono run --profile pfb-claude ...`** with the Docker flags: it drops
-  the mise grants that the `nono-claude-danger` recipe adds, so the tools
-  installed by mise disappear.
+- **A bare `nono run --profile pfb-claude ...`** with the Docker flags, until
+  2026-11-17: it dropped the mise grants that the `nono-claude-danger` recipe
+  added then, so the tools installed by mise disappeared.
 
 ## Root Cause
 
@@ -76,10 +78,12 @@ macOS). Three separate problems stood in the way, one after the other.
 - Docker Desktop sets `"credsStore": "desktop"` in `~/.docker/config.json`, so
   every pull runs `docker-credential-desktop`, which needs
   `~/Library/Containers/com.docker.docker`, outside the sandbox.
-- The mise grants are not in the profile but in the recipe: `nono-claude-danger`
-  in the root `justfile` adds `--read` on mise's data and configuration
-  directories, `--allow` on its state directory (the `mise_data`, `mise_config`
-  and `mise_state` variables) and `--read-file` on the mise executable.
+- The mise grants were in the recipe, not in the profile: `nono-claude-danger`
+  added `--read` on mise's data and configuration directories, `--allow` on its
+  state directory and `--read-file` on the mise executable. Since 2026-11-17
+  (`specs/0003-tool-manager`, task 9) each contributor's profile holds them, as
+  `.github/CONTRIBUTING.md` ("Agents in the nono sandbox") explains, and the
+  recipe passes only the profile.
 
 ## Solution
 
@@ -88,19 +92,16 @@ macOS). Three separate problems stood in the way, one after the other.
    needs). The recipe takes no extra arguments, so copy its command:
 
    ```sh
-   mise_data=~/.local/share/mise mise_config=~/.config/mise mise_state=~/.local/state/mise
-   mise_bin="$(command -v mise)"
-   PATH="$mise_data/shims:$PATH" nono run --allow-cwd --profile pfb-claude \
-     --read "$mise_data" --read "$mise_config" --allow "$mise_state" \
-     --read-file "$mise_bin" --read-file "$(realpath "$mise_bin")" \
+   nono run --allow-cwd --profile pfb-claude \
      --bypass-protection ~/.docker \
      --allow-unix-socket ~/.docker/run/docker.sock \
      -- claude --dangerously-skip-permissions
    ```
 
-   The two Docker flags were verified (`docker version` reaches the daemon);
-   this combined command line was not run as such: the spike's session used them
-   without the mise grants.
+   The two Docker flags were verified (`docker version` reaches the daemon), and
+   the same command without them keeps the tools installed by mise
+   (`specs/0003-tool-manager/findings.md` §4.2); this exact command line was not
+   run as such.
 
 2. Give Docker a configuration of its own, without a credential store, that
    still finds Docker Desktop's plugins:
@@ -127,5 +128,6 @@ protects. Grant it for one session, not in the profile.
   expected count, and stop otherwise: a failed pull leaves a half-started stack
   that looks like a test failure.
 - When proposing extra sandbox flags, start from the `nono-claude-danger` recipe
-  in the root `justfile`, never from a bare `nono run`. A recipe parameter for
-  extra flags would make this one command; it does not exist yet.
+  in the root `justfile`, so the session keeps its working directory and Claude
+  arguments. A recipe parameter for extra flags would make this one command; it
+  does not exist yet.

@@ -1,11 +1,11 @@
 ---
 title: mise's shims need the mise executable, so a sandbox must read it too
 date: 2026-11-12
-updated: 2026-11-14
+updated: 2026-11-17
 category: integration-issues
 status: active
 tags: [mise, shims, nono, sandbox, agents, home]
-modules: [justfile]
+modules: [justfile, .github/CONTRIBUTING.md]
 spec: specs/0003-tool-manager
 related:
   [
@@ -24,9 +24,11 @@ superseded_by:
 ## Context
 
 The `nono-claude-danger` recipe of the root `justfile` starts Claude in the nono
-sandbox with the tools mise installed outside it: it puts mise's shims directory
-ahead of the `PATH` and grants read access to mise's data and configuration
-directories and write access to its state directory.
+sandbox with the tools mise installed outside it. Until 2026-11-17 the recipe
+put mise's shims directory ahead of the `PATH` and granted read access to mise's
+data and configuration directories and write access to its state directory.
+Since then (`specs/0003-tool-manager`, task 9) each contributor's nono profile
+holds these grants and the recipe passes only the profile.
 
 ## Symptom
 
@@ -56,8 +58,17 @@ maintainer's mise came from Homebrew, and the `pfb-claude` profile already reads
 
 ## Solution
 
-The recipe grants the `mise` found on the caller's `PATH`, and the file it
-resolves to when it is a link, each as a single file:
+Grant the mise executable as a single file, not the folder around it. Since
+2026-11-17 the contributor's nono profile does it, as `.github/CONTRIBUTING.md`
+("Agents in the nono sandbox") explains: Homebrew's mise is readable through the
+`/opt/homebrew` grant of the base profile, and a mise in `~/.local/bin` needs
+
+```json
+"read_file": ["~/.local/bin/mise"]
+```
+
+Until then, the recipe granted the `mise` found on the caller's `PATH`, and the
+file it resolves to when it is a link, each as a single file:
 
 ```just
 mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
@@ -103,6 +114,7 @@ directory might also work; not tried.
 - When a sandbox must run tools through shims or wrappers (mise, asdf, pyenv),
   grant what the shim executes, not only the directories of the tools: check
   with `ls -l` on a shim.
-- Test sandbox recipes with more than one install method of the tool manager.
+- Test the sandbox setup with more than one install method of the tool manager.
+  The `read_file` entry for a mise in `~/.local/bin` is still untested.
 - When a command needs another `HOME` inside the sandbox, run the tool through
   `"$(mise which <tool>)"`, not through its shim.

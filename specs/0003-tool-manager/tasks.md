@@ -246,7 +246,7 @@ never touched. The commands and their results go in `findings.md`.
       `--profile pfb-claude` and `-- claude --dangerously-skip-permissions`
       only; `git grep -n mise_ justfile` finds nothing.
     - _Requirements: 3.1, 4.1_
-  - [ ] 9.3 Update the two learnings that describe the grants as part of the
+  - [x] 9.3 Update the two learnings that describe the grants as part of the
         recipe:
         `specs/learnings/integration-issues/docker-in-the-nono-sandbox.md` (the
         grants now live in the profile, and a session started by hand with extra
