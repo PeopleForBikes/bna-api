@@ -314,7 +314,7 @@ and 4, then replaced on 2026-11-17 by the new 4.1 and 4.2.
 | 6.2       | ✅     | task 5.1                                                                  |
 | 6.3       | ✅     | task 5.1                                                                  |
 | 6.4       | ✅     | task 5.2                                                                  |
-| 6.5       | ⏳     | task 9.1 (added 2026-11-17)                                               |
+| 6.5       | ✅     | task 9.1 (added 2026-11-17)                                               |
 
 Not covered by any check: the `linux-arm64` and `macos-x64` entries of
 `mise.lock` are checked by script only, never installed.
