@@ -5,11 +5,11 @@ looks like a bug unless you know it is deliberate, traps in the libraries and
 tools, and what worked. Each entry says what the rule is, how it was caught, and
 what it cost.
 
-Status: in progress. Tasks 1 to 8 done, with 3.1 and 5.3 added after the spec
-review (2026-11-12); task 7.2 skipped. Measured with mise 2026.11.6 on macOS
-arm64, in the nono sandbox, on 2026-11-11 and 2026-11-12. On 2026-11-17 the
-grants moved from the Agent_Recipe to the Sandbox_Profile (Requirements 4 and
-6.5 rewritten, task 9, §4).
+Status: done. Tasks 1 to 8 done, with 3.1 and 5.3 added after the spec review
+(2026-11-12); task 7.2 skipped. Measured with mise 2026.11.6 on macOS arm64, in
+the nono sandbox, on 2026-11-11 and 2026-11-12. On 2026-11-17 the grants moved
+from the Agent_Recipe to the Sandbox_Profile (Requirements 4 and 6.5 rewritten,
+task 9, §4).
 
 ## 1. Behavior that does not survive a naive implementation
 
@@ -282,39 +282,39 @@ The old criteria 4.1 to 4.5 (the recipe granted mise's directories and the mise
 executable and put the shims first on the `PATH`) were verified by tasks 3, 3.1
 and 4, then replaced on 2026-11-17 by the new 4.1 and 4.2.
 
-| Criterion | Status | Verified by                                                               |
-| --------- | ------ | ------------------------------------------------------------------------- |
-| 1.1       | ✅     | task 1.1 (`mise.toml:19-26`, exact versions)                              |
-| 1.2       | ✅     | task 1.1 (`github:` and `cargo:` backends)                                |
-| 1.3       | ✅     | task 1.1 (`mise.toml:6-16`)                                               |
-| 1.4       | ✅     | task 1.2 (`check_lock.py`: four platforms, URL and checksum each)         |
-| 1.5       | ✅     | task 1.2 (provenance of the four Attested_Tools on every platform)        |
-| 1.6       | ✅     | tasks 5.3 and 8 (widened `git grep`)                                      |
-| 2.1       | ✅     | task 1.3 (eight tools at their versions)                                  |
-| 2.2       | ✅     | tasks 1.3 and 1.4 (checksum step in the log, mismatch refused)            |
-| 2.3       | ✅     | task 1.3 (`locked_verify_provenance`, §1.1)                               |
-| 2.4       | ✅     | task 1.4 (altered checksum)                                               |
-| 2.5       | ✅     | task 1.4 (removed checksum, removed platform)                             |
-| 2.6       | ✅     | task 1.3 (`cargo install <crate>@<version> --locked`)                     |
-| 2.7       | ✅     | task 1.5 (warning, nothing installed)                                     |
-| 2.8       | ✅     | task 1.5 (exit 1 and 127 without another copy)                            |
-| 3.1       | ✅     | task 3 (`git diff -- justfile`)                                           |
-| 3.2       | ✅     | tasks 1.3, 6 and 7.1                                                      |
-| 3.3       | ✅     | tasks 6 and 8 (exit 127)                                                  |
-| 4.1       | ✅     | task 9.2 (rewritten 2026-11-17)                                           |
-| 4.2       | ⏳     | task 9.4 (rewritten 2026-11-17; the profile alone already verified, §4.2) |
-| 5.1       | ✅     | task 7.1, with `cache: false`                                             |
-| 5.2       | ✅     | task 2 (commit `b44d12e7…`, `version: 2026.11.5`)                         |
-| 5.3       | ✅     | task 7.1, with `cache: false`                                             |
-| 5.4       | ✅     | task 7.1, with `cache: false` (every run installs, §2.5)                  |
-| 5.5       | ✅     | task 1.4 (task 7.2 skipped)                                               |
-| 5.6       | ✅     | tasks 2.4 and 8                                                           |
-| 5.7       | ✅     | task 7.1, with `cache: false`                                             |
-| 6.1       | ✅     | task 5.1                                                                  |
-| 6.2       | ✅     | task 5.1                                                                  |
-| 6.3       | ✅     | task 5.1                                                                  |
-| 6.4       | ✅     | task 5.2                                                                  |
-| 6.5       | ✅     | task 9.1 (added 2026-11-17)                                               |
+| Criterion | Status | Verified by                                                        |
+| --------- | ------ | ------------------------------------------------------------------ |
+| 1.1       | ✅     | task 1.1 (`mise.toml:19-26`, exact versions)                       |
+| 1.2       | ✅     | task 1.1 (`github:` and `cargo:` backends)                         |
+| 1.3       | ✅     | task 1.1 (`mise.toml:6-16`)                                        |
+| 1.4       | ✅     | task 1.2 (`check_lock.py`: four platforms, URL and checksum each)  |
+| 1.5       | ✅     | task 1.2 (provenance of the four Attested_Tools on every platform) |
+| 1.6       | ✅     | tasks 5.3 and 8 (widened `git grep`)                               |
+| 2.1       | ✅     | task 1.3 (eight tools at their versions)                           |
+| 2.2       | ✅     | tasks 1.3 and 1.4 (checksum step in the log, mismatch refused)     |
+| 2.3       | ✅     | task 1.3 (`locked_verify_provenance`, §1.1)                        |
+| 2.4       | ✅     | task 1.4 (altered checksum)                                        |
+| 2.5       | ✅     | task 1.4 (removed checksum, removed platform)                      |
+| 2.6       | ✅     | task 1.3 (`cargo install <crate>@<version> --locked`)              |
+| 2.7       | ✅     | task 1.5 (warning, nothing installed)                              |
+| 2.8       | ✅     | task 1.5 (exit 1 and 127 without another copy)                     |
+| 3.1       | ✅     | task 3 (`git diff -- justfile`)                                    |
+| 3.2       | ✅     | tasks 1.3, 6 and 7.1                                               |
+| 3.3       | ✅     | tasks 6 and 8 (exit 127)                                           |
+| 4.1       | ✅     | task 9.2 (rewritten 2026-11-17)                                    |
+| 4.2       | ✅     | task 9.4 (rewritten 2026-11-17; §4.2 and §4.3)                     |
+| 5.1       | ✅     | task 7.1, with `cache: false`                                      |
+| 5.2       | ✅     | task 2 (commit `b44d12e7…`, `version: 2026.11.5`)                  |
+| 5.3       | ✅     | task 7.1, with `cache: false`                                      |
+| 5.4       | ✅     | task 7.1, with `cache: false` (every run installs, §2.5)           |
+| 5.5       | ✅     | task 1.4 (task 7.2 skipped)                                        |
+| 5.6       | ✅     | tasks 2.4 and 8                                                    |
+| 5.7       | ✅     | task 7.1, with `cache: false`                                      |
+| 6.1       | ✅     | task 5.1                                                           |
+| 6.2       | ✅     | task 5.1                                                           |
+| 6.3       | ✅     | task 5.1                                                           |
+| 6.4       | ✅     | task 5.2                                                           |
+| 6.5       | ✅     | task 9.1 (added 2026-11-17)                                        |
 
 Not covered by any check: the `linux-arm64` and `macos-x64` entries of
 `mise.lock` are checked by script only, never installed.
@@ -362,3 +362,30 @@ Only a session started without the recipe shows that the profile is enough.
 
 **Cost**: one more restart by the maintainer. Task 9.4 checks the same with the
 shortened recipe.
+
+### 4.3 The shortened recipe passes `just lint`; a stale terminal hid `cargo`
+
+Task 9.4, after task 9.2: the maintainer started `just nono-claude-danger` on
+the `nono-profile-grants` branch. Inside the session, `nono why --self` names
+the profile's three entries and `/opt/homebrew` (for the mise executable) as
+before, and a write to `~/.local/share/mise` is denied (`insufficient_access`).
+This time the Pinned_Tools resolved to mise's install folders rather than the
+shims: `mise activate` in the maintainer's shell put them on the `PATH` ahead of
+`/opt/homebrew/bin`, which Requirement 4.2 allows as well.
+
+`just lint` passed its spelling and Markdown steps with the pinned versions,
+then stopped at `lint-rust` with `cargo: command not found` (exit 127): the
+maintainer's Rust comes from Homebrew's `rustup`, whose proxies live in
+`/opt/homebrew/opt/rustup/bin`, and that folder was missing from the `PATH`. The
+sessions of the day had all been started from the same terminal, opened before
+the maintainer's shell configuration added it. Started again from a new bash
+window, the session has `/opt/homebrew/opt/rustup/bin` on its `PATH` and
+`just lint` exits 0 as is (clippy and rustdoc included).
+
+**Caught by**: running the full `just lint` in task 9.4 instead of the Markdown
+lints of §4.2.
+
+**Cost**: one more restart. The sandbox inherits the `PATH` of the terminal that
+starts it, so a tool missing inside the session can come from a terminal opened
+before a change to the shell configuration: compare with a new terminal before
+changing a grant or the recipe.
