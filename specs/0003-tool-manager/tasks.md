@@ -230,7 +230,7 @@ never touched. The commands and their results go in `findings.md`.
 - [ ] 9. Move the mise grants to the Sandbox_Profile
   - Added 2026-11-17 (`design.md`, "`justfile` (Agent_Recipe)"). One commit per
     sub-task, specification first: this update of the spec is its own commit.
-  - [ ] 9.1 In `.github/CONTRIBUTING.md` ("Local tools"), replace the sentence
+  - [x] 9.1 In `.github/CONTRIBUTING.md` ("Local tools"), replace the sentence
         saying `just nono-claude-danger` puts the shims on the `PATH` with a
         nono paragraph, as outlined in `design.md`: the `filesystem` entries of
         the Sandbox_Profile, `read_file` for a mise outside `/opt/homebrew`, the

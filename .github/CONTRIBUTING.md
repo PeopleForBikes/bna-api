@@ -49,13 +49,42 @@ the same two files.
 
 3. Put the tools on your `PATH`: either activate mise in your shell (for example
    `eval "$(mise activate zsh)"` in `~/.zshrc`), or add mise's shims directory
-   (`~/.local/share/mise/shims` by default) to your `PATH`. The
-   `just nono-claude-danger` recipe does the latter for the agent, and lets the
-   sandbox read the tools installed outside it.
+   (`~/.local/share/mise/shims` by default) to your `PATH`, ahead of any other
+   copy of the same tools (Homebrew's `just` or `hurl`, for example).
 
 Run `mise install` again after pulling a change to `mise.toml`. mise never
 installs a tool behind a command's back: a tool that is not installed falls back
 to any other copy on your `PATH`, and `mise exec` only warns about it.
+
+### Agents in the nono sandbox
+
+`just nono-claude-danger` starts Claude in the [nono] sandbox with your nono
+profile (`pfb-claude` by default) and grants nothing else, so your profile must
+let the sandbox use the tools mise installed. With mise's default directories,
+add to its `filesystem` section:
+
+```json
+"read": ["~/.local/share/mise", "~/.config/mise"],
+"allow": ["~/.local/state/mise"]
+```
+
+- Read access to the data directory covers the installed tools and the shims,
+  and read access to the configuration directory covers your trusted checkouts.
+  Keep the data directory read-only, so the agent cannot change the tools you
+  run outside the sandbox. mise needs to write its state directory only.
+- Each shim runs the mise executable, so the sandbox must read it too. A mise
+  installed with Homebrew is already readable. A mise installed elsewhere, for
+  example by its own installer, needs its own entry, such as
+  `"read_file": ["~/.local/bin/mise"]`.
+- If you moved mise's directories (`MISE_DATA_DIR`, the XDG variables), grant
+  those paths instead.
+- The sandbox inherits your `PATH`: keep mise's shims or activation ahead of any
+  other copy of the tools, as in step 3 above.
+- Install and update the tools outside the sandbox: inside it, mise cannot write
+  its data directory.
+
+`nono why --self --path <path> --op read`, run inside the sandbox, names the
+grant a failing tool is missing.
 
 ### What it protects against
 
@@ -87,4 +116,5 @@ steps in `.github/workflows/`.
 
 [mise]: https://mise.jdx.dev/
 [mise installation]: https://mise.jdx.dev/getting-started.html
+[nono]: https://nono.sh/
 [uv]: https://docs.astral.sh/uv/
