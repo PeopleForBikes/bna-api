@@ -238,7 +238,7 @@ never touched. The commands and their results go in `findings.md`.
         copies on the `PATH`, and the tools installed and updated outside the
         sandbox. `just lint-md lint-spellcheck` passes.
     - _Requirements: 6.5_
-  - [ ] 9.2 In `justfile`, remove the three `mise_*` variables and their
+  - [x] 9.2 In `justfile`, remove the three `mise_*` variables and their
         comment, and replace the body of `nono-claude-danger` with the one
         `nono run` line of `design.md`.
     - Verify: `just --fmt --check --unstable` passes;

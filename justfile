@@ -10,11 +10,6 @@ entities := "entity/src/entities"
 sql_dump := "docs/database.sql"
 sql_dump_data := "lambdas/tests/database-with-test-data.sql"
 
-# mise's directories, for the nono recipes (specs/0003-tool-manager).
-mise_data := env("MISE_DATA_DIR", env("XDG_DATA_HOME", home_directory() / ".local/share") / "mise")
-mise_config := env("MISE_CONFIG_DIR", env("XDG_CONFIG_HOME", home_directory() / ".config") / "mise")
-mise_state := env("MISE_STATE_DIR", env("XDG_STATE_HOME", home_directory() / ".local/state") / "mise")
-
 # Not included: dbml-check, which needs a database, the integration tests in
 # lambdas/tests, which need a running server, and generate, which rewrites
 # the generated files (CI checks their diff).
@@ -228,15 +223,7 @@ nono-claude-login:
 
 # Use nono sandbox for Claude -- restricted internet, skip-permissions, with the tools installed by mise.
 nono-claude-danger profile="pfb-claude":
-    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
-    --allow-cwd \
-    --profile {{ profile }} \
-    --read "{{ mise_data }}" \
-    --read "{{ mise_config }}" \
-    --allow "{{ mise_state }}" \
-    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
-    -- claude --dangerously-skip-permissions
+    nono run --allow-cwd --profile {{ profile }} -- claude --dangerously-skip-permissions
 
 # Start the Axum server locally in watch mode.
 debug-axum:
