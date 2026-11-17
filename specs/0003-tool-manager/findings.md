@@ -301,7 +301,7 @@ and 4, then replaced on 2026-11-17 by the new 4.1 and 4.2.
 | 3.1       | ✅     | task 3 (`git diff -- justfile`)                                           |
 | 3.2       | ✅     | tasks 1.3, 6 and 7.1                                                      |
 | 3.3       | ✅     | tasks 6 and 8 (exit 127)                                                  |
-| 4.1       | ⏳     | task 9.2 (rewritten 2026-11-17)                                           |
+| 4.1       | ✅     | task 9.2 (rewritten 2026-11-17)                                           |
 | 4.2       | ⏳     | task 9.4 (rewritten 2026-11-17; the profile alone already verified, §4.2) |
 | 5.1       | ✅     | task 7.1, with `cache: false`                                             |
 | 5.2       | ✅     | task 2 (commit `b44d12e7…`, `version: 2026.11.5`)                         |
