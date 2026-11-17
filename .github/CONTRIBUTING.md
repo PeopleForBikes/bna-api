@@ -73,9 +73,15 @@ add to its `filesystem` section:
   Keep the data directory read-only, so the agent cannot change the tools you
   run outside the sandbox. mise needs to write its state directory only.
 - Each shim runs the mise executable, so the sandbox must read it too. A mise
-  installed with Homebrew is already readable. A mise installed elsewhere, for
-  example by its own installer, needs its own entry, such as
-  `"read_file": ["~/.local/bin/mise"]`.
+  under `/opt/homebrew` (Homebrew on Apple silicon) is already readable through
+  the base profile. A mise installed elsewhere, for example by its own installer
+  or by Homebrew on Linux or Intel Macs, needs its own entry, such as
+  `"read_file": ["~/.local/bin/mise"]`. To check yours, run inside the sandbox:
+
+  ```bash
+  nono why --self --path "$(realpath "$(command -v mise)")" --op read
+  ```
+
 - If you moved mise's directories (`MISE_DATA_DIR`, the XDG variables), grant
   those paths instead.
 - The sandbox inherits your `PATH`: keep mise's shims or activation ahead of any

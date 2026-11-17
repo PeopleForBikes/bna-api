@@ -330,7 +330,7 @@ No runtime data. The two files above are the only new data: `mise.toml`
 7. **Agents read, never write, the tools**: the documented Sandbox_Profile
    grants read access to the data and configuration directories and to the mise
    executable, and write access only to the state directory; the Agent_Recipe
-   grants nothing itself.
+   grants nothing but the working directory.
 
 ## Error Handling
 
@@ -398,7 +398,8 @@ There is no Rust code; each requirement is checked by a command, recorded in
   and the Sandbox_Profile of this design, in a trusted checkout: `nono why`
   names the profile's entries as the grants of mise's directories, the mise
   executable has no grant of its own, `command -v` names the shim of each
-  Pinned_Tool and `just lint` exits 0 (4.2).
+  Pinned_Tool, or its mise install folder under `mise activate`, and `just lint`
+  exits 0 (4.2).
 - **CI** (5.1-5.7): the pull request's runs of `ci-rust`, `bnaclient` and
   `integration` pass; each job's log shows only its tools installed, from
   `mise.lock`. The failure path (5.5) relies on the action failing when

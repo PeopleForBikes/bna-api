@@ -258,10 +258,11 @@ never touched. The commands and their results go in `findings.md`.
         Sandbox_Profile of `design.md` promoted: start the sandbox without the
         old recipe's flags, and check inside it that `nono why` names the
         profile's entries, the mise executable has no grant of its own,
-        `command -v` names the shim of each Pinned_Tool and the lints pass. Done
-        2026-11-17 with the command the shortened recipe runs (`findings.md`
-        §4.2); after task 9.2, start it once with `just nono-claude-danger` and
-        run the full `just lint`.
+        `command -v` names the shim of each Pinned_Tool, or its mise install
+        folder under `mise activate`, and the lints pass. Done 2026-11-17 with
+        the command the shortened recipe runs (`findings.md` §4.2); after task
+        9.2, start it once with `just nono-claude-danger` and run the full
+        `just lint`.
     - _Requirements: 4.2_
 
 ## Notes
