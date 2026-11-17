@@ -14,6 +14,8 @@ sub-task, so each step can be checked on its own:
 4. Document the setup in `.github/CONTRIBUTING.md` and point `CLAUDE.md` at
    `mise.toml`.
 5. Check everything locally, then on the pull request's CI.
+6. Added 2026-11-17: move the grants from the Agent_Recipe to each contributor's
+   Sandbox_Profile (task 9).
 
 Prerequisites on the implementer's machine: mise 2026.11.5 or newer, a Rust
 toolchain (for the Crate_Tools), `gh auth login` or `GITHUB_TOKEN` (GitHub's
@@ -109,6 +111,8 @@ never touched. The commands and their results go in `findings.md`.
     - _Requirements: 5.6, 5.7_
 
 - [x] 3. Give agents the tools in the Agent_Recipes
+  - Superseded by task 9 (2026-11-17): the grants and the `PATH` change move to
+    the Sandbox_Profile. `nono-claude` was removed in commit `72dc977`.
   - In `justfile`, add the three variables `mise_data`, `mise_config` and
     `mise_state` with their comment, and replace `nono-claude` and
     `nono-claude-danger` (lines 194-204) with the recipes of `design.md`.
@@ -136,6 +140,7 @@ never touched. The commands and their results go in `findings.md`.
     - _Requirements: 4.1, 4.3_
 
 - [x] 4. Check the Agent_Recipes in a real nono session
+  - Superseded by tasks 9.3 and 9.4 (2026-11-17).
   - Run by the maintainer, outside the sandbox (an agent cannot start nono
     inside nono): in the checkout, `mise trust` and `mise install` with mise's
     default directories, then `just nono-claude`.
@@ -222,13 +227,50 @@ never touched. The commands and their results go in `findings.md`.
   - Every acceptance criterion of `requirements.md` is checked off against the
     task that verified it, in `findings.md`.
 
+- [ ] 9. Move the mise grants to the Sandbox_Profile
+  - Added 2026-11-17 (`design.md`, "`justfile` (Agent_Recipe)"). One commit per
+    sub-task, specification first: this update of the spec is its own commit.
+  - [ ] 9.1 In `.github/CONTRIBUTING.md` ("Local tools"), replace the sentence
+        saying `just nono-claude-danger` puts the shims on the `PATH` with a
+        nono paragraph, as outlined in `design.md`: the `filesystem` entries of
+        the Sandbox_Profile, `read_file` for a mise outside `/opt/homebrew`, the
+        data directory kept read-only, the shims or activation ahead of other
+        copies on the `PATH`, and the tools installed and updated outside the
+        sandbox. `just lint-md lint-spellcheck` passes.
+    - _Requirements: 6.5_
+  - [ ] 9.2 In `justfile`, remove the three `mise_*` variables and their
+        comment, and replace the body of `nono-claude-danger` with the one
+        `nono run` line of `design.md`.
+    - Verify: `just --fmt --check --unstable` passes;
+      `just --dry-run nono-claude-danger` shows `--allow-cwd`,
+      `--profile pfb-claude` and `-- claude --dangerously-skip-permissions`
+      only; `git grep -n mise_ justfile` finds nothing.
+    - _Requirements: 3.1, 4.1_
+  - [ ] 9.3 Update the two learnings that describe the grants as part of the
+        recipe:
+        `specs/learnings/integration-issues/docker-in-the-nono-sandbox.md` (the
+        grants now live in the profile, and a session started by hand with extra
+        flags keeps the tools) and
+        `specs/learnings/integration-issues/mise-shims-need-the-mise-binary-in-a-sandbox.md`
+        (its example becomes the profile's `read_file` entry).
+    - _Requirements: 6.5_
+  - [ ] 9.4 Real session, run by the maintainer outside the sandbox, with the
+        Sandbox_Profile of `design.md` promoted: start the sandbox without the
+        old recipe's flags, and check inside it that `nono why` names the
+        profile's entries, the mise executable has no grant of its own,
+        `command -v` names the shim of each Pinned_Tool and the lints pass. Done
+        2026-11-17 with the command the shortened recipe runs (`findings.md`
+        §4.2); after task 9.2, start it once with `just nono-claude-danger` and
+        run the full `just lint`.
+    - _Requirements: 4.2_
+
 ## Notes
 
 - **One commit per task or sub-task**, each signed off: task 1 (both files),
   2.1, 2.2, 2.3, 3, 5.1, 5.2. Tasks 4, 6, 7 and 8 only check, and record their
   results in `findings.md`.
 - **Line numbers** are those of commit `d927dea`; no earlier task edits the same
-  file, so they hold.
+  file, so they hold. Task 9 names sentences and recipes instead.
 - **Scratch directories**: never run a check that installs tools with mise's
   default directories, except task 4, which the maintainer runs on purpose.
   Scratch copies of the checkout (task 1.4) stay in the scratch directory.

@@ -18,10 +18,12 @@ job does not compile the Crate_Tools. The 20-line `gh` install function and its
 `extractions/setup-just` step disappear.
 
 The `justfile` recipes are unchanged: they keep calling the tools by name from
-the `PATH`. Only the two Agent_Recipes change: they grant the sandbox access to
-mise's directories and executable and put mise's shims ahead of the
-contributor's `PATH`, so an agent runs `just lint` with the tools installed
-outside the sandbox (spike §5.12).
+the `PATH`. The Agent_Recipe starts the sandbox with the contributor's
+Sandbox_Profile and nothing else: the profile grants the sandbox access to
+mise's directories, and the contributor's shell puts mise's shims or activation
+on the `PATH`, so an agent runs `just lint` with the tools installed outside the
+sandbox (spike §5.12). Until 2026-11-17 the recipe passed the grants as flags
+and put the shims first on the `PATH` itself (`findings.md` §4).
 
 ## Architecture
 
@@ -37,7 +39,7 @@ flowchart LR
     A --> Q["Tools on the runner's PATH"]
     P --> J["just fmt / just lint / just test …"]
     Q --> J
-    P --> N["just nono-claude<br/>grants + shims on PATH"]
+    P --> N["just nono-claude-danger<br/>grants from the Sandbox_Profile"]
     N --> J
 ```
 
@@ -77,7 +79,12 @@ locked_verify_provenance = true
 "cargo:bacon" = "3.26.0"
 "cargo:sea-orm-cli" = "2.0.4"
 "cargo:cargo-progenitor" = "0.16.0"
+"cargo:slumber" = "5.4.4"
 ```
+
+slumber was added after this feature, by the API request collection
+(`lambdas/specs/0000-api-request-collection`, commit `933d873`), as a fourth
+Crate_Tool.
 
 Why each choice (Requirement 1):
 
@@ -139,7 +146,7 @@ The `extractions/setup-just` step (line 15) and the "Install oxfmt, rumdl and
 typos" step with its `env` block (lines 16-41) are replaced by:
 
 ```yaml
-- uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+- uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
   with:
     version: 2026.11.5
     # Install from mise.lock at every run, so every job checks what it runs.
@@ -159,7 +166,7 @@ are replaced by one `jdx/mise-action` step, placed **after**
 toolchain on the `PATH`:
 
 ```yaml
-- uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # v5.2.7
+- uses: jdx/mise-action@d5574b52816a478f9d4e6529a3f6ff17a8a36785 # v5.2.8
   with:
     version: 2026.11.5
     # Install from mise.lock at every run, so every job checks what it runs.
@@ -184,10 +191,12 @@ to 100 s at every run, since the action's cache is off (below).
 - `schema`: `extractions/setup-just` (line 138) is replaced by a
   `jdx/mise-action` step with `install_args: github:casey/just`.
 
-All `jdx/mise-action` steps use the same commit and `version: 2026.11.5`, and
-the default `github_token` (the job's token, which avoids GitHub's anonymous
-rate limit). The action runs `mise install` with `--locked` itself when
-`mise.lock` exists (spike §5.13), and `locked = true` makes it locked anyway.
+All `jdx/mise-action` steps use the same commit (v5.2.7 when this feature
+shipped, bumped to v5.2.8 by Dependabot in commit `af8cbef`) and
+`version: 2026.11.5`, and the default `github_token` (the job's token, which
+avoids GitHub's anonymous rate limit). The action runs `mise install` with
+`--locked` itself when `mise.lock` exists (spike §5.13), and `locked = true`
+makes it locked anyway.
 
 Every step sets `cache: false` (decided after the first CI run, `findings.md`
 §2.5). The action's default cache saves mise's data directory and restores it on
@@ -198,73 +207,69 @@ trusted. Without it, each job downloads and verifies its tools: about 1 s for
 the release tools, 72.5 to 99.7 s for building cargo-progenitor in the bnaclient
 job.
 
-### `justfile` (Agent_Recipes)
+### `justfile` (Agent_Recipe)
 
-Three variables resolve mise's directories as mise does: its own environment
-variable first, then the XDG variable, then the default under the home directory
-(`~/.local/share/mise`, `~/.config/mise`, `~/.local/state/mise`, the locations
-the spike observed on macOS and Linux):
+The recipe passes the Sandbox_Profile, the working directory and the Claude
+arguments, and nothing else (Requirement 4.1):
 
 ```just
-# mise's directories, for the nono recipes (specs/0003-tool-manager).
-mise_data := env("MISE_DATA_DIR", env("XDG_DATA_HOME", home_directory() / ".local/share") / "mise")
-mise_config := env("MISE_CONFIG_DIR", env("XDG_CONFIG_HOME", home_directory() / ".config") / "mise")
-mise_state := env("MISE_STATE_DIR", env("XDG_STATE_HOME", home_directory() / ".local/state") / "mise")
-```
-
-The two recipes (lines 194-204) become:
-
-```just
-# Use nono sandbox for Claude, with the tools installed by mise.
-nono-claude profile="pfb-claude":
-    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
-    --allow-cwd \
-    --profile {{ profile }} \
-    --read "{{ mise_data }}" \
-    --read "{{ mise_config }}" \
-    --allow "{{ mise_state }}" \
-    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
-    -- claude
-
 # Use nono sandbox for Claude -- restricted internet, skip-permissions, with the tools installed by mise.
 nono-claude-danger profile="pfb-claude":
-    mkdir -p "{{ mise_data }}" "{{ mise_config }}" "{{ mise_state }}"
-    mise_bin="$(command -v mise || true)"; PATH="{{ mise_data }}/shims:$PATH" nono run \
-    --allow-cwd \
-    --profile {{ profile }} \
-    --read "{{ mise_data }}" \
-    --read "{{ mise_config }}" \
-    --allow "{{ mise_state }}" \
-    ${mise_bin:+--read-file "$mise_bin" --read-file "$(realpath "$mise_bin")"} \
-    -- claude --dangerously-skip-permissions
+    nono run --allow-cwd --profile {{ profile }} -- claude --dangerously-skip-permissions
+```
+
+The three variables `mise_data`, `mise_config` and `mise_state` go away with the
+grants that used them. `nono-claude-login` is unchanged: logging in needs no
+tool. The `nono-claude` recipe, which kept Claude's permission checks, was
+removed in commit `72dc977`: the sandbox is what constrains the agent.
+
+#### The Sandbox_Profile
+
+Each contributor adds the grants to their own profile (Requirement 6.5). With
+mise's default directories:
+
+```json
+"filesystem": {
+  "read": ["~/.local/share/mise", "~/.config/mise"],
+  "allow": ["~/.local/state/mise"]
+}
 ```
 
 - Read access to the data directory covers the installs and the shims; read
   access to the configuration directory covers the contributor's
-  `trusted_config_paths`; write access to the state directory lets mise record a
-  new checkout in `tracked-configs` (spike §5.12).
+  `trusted_config_paths`; read-write access to the state directory lets mise
+  record a new checkout in `tracked-configs` (spike §5.12). The data directory
+  stays read-only, so the agent cannot change the tools that run outside the
+  sandbox.
 - Each shim is a link to the mise executable, so the sandbox must also read it
-  (added after the spec review, `findings.md` §2.6). The recipe grants the
-  `mise` found on the caller's `PATH` and, when that is a link (Homebrew's
-  `/opt/homebrew/bin/mise`), the file it resolves to, each with `--read-file`:
-  the one program, not the folder around it (`~/.local/bin` for mise's own
-  installer, which may hold other programs). Without `mise` on the `PATH` the
-  recipe adds no grant and still starts the sandbox, as before this feature.
-- `mkdir -p` makes Requirement 4.5 hold without depending on how nono treats a
-  missing path, which the spike did not test (its own `--allow` flags for
-  missing or existing paths did not reach the session, spike §5.12). The
-  directories are mise's own, so creating them empty is harmless.
-- The shims come ahead of the contributor's `PATH` (nono adds its own helper
-  directory, holding only `open` and `nono-open-url-helper`, in front of them:
-  `findings.md` §2.4), so the agent gets the pinned tools whatever the
-  contributor's shell setup; outside a trusted checkout, a shim fails instead of
-  running an unpinned tool. mise creates shims for installed tools only, so a
-  Pinned_Tool the contributor has not installed resolves to the next copy on the
-  `PATH`, if any (`findings.md` §1.2).
-- `nono-claude-login` is unchanged: logging in needs no tool.
-- Whether `nono run` accepts several `--read` flags and passes the `PATH` of its
-  caller to the sandboxed process is checked once in a real session (task 4).
+  (`findings.md` §2.6). Homebrew's mise, under `/opt/homebrew`, is already
+  readable through the `nolabs-ai/claude` base profile; a mise installed by its
+  own installer in `~/.local/bin` needs `"read_file": ["~/.local/bin/mise"]`,
+  the one program rather than the folder around it.
+- A contributor who moved mise's directories (`MISE_DATA_DIR`, the XDG
+  variables) grants those paths instead.
+
+Why the profile rather than the recipe (decided 2026-11-17):
+
+- The recipe cluttered the `justfile` with three variables and a long `nono run`
+  line, and changed the `PATH` of every session.
+- The grants describe the contributor's machine (where mise and its directories
+  are), which the contributor's profile already describes. A contributor who
+  installs the tools another way (Homebrew, `cargo install`) needs no grant at
+  all: `/opt/homebrew` and `~/.cargo` are readable in the base profile.
+- Any `nono run --profile pfb-claude …` now gets the tools, including a session
+  started by hand with extra flags (Docker, another network grant), which lost
+  them when the grants lived in the recipe.
+
+#### The `PATH` inside the sandbox
+
+The sandboxed process inherits the `PATH` of the shell that runs the recipe, and
+the agent's shell is initialized from the contributor's shell profile. The shims
+or `mise activate` come from there: the recipe no longer guarantees that the
+pinned copies come first (the old Requirement 4.2). nono still puts its own
+helper directory first (`findings.md` §2.4). A contributor with another copy of
+a Pinned_Tool (Homebrew's `just` or `hurl`) keeps mise's shims or activation
+ahead of it, as Requirement 4.2 assumes.
 
 ### `.github/CONTRIBUTING.md`
 
@@ -277,10 +282,15 @@ A "Local tools" section after "General guidelines" (Requirement 6):
 - Setup: trust the checkout (`mise trust`), or once for every checkout under a
   folder, `trusted_config_paths` in `~/.config/mise/config.toml`; then
   `mise install`; then put the tools on the `PATH` with `mise activate` (shell
-  hook) or mise's shims directory. Mention that `just nono-claude` does the
-  latter for agents. Run `mise install` again after pulling a change to
-  `mise.toml`: a tool that is not installed falls back to any other copy on the
-  `PATH`, with only a warning from `mise exec`.
+  hook) or mise's shims directory, ahead of any other copy of the tools. Run
+  `mise install` again after pulling a change to `mise.toml`: a tool that is not
+  installed falls back to any other copy on the `PATH`, with only a warning from
+  `mise exec`.
+- The nono sandbox (Requirement 6.5): `just nono-claude-danger` passes only the
+  Sandbox_Profile, so the profile must grant the tools. The section shows the
+  `filesystem` entries of "The Sandbox_Profile" above, the `read_file` entry for
+  a mise outside `/opt/homebrew`, says to keep the data directory read-only, and
+  says to install and update the tools outside the sandbox.
 - What it protects against: checksums for every archive, GitHub release
   attestations for oxfmt, rumdl, typos and hurl; just is checked by checksum
   only; the cargo tools are built from crates.io.
@@ -317,9 +327,10 @@ No runtime data. The two files above are the only new data: `mise.toml`
    (`auto_install = false`).
 6. **One installer in CI**: no workflow installs a Pinned_Tool except through
    `jdx/mise-action`.
-7. **Agents read, never write, the tools**: the Agent_Recipes grant read access
-   to the data and configuration directories and to the mise executable, and
-   write access only to the state directory.
+7. **Agents read, never write, the tools**: the documented Sandbox_Profile
+   grants read access to the data and configuration directories and to the mise
+   executable, and write access only to the state directory; the Agent_Recipe
+   grants nothing itself.
 
 ## Error Handling
 
@@ -331,13 +342,17 @@ No runtime data. The two files above are the only new data: `mise.toml`
 | Checkout not trusted                                | mise refuses the configuration (`… are not trusted`); the contributor runs `mise trust`                                                         |
 | Tool not installed, run through mise                | Nothing installed; `mise exec` warns naming the tool and the install command, then runs the next copy on the `PATH` or fails when there is none |
 | Tool not on the `PATH`, run by a recipe             | The shell's `command not found`, non-zero exit (unchanged)                                                                                      |
+| Sandbox_Profile lacks a mise grant                  | The tools fail inside the sandbox with nono's permission denial; `nono why --self --path <path>` names the missing grant                        |
 | hurl on Linux without `libxml2`                     | `libxml2.so.2: cannot open shared object file`; documented prerequisite                                                                         |
 | GitHub anonymous rate limit                         | mise's API error; documented fix: `gh auth login` or `GITHUB_TOKEN`                                                                             |
 
 ## Integration
 
-- `justfile`: only the Agent_Recipes and three new variables change; every other
-  recipe keeps calling its tools by name (Requirement 3.1).
+- `justfile`: only the Agent_Recipe changes, and the three `mise_*` variables
+  go; every other recipe keeps calling its tools by name (Requirement 3.1).
+- The two learnings that describe the grants as part of the recipe,
+  `specs/learnings/integration-issues/docker-in-the-nono-sandbox.md` and
+  `mise-shims-need-the-mise-binary-in-a-sandbox.md`, move them to the profile.
 - `lambdas/tests/justfile` is unchanged: `hurl` and `sea-orm-cli` come from the
   `PATH`.
 - `lambdas/README.md`: its "Remark" told contributors to
@@ -375,14 +390,15 @@ There is no Rust code; each requirement is checked by a command, recorded in
   copy of a missing tool on the `PATH`, `mise exec` warns naming it and fails,
   and the shell finds no shim for it; the data directory is unchanged.
 - **Recipes** (3.1, 3.3): `git diff` shows no recipe change other than the
-  Agent_Recipes; with the tools off the `PATH`, `just lint` fails (exit 127, as
+  Agent_Recipe; with the tools off the `PATH`, `just lint` fails (exit 127, as
   recorded in `specs/0002-rust-tooling/findings.md` §2.2).
-- **Agents** (4.1-4.5): one real session started with `just nono-claude` in a
-  trusted checkout: inside it, `which typos` names the shim and `just lint`
-  exits 0; then once with a mise directory removed, the recipe still starts the
-  sandbox. `just --dry-run nono-claude` shows the flags (4.1, 4.2, 4.4). With a
-  stand-in `nono` printing its arguments, the `--read-file` grants follow the
-  `mise` on the `PATH` (a link and its target, a plain file, or none).
+- **Agents** (4.1, 4.2): `just --dry-run nono-claude-danger` shows
+  `--allow-cwd`, `--profile pfb-claude` and the Claude arguments only, and no
+  `PATH` change (4.1). One real session started with `just nono-claude-danger`
+  and the Sandbox_Profile of this design, in a trusted checkout: `nono why`
+  names the profile's entries as the grants of mise's directories, the mise
+  executable has no grant of its own, `command -v` names the shim of each
+  Pinned_Tool and `just lint` exits 0 (4.2).
 - **CI** (5.1-5.7): the pull request's runs of `ci-rust`, `bnaclient` and
   `integration` pass; each job's log shows only its tools installed, from
   `mise.lock`. The failure path (5.5) relies on the action failing when
@@ -398,6 +414,9 @@ There is no Rust code; each requirement is checked by a command, recorded in
 - Contributors must install mise (2026.11.5 or newer) and run `mise install`
   once per checkout before `just fmt`, `just lint` or the tests; the pull
   request description says so.
+- Contributors who run agents in nono add the grants of "The Sandbox_Profile" to
+  their profile before starting `just nono-claude-danger`; the pull request
+  description says so.
 - Every CI run of the bnaclient job builds cargo-progenitor (72 to 100 s); no
   job uses the action's cache.
 - Rollback: revert the commit; the previous install steps come back with it.
@@ -407,7 +426,7 @@ There is no Rust code; each requirement is checked by a command, recorded in
 | Dependency       | Version                                                   | Role                              | Integrity before use                                         |
 | ---------------- | --------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------ |
 | mise             | 2026.11.5 (CI pin; contributors this or newer)            | Tool manager                      | CI: the action checks mise's minisign-signed checksums       |
-| jdx/mise-action  | v5.2.7, commit `b44d12e7d0d8ee7461bb893e1b1993500433185b` | Installs mise and the tools in CI | Pinned by commit                                             |
+| jdx/mise-action  | v5.2.8, commit `d5574b52816a478f9d4e6529a3f6ff17a8a36785` | Installs mise and the tools in CI | Pinned by commit                                             |
 | oxfmt            | 0.78.0 (`oxc-project/oxc`, tag `oxfmt_v0.78.0`)           | Markdown formatter                | Lockfile checksum + GitHub release attestation               |
 | rumdl            | 0.3.2 (`rvben/rumdl`)                                     | Markdown linter                   | Lockfile checksum + GitHub release attestation               |
 | typos            | 1.52.1 (`crate-ci/typos`)                                 | Spellchecker                      | Lockfile checksum + GitHub release attestation               |
@@ -416,3 +435,4 @@ There is no Rust code; each requirement is checked by a command, recorded in
 | bacon            | 3.26.0 (crates.io)                                        | `just debug-axum`                 | `cargo install --locked` from crates.io                      |
 | sea-orm-cli      | 2.0.4 (crates.io)                                         | Migrations, entity generation     | `cargo install --locked` from crates.io                      |
 | cargo-progenitor | 0.16.0 (crates.io)                                        | `bnaclient` generation            | `cargo install --locked` from crates.io                      |
+| slumber          | 5.4.4 (crates.io)                                         | API request collection            | `cargo install --locked` from crates.io                      |
