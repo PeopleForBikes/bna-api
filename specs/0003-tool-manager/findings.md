@@ -273,6 +273,19 @@ directory is read-only in the sandbox
   widened version `git grep` of task 6 finds only `bnaclient/Cargo.toml:11` and
   the four `s3_bucket` test paths; no workflow mentions `setup-just`,
   `install-action`, `gh release download` or a `_VERSION` variable.
+- **9.1** (2026-11-17): `just lint-md lint-spellcheck` exits 0 on the new
+  "Agents in the nono sandbox" section of `.github/CONTRIBUTING.md`.
+- **9.2** (2026-11-17): `just --fmt --check --unstable` exits 0;
+  `just --dry-run nono-claude-danger` prints only
+  `nono run --allow-cwd --profile pfb-claude -- claude --dangerously-skip-permissions`;
+  `git grep -n mise_ justfile` finds nothing (exit 1). Run again by the spec
+  review, same results.
+- **9.3** (2026-11-17): oxfmt, rumdl and typos pass on `specs/learnings/`; the
+  two learnings name the profile as the place of the mise grants, and no other
+  file in the repository describes them as part of the recipe
+  (`git grep -n -E "mise_data|mise_state|mise_config"` outside
+  `specs/0003-tool-manager` and the learnings' dated history).
+- **9.4**: §4.2 and §4.3.
 
 ### 3.3 Acceptance criteria
 

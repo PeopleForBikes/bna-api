@@ -67,9 +67,6 @@ agents access to them.
 - **Agent_Recipe**: the `nono-claude-danger` recipe of the root `justfile`.
 - **Sandbox_Profile**: the contributor's own nono profile that the Agent_Recipe
   passes to `nono run` (`pfb-claude` by default).
-- **Mise_Directories**: mise's data directory (installed tools and shims), its
-  configuration directory and its state directory, at their default locations or
-  where mise's own environment variables put them.
 - **Trusted_Checkout**: a checkout whose Tool_Config mise trusts, because the
   contributor ran `mise trust` in it or listed a parent folder in
   `trusted_config_paths` in their global mise configuration.
@@ -151,8 +148,8 @@ agent to use the tools I installed, so that it can run `just fmt` and
 #### Acceptance Criteria
 
 1. The Agent_Recipe SHALL start the sandbox with the Sandbox_Profile, the
-   working directory and the Claude arguments only, granting no path and leaving
-   the `PATH` as is.
+   working directory and the Claude arguments only, granting no other path and
+   leaving the `PATH` as is.
 2. WHILE an agent runs in a sandbox started by the Agent_Recipe in a
    Trusted_Checkout, with a Sandbox_Profile holding the grants of 6.5 and mise's
    shims or activation ahead of any other copy of the Pinned_Tools on the
