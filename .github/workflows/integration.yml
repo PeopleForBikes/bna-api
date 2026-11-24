@@ -18,6 +18,8 @@ permissions:
 
 jobs:
   test:
+    # The name of the required check, distinct from the other test jobs.
+    name: integration
     # Hurl needs libxml2, which Ubuntu 26.04 no longer provides.
     runs-on: ubuntu-24.04
 
