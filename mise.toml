@@ -17,7 +17,7 @@ locked_verify_provenance = true
 
 [tools]
 "github:casey/just" = "1.59.0"
-"github:crate-ci/typos" = "1.52.1"
+"github:crate-ci/typos" = "1.52.2"
 "github:oxc-project/oxc" = { version = "0.78.0", version_prefix = "oxfmt_v" }
 "github:rvben/rumdl" = "0.3.2"
 "github:Orange-OpenSource/hurl" = "8.1.0"
