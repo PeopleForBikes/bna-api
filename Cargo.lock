@@ -1218,14 +1218,11 @@ dependencies = [
 name = "bnaclient"
 version = "1.6.0-alpha.1"
 dependencies = [
- "bytes",
  "chrono",
- "futures-core",
  "progenitor-client",
  "reqwest",
  "serde",
  "serde_json",
- "serde_urlencoded",
  "uuid",
 ]
 

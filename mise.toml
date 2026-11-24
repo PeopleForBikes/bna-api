@@ -17,11 +17,11 @@ locked_verify_provenance = true
 
 [tools]
 "github:casey/just" = "1.59.0"
-"github:crate-ci/typos" = "1.52.1"
-"github:oxc-project/oxc" = { version = "0.78.0", version_prefix = "oxfmt_v" }
-"github:rvben/rumdl" = "0.3.2"
+"github:crate-ci/typos" = "1.52.2"
+"github:oxc-project/oxc" = { version = "0.79.0", version_prefix = "oxfmt_v" }
+"github:rvben/rumdl" = "0.3.4"
 "github:Orange-OpenSource/hurl" = "8.1.0"
 "cargo:bacon" = "3.26.0"
 "cargo:sea-orm-cli" = "2.0.4"
-"cargo:cargo-progenitor" = "0.16.0"
+"cargo:cargo-progenitor" = "0.17.0"
 "cargo:slumber" = "5.4.4"

@@ -97,7 +97,7 @@ dbml: dbml-sql dbml-svg
 dbml-sql-print:
     #!/usr/bin/env bash
     set -euo pipefail
-    sql=$(npx -y --package=@dbml/cli@12.0.0 dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
+    sql=$(npx -y --package=@dbml/cli@12.1.0 dbml2sql --postgres {{ dbml }} | sed '/^-- Generated at:/d')
     printf -- '-- Generated from {{ dbml }} by `just dbml-sql`. Do not edit.\n\n%s\n' "$sql"
 
 # Builds a database from each on the server of DATABASE_URL and compares their
