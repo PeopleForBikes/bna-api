@@ -78,7 +78,7 @@ locked_verify_provenance = true
 "github:Orange-OpenSource/hurl" = "8.1.0"
 "cargo:bacon" = "3.26.0"
 "cargo:sea-orm-cli" = "2.0.4"
-"cargo:cargo-progenitor" = "0.16.0"
+"cargo:cargo-progenitor" = "0.17.0"
 "cargo:slumber" = "5.4.4"
 ```
 
@@ -435,5 +435,5 @@ There is no Rust code; each requirement is checked by a command, recorded in
 | just             | 1.59.0 (`casey/just`)                                     | Command runner                    | Lockfile checksum (GitHub API digest; release not immutable) |
 | bacon            | 3.26.0 (crates.io)                                        | `just debug-axum`                 | `cargo install --locked` from crates.io                      |
 | sea-orm-cli      | 2.0.4 (crates.io)                                         | Migrations, entity generation     | `cargo install --locked` from crates.io                      |
-| cargo-progenitor | 0.16.0 (crates.io)                                        | `bnaclient` generation            | `cargo install --locked` from crates.io                      |
+| cargo-progenitor | 0.17.0 (crates.io)                                        | `bnaclient` generation            | `cargo install --locked` from crates.io                      |
 | slumber          | 5.4.4 (crates.io)                                         | API request collection            | `cargo install --locked` from crates.io                      |

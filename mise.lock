@@ -8,9 +8,9 @@ backend = "cargo:bacon"
 specifiers = ["3.26.0"]
 
 [[tools."cargo:cargo-progenitor"]]
-version = "0.16.0"
+version = "0.17.0"
 backend = "cargo:cargo-progenitor"
-specifiers = ["0.16.0"]
+specifiers = ["0.17.0"]
 
 [[tools."cargo:sea-orm-cli"]]
 version = "2.0.4"

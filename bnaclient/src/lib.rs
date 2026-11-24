@@ -1,7 +1,12 @@
 #[allow(unused_imports)]
-use progenitor_client::{encode_path, ClientHooks, OperationInfo, RequestBuilderExt};
+use progenitor_client::{encode_path, ClientHooks, OperationInfo, QueryParam, RequestBuilderExt};
 #[allow(unused_imports)]
 pub use progenitor_client::{ByteStream, ClientInfo, Error, ResponseValue};
+/// Items consumers will typically use such as the Client.
+pub mod prelude {
+    pub use self::super::Client;
+}
+
 /// Types used as operation parameters and responses.
 #[allow(clippy::all)]
 pub mod types {
@@ -660,6 +665,13 @@ pub mod types {
     impl ::std::str::FromStr for CityPostName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            ::std::convert::TryFrom::try_from(value)
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for CityPostName {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 255usize {
                 return Err("longer than 255 characters".into());
             }
@@ -670,19 +682,12 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&str> for CityPostName {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for CityPostName {
         type Error = self::error::ConversionError;
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -691,8 +696,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -721,6 +725,13 @@ pub mod types {
     impl ::std::str::FromStr for CityPostRegion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
+            ::std::convert::TryFrom::try_from(value)
+        }
+    }
+
+    impl ::std::convert::TryFrom<&str> for CityPostRegion {
+        type Error = self::error::ConversionError;
+        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
             if value.chars().count() > 255usize {
                 return Err("longer than 255 characters".into());
             }
@@ -731,19 +742,12 @@ pub mod types {
         }
     }
 
-    impl ::std::convert::TryFrom<&str> for CityPostRegion {
-        type Error = self::error::ConversionError;
-        fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
-        }
-    }
-
     impl ::std::convert::TryFrom<::std::string::String> for CityPostRegion {
         type Error = self::error::ConversionError;
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -752,8 +756,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -1735,17 +1738,17 @@ pub mod types {
     impl ::std::str::FromStr for GetCityName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 255usize {
-                return Err("longer than 255 characters".into());
-            }
-            Ok(Self(value.to_string()))
+            ::std::convert::TryFrom::try_from(value)
         }
     }
 
     impl ::std::convert::TryFrom<&str> for GetCityName {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
         }
     }
 
@@ -1754,7 +1757,7 @@ pub mod types {
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -1763,8 +1766,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -1791,17 +1793,17 @@ pub mod types {
     impl ::std::str::FromStr for GetCityRatingsName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 255usize {
-                return Err("longer than 255 characters".into());
-            }
-            Ok(Self(value.to_string()))
+            ::std::convert::TryFrom::try_from(value)
         }
     }
 
     impl ::std::convert::TryFrom<&str> for GetCityRatingsName {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
         }
     }
 
@@ -1810,7 +1812,7 @@ pub mod types {
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -1819,8 +1821,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -1847,17 +1848,17 @@ pub mod types {
     impl ::std::str::FromStr for GetCityRatingsRegion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 255usize {
-                return Err("longer than 255 characters".into());
-            }
-            Ok(Self(value.to_string()))
+            ::std::convert::TryFrom::try_from(value)
         }
     }
 
     impl ::std::convert::TryFrom<&str> for GetCityRatingsRegion {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
         }
     }
 
@@ -1866,7 +1867,7 @@ pub mod types {
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -1875,8 +1876,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -1903,17 +1903,17 @@ pub mod types {
     impl ::std::str::FromStr for GetCityRegion {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 255usize {
-                return Err("longer than 255 characters".into());
-            }
-            Ok(Self(value.to_string()))
+            ::std::convert::TryFrom::try_from(value)
         }
     }
 
     impl ::std::convert::TryFrom<&str> for GetCityRegion {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
         }
     }
 
@@ -1922,7 +1922,7 @@ pub mod types {
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -1931,8 +1931,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -2015,17 +2014,17 @@ pub mod types {
     impl ::std::str::FromStr for GetUsStateName {
         type Err = self::error::ConversionError;
         fn from_str(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            if value.chars().count() > 255usize {
-                return Err("longer than 255 characters".into());
-            }
-            Ok(Self(value.to_string()))
+            ::std::convert::TryFrom::try_from(value)
         }
     }
 
     impl ::std::convert::TryFrom<&str> for GetUsStateName {
         type Error = self::error::ConversionError;
         fn try_from(value: &str) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            if value.chars().count() > 255usize {
+                return Err("longer than 255 characters".into());
+            }
+            Ok(Self(value.to_string()))
         }
     }
 
@@ -2034,7 +2033,7 @@ pub mod types {
         fn try_from(
             value: ::std::string::String,
         ) -> ::std::result::Result<Self, self::error::ConversionError> {
-            value.parse()
+            ::std::convert::TryFrom::try_from(value.as_str())
         }
     }
 
@@ -2043,8 +2042,7 @@ pub mod types {
         where
             D: ::serde::Deserializer<'de>,
         {
-            ::std::string::String::deserialize(deserializer)?
-                .parse()
+            ::std::convert::TryFrom::try_from(::std::string::String::deserialize(deserializer)?)
                 .map_err(|e: self::error::ConversionError| {
                     <D::Error as ::serde::de::Error>::custom(e.to_string())
                 })
@@ -6426,8 +6424,8 @@ pub mod builder {
     use super::types;
     #[allow(unused_imports)]
     use super::{
-        encode_path, ByteStream, ClientHooks, ClientInfo, Error, OperationInfo, RequestBuilderExt,
-        ResponseValue,
+        encode_path, ByteStream, ClientHooks, ClientInfo, Error, OperationInfo, QueryParam,
+        RequestBuilderExt, ResponseValue,
     };
     ///Builder for [`Client::get_cities`]
     ///
@@ -6520,13 +6518,10 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new(
-                    "order_direction",
-                    &order_direction,
-                ))
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
-                .query(&progenitor_client::QueryParam::new("sort_by", &sort_by))
+                .query(&QueryParam::new("order_direction", &order_direction))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("sort_by", &sort_by))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -6711,9 +6706,9 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
-                .query(&progenitor_client::QueryParam::new("status", &status))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("status", &status))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -6887,7 +6882,7 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("status", &status))
+                .query(&QueryParam::new("status", &status))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -7111,13 +7106,10 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new(
-                    "order_direction",
-                    &order_direction,
-                ))
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
-                .query(&progenitor_client::QueryParam::new("sort_by", &sort_by))
+                .query(&QueryParam::new("order_direction", &order_direction))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("sort_by", &sort_by))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -7444,8 +7436,8 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -7570,8 +7562,8 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -7958,13 +7950,10 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new(
-                    "order_direction",
-                    &order_direction,
-                ))
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
-                .query(&progenitor_client::QueryParam::new("sort_by", &sort_by))
+                .query(&QueryParam::new("order_direction", &order_direction))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("sort_by", &sort_by))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -8165,8 +8154,8 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -8573,8 +8562,8 @@ pub mod builder {
                     ::reqwest::header::ACCEPT,
                     ::reqwest::header::HeaderValue::from_static("application/json"),
                 )
-                .query(&progenitor_client::QueryParam::new("page", &page))
-                .query(&progenitor_client::QueryParam::new("page_size", &page_size))
+                .query(&QueryParam::new("page", &page))
+                .query(&QueryParam::new("page_size", &page_size))
                 .headers(header_map)
                 .build()?;
             let info = OperationInfo {
@@ -8664,9 +8653,4 @@ pub mod builder {
             }
         }
     }
-}
-
-/// Items consumers will typically use such as the Client.
-pub mod prelude {
-    pub use self::super::Client;
 }

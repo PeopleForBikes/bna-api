@@ -23,5 +23,5 @@ locked_verify_provenance = true
 "github:Orange-OpenSource/hurl" = "8.1.0"
 "cargo:bacon" = "3.26.0"
 "cargo:sea-orm-cli" = "2.0.4"
-"cargo:cargo-progenitor" = "0.16.0"
+"cargo:cargo-progenitor" = "0.17.0"
 "cargo:slumber" = "5.4.4"
