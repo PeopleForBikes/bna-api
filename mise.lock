@@ -8,9 +8,9 @@ backend = "cargo:bacon"
 specifiers = ["3.26.0"]
 
 [[tools."cargo:cargo-progenitor"]]
-version = "0.16.0"
+version = "0.17.0"
 backend = "cargo:cargo-progenitor"
-specifiers = ["0.16.0"]
+specifiers = ["0.17.0"]
 
 [[tools."cargo:sea-orm-cli"]]
 version = "2.0.4"
@@ -77,91 +77,91 @@ url = "https://github.com/casey/just/releases/download/1.59.0/just-1.59.0-x86_64
 url_api = "https://api.github.com/repos/casey/just/releases/assets/643131819"
 
 [[tools."github:crate-ci/typos"]]
-version = "1.52.1"
+version = "1.52.2"
 backend = "github:crate-ci/typos"
-specifiers = ["1.52.1"]
+specifiers = ["1.52.2"]
 
 [tools."github:crate-ci/typos"."platforms.linux-arm64"]
-checksum = "sha256:3c82c3e97aafdd686fbb3f8c7b82bca3a870d21a0bcadd41babd37e84cc2f2df"
-url = "https://github.com/crate-ci/typos/releases/download/v1.52.1/typos-v1.52.1-aarch64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/728873236"
+checksum = "sha256:f2f54b567f5f4688f000f1bf85c585ee22cce3b55befc9418bcdd4c5adc16595"
+url = "https://github.com/crate-ci/typos/releases/download/v1.52.2/typos-v1.52.2-aarch64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/733786825"
 provenance = "github-attestations"
 
 [tools."github:crate-ci/typos"."platforms.linux-x64"]
-checksum = "sha256:c034dbec8797cfa0c4548b3726c1eebbafcf703b8a17f15a961b037788eebcdd"
-url = "https://github.com/crate-ci/typos/releases/download/v1.52.1/typos-v1.52.1-x86_64-unknown-linux-musl.tar.gz"
-url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/728875573"
+checksum = "sha256:3b13d1291281d39d01822e54035636487a7a0f228e70097899b1e33aeb0e7e93"
+url = "https://github.com/crate-ci/typos/releases/download/v1.52.2/typos-v1.52.2-x86_64-unknown-linux-musl.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/733787189"
 provenance = "github-attestations"
 
 [tools."github:crate-ci/typos"."platforms.macos-arm64"]
-checksum = "sha256:e342c1ec32ea6f60a8b557cd75f30e7c604745131754acff295402a0a3d43263"
-url = "https://github.com/crate-ci/typos/releases/download/v1.52.1/typos-v1.52.1-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/728885543"
+checksum = "sha256:b8e7b8b81f28cc808fd763b6d935536e15ba1ef72613bbb6d628b58a891da7ef"
+url = "https://github.com/crate-ci/typos/releases/download/v1.52.2/typos-v1.52.2-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/733789873"
 provenance = "github-attestations"
 
 [tools."github:crate-ci/typos"."platforms.macos-x64"]
-checksum = "sha256:dbca3612fc20dd711829d3e45f948a9faf8902a681a1d056184a7e81b756ca98"
-url = "https://github.com/crate-ci/typos/releases/download/v1.52.1/typos-v1.52.1-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/728881013"
+checksum = "sha256:2c1e5cd3be644005d27543d7d83a32dbba36eb285bc12678818709938a63a988"
+url = "https://github.com/crate-ci/typos/releases/download/v1.52.2/typos-v1.52.2-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/crate-ci/typos/releases/assets/733789561"
 provenance = "github-attestations"
 
 [[tools."github:oxc-project/oxc"]]
-version = "0.78.0"
+version = "0.79.0"
 backend = "github:oxc-project/oxc"
-specifiers = ["0.78.0"]
+specifiers = ["0.79.0"]
 
 [tools."github:oxc-project/oxc".options]
 version_prefix = "oxfmt_v"
 
 [tools."github:oxc-project/oxc"."platforms.linux-arm64"]
-checksum = "sha256:7f90c13c29ff9f8c5f6955bfff9623909cc80ddb2704007249c2532676bd5266"
-url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.78.0/oxfmt-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/727291684"
+checksum = "sha256:2d550f171f2464df1fc7dd63154c6c77d795a9c6d54f99a3366cb45d2ff9e46d"
+url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.79.0/oxfmt-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/754764756"
 provenance = "github-attestations"
 
 [tools."github:oxc-project/oxc"."platforms.linux-x64"]
-checksum = "sha256:ed43ec296f699a5bcbb1c1947e2aeb4271c3674e43dc6db463f8c1da4c9bf15f"
-url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.78.0/oxfmt-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/727291793"
+checksum = "sha256:458ba526dd692baad90c5cf164341257e339da2a6e0f585dea6eae6644df5608"
+url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.79.0/oxfmt-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/754764891"
 provenance = "github-attestations"
 
 [tools."github:oxc-project/oxc"."platforms.macos-arm64"]
-checksum = "sha256:ba7e010e627377d12fa3ea0d40433d6cbaea66abfb0ea22f998f544cbd1dea90"
-url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.78.0/oxfmt-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/727291686"
+checksum = "sha256:c75859a53ec3a57a78d3e9752d2e9604badfca97dda65366c310ed2f5bf28534"
+url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.79.0/oxfmt-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/754764750"
 provenance = "github-attestations"
 
 [tools."github:oxc-project/oxc"."platforms.macos-x64"]
-checksum = "sha256:14e6798a0bce301e4a71db54d669a176544f066c7e00ce1f6d620549520f7ad2"
-url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.78.0/oxfmt-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/727291779"
+checksum = "sha256:99a82f2d30345af8b9fdb3858ef7a05e57822037ab035ff435827505e43f3e51"
+url = "https://github.com/oxc-project/oxc/releases/download/oxfmt_v0.79.0/oxfmt-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/oxc-project/oxc/releases/assets/754764855"
 provenance = "github-attestations"
 
 [[tools."github:rvben/rumdl"]]
-version = "0.3.2"
+version = "0.3.4"
 backend = "github:rvben/rumdl"
-specifiers = ["0.3.2"]
+specifiers = ["0.3.4"]
 
 [tools."github:rvben/rumdl"."platforms.linux-arm64"]
-checksum = "sha256:bdfca7a602f893fbe5d73d5e38f73b31f45a21d3bcf385b6ea819997d0449ec3"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.2/rumdl-v0.3.2-aarch64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/685449365"
+checksum = "sha256:d51bfff8c4aacebb786f701918389b3b568129cb9c16aee12567ede6869a61ad"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-aarch64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227511"
 provenance = "github-attestations"
 
 [tools."github:rvben/rumdl"."platforms.linux-x64"]
-checksum = "sha256:f527d1374765d826c1627ceab3d1f46e548268731a495b5b12a3af529b3d79e8"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.2/rumdl-v0.3.2-x86_64-unknown-linux-gnu.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/685449359"
+checksum = "sha256:36f1524f0cfaf33f5dfe68ac19220e1bd57ded1f0f9205931f6ee1de32f4a040"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-unknown-linux-gnu.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227513"
 provenance = "github-attestations"
 
 [tools."github:rvben/rumdl"."platforms.macos-arm64"]
-checksum = "sha256:a1eefb1cd2e0cafa42f0ca98d3f8713d7e73f9eba77fc8ef0ed6836875197935"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.2/rumdl-v0.3.2-aarch64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/685449362"
+checksum = "sha256:51f7bce0d56ea632ed65e7e42a99effb7ce7a23923fe0738ecda0e1d11bcb788"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-aarch64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227518"
 provenance = "github-attestations"
 
 [tools."github:rvben/rumdl"."platforms.macos-x64"]
-checksum = "sha256:ab35f245127a06374833127162eebdbdec1be17c1e3d8274f02f1b909645635c"
-url = "https://github.com/rvben/rumdl/releases/download/v0.3.2/rumdl-v0.3.2-x86_64-apple-darwin.tar.gz"
-url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/685449351"
+checksum = "sha256:e08cce7484b30f755b00b24d0629c2f87ab418cf1c24550e2466d2ac754dc97d"
+url = "https://github.com/rvben/rumdl/releases/download/v0.3.4/rumdl-v0.3.4-x86_64-apple-darwin.tar.gz"
+url_api = "https://api.github.com/repos/rvben/rumdl/releases/assets/741227510"
 provenance = "github-attestations"
