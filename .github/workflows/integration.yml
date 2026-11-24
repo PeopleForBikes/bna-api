@@ -12,6 +12,11 @@ on:
     branches:
       - main
 
+# A new push makes the running checks of the pull request obsolete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   # This is required for actions/checkout.
   contents: read
@@ -25,6 +30,9 @@ jobs:
 
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+      # Optimizing the binary further takes longer than all the tests.
+      CARGO_PROFILE_RELEASE_LTO: "off"
+      CARGO_PROFILE_RELEASE_CODEGEN_UNITS: "16"
 
     services:
       postgres:
@@ -71,8 +79,12 @@ jobs:
       - name: Start the standalone API server
         run: >
           BNA_API_LOG_LEVEL=debug BNA_API_STANDALONE=1 cargo run --release -p lambdas
-          --bin axumed &
-      - run: sleep 5
+          --bin axumed > "$RUNNER_TEMP/api-server.log" 2>&1 &
+      # Any answer will do, a 404 included.
+      - name: Wait for the API server
+        run: >
+          curl --silent --show-error --output /dev/null --retry 30 --retry-delay 1
+          --retry-connrefused http://localhost:3000/
       - name: Run the public smoke-tests
         working-directory: lambdas/tests
         run: just test-smoke-public localhost
@@ -118,6 +130,14 @@ jobs:
         with:
           name: schemathesis-reports
           path: lambdas/tests/schemathesis-report
+          if-no-files-found: warn
+      # The details of a 500 are in this log only, not in the response.
+      - name: Upload the log of the API server
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: api-server-log
+          path: ${{ runner.temp }}/api-server.log
           if-no-files-found: warn
 
   # Checks that the schema specification, docs/database.dbml, matches the
