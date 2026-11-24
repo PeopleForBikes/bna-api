@@ -43,14 +43,17 @@ just generate-client           # regenerate bnaclient (keeps bnaclient/Cargo.tom
 
 Standard Cargo commands work as usual for building/testing/checking the Rust
 code (`cargo build`, `cargo test`, `cargo test -p lambdas <name>`,
-`cargo clippy`). CI runs `just lint` on every pull request
-(`.github/workflows/ci-rust.yml`), and `cargo test` in `lambdas/` and
-`migration/` when they change (`lambdas.yml`, `migration.yml`). Before
-committing, run `just ci`: `lint` and `test`, whose Rust checks cover the whole
-workspace (clippy skips the generated `bnaclient`). Three CI checks run
-separately: `just dbml-check` (needs the database), the integration tests below
-(need a running server), and `just generate` (rewrites the generated files; CI
-fails on their diff).
+`cargo clippy`). On every pull request, `.github/workflows/ci-rust.yml` runs the
+checks of `just lint-rust` and `just test-rust`, and a build, through the
+`ci-rust` workflow shared by the organization (`PeopleForBikes/.github`, which
+calls cargo, not the recipes: keep the two in step), and
+`just lint-spellcheck lint-md` in its own `lint-docs` job. `lambdas.yml` and
+`migration.yml` run `cargo test` and a build when `lambdas/` and `migration/`
+change. Before committing, run `just ci`: `lint` and `test`, whose Rust checks
+cover the whole workspace (clippy skips the generated `bnaclient`). Three CI
+checks run separately: `just dbml-check` (needs the database), the integration
+tests below (need a running server), and `just generate` (rewrites the generated
+files; CI fails on their diff).
 
 `just fmt` and `just lint` need oxfmt (Markdown formatter, `.oxfmtrc.json`),
 rumdl (Markdown linter, `.markdownlint.yml`) and typos (spellchecker,

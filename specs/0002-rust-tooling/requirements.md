@@ -25,8 +25,8 @@ checked.
   whole repository with typos, each pinned to an exact version in CI.
 - `just fmt` applying every automatic fix; `just lint` checking formatting, lint
   rules and spelling without modifying files.
-- CI running `just lint` on every pull request and stopping at the first
-  failure.
+- CI running the checks of `just lint` on every pull request, each job stopping
+  at its first failure.
 - Fixing the real typos found by the spike, and shortening the two link
   reference definitions that rumdl misreports (spike §5.1, §5.17).
 - Pinning the `@dbml/cli` and `@softwaretechnik/dbml-renderer` packages.
@@ -146,15 +146,15 @@ tools, so that the rules are enforced and no unpinned code runs in CI.
 
 #### Acceptance Criteria
 
-1. WHEN a pull request is opened, synchronized or reopened, CI SHALL run
-   `just lint`.
+1. WHEN a pull request is opened, synchronized or reopened, CI SHALL run the
+   checks of `just lint`, in one or several jobs.
 2. CI SHALL NOT run `just fmt` or modify any file.
-3. IF a check fails, THEN the CI job SHALL fail without running the remaining
-   checks.
+3. IF a check fails, THEN its CI job SHALL fail without running the remaining
+   checks of the job.
 4. CI SHALL install rumdl, oxfmt and typos as Pinned_Tools.
 5. IF a tool's checksum or attestation does not match, THEN CI SHALL fail before
    running the tool.
-6. CI SHALL NOT need Node.js to run `just lint`.
+6. CI SHALL NOT need Node.js to run the checks of `just lint`.
 
 ### Requirement 6: Pinned Generators
 
@@ -198,8 +198,8 @@ before pushing.
 1. `CLAUDE.md` SHALL name oxfmt, rumdl and typos, and SHALL state that they must
    be on the `PATH` at the versions CI pins.
 2. `CLAUDE.md` SHALL state that `just fmt` applies the automatic fixes and that
-   CI runs `just lint` (formatting check, Markdown lint, spellcheck of the whole
-   repository).
+   CI runs the checks of `just lint` (formatting check, Markdown lint,
+   spellcheck of the whole repository).
 3. `CLAUDE.md` SHALL state that the changes `just fmt` makes to code (typos
    corrections) must be reviewed and compiled before committing.
 4. `CLAUDE.md` SHALL NOT mention prettier, markdownlint-cli2, cspell or
