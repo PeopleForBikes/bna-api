@@ -75,7 +75,11 @@ jobs:
         run: >
           BNA_API_LOG_LEVEL=debug BNA_API_STANDALONE=1 cargo run --release -p lambdas
           --bin axumed &
-      - run: sleep 5
+      # Any answer will do, a 404 included.
+      - name: Wait for the API server
+        run: >
+          curl --silent --show-error --output /dev/null --retry 30 --retry-delay 1
+          --retry-connrefused http://localhost:3000/
       - name: Run the public smoke-tests
         working-directory: lambdas/tests
         run: just test-smoke-public localhost
