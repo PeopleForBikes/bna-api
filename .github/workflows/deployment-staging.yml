@@ -11,28 +11,14 @@ permissions:
   # This is required for actions/checkout.
   contents: read
 
-concurrency: ${{ github.ref }}
-
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - name: Install cargo lambda
-        run: pip install cargo-lambda
-
-      # Configure AWS and deploy the lambdas.
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.LAMBDA_DEPLOY_GITHUB_ROLE_ARN_STAGING }}
-          aws-region: ${{ secrets.AWS_REGION_STAGING }}
-
-      # Build the lambdas in release mode and deploy them.
-      - name: Build all lambdas
-        run: cd lambdas && cargo lambda build --release
-      - name: Deploy lambdas
-        run: >
-          cargo lambda deploy --iam-role ${{ secrets.BNAAPI_ROLE_ARN_STAGING }} axumed
+    # Pinned, so that a change to the shared workflow is reviewed here first.
+    uses: PeopleForBikes/.github/.github/workflows/lambda-deploy-rust.yml@9f5369623e3bafbd2c1f1647bde247fd6b78ad7c # main 2026-11-24
+    with:
+      stage: staging
+      lambdas: axumed
+      aws-region: us-west-2
+    secrets:
+      github-role: ${{ secrets.LAMBDA_DEPLOY_GITHUB_ROLE_ARN_STAGING }}
+      lambda-role: ${{ secrets.BNAAPI_ROLE_ARN_STAGING }}
