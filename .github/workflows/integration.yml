@@ -25,6 +25,9 @@ jobs:
 
     env:
       DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/postgres"
+      # Optimizing the binary further takes longer than all the tests.
+      CARGO_PROFILE_RELEASE_LTO: "off"
+      CARGO_PROFILE_RELEASE_CODEGEN_UNITS: "16"
 
     services:
       postgres:
