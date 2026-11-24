@@ -11,39 +11,18 @@ permissions:
   # This is required for actions/checkout.
   contents: read
 
-# Never run two production deployments at the same time.
-concurrency:
-  group: production-deployment
-  cancel-in-progress: false
-
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
-      - name: Ensure the tag matches the workspace version
-        run: |
-          VERSION=$(cargo pkgid -p lambdas | sed 's/.*[#@]//')
-          if [ "${GITHUB_REF_NAME}" != "${VERSION}" ]; then
-            echo "::error::Tag ${GITHUB_REF_NAME} does not match the workspace version ${VERSION}."
-            exit 1
-          fi
-      - name: Install cargo lambda
-        run: pip install cargo-lambda
-
-      # Configure AWS and deploy the lambdas.
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.LAMBDA_DEPLOY_GITHUB_ROLE_ARN_PRODUCTION }}
-          aws-region: ${{ secrets.AWS_REGION_PRODUCTION }}
-
-      # Build the lambdas in release mode and deploy them.
-      - name: Build all lambdas
-        run: cd lambdas && cargo lambda build --release
-      - name: Deploy lambdas
-        run: >
-          cargo lambda deploy --iam-role ${{ secrets.BNAAPI_ROLE_ARN_PRODUCTION }}
-          axumed
+    # Pinned, so that a change to the shared workflow is reviewed here first.
+    uses: PeopleForBikes/.github/.github/workflows/lambda-deploy-rust.yml@9f5369623e3bafbd2c1f1647bde247fd6b78ad7c # main 2026-11-24
+    with:
+      stage: production
+      lambdas: axumed
+      aws-region: us-west-2
+      # The tag must match the workspace version.
+      version-package: lambdas
+      # Do not build releases from files left by an earlier job.
+      use-cache: false
+    secrets:
+      github-role: ${{ secrets.LAMBDA_DEPLOY_GITHUB_ROLE_ARN_PRODUCTION }}
+      lambda-role: ${{ secrets.BNAAPI_ROLE_ARN_PRODUCTION }}

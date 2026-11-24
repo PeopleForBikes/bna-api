@@ -5,15 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
 
   # Maintain Rust dependencies.
   - package-ecosystem: cargo
     directory: "/"
     schedule:
       interval: weekly
-
-  # Maintain Python dependencies.
-  - package-ecosystem: pip
-    directory: "/"
-    schedule:
-      interval: weekly
+    cooldown:
+      default-days: 7

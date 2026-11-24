@@ -12,8 +12,14 @@ on:
     branches:
       - main
 
+permissions:
+  # This is required for actions/checkout.
+  contents: read
+
 jobs:
   test:
+    # The name of the required check, distinct from the other test jobs.
+    name: integration
     # Hurl needs libxml2, which Ubuntu 26.04 no longer provides.
     runs-on: ubuntu-24.04
 
@@ -35,10 +41,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@stable
         with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master 2026-11-15
+        with:
+          toolchain: stable
           components: clippy, rustfmt
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          # The default key is the job id, which other workflows use too, and does
+          # not contain the version of Ubuntu.
+          shared-key: integration
+          # Caches saved by a pull request are only visible to itself.
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:
           version: 2026.11.5
@@ -128,8 +143,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: dtolnay/rust-toolchain@stable
+        with:
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@df2a88e9fe4098bad09cb42c3dec7187f15861fc # master 2026-11-15
+        with:
+          toolchain: stable
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+        with:
+          shared-key: integration-schema
+          # Caches saved by a pull request are only visible to itself.
+          save-if: ${{ github.ref == 'refs/heads/main' }}
       - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
         with:
           version: 2026.11.5
