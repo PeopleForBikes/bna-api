@@ -74,7 +74,7 @@ locked_verify_provenance = true
 "github:casey/just" = "1.59.0"
 "github:crate-ci/typos" = "1.52.2"
 "github:oxc-project/oxc" = { version = "0.78.0", version_prefix = "oxfmt_v" }
-"github:rvben/rumdl" = "0.3.2"
+"github:rvben/rumdl" = "0.3.4"
 "github:Orange-OpenSource/hurl" = "8.1.0"
 "cargo:bacon" = "3.26.0"
 "cargo:sea-orm-cli" = "2.0.4"
@@ -429,7 +429,7 @@ There is no Rust code; each requirement is checked by a command, recorded in
 | mise             | 2026.11.5 (CI pin; contributors this or newer)            | Tool manager                      | CI: the action checks mise's minisign-signed checksums       |
 | jdx/mise-action  | v5.2.8, commit `d5574b52816a478f9d4e6529a3f6ff17a8a36785` | Installs mise and the tools in CI | Pinned by commit                                             |
 | oxfmt            | 0.78.0 (`oxc-project/oxc`, tag `oxfmt_v0.78.0`)           | Markdown formatter                | Lockfile checksum + GitHub release attestation               |
-| rumdl            | 0.3.2 (`rvben/rumdl`)                                     | Markdown linter                   | Lockfile checksum + GitHub release attestation               |
+| rumdl            | 0.3.4 (`rvben/rumdl`)                                     | Markdown linter                   | Lockfile checksum + GitHub release attestation               |
 | typos            | 1.52.2 (`crate-ci/typos`)                                 | Spellchecker                      | Lockfile checksum + GitHub release attestation               |
 | hurl             | 8.1.0 (`Orange-OpenSource/hurl`)                          | API tests                         | Lockfile checksum + GitHub release attestation               |
 | just             | 1.59.0 (`casey/just`)                                     | Command runner                    | Lockfile checksum (GitHub API digest; release not immutable) |
