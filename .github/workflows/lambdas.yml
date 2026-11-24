@@ -15,6 +15,10 @@ on:
       - synchronize
       - reopened
 
+permissions:
+  # This is required for actions/checkout.
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
