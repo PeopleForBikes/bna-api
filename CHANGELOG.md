@@ -208,3 +208,8 @@ and this project adheres to
   (`/cities/United%20States/Tennessee/`), now gets a JSON `APIErrors` document
   with its `404 Not Found`, holding the path in `source.pointer`, like every
   other 404. The body used to be empty, without a `content-type`.
+- A number of a pipeline's `sqs_message` can no longer make the pipeline
+  unreadable. The largest double, `1.7976931348623157e308`, was stored, then
+  every read of the pipeline, and every list holding it, returned
+  `500 Internal Server Error`. The other numbers now keep their exact value:
+  some came back with a different last digit.

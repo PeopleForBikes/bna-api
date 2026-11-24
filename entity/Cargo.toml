@@ -11,6 +11,8 @@ path = "src/lib.rs"
 [dependencies]
 sea-orm = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
+# PostgreSQL rewrites the numbers of a JSON document with all their digits, and
+# only this feature reads each of them back, with the same value.
+serde_json = { workspace = true, features = ["float_roundtrip"] }
 serde_plain = { workspace = true }
 utoipa = { workspace = true }
