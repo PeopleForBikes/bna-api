@@ -29,6 +29,11 @@ on:
       - synchronize
       - reopened
 
+# A new push makes the running checks of the pull request obsolete.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
 permissions:
   # This is required for actions/checkout.
   contents: read
