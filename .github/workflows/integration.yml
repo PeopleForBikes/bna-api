@@ -63,7 +63,7 @@ jobs:
       # uv runs the Schemathesis release pinned in lambdas/tests/justfile.
       - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
         with:
-          version: "0.13.8"
+          version: "0.13.9"
       - name: Seed the database
         run: psql $DATABASE_URL < lambdas/tests/database-with-test-data.sql
       - name: Build the API server
