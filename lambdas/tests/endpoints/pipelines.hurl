@@ -292,6 +292,30 @@ HTTP 200
 [Asserts]
 jsonpath "$.sqs_message.city" == "hurl-2"
 
+# Keeps the largest number of an SQS message readable. PostgreSQL stores it as
+# an integer of 309 digits.
+PATCH {{host}}/pipelines/bna/{{string_pipeline_id}}
+Authorization: Bearer {{token}}
+content-type: application/json
+{
+  "sqs_message": {"city": "hurl-2", "number": 1.7976931348623157e308}
+}
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.number" exists
+
+# Reads the number back.
+GET {{host}}/pipelines/bna/{{string_pipeline_id}}
+HTTP 200
+[Asserts]
+jsonpath "$.sqs_message.number" exists
+
+# Lists the pipelines, the one with that number included.
+GET {{host}}/pipelines/bna?page_size={{max_page_size}}
+HTTP 200
+[Asserts]
+jsonpath "$[?(@.state_machine_id == '{{string_pipeline_id}}')].sqs_message.number" exists
+
 # Rejects an SQS message that cannot be turned into a JSON object.
 POST {{host}}/pipelines/bna
 Authorization: Bearer {{token}}

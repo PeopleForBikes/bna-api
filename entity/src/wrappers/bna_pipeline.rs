@@ -196,4 +196,14 @@ mod tests {
             Some(Some(utrecht()))
         );
     }
+
+    // PostgreSQL writes the numbers of a JSON document in full.
+    #[test]
+    fn test_sqs_message_numbers_written_in_full() {
+        for number in [f64::MAX, f64::MIN, 1.7976931348623155e308, 5e-324] {
+            let text = format!("{{\"number\": {number}}}");
+            let message: JsonObject = serde_json::from_str(&text).unwrap();
+            assert_eq!(message["number"].as_f64(), Some(number));
+        }
+    }
 }
